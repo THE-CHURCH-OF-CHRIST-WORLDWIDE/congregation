@@ -1,75 +1,42 @@
-# Nuxt Minimal Starter
+# Congregation 🕊️
+> An open-source Church Management System + Website powered by Firebase and Nuxt/Vue
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Congregation is a modern, open-source platform designed to help churches manage their community, events, donations, and communications — while also providing a public-facing website for outreach and engagement.
 
-## Setup
+---
 
-Make sure to install dependencies:
+## 🚀 Features
 
+- 🔐 **Member Management** — Add, track, and manage congregation members  
+- 💸 **Donations & Offerings** — Manage giving records (via Firebase)  
+- 📅 **Event Scheduling** — Organize and share events easily  
+- 📣 **Announcements & Notifications**  
+- 🌍 **Landing Page / Website** — Fully customizable with your church’s branding  
+- ☁️ **Firebase Backend** — Real-time, scalable, and secure
+
+---
+
+## 🏗️ Tech Stack
+
+| Layer | Technology |
+|-------|-------------|
+| Frontend | Vue 3 / Nuxt 3 + Tailwind CSS |
+| Backend | Firebase (Firestore, Auth, Functions) |
+| Hosting | Firebase Hosting |
+| Auth | Firebase Authentication |
+| Database | Firestore |
+| Storage | Firebase Storage |
+
+---
+
+## 🧑‍💻 Getting Started
+
+### Prerequisites
+- Node.js 20+
+- Firebase CLI (`npm install -g firebase-tools`)
+- Git
+
+### Clone the repository
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+git clone https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation.git
+cd Congregation
