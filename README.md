@@ -29,18 +29,7 @@ It’s designed to be scalable, secure, and easy to deploy, supporting both smal
 - [Project Structure](#-project-structure)
 - [Prerequisites](#-prerequisites)
 - [Getting Started](#-getting-started)
-- [Firebase Setup](#-firebase-setup)
-- [Deployment](#-deployment)
-- [Configuration](#-configuration)
-- [Contribution Guide](#-contribution-guide)
-- [Issue & PR Templates](#-issue--pr-templates)
-- [Code of Conduct](#-code-of-conduct)
-- [Security](#-security)
-- [Roadmap](#-roadmap)
-- [License](#-license)
-- [Acknowledgements](#-acknowledgements)
 - [Support & Contact](#-support--contact)
-- [Changelog](#-changelog)
 
 ---
 
@@ -165,7 +154,7 @@ congregation/
 ### Local Development
 
 ```bash
-git clone https://github.com/mfonidomark/congregation.git
+git clone https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation.git
 cd congregation
 npm install
 ```
