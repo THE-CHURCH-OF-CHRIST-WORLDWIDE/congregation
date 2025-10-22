@@ -6,7 +6,7 @@
 ```markdown
 # Contributing Guide
 
-We’re glad you want to contribute to ShepherdCMS 🕊️!
+We’re glad you want to contribute to congregation 🕊️!
 
 ---
 
@@ -22,7 +22,7 @@ Click **Fork** on the top right of the repo page.
 
 ### 2. Clone your Fork
 ```bash
-git clone https://github.com/<your-username>/ShepherdCMS.git
+git clone https://github.com/<your-username>/congregation.git
 
 git checkout -b feature/your-feature-name
 
