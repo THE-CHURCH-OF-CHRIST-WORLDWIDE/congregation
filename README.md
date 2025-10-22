@@ -146,7 +146,7 @@ congregation/
 ├── nuxt.config.ts       # Nuxt configuration
 ├── package.json         # Dependencies and scripts
 └── tailwind.config.js   # Tailwind configuration
-
+```
 ---
 
 ## 🧩 Prerequisites
