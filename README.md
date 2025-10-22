@@ -160,3 +160,25 @@ congregation/
 ### Optional:
 - VS Code (with Volar, Tailwind CSS IntelliSense, Prettier)
 - Firebase Emulator Suite
+
+## 🚀 Getting Started
+### Local Development
+
+```bash
+git clone https://github.com/mfonidomark/congregation.git
+cd congregation
+npm install
+```
+## 💬 Support & Contact
+### Authors
+- Mfonido Mark — Lead Engineer
+- GitHub - @favourmark05
+- Twitter/x - @MfonidoMark 
+- Email - MfonidoMark@gmail.com
+
+- Abasifreke Antia — Designer / Product Manager
+- Email - abasifrekeantiaa@gmail.com
+- Twitter/x - @Seantantiaa
+- GitHub - @abasifrekeantia
+
+>“Technology for the Kingdom — because stewardship should be as excellent as worship.”
