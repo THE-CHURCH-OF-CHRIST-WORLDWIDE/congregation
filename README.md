@@ -147,6 +147,8 @@ congregation/
 ├── package.json         # Dependencies and scripts
 └── tailwind.config.js   # Tailwind configuration
 
+---
+
 ## 🧩 Prerequisites
 ### Ensure the following are installed:
 - Node.js v20+
