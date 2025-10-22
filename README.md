@@ -1,23 +1,23 @@
 # 🕊️ Congregation
 
-[![GitHub stars](https://img.shields.io/github/stars/mfonidomark/congregation?style=social)](https://github.com/mfonidomark/congregation/stargazers)
+<!-- [![GitHub stars](https://img.shields.io/github/stars/mfonidomark/congregation?style=social)](https://github.com/mfonidomark/congregation/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/mfonidomark/congregation?style=social)](https://github.com/mfonidomark/congregation/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/mfonidomark/congregation)](https://github.com/mfonidomark/congregation/issues)
 [![GitHub license](https://img.shields.io/github/license/mfonidomark/congregation)](https://github.com/mfonidomark/congregation/blob/main/LICENSE)
-[![npm version](https://img.shields.io/npm/v/congregation?color=orange)](https://www.npmjs.com/package/congregation)
+[![npm version](https://img.shields.io/npm/v/congregation?color=orange)](https://www.npmjs.com/package/congregation) -->
 
 > **Congregation** is an open-source **Church Management System (CMS)** and **public landing platform** that empowers churches and faith-based organizations to manage members, attendance, giving, events, and communications — all in one accessible and modern interface.
 
 Built with **Vue.js**, **Nuxt 3**, and **Firebase**, Congregation brings simplicity, transparency, and connection to ministry administration — whether online or offline.  
 It’s designed to be scalable, secure, and easy to deploy, supporting both small house churches and larger congregations.
 
----
+<!-- ---
 
 ## 📸 Screenshots
 
 | Admin Dashboard | Public Landing Page | Mobile View |
 |-----------------|---------------------|--------------|
-| ![Admin Dashboard Screenshot](docs/screenshots/admin-dashboard.png) | ![Public Landing Page Screenshot](docs/screenshots/public-landing.png) | ![Mobile Responsive Screenshot](docs/screenshots/mobile-view.png) |
+| ![Admin Dashboard Screenshot](docs/screenshots/admin-dashboard.png) | ![Public Landing Page Screenshot](docs/screenshots/public-landing.png) | ![Mobile Responsive Screenshot](docs/screenshots/mobile-view.png) | -->
 
 ---
 
@@ -160,12 +160,12 @@ npm install
 ```
 ## 💬 Support & Contact
 ### Authors
-- Mfonido Mark — Lead Engineer
+#### Mfonido Mark — Lead Engineer
 - GitHub - @favourmark05
 - Twitter/x - @MfonidoMark 
 - Email - MfonidoMark@gmail.com
 
-- Abasifreke Antia — Designer / Product Manager
+#### Abasifreke Antia — Designer / Product Manager
 - Email - abasifrekeantiaa@gmail.com
 - Twitter/x - @Seantantiaa
 - GitHub - @abasifrekeantia
