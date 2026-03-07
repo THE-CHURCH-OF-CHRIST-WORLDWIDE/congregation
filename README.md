@@ -1,173 +1,191 @@
-# 🕊️ Congregation
+# Congregation
 
-<!-- [![GitHub stars](https://img.shields.io/github/stars/mfonidomark/congregation?style=social)](https://github.com/mfonidomark/congregation/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/mfonidomark/congregation?style=social)](https://github.com/mfonidomark/congregation/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/mfonidomark/congregation?style=social)](https://github.com/mfonidomark/congregation/network/members)
 [![GitHub issues](https://img.shields.io/github/issues/mfonidomark/congregation)](https://github.com/mfonidomark/congregation/issues)
 [![GitHub license](https://img.shields.io/github/license/mfonidomark/congregation)](https://github.com/mfonidomark/congregation/blob/main/LICENSE)
-[![npm version](https://img.shields.io/npm/v/congregation?color=orange)](https://www.npmjs.com/package/congregation) -->
 
-> **Congregation** is an open-source **Church Management System (CMS)** and **public landing platform** that empowers churches and faith-based organizations to manage members, attendance, giving, events, and communications — all in one accessible and modern interface.
-
-Built with **Vue.js**, **Nuxt 3**, and **Firebase**, Congregation brings simplicity, transparency, and connection to ministry administration — whether online or offline.  
-It’s designed to be scalable, secure, and easy to deploy, supporting both small house churches and larger congregations.
-
-<!-- ---
-
-## 📸 Screenshots
-
-| Admin Dashboard | Public Landing Page | Mobile View |
-|-----------------|---------------------|--------------|
-| ![Admin Dashboard Screenshot](docs/screenshots/admin-dashboard.png) | ![Public Landing Page Screenshot](docs/screenshots/public-landing.png) | ![Mobile Responsive Screenshot](docs/screenshots/mobile-view.png) | -->
+An open-source **Church Management System (CMS)** built with Nuxt 4, Vue 3, TypeScript, Tailwind CSS, and Firebase. Congregation helps churches and faith-based organizations manage members, attendance, giving, events, and communications from a single modern interface.
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Prerequisites](#-prerequisites)
-- [Getting Started](#-getting-started)
-- [Support & Contact](#-support--contact)
-
----
-
-## 🧭 Overview
-
-Congregation serves two main purposes:
-
-### 🧑‍💼 Admin Dashboard (CMS)
-
-- **Centralized Management:** Manage members, families, attendance, giving, announcements, small groups, and events from a single dashboard.
-- **Data Insights:** Generate reports on attendance trends, giving summaries, and engagement.
-- **Collaboration Tools:** Role-based access for pastors, admins, and members.
-
-### 🌍 Public Landing Page
-
-- **Engaging Frontend:** Customizable website to share sermons, news, and events.
-- **Community Interaction:** Prayer requests, newsletter sign-ups, and live stream integrations.
-- **SEO Optimized:** Built for discoverability and fast performance.
-
-> Congregation helps ministries embrace technology with accessibility and excellence — especially in underrepresented communities.  
-> It’s free to use, modify, and deploy under the **AGPL-3.0 license**.
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+- [Authors](#authors)
 
 ---
 
-## ⚙️ Features
+## Overview
 
-### 🖥️ Admin Dashboard
+Congregation is a single-page application (SPA) with two distinct areas:
 
-- Member & Family Management
-- Giving & Tithe Tracking
-- Event Scheduling & Reminders
-- Attendance via QR Code or Manual Entry
-- Sermon & Content Management
-- Role-Based Access Control (RBAC)
-- Custom Reports & Export Options
+**Admin Dashboard** — A full-featured CMS for church staff to manage members, families, attendance, giving, events, announcements, and small groups. Includes role-based access control (RBAC) and data reporting.
 
-### 🌐 Public Landing Page
+**Public Landing Page** — A customizable, SEO-friendly website for sharing sermons, events, and news. Supports prayer request forms, newsletter subscriptions, and multimedia embeds.
 
-- Dynamic, Modular Sections (About, Events, Sermons)
-- Interactive Forms (Prayer, Volunteer)
-- Newsletter Subscriptions via Firebase Extensions
-- Multimedia Support (YouTube, Vimeo)
-- Mobile-First, Tailwind-powered Design
-- WCAG 2.1 AA Accessibility Compliance
-
-### 🔥 Backend (Firebase)
-
-- Multi-provider Authentication
-- Cloud Firestore Database
-- Firebase Storage for Media
-- Cloud Functions for automation
-- Firebase Hosting & GitHub Actions CI/CD
-- Built-in Analytics
-
-### 🛡️ Security Features
-
-- Data encryption at rest and in transit
-- Input validation and sanitization
-- Rate limiting and audit logs
+> Licensed under **GNU AGPL v3** — free to use, modify, and self-host.
 
 ---
 
-## 🧰 Tech Stack
+## Features
 
-| Area | Technology | Notes |
-|------|-------------|-------|
-| **Frontend** | Vue.js 3 / Nuxt 3 | SSR/SSG support |
-| **Styling** | Tailwind CSS | Utility-first CSS framework |
-| **State Management** | Pinia | Vue official store |
-| **UI Components** | Headless UI / Heroicons | Accessible, unstyled components |
-| **Backend** | Firebase | Serverless backend |
-| **Database** | Cloud Firestore | NoSQL, real-time |
-| **Authentication** | Firebase Auth | Multi-provider |
-| **Storage** | Firebase Storage | File uploads & CDN |
-| **Functions** | Firebase Cloud Functions | Node.js runtime |
-| **Testing** | Vitest / Cypress | Unit & E2E tests |
-| **Linting** | ESLint / Prettier | Code quality |
-| **License** | GNU AGPL v3 | Copyleft open-source |
+### Admin Dashboard
+
+- Member and family profile management
+- Giving and tithe tracking
+- Event scheduling with reminders
+- Attendance recording via QR code or manual entry
+- Sermon and content management
+- Role-based access control (Pastor, Admin, Member)
+- Custom reports and data export
+
+### Public Landing Page
+
+- Modular, customizable sections (About, Events, Sermons)
+- Interactive forms (Prayer requests, Volunteer sign-ups)
+- Newsletter subscriptions via Firebase Extensions
+- YouTube and Vimeo embed support
+- Mobile-first design with WCAG 2.1 AA accessibility compliance
+
+### Backend (Firebase)
+
+- Multi-provider authentication (email, Google, etc.)
+- Cloud Firestore real-time database
+- Firebase Storage for media files
+- Cloud Functions for server-side automation
+- Firebase Hosting with GitHub Actions CI/CD
 
 ---
 
-## 🗂️ Project Structure
+## Tech Stack
 
-```bash
-congregation/
-├── assets/              # Static assets
-│   └── css/
-├── components/          # Reusable Vue components
-│   ├── admin/
-│   └── public/
-├── composables/         # Reusable logic (e.g., useAuth.js)
-├── layouts/             # App layouts (admin, default)
-├── middleware/          # Route guards (auth.js)
-├── pages/               # Route-based pages
-│   ├── admin/
-│   └── public/
-├── plugins/             # Nuxt plugins (firebase, tailwind)
-├── public/              # Static files
-├── server/              # Server-side API routes
-├── stores/              # Pinia stores
-├── utils/               # Helper utilities
-├── .env.example         # Environment variables template
-├── nuxt.config.ts       # Nuxt configuration
-├── package.json         # Dependencies and scripts
-└── tailwind.config.js   # Tailwind configuration
+| Area              | Technology              | Notes                          |
+|-------------------|-------------------------|--------------------------------|
+| Frontend          | Vue 3 / Nuxt 4          | SPA mode (`ssr: false`)        |
+| Language          | TypeScript              | Strict mode                    |
+| Styling           | Tailwind CSS            | Utility-first CSS              |
+| State Management  | Pinia                   | Auto-discovered stores         |
+| Icons             | Iconify                 | Registered globally via plugin |
+| Backend           | Firebase                | Serverless                     |
+| Database          | Cloud Firestore         | NoSQL, real-time               |
+| Authentication    | Firebase Auth           | Multi-provider                 |
+| Storage           | Firebase Storage        | File uploads and CDN           |
+| Functions         | Firebase Cloud Functions| Node.js runtime                |
+| License           | GNU AGPL v3             | Copyleft open-source           |
+
+---
+
+## Project Structure
+
 ```
+congregation/
+├── assets/
+│   └── css/              # Global styles (Tailwind entry point)
+├── components/
+│   ├── admin/            # Admin dashboard components
+│   └── public/           # Public landing page components
+├── composables/          # Shared Vue composables (e.g., useAuth)
+├── constants/            # Shared constants
+├── layouts/              # App layouts (admin, default)
+├── middleware/           # Route guards
+├── pages/
+│   ├── admin/            # Admin routes
+│   └── public/           # Public routes
+├── plugins/              # Nuxt plugins (firebase.client.ts, iconify.client.ts)
+├── repositories/         # Firebase data access layer
+├── stores/               # Pinia stores
+├── types/                # TypeScript type declarations
+├── utils/                # Helper utilities
+├── .env.example          # Environment variable template
+├── nuxt.config.ts        # Nuxt configuration
+└── package.json
+```
+
 ---
 
-## 🧩 Prerequisites
-### Ensure the following are installed:
-- Node.js v20+
-- npm or yarn
-- Git
-- Firebase CLI (npm install -g firebase-tools)
-- Google account for Firebase setup
+## Prerequisites
 
-### Optional:
-- VS Code (with Volar, Tailwind CSS IntelliSense, Prettier)
-- Firebase Emulator Suite
+- **Node.js** v20 or higher
+- **npm** (or yarn / pnpm)
+- **Git**
+- **Firebase CLI** — `npm install -g firebase-tools`
+- A Google account with a Firebase project
 
-## 🚀 Getting Started
-### Local Development
+**Recommended (optional):**
+
+- VS Code with the [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar), Tailwind CSS IntelliSense, and Prettier extensions
+- Firebase Emulator Suite for local backend development
+
+---
+
+## Getting Started
 
 ```bash
-git clone https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation.git
+git clone https://github.com/mfonidomark/congregation.git
 cd congregation
 npm install
 ```
-## 💬 Support & Contact
-### Authors
-#### Mfonido Mark — Lead Engineer
-- GitHub - @favourmark05
-- Twitter/x - @MfonidoMark 
-- Email - MfonidoMark@gmail.com
 
-#### Abasifreke Antia — Designer / Product Manager
-- Email - abasifrekeantiaa@gmail.com
-- Twitter/x - @Seantantiaa
-- GitHub - @abasifrekeantia
+Copy the environment variable template and fill in your Firebase credentials:
 
->“Technology for the Kingdom — because stewardship should be as excellent as worship.”
+```bash
+cp .env.example .env
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+For full setup instructions including Firebase configuration, see [docs/getting-started.md](docs/getting-started.md).
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Getting Started](docs/getting-started.md) | Full local setup guide |
+| [Firebase Setup](docs/firebase-setup.md) | Firebase project configuration |
+| [Architecture](docs/architecture.md) | Codebase structure and design decisions |
+| [Contributing](docs/contributing.md) | How to contribute to this project |
+
+---
+
+## Contributing
+
+Contributions are welcome. Please read [docs/contributing.md](docs/contributing.md) for guidelines on branching, commit conventions, and the pull request process.
+
+---
+
+## License
+
+Distributed under the **GNU Affero General Public License v3.0**. See [LICENSE](LICENSE) for details.
+
+---
+
+## Authors
+
+**Mfonido Mark** — Lead Engineer
+- GitHub: [@mfonidomark](https://github.com/mfonidomark)
+- Twitter: [@MfonidoMark](https://twitter.com/MfonidoMark)
+- Email: MfonidoMark@gmail.com
+
+**Abasifreke Antia** — Designer / Product Manager
+- GitHub: [@abasifrekeantia](https://github.com/abasifrekeantia)
+- Twitter: [@Seantantiaa](https://twitter.com/Seantantiaa)
+- Email: abasifrekeantiaa@gmail.com
+
+---
+
+> "Technology for the Kingdom — because stewardship should be as excellent as worship."
