@@ -18,6 +18,11 @@
   along with Congregation.  If not, see https://www.gnu.org/licenses/.
 -->
 
+<script setup lang="ts">
+const authStore = useAuthStore()
+authStore.init()
+</script>
+
 <template>
   <NuxtLayout>
     <NuxtPage />

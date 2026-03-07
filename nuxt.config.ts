@@ -15,12 +15,14 @@ export default defineNuxtConfig({
     ],
   },
   runtimeConfig: {
-    // Private keys (server only)
-    apiSecret: process.env.API_SECRET,
-
     public: {
-      apiBase: process.env.API_BASE || "https://api.example.com",
-      appEnv: process.env.APP_ENV || "development",
+      appEnv: process.env.APP_ENV || 'development',
+      firebaseApiKey: process.env.VITE_FIREBASE_API_KEY,
+      firebaseAuthDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+      firebaseProjectId: process.env.VITE_FIREBASE_PROJECT_ID,
+      firebaseStorageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+      firebaseMessagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      firebaseAppId: process.env.VITE_FIREBASE_APP_ID,
     },
   },
   components: [
@@ -40,26 +42,16 @@ export default defineNuxtConfig({
         pageTransition: { name: "fade", mode: "out-in" },
         head: {
             title: "Congregation",
-            titleTemplate: "%s - Congregation Marketplace",
+            titleTemplate: "%s | Congregation",
             meta: [
                 { name: "description", content: "Congregation - Your All in one church management solution" },
                 { name: "viewport", content: "width=device-width, initial-scale=1" },
             ],
             link: [
-                { rel: "icon", type: "image/png", href: "/images/icon.png" },
-                { rel: "icon", type: "image/x-icon", href: "/images/icon.png" },
-                { rel: "apple-touch-icon", href: "/images/icon.png" },
+                { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
                 {
                 rel: "stylesheet",
-                href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap",
-                },
-                {
-                rel: "stylesheet",
-                href: "https://fonts.googleapis.com/css2?family=Piedra&display=swap",
-                },
-                {
-                rel: "stylesheet",
-                href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
+                href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Piedra&family=Poppins:wght@400;500;600;700&display=swap",
                 },
             ],
         },
