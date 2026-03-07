@@ -177,7 +177,7 @@ Distributed under the **GNU Affero General Public License v3.0**. See [LICENSE](
 ## Authors
 
 **Mfonido Mark** — Lead Engineer
-- GitHub: [@mfonidomark](https://github.com/mfonidomark)
+- GitHub: [@favourmark05](https://github.com/favourmark05)
 - Twitter: [@MfonidoMark](https://twitter.com/MfonidoMark)
 - Email: MfonidoMark@gmail.com
 
