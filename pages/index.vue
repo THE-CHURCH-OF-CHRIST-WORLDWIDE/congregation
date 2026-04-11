@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import { useChurchSettingsStore } from '../stores/useChurchSettingsStore'
+
 definePageMeta({
   layout: 'default',
 })
+
+const store = useChurchSettingsStore()
+store.load()
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center gap-4 bg-red-400 p-20 text-center text-white">
-    Welcome to Congregation
-    <Icon icon="mdi:account" />
-    <Icon icon="logos:nuxt-icon" />
-    <Icon icon="uil:github" />
-  </div>
+<div>
+    <HeroSection
+    :name="store.settings.name"
+    :address="store.settings.address"
+    :image-url="store.settings.heroImageUrl"
+  />
+</div>
 </template>

@@ -21,6 +21,11 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
 authStore.init()
+
+const { seed } = useMockData()
+onMounted(() => {
+  seed()
+})
 </script>
 
 <template>
