@@ -1,5 +1,40 @@
 @import "tailwindcss";
 
+@theme {
+  --color-navy: #1E3A5F;
+  --color-accent: #2563EB;
+  --color-live: #EF4444;
+  --color-bg-alt: #F8F9FA;
+  --font-family-serif: "Playfair Display", Georgia, serif;
+}
+
+/* Public site typography */
+.font-serif {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+/* Pulse ring animation for live badge */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.pulse-ring::before,
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #EF4444;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+.pulse-ring::after {
+  animation-delay: 0.5s;
+}
+
+/* Hide scrollbar for filter bar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Page transitions */
 .fade-enter-active,
 .fade-leave-active {

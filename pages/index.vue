@@ -1,20 +1,37 @@
 <script setup lang="ts">
-import { useChurchSettingsStore } from '../stores/useChurchSettingsStore'
+definePageMeta({ layout: 'default' })
 
-definePageMeta({
-  layout: 'default',
+useSeoMeta({
+  title: 'The Church of Christ — Ekot Ekpene',
+  description: 'Welcome to the Church of Christ, Ekot Ekpene. Join us for Sunday Worship, Bible Classes, and live streamed services. A New Testament church built on the word of God.',
+  ogTitle: 'The Church of Christ — Ekot Ekpene',
+  ogDescription: 'A New Testament church built solely on the word of God. Find worship times, live streams, sermons, and Sunday School lessons.',
+  ogImage: '/images/heroImg.png',
 })
 
-const store = useChurchSettingsStore()
-store.load()
+useHead({
+  script: [{
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Church of Christ, Worldwide',
+      url: 'https://churchofchrist.org',
+      description: 'Open-source Church of Christ management and public website.',
+    }),
+  }],
+})
 </script>
 
 <template>
-<div>
-    <HeroSection
-    :name="store.settings.name"
-    :address="store.settings.address"
-    :image-url="store.settings.heroImageUrl"
-  />
-</div>
+  <div>
+    <HeroBanner />
+    <MinisterWelcome />
+    <LiveStreamTeaser />
+    <CongregationSearch />
+    <SermonsTeaser />
+    <EventsList />
+    <ContactForm />
+    <PhotoGallery />
+  </div>
 </template>
