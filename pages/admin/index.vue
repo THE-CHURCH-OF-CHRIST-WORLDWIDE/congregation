@@ -14,6 +14,11 @@ const chartService = ref('Sunday Worship')
 const serviceOptions = ['Sunday Worship', 'Sunday School', 'Bible Class', 'Prayer Meeting']
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+// ─── Live chart data reacts to both chartMode and chartService ─────────────
+const chartTitle = computed(() =>
+  chartMode.value === 'monthly' ? 'Monthly Attendance Trend' : 'Weekly Attendance Trend'
+)
+
 const greeting = computed(() => {
   const h = new Date().getHours()
   if (h < 12) return 'Good morning'
@@ -67,35 +72,84 @@ const statsCards = computed(() => [
 ])
 
 const barChartData = computed<ChartData<'bar'>>(() => {
-  const monthly = attendanceStore.monthlyPresenceCounts
-  return {
-    labels: MONTH_LABELS,
-    datasets: [
-      {
-        label: 'Present',
-        data: monthly.map((m) => m.presentCount),
-        backgroundColor: monthly.map((_, i) => {
-          const current = new Date().getMonth()
-          return i === current ? '#2563eb' : '#bfdbfe'
-        }),
-        borderRadius: 4,
-      },
-    ],
+  const currentMonthIdx = new Date().getMonth()
+
+  if (chartMode.value === 'monthly') {
+    const data = attendanceStore.monthlyByService(chartService.value)
+    return {
+      labels: MONTH_LABELS,
+      datasets: [
+        {
+          label: 'Present',
+          data: data.map((d) => d.present),
+          backgroundColor: data.map((_, i) =>
+            i === currentMonthIdx ? '#2563eb' : '#bfdbfe'
+          ),
+          borderRadius: 4,
+        },
+        {
+          label: 'Absent',
+          data: data.map((d) => d.total - d.present),
+          backgroundColor: data.map((_, i) =>
+            i === currentMonthIdx ? '#f87171' : '#fecaca'
+          ),
+          borderRadius: 4,
+        },
+      ],
+    }
+  } else {
+    const data = attendanceStore.weeklyByService(chartService.value)
+    return {
+      labels: data.map((d) => d.label),
+      datasets: [
+        {
+          label: 'Present',
+          data: data.map((d) => d.present),
+          backgroundColor: data.map((_, i) =>
+            i === data.length - 1 ? '#2563eb' : '#bfdbfe'
+          ),
+          borderRadius: 4,
+        },
+        {
+          label: 'Absent',
+          data: data.map((d) => d.total - d.present),
+          backgroundColor: data.map((_, i) =>
+            i === data.length - 1 ? '#f87171' : '#fecaca'
+          ),
+          borderRadius: 4,
+        },
+      ],
+    }
   }
 })
 
-const barOptions: ChartOptions<'bar'> = {
+const barOptions = computed<ChartOptions<'bar'>>(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { display: false },
-    tooltip: { mode: 'index', intersect: false },
+    legend: {
+      display: true,
+      position: 'top',
+      labels: { usePointStyle: true, boxWidth: 8, font: { size: 11 } },
+    },
+    tooltip: {
+      mode: 'index',
+      intersect: false,
+      callbacks: {
+        afterBody(items) {
+          const present = items.find((i) => i.dataset.label === 'Present')?.parsed.y ?? 0
+          const absent = items.find((i) => i.dataset.label === 'Absent')?.parsed.y ?? 0
+          const total = present + absent
+          return total ? [`Rate: ${Math.round((present / total) * 100)}%`] : []
+        },
+      },
+    },
   },
   scales: {
-    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-    y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 } }, beginAtZero: true, max: 1000 },
+    x: { stacked: false, grid: { display: false }, ticks: { font: { size: 11 } } },
+    y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 } }, beginAtZero: true },
   },
-}
+}))
 </script>
 
 <template>
@@ -115,7 +169,7 @@ const barOptions: ChartOptions<'bar'> = {
       <Card class="xl:col-span-2">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
-            <h3 class="text-sm font-semibold text-gray-900">Monthly Attendance Trend</h3>
+            <h3 class="text-sm font-semibold text-gray-900">{{ chartTitle }}</h3>
             <div class="flex items-center gap-4 mt-2">
               <label class="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
                 <input v-model="chartMode" type="radio" value="weekly" class="accent-blue-600" />
@@ -135,7 +189,7 @@ const barOptions: ChartOptions<'bar'> = {
             <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
           </select>
         </div>
-        <BarChart :data="barChartData" :options="barOptions" :height="240" />
+        <BarChart :data="barChartData" :options="barOptions" :height="240" :key="`${chartMode}-${chartService}`" />
       </Card>
 
       <!-- Recent uploads -->

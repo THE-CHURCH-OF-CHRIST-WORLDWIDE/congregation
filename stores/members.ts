@@ -11,14 +11,22 @@ export const useMembersStore = defineStore('members', () => {
     tab: 'all',
   })
 
+  // Statuses that are excluded from the "All Members" default view
+  const HIDDEN_FROM_ALL: Member['status'][] = ['Late']
+
   const filteredMembers = computed(() => {
     let result = [...members.value]
     const { search, gender, status, tab } = filters.value
 
-    if (tab === 'brothers') result = result.filter((m) => m.gender === 'Male')
-    else if (tab === 'sisters') result = result.filter((m) => m.gender === 'Female')
+    if (tab === 'brothers') result = result.filter((m) => m.gender === 'Male' && !HIDDEN_FROM_ALL.includes(m.status))
+    else if (tab === 'sisters') result = result.filter((m) => m.gender === 'Female' && !HIDDEN_FROM_ALL.includes(m.status))
     else if (tab === 'active') result = result.filter((m) => m.status === 'Active')
-    else if (tab === 'inactive') result = result.filter((m) => m.status !== 'Active')
+    else if (tab === 'inactive') result = result.filter((m) => !['Active', 'Late'].includes(m.status))
+    else if (tab === 'disfellowshipped') result = result.filter((m) => m.status === 'Disfellowshipped')
+    else if (tab === 'transfer') result = result.filter((m) => m.status === 'Transfer')
+    else if (tab === 'weak') result = result.filter((m) => m.status === 'Weak')
+    else if (tab === 'late') result = result.filter((m) => m.status === 'Late')
+    else result = result.filter((m) => !HIDDEN_FROM_ALL.includes(m.status)) // 'all' tab
 
     if (gender) result = result.filter((m) => m.gender === gender)
     if (status) result = result.filter((m) => m.status === status)

@@ -29,10 +29,10 @@ onMounted(() => {
       >
         <div class="absolute inset-0 bg-black/40" @click="close" />
         <div
-          :class="['relative bg-white rounded-2xl shadow-xl w-full', sizeClasses[size]]"
+          :class="['relative bg-white rounded-2xl shadow-xl w-full flex flex-col max-h-[90vh]', sizeClasses[size]]"
           @click.stop
         >
-          <div v-if="title" class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <div v-if="title" class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
             <h2 class="text-base font-semibold text-gray-900">{{ title }}</h2>
             <button
               class="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"
@@ -42,10 +42,10 @@ onMounted(() => {
               <Icon icon="mdi:close" class="text-lg" />
             </button>
           </div>
-          <div class="p-5">
+          <div class="p-5 overflow-y-auto flex-1 sidebar-scroll">
             <slot />
           </div>
-          <div v-if="$slots.footer" class="px-5 pb-5">
+          <div v-if="$slots.footer" class="px-5 pb-5 shrink-0 border-t border-gray-100 pt-4">
             <slot name="footer" />
           </div>
         </div>

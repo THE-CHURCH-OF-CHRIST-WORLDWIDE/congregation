@@ -12,7 +12,7 @@ export interface Member {
   phone: string
   email: string
   dob?: string
-  status: 'Active' | 'Backslider' | 'Weak' | 'Distant' | 'Withdrawal'
+  status: 'Active' | 'Backslider' | 'Weak' | 'Distant' | 'Withdrawal' | 'Disfellowshipped' | 'Transfer' | 'Late'
   absenceCount: number
   avatar?: string
   // Extended profile
@@ -139,7 +139,7 @@ export interface MemberFilters {
   search: string
   gender: string
   status: string
-  tab: 'all' | 'brothers' | 'sisters' | 'active' | 'inactive'
+  tab: 'all' | 'brothers' | 'sisters' | 'active' | 'inactive' | 'disfellowshipped' | 'transfer' | 'weak' | 'late'
 }
 
 export interface ServiceAttendanceStats {

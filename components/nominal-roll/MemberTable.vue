@@ -7,13 +7,11 @@ interface Props {
 }
 const props = defineProps<Props>()
 const membersStore = useMembersStore()
-const emit = defineEmits<{ 'add': []; 'select': [member: Member] }>()
+const emit = defineEmits<{ 'add': []; 'select': [member: Member]; 'edit': [member: Member] }>()
 
 const page = ref(1)
 const perPage = 10
 const openMenuId = ref<string | null>(null)
-const editingId = ref<string | null>(null)
-const editForm = ref<Partial<Member>>({})
 
 // Use injected items if provided, otherwise fall back to store's filtered list
 const sourceMembers = computed(() => props.items ?? membersStore.filteredMembers)
@@ -32,26 +30,10 @@ const statusBadge = {
   Weak: 'warning',
   Distant: 'info',
   Withdrawal: 'neutral',
+  Disfellowshipped: 'danger',
+  Transfer: 'info',
+  Late: 'warning',
 } as const
-
-function startEdit(member: Member) {
-  editingId.value = member.id
-  editForm.value = { ...member }
-  openMenuId.value = null
-}
-
-function saveEdit() {
-  if (editingId.value && editForm.value) {
-    membersStore.updateMember(editingId.value, editForm.value)
-    editingId.value = null
-    editForm.value = {}
-  }
-}
-
-function cancelEdit() {
-  editingId.value = null
-  editForm.value = {}
-}
 
 function deleteMember(id: string) {
   membersStore.deleteMember(id)
@@ -72,119 +54,66 @@ onMounted(() => {
     <div class="overflow-x-auto">
       <table class="w-full text-sm" role="table">
         <thead>
-          <tr class="bg-gray-50 border-b border-gray-100">
-            <th scope="col" class="text-left px-4 py-3 text-xs font-medium text-gray-500 w-10">S/N</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-medium text-gray-500">Name</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-medium text-gray-500">Gender</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-medium text-gray-500">Phone Number</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-medium text-gray-500">Email Address</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-medium text-gray-500">Attendance Status</th>
+          <tr class="bg-gray-50 border-b border-gray-100 ">
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800 w-10">S/N</th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Name</th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Gender</th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Phone Number</th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Email Address</th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Attendance Status</th>
             <th scope="col" class="w-10 px-4 py-3"></th>
           </tr>
         </thead>
         <tbody>
-          <template v-for="(member, idx) in paginated" :key="member.id">
-            <!-- Normal row -->
-            <tr
-              v-if="editingId !== member.id"
-              class="border-b border-gray-50 hover:bg-blue-50/30 cursor-pointer transition-colors"
-              @click="emit('select', member)"
-            >
-              <td class="px-4 py-3 text-gray-500">{{ (page - 1) * perPage + idx + 1 }}</td>
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-2.5">
-                  <Avatar :name="member.name" size="sm" />
-                  <span class="font-medium text-gray-900">{{ member.name }}</span>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-gray-600">{{ member.gender }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ member.phone }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ member.email }}</td>
-              <td class="px-4 py-3">
-                <Badge :variant="statusBadge[member.status] ?? 'neutral'">{{ member.status }}</Badge>
-              </td>
-              <td class="px-4 py-3 relative">
+          <tr
+            v-for="(member, idx) in paginated"
+            :key="member.id"
+            class="border-b border-gray-50 hover:bg-blue-50/30 cursor-pointer transition-colors"
+            @click="emit('select', member)"
+          >
+            <td class="px-4 py-3 text-gray-500">{{ (page - 1) * perPage + idx + 1 }}</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2.5">
+                <Avatar :name="member.name" size="sm" />
+                <span class="font-medium text-gray-900">{{ member.name }}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-gray-600">{{ member.gender }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ member.phone }}</td>
+            <td class="px-4 py-3 text-gray-600">{{ member.email }}</td>
+            <td class="px-4 py-3">
+              <Badge :variant="statusBadge[member.status] ?? 'neutral'">{{ member.status }}</Badge>
+            </td>
+            <td class="px-4 py-3 relative">
+              <button
+                class="p-1 rounded hover:bg-gray-100 text-gray-400"
+                :aria-label="`Actions for ${member.name}`"
+                @click.stop="toggleMenu(member.id)"
+              >
+                <Icon icon="mdi:dots-vertical" />
+              </button>
+              <div
+                v-if="openMenuId === member.id"
+                class="absolute right-0 top-8 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-32"
+                @click.stop
+              >
                 <button
-                  class="p-1 rounded hover:bg-gray-100 text-gray-400"
-                  :aria-label="`Actions for ${member.name}`"
-                  @click.stop="toggleMenu(member.id)"
+                  class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  @click="emit('edit', member); openMenuId = null"
                 >
-                  <Icon icon="mdi:dots-vertical" />
+                  <Icon icon="mdi:pencil-outline" />
+                  Edit
                 </button>
-                <div
-                  v-if="openMenuId === member.id"
-                  class="absolute right-0 top-8 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-32"
-                  @click.stop
+                <button
+                  class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  @click="deleteMember(member.id)"
                 >
-                  <button
-                    class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    @click="startEdit(member)"
-                  >
-                    <Icon icon="mdi:pencil-outline" />
-                    Edit
-                  </button>
-                  <button
-                    class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    @click="deleteMember(member.id)"
-                  >
-                    <Icon icon="mdi:trash-can-outline" />
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Edit row -->
-            <tr v-else class="border-b border-blue-100 bg-blue-50/30">
-              <td class="px-4 py-3 text-gray-500">{{ (page - 1) * perPage + idx + 1 }}</td>
-              <td class="px-4 py-3">
-                <input
-                  v-model="editForm.name"
-                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Full name"
-                />
-              </td>
-              <td class="px-4 py-3">
-                <select
-                  v-model="editForm.gender"
-                  class="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </td>
-              <td class="px-4 py-3">
-                <input
-                  v-model="editForm.phone"
-                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </td>
-              <td class="px-4 py-3">
-                <input
-                  v-model="editForm.email"
-                  class="w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </td>
-              <td class="px-4 py-3">
-                <select
-                  v-model="editForm.status"
-                  class="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Backslider">Backslider</option>
-                  <option value="Weak">Weak</option>
-                  <option value="Distant">Distant</option>
-                  <option value="Withdrawal">Withdrawal</option>
-                </select>
-              </td>
-              <td class="px-4 py-3">
-                <div class="flex gap-1">
-                  <Button size="sm" @click="saveEdit">Save Changes</Button>
-                  <Button variant="secondary" size="sm" @click="cancelEdit">Close</Button>
-                </div>
-              </td>
-            </tr>
-          </template>
+                  <Icon icon="mdi:trash-can-outline" />
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
 
           <tr v-if="!paginated.length">
             <td colspan="7" class="px-4 py-10 text-center text-gray-400">

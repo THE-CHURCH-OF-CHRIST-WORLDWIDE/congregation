@@ -204,6 +204,8 @@ const MOCK_MEMBERS: Member[] = [
 ]
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+// All Sundays per month (Sunday Worship + Sunday School)
 const SUNDAYS_2025: Record<string, string[]> = {
   '2025-01': ['2025-01-05', '2025-01-12', '2025-01-19', '2025-01-26'],
   '2025-02': ['2025-02-02', '2025-02-09', '2025-02-16', '2025-02-23'],
@@ -219,29 +221,76 @@ const SUNDAYS_2025: Record<string, string[]> = {
   '2025-12': ['2025-12-07', '2025-12-14', '2025-12-21', '2025-12-28'],
 }
 
+// Wednesdays per month (Bible Class)
+const WEDNESDAYS_2025: Record<string, string[]> = {
+  '2025-01': ['2025-01-08', '2025-01-15', '2025-01-22', '2025-01-29'],
+  '2025-02': ['2025-02-05', '2025-02-12', '2025-02-19', '2025-02-26'],
+  '2025-03': ['2025-03-05', '2025-03-12', '2025-03-19', '2025-03-26'],
+  '2025-04': ['2025-04-02', '2025-04-09', '2025-04-16', '2025-04-23'],
+  '2025-05': ['2025-05-07', '2025-05-14', '2025-05-21', '2025-05-28'],
+  '2025-06': ['2025-06-04', '2025-06-11', '2025-06-18', '2025-06-25'],
+  '2025-07': ['2025-07-02', '2025-07-09', '2025-07-16', '2025-07-23'],
+  '2025-08': ['2025-08-06', '2025-08-13', '2025-08-20', '2025-08-27'],
+  '2025-09': ['2025-09-03', '2025-09-10', '2025-09-17', '2025-09-24'],
+  '2025-10': ['2025-10-01', '2025-10-08', '2025-10-15', '2025-10-22'],
+  '2025-11': ['2025-11-05', '2025-11-12', '2025-11-19', '2025-11-26'],
+  '2025-12': ['2025-12-03', '2025-12-10', '2025-12-17', '2025-12-24'],
+}
+
+// Fridays per month (Prayer Meeting)
+const FRIDAYS_2025: Record<string, string[]> = {
+  '2025-01': ['2025-01-03', '2025-01-10', '2025-01-17', '2025-01-24'],
+  '2025-02': ['2025-02-07', '2025-02-14', '2025-02-21', '2025-02-28'],
+  '2025-03': ['2025-03-07', '2025-03-14', '2025-03-21', '2025-03-28'],
+  '2025-04': ['2025-04-04', '2025-04-11', '2025-04-18', '2025-04-25'],
+  '2025-05': ['2025-05-02', '2025-05-09', '2025-05-16', '2025-05-23'],
+  '2025-06': ['2025-06-06', '2025-06-13', '2025-06-20', '2025-06-27'],
+  '2025-07': ['2025-07-04', '2025-07-11', '2025-07-18', '2025-07-25'],
+  '2025-08': ['2025-08-01', '2025-08-08', '2025-08-15', '2025-08-22'],
+  '2025-09': ['2025-09-05', '2025-09-12', '2025-09-19', '2025-09-26'],
+  '2025-10': ['2025-10-03', '2025-10-10', '2025-10-17', '2025-10-24'],
+  '2025-11': ['2025-11-07', '2025-11-14', '2025-11-21', '2025-11-28'],
+  '2025-12': ['2025-12-05', '2025-12-12', '2025-12-19', '2025-12-26'],
+}
+
+function presenceRand(member: Member): number {
+  if (member.status === 'Withdrawal') return 0
+  if (member.status === 'Backslider') return 0.45
+  if (member.status === 'Distant') return 0.3
+  if (member.status === 'Weak') return 0.55
+  return 0.78
+}
+
 function generateAttendanceRecords(): AttendanceRecord[] {
   const records: AttendanceRecord[] = []
   let id = 1
-  for (const [, dates] of Object.entries(SUNDAYS_2025)) {
-    for (const date of dates) {
-      for (const member of MOCK_MEMBERS) {
-        const rand = Math.random()
-        let present = rand > 0.25
-        if (member.status === 'Backslider') present = rand > 0.6
-        if (member.status === 'Weak') present = rand > 0.7
-        if (member.status === 'Distant') present = rand > 0.8
-        if (member.status === 'Withdrawal') present = false
-        records.push({
-          id: String(id++),
-          memberId: member.id,
-          serviceId: `sunday-worship-${date}`,
-          date,
-          present,
-          serviceType: 'Sunday Worship',
-        })
+
+  const serviceGroups: Array<{ type: string; dates: Record<string, string[]>; absentBias: number }> = [
+    { type: 'Sunday Worship', dates: SUNDAYS_2025, absentBias: 0 },
+    { type: 'Sunday School', dates: SUNDAYS_2025, absentBias: 0.1 },
+    { type: 'Bible Class', dates: WEDNESDAYS_2025, absentBias: 0.15 },
+    { type: 'Prayer Meeting', dates: FRIDAYS_2025, absentBias: 0.2 },
+  ]
+
+  for (const { type, dates, absentBias } of serviceGroups) {
+    for (const [, dayList] of Object.entries(dates)) {
+      for (const date of dayList) {
+        for (const member of MOCK_MEMBERS) {
+          const base = presenceRand(member)
+          const present = member.status === 'Withdrawal' ? false : Math.random() < (base - absentBias)
+          records.push({
+            id: String(id++),
+            memberId: member.id,
+            serviceId: `${type.toLowerCase().replace(/ /g, '-')}-${date}`,
+            date,
+            present,
+            serviceType: type,
+          })
+        }
       }
     }
   }
+
   return records
 }
 

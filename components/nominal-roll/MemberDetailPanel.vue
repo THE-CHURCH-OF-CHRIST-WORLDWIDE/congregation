@@ -4,6 +4,7 @@ import type { Member } from '~/types'
 interface Props {
   member: Member | null
   modelValue: boolean
+  autoEdit?: boolean
 }
 const props = defineProps<Props>()
 const emit = defineEmits<{
@@ -64,8 +65,14 @@ function saveEdit() {
 
 function cancelEdit() { mode.value = 'view' }
 
-// Reset to view mode when panel closes
-watch(() => props.modelValue, (open) => { if (!open) mode.value = 'view' })
+// Reset to view when panel closes; jump to edit when autoEdit is set
+watch(() => props.modelValue, (open) => {
+  if (!open) {
+    mode.value = 'view'
+  } else if (props.autoEdit) {
+    nextTick(() => startEdit())
+  }
+})
 
 // ─── View helpers ─────────────────────────────────────────────────────────────
 function close() { emit('update:modelValue', false) }
@@ -87,7 +94,10 @@ const statusConfig = {
   Backslider: { variant: 'danger', label: 'Backslider' },
   Weak: { variant: 'warning', label: 'Weak Brethren' },
   Distant: { variant: 'info', label: 'Distant Member' },
-  Withdrawal: { variant: 'neutral', label: 'Withdrawal/Transfer' },
+  Withdrawal: { variant: 'neutral', label: 'Withdrawal' },
+  Disfellowshipped: { variant: 'danger', label: 'Disfellowshipped' },
+  Transfer: { variant: 'info', label: 'Transfer' },
+  Late: { variant: 'warning', label: 'Late Brethren' },
 } as const
 
 const memberStatus = computed(() =>
@@ -111,6 +121,9 @@ const statusOptions = [
   { label: 'Weak', value: 'Weak' },
   { label: 'Distant', value: 'Distant' },
   { label: 'Withdrawal', value: 'Withdrawal' },
+  { label: 'Disfellowshipped', value: 'Disfellowshipped' },
+  { label: 'Transfer', value: 'Transfer' },
+  { label: 'Late', value: 'Late' },
 ]
 const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
 </script>

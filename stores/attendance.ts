@@ -46,6 +46,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
     }
   })
 
+  // ── Monthly presence counts by service type ────────────────────────────────
   const monthlyPresenceCounts = computed(() => {
     const months = ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06',
                     '2025-07','2025-08','2025-09','2025-10','2025-11','2025-12']
@@ -58,6 +59,49 @@ export const useAttendanceStore = defineStore('attendance', () => {
       return { month: m, totalSessions, presentCount, listedCount }
     })
   })
+
+  // ── Reactive monthly data for a given service ───────────────────────────────
+  function monthlyByService(serviceType: string) {
+    const months = ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06',
+                    '2025-07','2025-08','2025-09','2025-10','2025-11','2025-12']
+    return months.map((m) => {
+      const recs = records.value.filter((r) => r.date.startsWith(m) && r.serviceType === serviceType)
+      const sessions = [...new Set(recs.map((r) => r.date))].length
+      const present = recs.filter((r) => r.present).length
+      const total = recs.length
+      const rate = total ? Math.round((present / total) * 100) : 0
+      return { month: m, sessions, present, total, rate }
+    })
+  }
+
+  // ── Weekly data: last 12 weeks for a given service ──────────────────────────
+  function weeklyByService(serviceType: string) {
+    const result: Array<{ week: string; label: string; present: number; total: number; rate: number }> = []
+    const now = new Date()
+
+    for (let w = 11; w >= 0; w--) {
+      const weekStart = new Date(now)
+      weekStart.setDate(now.getDate() - now.getDay() - w * 7)
+      const weekEnd = new Date(weekStart)
+      weekEnd.setDate(weekStart.getDate() + 6)
+
+      const startStr = weekStart.toISOString().slice(0, 10)
+      const endStr = weekEnd.toISOString().slice(0, 10)
+
+      const recs = records.value.filter(
+        (r) => r.serviceType === serviceType && r.date >= startStr && r.date <= endStr
+      )
+      const present = recs.filter((r) => r.present).length
+      const total = recs.length
+      const rate = total ? Math.round((present / total) * 100) : 0
+
+      // Label: "Jan 5" format
+      const label = weekStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      result.push({ week: startStr, label, present, total, rate })
+    }
+
+    return result
+  }
 
   function markPresent(recordId: string) {
     const r = records.value.find((r) => r.id === recordId)
@@ -108,6 +152,8 @@ export const useAttendanceStore = defineStore('attendance', () => {
     attendanceRate,
     memberMonthlySummary,
     monthlyPresenceCounts,
+    monthlyByService,
+    weeklyByService,
     markPresent,
     markAbsent,
     toggleAttendance,

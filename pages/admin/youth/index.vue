@@ -54,26 +54,39 @@ const statCards = computed(() => [
     value: membersStore.youthMembers.length,
     subtitle: 'Ages 13–35',
     change: 12,
+    tab: 'all' as const,
   },
   {
     label: 'Youth Girls',
     value: membersStore.youthGirlsCount,
     subtitle: `${membersStore.youthMembers.length - membersStore.youthGirlsCount} boys`,
     change: 8,
+    tab: 'girls' as const,
   },
   {
     label: 'Youth Boys',
     value: membersStore.youthBoysCount,
     subtitle: `${membersStore.youthMembers.length - membersStore.youthBoysCount} girls`,
     change: 15,
+    tab: 'boys' as const,
   },
   {
     label: 'Active Youth',
     value: membersStore.youthActiveCount,
     subtitle: `${membersStore.youthMembers.length - membersStore.youthActiveCount} inactive`,
     change: 10,
+    tab: 'active' as const,
   },
 ])
+
+const tableRef = ref<HTMLElement | null>(null)
+
+function viewList(tab: 'all' | 'boys' | 'girls' | 'active' | 'inactive') {
+  activeTab.value = tab
+  nextTick(() => {
+    tableRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
 
 // ─── Donut chart ─────────────────────────────────────────────────────────────
 const donutData = computed<ChartData<'doughnut'>>(() => {
@@ -106,55 +119,26 @@ const donutData = computed<ChartData<'doughnut'>>(() => {
 
 // ─── Panel ───────────────────────────────────────────────────────────────────
 const panelOpen = ref(false)
+const panelAutoEdit = ref(false)
 const selectedMember = ref<Member | null>(null)
 
 function openPanel(member: Member) {
+  panelAutoEdit.value = false
   selectedMember.value = member
+  panelOpen.value = true
+}
+
+function openPanelEdit(member: Member) {
+  selectedMember.value = member
+  panelAutoEdit.value = true
   panelOpen.value = true
 }
 
 // ─── Add modal ───────────────────────────────────────────────────────────────
 const showAddModal = ref(false)
 
-const newMember = reactive<Omit<Member, 'id' | 'absenceCount'>>({
-  name: '',
-  gender: 'Male',
-  phone: '',
-  email: '',
-  dob: '',
-  status: 'Active',
-})
-
-const addErrors = reactive({ name: '', email: '', phone: '' })
-
-const genderOptions = [
-  { label: 'Male', value: 'Male' },
-  { label: 'Female', value: 'Female' },
-]
-
-const statusOptions = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Backslider', value: 'Backslider' },
-  { label: 'Weak', value: 'Weak' },
-  { label: 'Distant', value: 'Distant' },
-  { label: 'Withdrawal', value: 'Withdrawal' },
-]
-
-function validateAndSave() {
-  addErrors.name = newMember.name ? '' : 'Name is required'
-  addErrors.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newMember.email) ? '' : 'Valid email required'
-  addErrors.phone = newMember.phone ? '' : 'Phone is required'
-
-  if (addErrors.name || addErrors.email || addErrors.phone) return
-
-  membersStore.addMember({ ...newMember, absenceCount: 0 })
-  closeModal()
-}
-
-function closeModal() {
-  showAddModal.value = false
-  Object.assign(newMember, { name: '', gender: 'Male', phone: '', email: '', dob: '', status: 'Active' })
-  Object.assign(addErrors, { name: '', email: '', phone: '' })
+function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
+  membersStore.addMember({ ...member, absenceCount: 0 })
 }
 
 // ─── Export ──────────────────────────────────────────────────────────────────
@@ -172,11 +156,12 @@ function doExport() {
   )
 }
 
-function doImport() {
-  const el = document.createElement('input')
-  el.type = 'file'
-  el.accept = '.csv'
-  el.click()
+const showImport = ref(false)
+
+function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
+  for (const m of members) {
+    membersStore.addMember({ ...m, absenceCount: 0 })
+  }
 }
 
 // ─── Age helper ───────────────────────────────────────────────────────────────
@@ -217,7 +202,7 @@ function getAge(dob?: string) {
               {{ Math.abs(card.change) }}%
             </Badge>
           </div>
-          <button class="mt-3 text-xs text-blue-600 hover:underline">View List</button>
+          <button class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer" @click="viewList(card.tab)">View List</button>
         </Card>
       </div>
 
@@ -229,14 +214,14 @@ function getAge(dob?: string) {
     </div>
 
     <!-- Filter bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div ref="tableRef" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <Tabs :tabs="tabs" v-model="activeTab" />
       <div class="flex gap-2 shrink-0">
         <Button variant="secondary" size="sm" @click="doExport">
           <template #icon-left><Icon icon="mdi:upload-outline" /></template>
           Export CSV
         </Button>
-        <Button variant="secondary" size="sm" @click="doImport">
+        <Button variant="secondary" size="sm" @click="showImport = true">
           <template #icon-left><Icon icon="mdi:download-outline" /></template>
           Import CSV
         </Button>
@@ -262,7 +247,7 @@ function getAge(dob?: string) {
     </div>
 
     <!-- Table — passes filtered youth as items prop -->
-    <MemberTable :items="filteredYouth" @select="openPanel" />
+    <MemberTable :items="filteredYouth" @select="openPanel" @edit="openPanelEdit" />
 
     <!-- Empty state when no youth at all -->
     <div
@@ -284,72 +269,17 @@ function getAge(dob?: string) {
     <MemberDetailPanel
       v-model="panelOpen"
       :member="selectedMember"
+      :auto-edit="panelAutoEdit"
     />
 
-    <!-- Add modal -->
-    <Modal
+    <AddMemberModal
       v-model="showAddModal"
       title="Add Youth Member"
-      size="lg"
-    >
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Input
-          v-model="newMember.name"
-          label="Full Name"
-          placeholder="Enter full name"
-          required
-          :error="addErrors.name"
-        />
-        <Select
-          v-model="newMember.gender"
-          label="Gender"
-          :options="genderOptions"
-          required
-        />
-        <Input
-          v-model="newMember.phone"
-          label="Phone Number"
-          placeholder="+234 800 000 0000"
-          required
-          :error="addErrors.phone"
-        />
-        <Input
-          v-model="newMember.email"
-          label="Email Address"
-          type="email"
-          placeholder="member@example.com"
-          required
-          :error="addErrors.email"
-        />
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">
-            Date of Birth<span class="text-red-500 ml-0.5">*</span>
-          </label>
-          <input
-            v-model="newMember.dob"
-            type="date"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-            aria-label="Date of birth"
-          />
-          <p class="text-xs text-gray-400">Must be between 13–35 years old to appear in Youth list</p>
-        </div>
-        <Select
-          v-model="newMember.status"
-          label="Member Status"
-          :options="statusOptions"
-          required
-        />
-      </div>
+      :youth-mode="true"
+      @save="onMemberSaved"
+    />
 
-      <template #footer>
-        <div class="flex gap-2 justify-end">
-          <Button variant="secondary" @click="closeModal">Cancel</Button>
-          <Button @click="validateAndSave">
-            Add Member
-          </Button>
-        </div>
-      </template>
-    </Modal>
+    <ImportCsvModal v-model="showImport" @import="onImport" />
 
   </div>
 </template>
