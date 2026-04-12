@@ -178,11 +178,12 @@ onBeforeUnmount(() => {
           >Events</NuxtLink>
         </li>
         <li>
-          <a
-            href="/#about"
+          <NuxtLink
+            to="/about-us"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
+            active-class="text-blue-600"
             aria-label="About Us"
-          >About Us</a>
+          >About Us</NuxtLink>
         </li>
         <li>
           <a
@@ -268,10 +269,12 @@ onBeforeUnmount(() => {
               >Events</NuxtLink>
             </li>
             <li>
-              <a href="/#about" @click="mobileOpen = false"
-                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                About Us
-              </a>
+              <NuxtLink
+                to="/about-us"
+                active-class="text-blue-600 bg-blue-50"
+                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false"
+              >About Us</NuxtLink>
             </li>
             <li>
               <a href="/#contact" @click="mobileOpen = false"
