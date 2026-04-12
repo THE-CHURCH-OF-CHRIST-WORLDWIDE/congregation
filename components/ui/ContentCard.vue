@@ -26,7 +26,7 @@ const linkPath = computed(() => {
         loading="lazy"
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
-      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+      <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" ></div>
       <div class="absolute top-3 left-3 flex flex-wrap gap-1">
         <CategoryBadge v-for="tag in props.tags.slice(0, 2)" :key="tag" :label="tag" />
       </div>

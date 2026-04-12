@@ -12,6 +12,9 @@ export default withNuxt({
     // Allow unused vars prefixed with _ (conventional for ignored params)
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
 
+    // TypeScript already enforces optional prop types — explicit undefined defaults are noise
+    'vue/require-default-prop': 'off',
+
     // Consistent Vue component definition order
     'vue/component-api-style': ['error', ['script-setup']],
 

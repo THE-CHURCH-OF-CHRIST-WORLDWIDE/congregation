@@ -20,8 +20,8 @@ const liveStore = usePublicLiveStreamStore()
           <div class="text-white">
             <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#EF4444]/20 px-3 py-1 border border-[#EF4444]/30">
               <span class="relative flex h-2.5 w-2.5">
-                <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" />
-                <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#EF4444]" />
+                <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" ></span>
+                <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#EF4444]" ></span>
               </span>
               <span class="text-xs font-bold text-[#EF4444] uppercase tracking-widest">Live Now</span>
             </div>
@@ -40,8 +40,8 @@ const liveStore = usePublicLiveStreamStore()
             aria-label="Watch live stream now"
           >
             <span class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-white" />
+              <span class="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" ></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-white" ></span>
             </span>
             Watch Live Now
           </a>

@@ -164,12 +164,6 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
   }
 }
 
-// ─── Age helper ───────────────────────────────────────────────────────────────
-function getAge(dob?: string) {
-  if (!dob) return '—'
-  const age = new Date().getFullYear() - new Date(dob).getFullYear()
-  return `${age} yrs`
-}
 </script>
 
 <template>
@@ -177,7 +171,7 @@ function getAge(dob?: string) {
 
     <!-- Header -->
     <div class="flex items-center justify-between">
-      <div />
+      <div ></div>
       <Button @click="showAddModal = true">
         <template #icon-left><Icon icon="mdi:plus" /></template>
         Add Youth Member
@@ -215,7 +209,7 @@ function getAge(dob?: string) {
 
     <!-- Filter bar -->
     <div ref="tableRef" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <Tabs :tabs="tabs" v-model="activeTab" />
+      <Tabs v-model="activeTab" :tabs="tabs" />
       <div class="flex gap-2 shrink-0">
         <Button variant="secondary" size="sm" @click="doExport">
           <template #icon-left><Icon icon="mdi:upload-outline" /></template>

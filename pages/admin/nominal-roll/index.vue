@@ -53,7 +53,7 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
   <div class="flex flex-col gap-5">
     <!-- Header -->
     <div class="flex items-center justify-between">
-      <div />
+      <div ></div>
       <Button @click="showAddModal = true">
         <template #icon-left><Icon icon="mdi:plus" /></template>
         Add New Member

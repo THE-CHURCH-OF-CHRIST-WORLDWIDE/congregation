@@ -16,6 +16,6 @@ defineProps<{
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
       title="Church location map"
-    />
+    ></iframe>
   </div>
 </template>

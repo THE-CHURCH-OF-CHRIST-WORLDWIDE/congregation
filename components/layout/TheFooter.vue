@@ -13,7 +13,7 @@
             <p class="font-serif font-bold text-lg leading-tight">Church of Christ</p>
           </div>
           <p class="text-sm text-white/60 leading-relaxed mb-4">
-            7b Esa Atan, Ekot Ekpene<br>Akwa Ibom State, Nigeria
+            7b Esa Atan, Ekot Ekpene<br/>Akwa Ibom State, Nigeria
           </p>
           <p class="text-xs text-white/40 italic mb-5">
             "…the churches of Christ salute you." — Romans 16:16

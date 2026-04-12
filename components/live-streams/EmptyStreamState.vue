@@ -22,9 +22,9 @@ const emit = defineEmits<{
 
     <div class="flex flex-col gap-3 sm:flex-row">
       <button
-        @click="emit('watch-recorded')"
         class="inline-flex items-center gap-2 rounded-full bg-[#2563EB] px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
         aria-label="Watch recorded videos"
+        @click="emit('watch-recorded')"
       >
         <Icon icon="heroicons:play-circle" class="h-5 w-5" />
         Watch Recorded Videos

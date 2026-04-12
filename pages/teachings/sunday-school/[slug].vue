@@ -171,9 +171,9 @@ function share() {
             <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
               <h3 class="font-serif font-bold text-[#1E3A5F] mb-4">Share This Message</h3>
               <button
-                @click="share"
                 class="w-full flex items-center justify-center gap-2 rounded-lg bg-[#1E3A5F] py-3 text-sm font-semibold text-white hover:bg-[#2563EB] transition-colors"
                 aria-label="Share lesson link"
+                @click="share"
               >
                 <Icon :icon="copied ? 'heroicons:check' : 'heroicons:share'" class="h-4 w-4" />
                 {{ copied ? 'Link Copied!' : 'Share Lesson' }}

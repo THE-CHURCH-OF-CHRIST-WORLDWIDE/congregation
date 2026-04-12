@@ -152,7 +152,7 @@ function doExport() {
                       <div
                         class="progress-bar-fill"
                         :style="{ width: `${getMonthlySummary(member.id).percentage}%` }"
-                      />
+                      ></div>
                     </div>
                     <span class="text-[11px] font-medium text-gray-700 w-7 text-right">
                       {{ getMonthlySummary(member.id).percentage }}%

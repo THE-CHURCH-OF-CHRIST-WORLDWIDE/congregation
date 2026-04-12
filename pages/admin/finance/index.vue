@@ -287,7 +287,7 @@ function saveExpense() {
 
     <!-- Header actions -->
     <div class="flex items-center justify-between flex-wrap gap-3">
-      <div />
+      <div ></div>
       <div class="flex gap-2">
         <Button variant="secondary" @click="showAddExpense = true">
           <template #icon-left><Icon icon="mdi:minus-circle-outline" /></template>
@@ -377,7 +377,7 @@ function saveExpense() {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <h3 class="text-sm font-semibold text-gray-800">Income vs Expenses</h3>
           <div class="flex gap-2 flex-wrap">
-            <Tabs :tabs="periodTabs" v-model="activePeriod" />
+            <Tabs v-model="activePeriod" :tabs="periodTabs" />
           </div>
         </div>
         <BarChart :data="chartData" :height="240" />
@@ -398,7 +398,7 @@ function saveExpense() {
               <span
                 class="w-2.5 h-2.5 rounded-full flex-shrink-0"
                 :style="{ backgroundColor: categoryColors[cat as ExpenseCategory] }"
-              />
+              ></span>
               <span class="text-xs text-slate-300">{{ cat }}</span>
             </div>
             <span class="text-xs text-white font-medium">{{ fmt(amount as number) }}</span>
@@ -470,7 +470,7 @@ function saveExpense() {
               <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Type</th>
               <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Description</th>
               <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Amount (₦)</th>
-              <th class="w-10 px-4 py-3" />
+              <th class="w-10 px-4 py-3" ></th>
             </tr>
           </thead>
           <tbody>

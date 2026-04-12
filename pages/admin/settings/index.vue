@@ -29,7 +29,7 @@ function save() {
   <div class="flex flex-col gap-5">
 
     <!-- Tab switcher -->
-    <Tabs :tabs="tabs" v-model="activeTab" />
+    <Tabs v-model="activeTab" :tabs="tabs" />
 
     <Transition name="fade" mode="out-in">
 

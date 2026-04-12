@@ -56,7 +56,7 @@ function doExport() {
 <template>
   <div>
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-      <Tabs :tabs="tabs" v-model="activeTab" />
+      <Tabs v-model="activeTab" :tabs="tabs" />
       <div class="flex gap-2 shrink-0">
         <Button variant="secondary" size="sm" @click="doExport">
           <template #icon-left><Icon icon="mdi:upload-outline" class="text-base" /></template>

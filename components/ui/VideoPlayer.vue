@@ -22,11 +22,11 @@ function play() {
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover"
       />
-      <div class="absolute inset-0 bg-black/40" />
+      <div class="absolute inset-0 bg-black/40" ></div>
       <button
-        @click="play"
         :aria-label="`Play ${props.title}`"
         class="absolute inset-0 flex items-center justify-center group"
+        @click="play"
       >
         <span class="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-xl transition-transform group-hover:scale-110">
           <!-- Play triangle -->
@@ -45,6 +45,6 @@ function play() {
       class="absolute inset-0 h-full w-full"
       allow="autoplay; fullscreen; picture-in-picture"
       allowfullscreen
-    />
+    ></iframe>
   </div>
 </template>

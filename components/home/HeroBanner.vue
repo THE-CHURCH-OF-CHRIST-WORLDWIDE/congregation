@@ -8,7 +8,7 @@
       loading="eager"
     />
     <!-- Overlay gradient -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-[#1E3A5F]/50 to-[#1E3A5F]/90" />
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-[#1E3A5F]/50 to-[#1E3A5F]/90" ></div>
 
     <!-- Content -->
     <div class="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">

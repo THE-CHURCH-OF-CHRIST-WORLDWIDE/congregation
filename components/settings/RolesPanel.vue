@@ -201,7 +201,7 @@ function permCount(perms: RolePermissions) {
                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Role</th>
                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Assigned</th>
                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Custom Perms</th>
-                <th class="w-24 px-4 py-3" />
+                <th class="w-24 px-4 py-3" ></th>
               </tr>
             </thead>
             <tbody>

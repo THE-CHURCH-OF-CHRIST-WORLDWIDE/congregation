@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Member } from '~/types'
 const membersStore = useMembersStore()
 const { exportCSV } = useExportCSV()
 

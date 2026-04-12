@@ -33,7 +33,7 @@ async function logout() {
       v-if="uiStore.mobileSidebarOpen"
       class="fixed inset-0 bg-black/40 z-20 lg:hidden"
       @click="uiStore.closeMobileSidebar()"
-    />
+    ></div>
 
     <!-- Sidebar -->
     <aside
@@ -65,13 +65,13 @@ async function logout() {
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          @click="uiStore.closeMobileSidebar()"
           :class="[
             'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
             isActive(item)
               ? 'bg-blue-50 text-blue-600 border-l-[3px] border-blue-600 pl-[9px]'
               : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
           ]"
+          @click="uiStore.closeMobileSidebar()"
         >
           <Icon :icon="item.icon" class="text-[18px] flex-shrink-0" />
           {{ item.label }}
@@ -118,7 +118,7 @@ async function logout() {
       <!-- Page content -->
       <main class="flex-1 overflow-y-auto">
         <div class="p-4 lg:p-6">
-          <slot />
+          <slot ></slot>
         </div>
       </main>
     </div>

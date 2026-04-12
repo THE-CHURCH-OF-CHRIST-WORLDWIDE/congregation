@@ -47,8 +47,8 @@ useSeoMeta({
       <div class="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
         <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-[#EF4444]/20 px-4 py-1.5 border border-[#EF4444]/30">
           <span class="relative flex h-2.5 w-2.5">
-            <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" />
-            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#EF4444]" />
+            <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" ></span>
+            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#EF4444]" ></span>
           </span>
           <span class="text-xs font-bold text-[#EF4444] tracking-widest uppercase">Live Streams</span>
         </div>
@@ -84,28 +84,28 @@ useSeoMeta({
       <!-- Tabs -->
       <div class="mb-8 flex gap-1 rounded-xl bg-gray-100 p-1 w-fit">
         <button
-          @click="setTab('live')"
           :class="[
             'rounded-lg px-6 py-2.5 text-sm font-semibold transition-all',
             activeTab === 'live' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-gray-500 hover:text-gray-700',
           ]"
           aria-label="Live Now tab"
+          @click="setTab('live')"
         >
           <span class="flex items-center gap-2">
             <span v-if="isLive" class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" />
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#EF4444]" />
+              <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" ></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#EF4444]" ></span>
             </span>
             Live Now
           </span>
         </button>
         <button
-          @click="setTab('recorded')"
           :class="[
             'rounded-lg px-6 py-2.5 text-sm font-semibold transition-all',
             activeTab === 'recorded' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-gray-500 hover:text-gray-700',
           ]"
           aria-label="Recorded tab"
+          @click="setTab('recorded')"
         >
           Recorded
         </button>

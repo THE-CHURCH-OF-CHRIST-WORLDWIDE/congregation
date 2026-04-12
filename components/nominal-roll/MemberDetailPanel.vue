@@ -137,7 +137,7 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
         class="fixed inset-0 bg-black/25 z-40"
         aria-hidden="true"
         @click="close"
-      />
+      ></div>
     </Transition>
 
     <!-- Panel -->

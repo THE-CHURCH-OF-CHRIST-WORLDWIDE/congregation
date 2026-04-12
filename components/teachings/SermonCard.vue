@@ -4,7 +4,7 @@ import type { Sermon } from '~/types'
 interface Props {
   sermon: Sermon
 }
-const props = defineProps<Props>()
+defineProps<Props>()
 const teachingsStore = useTeachingsStore()
 const showMenu = ref(false)
 

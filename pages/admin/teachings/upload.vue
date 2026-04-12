@@ -21,9 +21,6 @@ function getCategoryColor(cat: string) {
   return categoryColors[cat] ?? 'bg-gray-100 text-gray-700'
 }
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-}
 </script>
 
 <template>
@@ -68,7 +65,8 @@ function formatDate(d: string) {
       <Card>
         <h3 class="text-sm font-semibold text-gray-900 mb-3">Upload Tips</h3>
         <ul class="space-y-2">
-          <li v-for="tip in [
+          <li
+v-for="tip in [
             'Use clear descriptive titles',
             'Add detailed descriptions',
             'Select high quality thumbnails',

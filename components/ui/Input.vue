@@ -20,7 +20,7 @@ const emit = defineEmits<{ 'update:modelValue': [val: string] }>()
     </label>
     <div class="relative">
       <div v-if="$slots['icon-left']" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-        <slot name="icon-left" />
+        <slot name="icon-left" ></slot>
       </div>
       <input
         :type="type"
@@ -39,7 +39,7 @@ const emit = defineEmits<{ 'update:modelValue': [val: string] }>()
         @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       />
       <div v-if="$slots['icon-right']" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-        <slot name="icon-right" />
+        <slot name="icon-right" ></slot>
       </div>
     </div>
     <p v-if="error" class="text-xs text-red-500">{{ error }}</p>

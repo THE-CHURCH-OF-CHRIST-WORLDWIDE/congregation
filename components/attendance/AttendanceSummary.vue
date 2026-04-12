@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ServiceAttendanceStats } from '~/types'
 
-const attendanceStore = useAttendanceStore()
-
 const services: ServiceAttendanceStats[] = [
   { serviceType: 'Sunday Worship', count: 600, change: 10, icon: 'mdi:church' },
   { serviceType: "Leaders' Class", count: 150, change: 10, icon: 'mdi:account-tie-outline' },

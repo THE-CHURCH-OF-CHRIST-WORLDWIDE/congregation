@@ -17,10 +17,6 @@ function closeTeachings() {
   }, 150)
 }
 
-function closeTeachingsDelayed() {
-  closeTeachings()
-}
-
 watch(route, () => {
   mobileOpen.value = false
   teachingsOpen.value = false
@@ -53,10 +49,12 @@ onBeforeUnmount(() => {
             <!-- Open Bible (center) -->
             <g transform="translate(50,50)">
               <!-- Left page -->
-              <path d="M-18,-12 Q-18,-15 -12,-15 L0,-15 L0,15 L-12,15 Q-18,15 -18,12 Z"
+              <path
+d="M-18,-12 Q-18,-15 -12,-15 L0,-15 L0,15 L-12,15 Q-18,15 -18,12 Z"
                     fill="#f5e6c8" stroke="#8B6914" stroke-width="1.2"/>
               <!-- Right page -->
-              <path d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
+              <path
+d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
                     fill="#f5e6c8" stroke="#8B6914" stroke-width="1.2"/>
               <!-- Spine -->
               <rect x="-1.5" y="-15" width="3" height="30" fill="#8B6914"/>
@@ -111,8 +109,8 @@ onBeforeUnmount(() => {
             aria-label="Live Streams"
           >
             <span v-if="liveStore.isLive" class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"/>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-live"/>
+              <span class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-live"></span>
             </span>
             Live Streams
           </NuxtLink>
@@ -218,17 +216,19 @@ onBeforeUnmount(() => {
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
           <ul class="flex flex-col gap-1">
             <li>
-              <NuxtLink to="/" @click="mobileOpen = false"
-                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <NuxtLink
+to="/" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false">
                 Home
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/live-streams" @click="mobileOpen = false"
-                class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <NuxtLink
+to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false">
                 <span v-if="liveStore.isLive" class="relative flex h-2 w-2">
-                  <span class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"/>
-                  <span class="relative inline-flex h-2 w-2 rounded-full bg-live"/>
+                  <span class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"></span>
+                  <span class="relative inline-flex h-2 w-2 rounded-full bg-live"></span>
                 </span>
                 Live Streams
               </NuxtLink>
@@ -250,8 +250,8 @@ onBeforeUnmount(() => {
                   <li v-for="link in teachingLinks" :key="link.label">
                     <NuxtLink
                       :to="link.to"
-                      @click="mobileOpen = false; teachingsOpen = false"
                       class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                      @click="mobileOpen = false; teachingsOpen = false"
                     >
                       <Icon :icon="link.icon" class="h-4 w-4 text-accent"/>
                       {{ link.label }}
@@ -277,8 +277,9 @@ onBeforeUnmount(() => {
               >About Us</NuxtLink>
             </li>
             <li>
-              <a href="/#contact" @click="mobileOpen = false"
-                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+              <a
+href="/#contact" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false">
                 Contact Us
               </a>
             </li>

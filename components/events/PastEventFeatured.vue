@@ -26,7 +26,7 @@ const event = computed(() => eventsStore.selectedPastEvent)
       />
 
       <!-- Gradient overlay: strong at bottom, fades up -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" ></div>
 
       <!-- Content pinned to bottom-left -->
       <div class="relative mt-auto w-full p-5 md:p-7">

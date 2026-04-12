@@ -19,7 +19,7 @@ function formatViews(n: number): string {
         loading="lazy"
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
       />
-      <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors" />
+      <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors" ></div>
 
       <!-- Service type badge top-left -->
       <span class="absolute top-3 left-3 rounded-full bg-[#1E3A5F]/80 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">

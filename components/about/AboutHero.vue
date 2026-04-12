@@ -8,7 +8,7 @@
     />
 
     <!-- Dark overlay -->
-    <div class="absolute inset-0 bg-black/65" />
+    <div class="absolute inset-0 bg-black/65" ></div>
 
     <!-- Centered text -->
     <div class="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">

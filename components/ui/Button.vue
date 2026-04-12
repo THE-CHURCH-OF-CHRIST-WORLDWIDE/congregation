@@ -6,7 +6,7 @@ interface Props {
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'
 }
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   variant: 'primary',
   size: 'md',
   loading: false,
@@ -39,8 +39,8 @@ const sizeClasses = {
     ]"
   >
     <Icon v-if="loading" icon="mdi:loading" class="animate-spin" />
-    <slot name="icon-left" />
-    <slot />
-    <slot name="icon-right" />
+    <slot name="icon-left" ></slot>
+    <slot ></slot>
+    <slot name="icon-right" ></slot>
   </button>
 </template>

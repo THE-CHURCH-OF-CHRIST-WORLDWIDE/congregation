@@ -17,8 +17,8 @@ defineProps<{ stream: LiveStream }>()
       <!-- Pulsing LIVE badge -->
       <div class="mb-6 flex items-center gap-3 rounded-full bg-[#EF4444]/20 px-4 py-2 backdrop-blur-sm border border-[#EF4444]/30">
         <span class="relative flex h-3 w-3">
-          <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" />
-          <span class="relative inline-flex h-3 w-3 rounded-full bg-[#EF4444]" />
+          <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" ></span>
+          <span class="relative inline-flex h-3 w-3 rounded-full bg-[#EF4444]" ></span>
         </span>
         <span class="text-sm font-bold tracking-widest text-[#EF4444] uppercase">Live Now</span>
       </div>
@@ -40,8 +40,8 @@ defineProps<{ stream: LiveStream }>()
         aria-label="Watch live stream now"
       >
         <span class="relative flex h-2 w-2">
-          <span class="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
-          <span class="relative inline-flex h-2 w-2 rounded-full bg-white" />
+          <span class="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" ></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-white" ></span>
         </span>
         Watch Live Now
       </a>

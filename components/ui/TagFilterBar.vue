@@ -14,13 +14,13 @@ const emit = defineEmits<{
     <button
       v-for="tag in props.tags"
       :key="tag"
-      @click="emit('update:active', tag)"
       :class="[
         'shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
         props.active === tag
           ? 'bg-[#2563EB] text-white'
           : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
       ]"
+      @click="emit('update:active', tag)"
     >
       {{ tag }}
     </button>

@@ -189,7 +189,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
             <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
           </select>
         </div>
-        <BarChart :data="barChartData" :options="barOptions" :height="240" :key="`${chartMode}-${chartService}`" />
+        <BarChart :key="`${chartMode}-${chartService}`" :data="barChartData" :options="barOptions" :height="240" />
       </Card>
 
       <!-- Recent uploads -->

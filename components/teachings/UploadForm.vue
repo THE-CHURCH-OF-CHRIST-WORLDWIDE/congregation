@@ -149,7 +149,7 @@ async function submit() {
         placeholder="Enter a brief description of the topic you are uploading..."
         :class="['w-full rounded-lg border text-sm px-3 py-2 outline-none resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all', errors.description ? 'border-red-400' : 'border-gray-300']"
         aria-label="Brief description"
-      />
+      ></textarea>
       <p v-if="errors.description" class="text-xs text-red-500">{{ errors.description }}</p>
     </div>
 
@@ -167,8 +167,8 @@ async function submit() {
           <img :src="thumbnailPreview" alt="Thumbnail preview" class="w-full h-32 object-cover rounded-lg" />
           <button
             class="absolute top-1 right-1 bg-white rounded-full p-0.5 text-gray-500 hover:text-red-500"
-            @click.stop="thumbnailFile = null; thumbnailPreview = null"
             aria-label="Remove thumbnail"
+            @click.stop="thumbnailFile = null; thumbnailPreview = null"
           >
             <Icon icon="mdi:close-circle" />
           </button>

@@ -50,7 +50,7 @@ function onTouchStart(e: TouchEvent) {
 
 function onTouchEnd(e: TouchEvent) {
   const delta = touchStartX - (e.changedTouches[0]?.clientX ?? 0)
-  if (Math.abs(delta) > 50) delta > 0 ? next() : prev()
+  if (Math.abs(delta) > 50) { if (delta > 0) next(); else prev() }
 }
 
 onUnmounted(() => {

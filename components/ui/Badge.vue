@@ -30,7 +30,7 @@ const sizeClasses = {
       sizeClasses[size],
     ]"
   >
-    <slot name="icon" />
-    <slot />
+    <slot name="icon" ></slot>
+    <slot ></slot>
   </span>
 </template>

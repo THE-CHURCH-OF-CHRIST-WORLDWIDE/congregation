@@ -4,7 +4,7 @@ interface Props {
   title?: string
   size?: 'sm' | 'md' | 'lg' | 'xl'
 }
-const props = withDefaults(defineProps<Props>(), { size: 'md' })
+withDefaults(defineProps<Props>(), { size: 'md' })
 const emit = defineEmits<{ 'update:modelValue': [val: boolean] }>()
 
 function close() { emit('update:modelValue', false) }
@@ -27,7 +27,7 @@ onMounted(() => {
         role="dialog"
         aria-modal="true"
       >
-        <div class="absolute inset-0 bg-black/40" @click="close" />
+        <div class="absolute inset-0 bg-black/40" @click="close" ></div>
         <div
           :class="['relative bg-white rounded-2xl shadow-xl w-full flex flex-col max-h-[90vh]', sizeClasses[size]]"
           @click.stop
@@ -43,10 +43,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="p-5 overflow-y-auto flex-1 sidebar-scroll">
-            <slot />
+            <slot ></slot>
           </div>
           <div v-if="$slots.footer" class="px-5 pb-5 shrink-0 border-t border-gray-100 pt-4">
-            <slot name="footer" />
+            <slot name="footer" ></slot>
           </div>
         </div>
       </div>

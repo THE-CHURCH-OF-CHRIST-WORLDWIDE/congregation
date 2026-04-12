@@ -7,15 +7,6 @@ const searchQuery = ref('')
 
 const filterTags = ['All Sermons', 'Church', 'Faith', 'Foundation', 'Baptism', 'Salvation', 'Scripture', 'Gospel', 'Grace']
 
-const normalisedFilter = computed(() =>
-  activeFilter.value === 'All Sermons' ? 'All' : activeFilter.value,
-)
-
-const storeFilter = computed({
-  get: () => store.activeFilter,
-  set: (v: string) => store.setFilter(v),
-})
-
 watch(activeFilter, v => {
   store.setFilter(v === 'All Sermons' ? 'All' : v)
 })
@@ -97,9 +88,9 @@ useSeoMeta({
       <!-- Load more -->
       <div v-if="hasMore" class="mt-10 text-center">
         <button
-          @click="loadMore"
           class="rounded-full border border-[#2563EB] px-8 py-3 text-sm font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors"
           aria-label="Load more sermons"
+          @click="loadMore"
         >
           Load More Sermons
         </button>

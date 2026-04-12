@@ -85,9 +85,9 @@ useSeoMeta({
       <!-- Load more -->
       <div v-if="hasMore" class="mt-10 text-center">
         <button
-          @click="loadMore"
           class="rounded-full border border-[#2563EB] px-8 py-3 text-sm font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors"
           aria-label="Load more lessons"
+          @click="loadMore"
         >
           Load More Lessons
         </button>

@@ -41,10 +41,10 @@ onMounted(() => {
           v-for="photo in photos"
           :key="photo.id"
           class="mb-4 break-inside-avoid cursor-pointer overflow-hidden rounded-xl group"
-          @click="openLightbox(photo)"
           :aria-label="`View photo: ${photo.alt}`"
           role="button"
           tabindex="0"
+          @click="openLightbox(photo)"
           @keydown.enter="openLightbox(photo)"
         >
           <img
@@ -53,7 +53,7 @@ onMounted(() => {
             loading="lazy"
             class="w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-xl" />
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-xl" ></div>
         </div>
       </div>
     </div>
@@ -64,15 +64,15 @@ onMounted(() => {
         <div
           v-if="selectedPhoto"
           class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
-          @click.self="closeLightbox"
           aria-modal="true"
           role="dialog"
           :aria-label="selectedPhoto.alt"
+          @click.self="closeLightbox"
         >
           <button
-            @click="closeLightbox"
             class="absolute top-4 right-4 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition"
             aria-label="Close lightbox"
+            @click="closeLightbox"
           >
             <Icon icon="heroicons:x-mark" class="h-7 w-7" />
           </button>

@@ -43,9 +43,9 @@ watch(query, search)
           aria-label="Search for a congregation"
         />
         <button
-          @click="search"
           class="rounded-lg bg-[#2563EB] px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
           aria-label="Search"
+          @click="search"
         >
           Search
         </button>

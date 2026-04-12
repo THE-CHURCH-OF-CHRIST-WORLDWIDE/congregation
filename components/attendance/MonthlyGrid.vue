@@ -65,7 +65,7 @@ const monthlyData = computed(() => {
             <span class="font-medium">{{ month.attendancePercent }}%</span>
           </div>
           <div class="progress-bar">
-            <div class="progress-bar-fill" :style="{ width: `${month.attendancePercent}%` }" />
+            <div class="progress-bar-fill" :style="{ width: `${month.attendancePercent}%` }" ></div>
           </div>
         </div>
 

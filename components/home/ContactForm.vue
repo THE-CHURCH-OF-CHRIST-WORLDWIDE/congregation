@@ -36,14 +36,14 @@ async function handleSubmit() {
             <h3 class="font-serif text-xl font-bold text-[#1E3A5F] mb-2">Message Sent!</h3>
             <p class="text-gray-500 text-sm">Thank you for reaching out. We'll be in touch soon.</p>
             <button
-              @click="submitted = false"
               class="mt-6 text-sm text-[#2563EB] hover:underline"
+              @click="submitted = false"
             >
               Send another message
             </button>
           </div>
 
-          <form v-else @submit.prevent="handleSubmit" class="space-y-5">
+          <form v-else class="space-y-5" @submit.prevent="handleSubmit">
             <div class="grid gap-5 sm:grid-cols-2">
               <div>
                 <label class="mb-1.5 block text-xs font-medium text-gray-700" for="contact-name">Full Name</label>
@@ -88,7 +88,7 @@ async function handleSubmit() {
                 required
                 placeholder="Write your message here…"
                 class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition resize-none"
-              />
+              ></textarea>
             </div>
             <button
               type="submit"
@@ -113,7 +113,7 @@ async function handleSubmit() {
                 </div>
                 <div>
                   <p class="text-sm font-medium text-gray-700">Address</p>
-                  <p class="text-sm text-gray-500">7b Esa Atan, Ekot Ekpene<br>Akwa Ibom State, Nigeria</p>
+                  <p class="text-sm text-gray-500">7b Esa Atan, Ekot Ekpene<br/>Akwa Ibom State, Nigeria</p>
                 </div>
               </div>
               <div class="flex items-start gap-3">

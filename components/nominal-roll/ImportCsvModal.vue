@@ -220,8 +220,8 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
         <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
           <span class="relative inline-block w-8 h-4">
             <input v-model="importOnlyValid" type="checkbox" class="sr-only peer" />
-            <span class="absolute inset-0 rounded-full bg-gray-300 peer-checked:bg-blue-600 transition-colors" />
-            <span class="absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" />
+            <span class="absolute inset-0 rounded-full bg-gray-300 peer-checked:bg-blue-600 transition-colors" ></span>
+            <span class="absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4" ></span>
           </span>
           Skip invalid rows ({{ invalidRows.length }})
         </label>
@@ -288,7 +288,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
           <template #icon-left><Icon icon="mdi:arrow-left" /></template>
           Back
         </Button>
-        <div v-else />
+        <div v-else ></div>
         <div class="flex gap-2">
           <Button variant="secondary" @click="close">Cancel</Button>
           <Button

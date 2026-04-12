@@ -44,7 +44,7 @@ function onImgError(e: Event) {
     </div>
 
     <!-- Divider -->
-    <div class="w-px bg-white/20 self-stretch" />
+    <div class="w-px bg-white/20 self-stretch" ></div>
 
     <!-- Speakers group -->
     <div>
