@@ -1,0 +1,390 @@
+import type { Member, AttendanceRecord, Sermon } from '~/types'
+
+const MOCK_MEMBERS: Member[] = [
+  {
+    id: '1', name: 'Megan Willow', gender: 'Female', phone: '+234 703 123 4567', email: 'meganwillow@gmail.com',
+    status: 'Active', absenceCount: 4, churchNumber: '6001', maritalStatus: 'Single',
+    dob: '1995-06-14', dateOfBaptism: '2018-03-10', dateJoined: '2018-03-10',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ikot Ekpene', village: 'Ikot Ntuen',
+    address: 'No. 12 Church Road, Ikot Ekpene', occupation: 'Nurse',
+    emergencyContact: { name: 'Brother Paul Willow', relationship: 'Brother', phone: '+234 703 111 0001', address: 'No. 12 Church Road, Ikot Ekpene, Akwa Ibom State' },
+  },
+  {
+    id: '2', name: 'Alison David', gender: 'Female', phone: '+234 912 345 6789', email: 'alisondavid@gmail.com',
+    status: 'Backslider', absenceCount: 4, churchNumber: '6002', maritalStatus: 'Married',
+    dob: '1990-02-20', dateOfBaptism: '2015-07-15', dateJoined: '2015-07-15',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ibiono Ibom', village: 'Ikot Oku',
+    address: 'No. 8 Convent Road, Ikot Ekpene', occupation: 'Teacher',
+    emergencyContact: { name: 'Brother James David', relationship: 'Husband', phone: '+234 912 222 3333', address: 'No. 8 Convent Road, Ikot Ekpene, Akwa Ibom State' },
+  },
+  {
+    id: '3', name: 'Olamide Akintan', gender: 'Male', phone: '+234 814 567 8901', email: 'olamideakintan@gmail.com',
+    status: 'Backslider', absenceCount: 4, churchNumber: '6003', maritalStatus: 'Single',
+    dob: '1993-11-05', dateOfBaptism: '2019-01-20', dateJoined: '2019-01-20',
+    country: 'Nigeria', state: 'Lagos State', localGovernment: 'Surulere', village: 'N/A',
+    address: '15B Adeniran Ogunsanya, Surulere, Lagos', occupation: 'Engineer',
+    emergencyContact: { name: 'Sis. Bukola Akintan', relationship: 'Sister', phone: '+234 803 456 7890', address: '15B Adeniran Ogunsanya, Surulere, Lagos' },
+  },
+  {
+    id: '4', name: 'Douglas Smith', gender: 'Male', phone: '+234 701 234 5678', email: 'douglassmith@gmail.com',
+    status: 'Active', absenceCount: 4, churchNumber: '6004', maritalStatus: 'Married',
+    dob: '1985-08-30', dateOfBaptism: '2010-04-05', dateJoined: '2010-04-05',
+    country: 'Nigeria', state: 'Cross River State', localGovernment: 'Calabar Municipality', village: 'Ikot Ansa',
+    address: 'No. 5 Etta Agbo Road, Calabar', occupation: 'Accountant',
+    emergencyContact: { name: 'Sis. Janet Smith', relationship: 'Wife', phone: '+234 807 654 3210', address: 'No. 5 Etta Agbo Road, Calabar, Cross River State' },
+  },
+  {
+    id: '5', name: 'Kenneth Tarry', gender: 'Male', phone: '+234 812 345 6790', email: 'kennethtarry@gmail.com',
+    status: 'Active', absenceCount: 4, churchNumber: '6005', maritalStatus: 'Single',
+    dob: '1998-03-17', dateOfBaptism: '2022-06-12', dateJoined: '2022-06-12',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Abak', village: 'Ikot Nseyen',
+    address: 'No. 3 Market Square, Abak', occupation: 'Student',
+    emergencyContact: { name: 'Bro. Matthew Tarry', relationship: 'Father', phone: '+234 812 111 2222', address: 'No. 3 Market Square, Abak, Akwa Ibom State' },
+  },
+  {
+    id: '6', name: 'Janelle Levi', gender: 'Female', phone: '+234 709 012 3456', email: 'janellelevi@gmail.com',
+    status: 'Active', absenceCount: 1, churchNumber: '6006', maritalStatus: 'Married',
+    dob: '1988-12-01', dateOfBaptism: '2012-09-08', dateJoined: '2012-09-08',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Eket', village: 'Afaha Eket',
+    address: 'No. 22 Eket Drive, Eket', occupation: 'Business Owner',
+    emergencyContact: { name: 'Bro. Samuel Levi', relationship: 'Husband', phone: '+234 709 000 1111', address: 'No. 22 Eket Drive, Eket, Akwa Ibom State' },
+  },
+  {
+    id: '7', name: 'King Fisher', gender: 'Male', phone: '+234 815 678 9012', email: 'kingfisher@gmail.com',
+    status: 'Active', absenceCount: 0, churchNumber: '6007', maritalStatus: 'Single',
+    dob: '2000-07-22', dateOfBaptism: '2023-02-19', dateJoined: '2023-02-19',
+    country: 'Nigeria', state: 'Rivers State', localGovernment: 'Port Harcourt', village: 'D-Line',
+    address: '10 Rumuola Road, Port Harcourt', occupation: 'Student',
+    emergencyContact: { name: 'Sis. Blessing Fisher', relationship: 'Mother', phone: '+234 803 999 8888', address: '10 Rumuola Road, Port Harcourt, Rivers State' },
+  },
+  {
+    id: '8', name: 'Olivia Maham', gender: 'Female', phone: '+234 903 456 7890', email: 'oliviamaham@gmail.com',
+    status: 'Active', absenceCount: 2, churchNumber: '6008', maritalStatus: 'Married',
+    dob: '1992-04-11', dateOfBaptism: '2016-11-27', dateJoined: '2016-11-27',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Uyo', village: 'Ikot Ekpuk',
+    address: 'No. 7 Abak Road, Uyo', occupation: 'Pharmacist',
+    emergencyContact: { name: 'Bro. David Maham', relationship: 'Husband', phone: '+234 903 777 6666', address: 'No. 7 Abak Road, Uyo, Akwa Ibom State' },
+  },
+  {
+    id: '9', name: 'Vivant Kalu', gender: 'Female', phone: '+234 806 789 1234', email: 'vivantkalu@gmail.com',
+    status: 'Active', absenceCount: 1, churchNumber: '6009', maritalStatus: 'Single',
+    dob: '1996-09-28', dateOfBaptism: '2020-08-16', dateJoined: '2020-08-16',
+    country: 'Nigeria', state: 'Abia State', localGovernment: 'Umuahia North', village: 'Ibeku',
+    address: '5 Azikiwe Road, Umuahia', occupation: 'Civil Servant',
+    emergencyContact: { name: 'Bro. Chukwu Kalu', relationship: 'Brother', phone: '+234 806 555 4444', address: '5 Azikiwe Road, Umuahia, Abia State' },
+  },
+  {
+    id: '10', name: 'Samuel Eze', gender: 'Male', phone: '+234 704 567 8901', email: 'samueleze@gmail.com',
+    status: 'Active', absenceCount: 0, churchNumber: '6010', maritalStatus: 'Married',
+    dob: '1982-01-15', dateOfBaptism: '2008-05-04', dateJoined: '2008-05-04',
+    country: 'Nigeria', state: 'Enugu State', localGovernment: 'Enugu North', village: 'Ogui',
+    address: '20 Zik Avenue, Enugu', occupation: 'Pastor/Evangelist',
+    emergencyContact: { name: 'Sis. Ruth Eze', relationship: 'Wife', phone: '+234 704 333 2222', address: '20 Zik Avenue, Enugu, Enugu State' },
+  },
+  {
+    id: '11', name: 'Grace Okon', gender: 'Female', phone: '+234 802 345 6789', email: 'graceokon@gmail.com',
+    status: 'Weak', absenceCount: 6, churchNumber: '6011', maritalStatus: 'Widowed',
+    dob: '1975-06-30', dateOfBaptism: '2005-12-25', dateJoined: '2005-12-25',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ikot Abasi', village: 'Opobo Town',
+    address: 'No. 1 Nwaniba Road, Ikot Abasi', occupation: 'Trader',
+    emergencyContact: { name: 'Bro. Etim Okon', relationship: 'Son', phone: '+234 802 111 0000', address: 'No. 1 Nwaniba Road, Ikot Abasi, Akwa Ibom State' },
+  },
+  {
+    id: '12', name: 'Peter James', gender: 'Male', phone: '+234 901 234 5678', email: 'peterjames@gmail.com',
+    status: 'Active', absenceCount: 1, churchNumber: '6012', maritalStatus: 'Married',
+    dob: '1987-10-08', dateOfBaptism: '2013-03-31', dateJoined: '2013-03-31',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ikot Ekpene', village: 'Afaha Obong',
+    address: 'No. 9 Ikot Ekpene Road, Uyo', occupation: 'Software Developer',
+    emergencyContact: { name: 'Sis. Peace James', relationship: 'Wife', phone: '+234 901 888 7777', address: 'No. 9 Ikot Ekpene Road, Uyo, Akwa Ibom State' },
+  },
+  {
+    id: '13', name: 'Esther Nwosu', gender: 'Female', phone: '+234 708 901 2345', email: 'esthernwosu@gmail.com',
+    status: 'Distant', absenceCount: 8, churchNumber: '6013', maritalStatus: 'Married',
+    dob: '1991-03-25', dateOfBaptism: '2017-10-22', dateJoined: '2017-10-22',
+    country: 'Nigeria', state: 'Imo State', localGovernment: 'Owerri North', village: 'Aladinma',
+    address: '30 Douglas Road, Owerri', occupation: 'Lecturer',
+    emergencyContact: { name: 'Bro. Chidi Nwosu', relationship: 'Husband', phone: '+234 708 666 5555', address: '30 Douglas Road, Owerri, Imo State' },
+  },
+  {
+    id: '14', name: 'David Obi', gender: 'Male', phone: '+234 803 456 7890', email: 'davidobi@gmail.com',
+    status: 'Active', absenceCount: 2, churchNumber: '6014', maritalStatus: 'Single',
+    dob: '1999-05-19', dateOfBaptism: '2021-04-18', dateJoined: '2021-04-18',
+    country: 'Nigeria', state: 'Anambra State', localGovernment: 'Awka South', village: 'Amawbia',
+    address: '7 Zik Avenue, Awka', occupation: 'Student',
+    emergencyContact: { name: 'Sis. Chioma Obi', relationship: 'Sister', phone: '+234 803 444 3333', address: '7 Zik Avenue, Awka, Anambra State' },
+  },
+  {
+    id: '15', name: 'Rachel Bello', gender: 'Female', phone: '+234 905 678 9012', email: 'rachelbello@gmail.com',
+    status: 'Active', absenceCount: 0, churchNumber: '6015', maritalStatus: 'Married',
+    dob: '1986-07-04', dateOfBaptism: '2011-08-14', dateJoined: '2011-08-14',
+    country: 'Nigeria', state: 'Kwara State', localGovernment: 'Ilorin South', village: 'Taiwo',
+    address: 'No. 4 Unity Road, Ilorin', occupation: 'Doctor',
+    emergencyContact: { name: 'Bro. Ahmed Bello', relationship: 'Husband', phone: '+234 905 222 1111', address: 'No. 4 Unity Road, Ilorin, Kwara State' },
+  },
+  {
+    id: '16', name: 'Andrew Okafor', gender: 'Male', phone: '+234 702 345 6789', email: 'andrewokafor@gmail.com',
+    status: 'Active', absenceCount: 1, churchNumber: '6016', maritalStatus: 'Married',
+    dob: '1984-12-12', dateOfBaptism: '2009-06-21', dateJoined: '2009-06-21',
+    country: 'Nigeria', state: 'Delta State', localGovernment: 'Oshimili South', village: 'Asaba GRA',
+    address: '16 Cable Point Road, Asaba', occupation: 'Lawyer',
+    emergencyContact: { name: 'Sis. Ngozi Okafor', relationship: 'Wife', phone: '+234 702 000 9999', address: '16 Cable Point Road, Asaba, Delta State' },
+  },
+  {
+    id: '17', name: 'Priscilla Udo', gender: 'Female', phone: '+234 807 890 1234', email: 'priscillaudo@gmail.com',
+    status: 'Backslider', absenceCount: 5, churchNumber: '6017', maritalStatus: 'Single',
+    dob: '1994-08-23', dateOfBaptism: '2018-12-30', dateJoined: '2018-12-30',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Mkpat Enin', village: 'Ikot Akpa Nkuk',
+    address: 'No. 11 Uyo Road, Mkpat Enin', occupation: 'Nurse',
+    emergencyContact: { name: 'Sis. Blessing Udo', relationship: 'Mother', phone: '+234 807 777 8888', address: 'No. 11 Uyo Road, Mkpat Enin, Akwa Ibom State' },
+  },
+  {
+    id: '18', name: 'James Ikpe', gender: 'Male', phone: '+234 906 789 0123', email: 'jamesikpe@gmail.com',
+    status: 'Active', absenceCount: 3, churchNumber: '6018', maritalStatus: 'Married',
+    dob: '1980-04-02', dateOfBaptism: '2006-02-12', dateJoined: '2006-02-12',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ibiono Ibom', village: 'Ikot Oku',
+    address: 'No. 8 Convent Road, Ikot Ekpene', occupation: 'Teacher',
+    emergencyContact: { name: 'Sis. Faith Ikpe', relationship: 'Wife', phone: '+234 906 555 6666', address: 'No. 8 Convent Road, Ikot Ekpene, Akwa Ibom State' },
+  },
+  {
+    id: '19', name: 'Mary Ekpe', gender: 'Female', phone: '+234 701 289 0123', email: 'maryekpe@gmail.com',
+    status: 'Active', absenceCount: 2, churchNumber: '6019', maritalStatus: 'Single',
+    dob: '1997-01-30', dateOfBaptism: '2021-09-05', dateJoined: '2021-09-05',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ibiono Ibom', village: 'Ikot Oku',
+    address: 'No. 8 Convent Road, Ikot Ekpene', occupation: 'Teacher',
+    emergencyContact: { name: 'Bro. John Ekpe', relationship: 'Brother', phone: '+234 701 444 5555', address: 'No. 8 Convent Road, Ikot Ekpene, Akwa Ibom State' },
+  },
+  {
+    id: '20', name: 'Emmanuel Akpan', gender: 'Male', phone: '+234 804 567 8901', email: 'emmanuelakpan@gmail.com',
+    status: 'Weak', absenceCount: 7, churchNumber: '6020', maritalStatus: 'Divorced',
+    dob: '1978-11-11', dateOfBaptism: '2003-07-06', dateJoined: '2003-07-06',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Uyo', village: 'Ikot Ekpuk',
+    address: 'No. 45 Abak Road, Uyo', occupation: 'Mechanic',
+    emergencyContact: { name: 'Bro. Peter Akpan', relationship: 'Brother', phone: '+234 804 222 3333', address: 'No. 45 Abak Road, Uyo, Akwa Ibom State' },
+  },
+  {
+    id: '21', name: 'Deborah Etuk', gender: 'Female', phone: '+234 902 345 6789', email: 'deborahetuk@gmail.com',
+    status: 'Active', absenceCount: 0, churchNumber: '6021', maritalStatus: 'Married',
+    dob: '1989-02-14', dateOfBaptism: '2014-04-20', dateJoined: '2014-04-20',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ikot Ekpene', village: 'Afaha Obong',
+    address: 'No. 3 Ikpe Road, Ikot Ekpene', occupation: 'Seamstress',
+    emergencyContact: { name: 'Bro. Paul Etuk', relationship: 'Husband', phone: '+234 902 111 0000', address: 'No. 3 Ikpe Road, Ikot Ekpene, Akwa Ibom State' },
+  },
+  {
+    id: '22', name: 'Philip Bassey', gender: 'Male', phone: '+234 705 678 9012', email: 'philipbassey@gmail.com',
+    status: 'Active', absenceCount: 1, churchNumber: '6022', maritalStatus: 'Single',
+    dob: '2001-06-06', dateOfBaptism: '2023-11-19', dateJoined: '2023-11-19',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ikot Ekpene', village: 'Ikot Ntuen',
+    address: 'No. 17 Ikot Ekpene Road, Ikot Ekpene', occupation: 'Student',
+    emergencyContact: { name: 'Sis. Agnes Bassey', relationship: 'Mother', phone: '+234 705 888 9999', address: 'No. 17 Ikot Ekpene Road, Ikot Ekpene, Akwa Ibom State' },
+  },
+  {
+    id: '23', name: 'Susan Nnah', gender: 'Female', phone: '+234 801 234 5678', email: 'susannah@gmail.com',
+    status: 'Withdrawal', absenceCount: 10, churchNumber: '6023', maritalStatus: 'Married',
+    dob: '1983-09-09', dateOfBaptism: '2007-01-28', dateJoined: '2007-01-28',
+    country: 'Nigeria', state: 'Edo State', localGovernment: 'Oredo', village: 'Benin City GRA',
+    address: '25 Sapele Road, Benin City', occupation: 'Hairdresser',
+    emergencyContact: { name: 'Bro. Henry Nnah', relationship: 'Husband', phone: '+234 801 666 7777', address: '25 Sapele Road, Benin City, Edo State' },
+  },
+  {
+    id: '24', name: 'Daniel Effiong', gender: 'Male', phone: '+234 903 456 0123', email: 'danieleffiong@gmail.com',
+    status: 'Distant', absenceCount: 9, churchNumber: '6024', maritalStatus: 'Single',
+    dob: '2002-04-16', dateOfBaptism: '2024-03-10', dateJoined: '2024-03-10',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Eket', village: 'Afaha Eket',
+    address: 'No. 6 Eket Drive, Eket', occupation: 'Student',
+    emergencyContact: { name: 'Sis. Grace Effiong', relationship: 'Mother', phone: '+234 903 333 4444', address: 'No. 6 Eket Drive, Eket, Akwa Ibom State' },
+  },
+  {
+    id: '25', name: 'Joy Inyang', gender: 'Female', phone: '+234 707 890 1234', email: 'joyinyang@gmail.com',
+    status: 'Active', absenceCount: 0, churchNumber: '6025', maritalStatus: 'Married',
+    dob: '1990-10-31', dateOfBaptism: '2015-05-03', dateJoined: '2015-05-03',
+    country: 'Nigeria', state: 'Akwa Ibom State', localGovernment: 'Ikono', village: 'Ikono Town',
+    address: 'No. 14 Ikono Road, Ikono', occupation: 'Nurse',
+    emergencyContact: { name: 'Bro. Timothy Inyang', relationship: 'Husband', phone: '+234 707 222 1111', address: 'No. 14 Ikono Road, Ikono, Akwa Ibom State' },
+  },
+]
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+// All Sundays per month (Sunday Worship + Sunday School)
+const SUNDAYS_2025: Record<string, string[]> = {
+  '2025-01': ['2025-01-05', '2025-01-12', '2025-01-19', '2025-01-26'],
+  '2025-02': ['2025-02-02', '2025-02-09', '2025-02-16', '2025-02-23'],
+  '2025-03': ['2025-03-02', '2025-03-09', '2025-03-16', '2025-03-23'],
+  '2025-04': ['2025-04-06', '2025-04-13', '2025-04-20', '2025-04-27'],
+  '2025-05': ['2025-05-04', '2025-05-11', '2025-05-18', '2025-05-25'],
+  '2025-06': ['2025-06-01', '2025-06-08', '2025-06-15', '2025-06-22'],
+  '2025-07': ['2025-07-06', '2025-07-13', '2025-07-20', '2025-07-27'],
+  '2025-08': ['2025-08-03', '2025-08-10', '2025-08-17', '2025-08-24'],
+  '2025-09': ['2025-09-07', '2025-09-14', '2025-09-21', '2025-09-28'],
+  '2025-10': ['2025-10-05', '2025-10-12', '2025-10-19', '2025-10-26'],
+  '2025-11': ['2025-11-02', '2025-11-09', '2025-11-16', '2025-11-23'],
+  '2025-12': ['2025-12-07', '2025-12-14', '2025-12-21', '2025-12-28'],
+}
+
+// Wednesdays per month (Bible Class)
+const WEDNESDAYS_2025: Record<string, string[]> = {
+  '2025-01': ['2025-01-08', '2025-01-15', '2025-01-22', '2025-01-29'],
+  '2025-02': ['2025-02-05', '2025-02-12', '2025-02-19', '2025-02-26'],
+  '2025-03': ['2025-03-05', '2025-03-12', '2025-03-19', '2025-03-26'],
+  '2025-04': ['2025-04-02', '2025-04-09', '2025-04-16', '2025-04-23'],
+  '2025-05': ['2025-05-07', '2025-05-14', '2025-05-21', '2025-05-28'],
+  '2025-06': ['2025-06-04', '2025-06-11', '2025-06-18', '2025-06-25'],
+  '2025-07': ['2025-07-02', '2025-07-09', '2025-07-16', '2025-07-23'],
+  '2025-08': ['2025-08-06', '2025-08-13', '2025-08-20', '2025-08-27'],
+  '2025-09': ['2025-09-03', '2025-09-10', '2025-09-17', '2025-09-24'],
+  '2025-10': ['2025-10-01', '2025-10-08', '2025-10-15', '2025-10-22'],
+  '2025-11': ['2025-11-05', '2025-11-12', '2025-11-19', '2025-11-26'],
+  '2025-12': ['2025-12-03', '2025-12-10', '2025-12-17', '2025-12-24'],
+}
+
+// Fridays per month (Prayer Meeting)
+const FRIDAYS_2025: Record<string, string[]> = {
+  '2025-01': ['2025-01-03', '2025-01-10', '2025-01-17', '2025-01-24'],
+  '2025-02': ['2025-02-07', '2025-02-14', '2025-02-21', '2025-02-28'],
+  '2025-03': ['2025-03-07', '2025-03-14', '2025-03-21', '2025-03-28'],
+  '2025-04': ['2025-04-04', '2025-04-11', '2025-04-18', '2025-04-25'],
+  '2025-05': ['2025-05-02', '2025-05-09', '2025-05-16', '2025-05-23'],
+  '2025-06': ['2025-06-06', '2025-06-13', '2025-06-20', '2025-06-27'],
+  '2025-07': ['2025-07-04', '2025-07-11', '2025-07-18', '2025-07-25'],
+  '2025-08': ['2025-08-01', '2025-08-08', '2025-08-15', '2025-08-22'],
+  '2025-09': ['2025-09-05', '2025-09-12', '2025-09-19', '2025-09-26'],
+  '2025-10': ['2025-10-03', '2025-10-10', '2025-10-17', '2025-10-24'],
+  '2025-11': ['2025-11-07', '2025-11-14', '2025-11-21', '2025-11-28'],
+  '2025-12': ['2025-12-05', '2025-12-12', '2025-12-19', '2025-12-26'],
+}
+
+function presenceRand(member: Member): number {
+  if (member.status === 'Withdrawal') return 0
+  if (member.status === 'Backslider') return 0.45
+  if (member.status === 'Distant') return 0.3
+  if (member.status === 'Weak') return 0.55
+  return 0.78
+}
+
+function generateAttendanceRecords(): AttendanceRecord[] {
+  const records: AttendanceRecord[] = []
+  let id = 1
+
+  const serviceGroups: Array<{ type: string; dates: Record<string, string[]>; absentBias: number }> = [
+    { type: 'Sunday Worship', dates: SUNDAYS_2025, absentBias: 0 },
+    { type: 'Sunday School', dates: SUNDAYS_2025, absentBias: 0.1 },
+    { type: 'Bible Class', dates: WEDNESDAYS_2025, absentBias: 0.15 },
+    { type: 'Prayer Meeting', dates: FRIDAYS_2025, absentBias: 0.2 },
+  ]
+
+  for (const { type, dates, absentBias } of serviceGroups) {
+    for (const [, dayList] of Object.entries(dates)) {
+      for (const date of dayList) {
+        for (const member of MOCK_MEMBERS) {
+          const base = presenceRand(member)
+          const present = member.status === 'Withdrawal' ? false : Math.random() < (base - absentBias)
+          records.push({
+            id: String(id++),
+            memberId: member.id,
+            serviceId: `${type.toLowerCase().replace(/ /g, '-')}-${date}`,
+            date,
+            present,
+            serviceType: type,
+          })
+        }
+      }
+    }
+  }
+
+  return records
+}
+
+const MOCK_SERMONS: Sermon[] = [
+  {
+    id: 's1',
+    type: 'Sermon',
+    date: '2026-01-27',
+    preacher: 'Bro. Emmanuel Akpan',
+    topic: 'The Church: Pillar and Ground of Truth',
+    scripture: '1 Timothy 3:15',
+    description: 'An expository sermon on the nature and role of the church as the pillar and ground of truth in a world of moral relativism.',
+    categories: ['Church', 'Truth'],
+    createdAt: '2026-01-27T10:00:00Z',
+    videoAttendees: 120,
+  },
+  {
+    id: 's2',
+    type: 'Sermon',
+    date: '2026-02-24',
+    preacher: 'Bro. Philip Bassey',
+    topic: 'The Church: Pillar and Ground of Truth',
+    scripture: '1 Timothy 3:15',
+    description: 'Part 2 of the series on the identity and mission of the local church in our times.',
+    categories: ['Church', 'Truth'],
+    createdAt: '2026-02-24T10:00:00Z',
+    videoAttendees: 142,
+  },
+  {
+    id: 's3',
+    type: 'Sunday School',
+    date: '2026-03-25',
+    preacher: 'Bro. James Ikpe',
+    topic: 'Walking in the Spirit',
+    scripture: 'Galatians 5:16-25',
+    description: 'A Sunday School lesson on practical Christian living guided by the Spirit of God.',
+    categories: ['Christian Living', 'Spirit'],
+    createdAt: '2026-03-25T09:00:00Z',
+    videoAttendees: 200,
+  },
+  {
+    id: 's4',
+    type: 'Bible Class',
+    date: '2026-04-07',
+    preacher: 'Bro. Andrew Okafor',
+    topic: 'Faith that Moves Mountains',
+    scripture: 'Matthew 17:20',
+    description: 'An in-depth Bible class study on the nature of saving faith and its practical expressions.',
+    categories: ['Faith', 'Bible Study'],
+    createdAt: '2026-04-07T18:00:00Z',
+    videoAttendees: 180,
+  },
+  {
+    id: 's5',
+    type: 'Sermon',
+    date: '2026-04-14',
+    preacher: 'Bro. Samuel Eze',
+    topic: 'The Power of Prayer',
+    scripture: 'James 5:16',
+    description: 'Understanding the power and privilege of prayer in the life of a believer and the body of Christ.',
+    categories: ['Prayer', 'Worship'],
+    createdAt: '2026-04-14T10:00:00Z',
+    videoAttendees: 165,
+  },
+  {
+    id: 's6',
+    type: 'Youth Class',
+    date: '2026-04-21',
+    preacher: 'Bro. Peter James',
+    topic: 'Standing Firm in Your Faith',
+    scripture: '1 Corinthians 16:13',
+    description: 'A youth-focused lesson on maintaining Christian conviction in a secular age.',
+    categories: ['Youth', 'Faith'],
+    createdAt: '2026-04-21T10:00:00Z',
+    videoAttendees: 98,
+  },
+]
+
+export function useMockData() {
+  const membersStore = useMembersStore()
+  const attendanceStore = useAttendanceStore()
+  const teachingsStore = useTeachingsStore()
+
+  function seed() {
+    if (!membersStore.members.length) {
+      membersStore.members = [...MOCK_MEMBERS]
+    }
+    if (!attendanceStore.records.length) {
+      attendanceStore.records = generateAttendanceRecords()
+    }
+    if (!teachingsStore.sermons.length) {
+      teachingsStore.sermons = [...MOCK_SERMONS]
+    }
+  }
+
+  return { seed, MONTHS, SUNDAYS_2025 }
+}
