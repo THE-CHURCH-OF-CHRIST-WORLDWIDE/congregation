@@ -11,10 +11,8 @@ const form = reactive({
   categories: [] as string[],
 })
 
-const thumbnailFile = ref<File | null>(null)
-const thumbnailPreview = ref<string | null>(null)
+const thumbnailUrl = ref<string>('')
 const documentFile = ref<File | null>(null)
-const thumbnailDragging = ref(false)
 const docDragging = ref(false)
 const success = ref(false)
 
@@ -35,29 +33,6 @@ const typeOptions = [
 
 const isValid = computed(() => form.type && form.preacher && form.description)
 
-function onThumbnailChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (file) setThumbnail(file)
-}
-
-function setThumbnail(file: File) {
-  if (file.size > 5 * 1024 * 1024) {
-    alert('Thumbnail must be under 5MB')
-    return
-  }
-  thumbnailFile.value = file
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    thumbnailPreview.value = e.target?.result as string
-  }
-  reader.readAsDataURL(file)
-}
-
-function clearThumbnail() {
-  thumbnailFile.value = null
-  thumbnailPreview.value = null
-}
-
 function onDocChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (file) {
@@ -67,12 +42,6 @@ function onDocChange(e: Event) {
     }
     documentFile.value = file
   }
-}
-
-function onThumbnailDrop(e: DragEvent) {
-  thumbnailDragging.value = false
-  const file = e.dataTransfer?.files[0]
-  if (file && file.type.startsWith('image/')) setThumbnail(file)
 }
 
 function onDocDrop(e: DragEvent) {
@@ -96,7 +65,7 @@ async function submit() {
 
   await teachingsStore.uploadSermon({
     ...form,
-    thumbnail: thumbnailPreview.value ?? undefined,
+    thumbnail: thumbnailUrl.value || undefined,
     documentFile: documentFile.value?.name,
     videoAttendees: 0,
   })
@@ -111,8 +80,7 @@ async function submit() {
     description: '',
     categories: [],
   })
-  thumbnailFile.value = null
-  thumbnailPreview.value = null
+  thumbnailUrl.value = ''
   documentFile.value = null
   setTimeout(() => {
     success.value = false
@@ -187,50 +155,12 @@ async function submit() {
     </div>
 
     <!-- Thumbnail -->
-    <div>
-      <label class="text-sm font-medium text-gray-700 block mb-1.5">Thumbnail Image</label>
-      <div
-        :class="[
-          'border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer',
-          thumbnailDragging
-            ? 'border-blue-400 bg-blue-50'
-            : 'border-gray-200 hover:border-gray-300',
-        ]"
-        @dragover.prevent="thumbnailDragging = true"
-        @dragleave="thumbnailDragging = false"
-        @drop.prevent="onThumbnailDrop"
-        @click="($refs.thumbInput as HTMLInputElement)?.click()"
-      >
-        <div v-if="thumbnailPreview" class="relative">
-          <img
-            :src="thumbnailPreview"
-            alt="Thumbnail preview"
-            class="w-full h-32 object-cover rounded-lg"
-          />
-          <button
-            class="absolute top-1 right-1 bg-white rounded-full p-0.5 text-gray-500 hover:text-red-500"
-            aria-label="Remove thumbnail"
-            @click.stop="clearThumbnail"
-          >
-            <Icon icon="mdi:close-circle" />
-          </button>
-        </div>
-        <div v-else>
-          <Icon icon="mdi:cloud-upload-outline" class="text-3xl text-gray-400 mb-2 block mx-auto" />
-          <p class="text-sm text-gray-500">
-            <span class="text-blue-600 font-medium">Click to upload</span> or drag and drop
-          </p>
-          <p class="text-xs text-gray-400 mt-1">Supported formats: JPG, PNG, GIF, WebP (max 5MB)</p>
-        </div>
-        <input
-          ref="thumbInput"
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="onThumbnailChange"
-        />
-      </div>
-    </div>
+    <ImageUpload
+      v-model="thumbnailUrl"
+      label="Thumbnail Image"
+      folder="congregation/sermons"
+      helper="JPG, PNG, GIF or WebP — max 5MB."
+    />
 
     <!-- Upload Sermon Button -->
     <Button
@@ -268,7 +198,13 @@ async function submit() {
       </div>
       <div class="text-center mt-3">
         <label class="cursor-pointer">
-          <input type="file" accept=".pdf,.doc,.docx" class="hidden" @change="onDocChange" />
+          <input
+            ref="docInput"
+            type="file"
+            accept=".pdf,.doc,.docx"
+            class="hidden"
+            @change="onDocChange"
+          />
           <Button
             variant="secondary"
             size="sm"

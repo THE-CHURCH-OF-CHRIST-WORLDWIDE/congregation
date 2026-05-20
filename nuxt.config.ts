@@ -19,6 +19,9 @@ export default defineNuxtConfig({
       firebaseStorageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
       firebaseMessagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.VITE_FIREBASE_APP_ID,
+      cloudinaryCloudName: process.env.VITE_CLOUDINARY_CLOUD_NAME,
+      cloudinaryUploadPreset: process.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+      cloudinaryFolder: process.env.VITE_CLOUDINARY_FOLDER || 'congregation',
     },
   },
   components: [
