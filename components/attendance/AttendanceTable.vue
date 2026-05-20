@@ -22,7 +22,10 @@ const sundaysInMonth = computed(() => {
   const dates: string[] = []
   const d = new Date(year, mon - 1, 1)
   while (d.getMonth() === mon - 1) {
-    if (d.getDay() === 0) dates.push(d.toISOString().slice(0, 10))
+    // formatDate(_, 'iso') uses local-time components, avoiding the UTC offset
+    // bug that toISOString causes — critical so the date strings match the
+    // (locally-formatted) dates already in records.
+    if (d.getDay() === 0) dates.push(formatDate(d, 'iso'))
     d.setDate(d.getDate() + 1)
   }
   return dates
@@ -35,26 +38,21 @@ const filteredMembers = computed(() => {
   )
 })
 
-function getRecord(memberId: string, date: string) {
-  return attendanceStore.records.find(
-    (r) => r.memberId === memberId && r.date === date && r.serviceType === props.serviceType
-  )
-}
-
 function isPresent(memberId: string, date: string) {
-  return getRecord(memberId, date)?.present ?? false
+  return attendanceStore.findRecord(memberId, date, props.serviceType)?.present ?? false
 }
 
 function toggle(memberId: string, date: string) {
-  const record = getRecord(memberId, date)
-  if (record) {
-    attendanceStore.toggleAttendance(record.id)
-    hasChanged.value = true
-  }
+  attendanceStore.toggleForMemberDate(memberId, date, props.serviceType)
+  hasChanged.value = true
 }
 
 function getMonthlySummary(memberId: string) {
-  return attendanceStore.memberMonthlySummary(memberId, props.month, props.serviceType)
+  const dates = sundaysInMonth.value
+  const sessionsTotal = dates.length
+  const sessionsPresent = dates.reduce((n, d) => (isPresent(memberId, d) ? n + 1 : n), 0)
+  const percentage = sessionsTotal ? Math.round((sessionsPresent / sessionsTotal) * 100) : 0
+  return { sessionsTotal, sessionsPresent, percentage }
 }
 
 function save() {

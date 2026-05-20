@@ -189,18 +189,24 @@ export const useFinanceStore = defineStore('finance', () => {
   // ── CRUD ───────────────────────────────────────────────────────────────────
   function addCollection(entry: Omit<FinanceCollection, 'id'>) {
     collections.value.push({ ...entry, id: String(Date.now()) })
+    useToast().success('Collection recorded')
   }
 
   function addExpense(entry: Omit<FinanceExpense, 'id'>) {
     expenses.value.push({ ...entry, id: String(Date.now()) })
+    useToast().success('Expense recorded')
   }
 
   function deleteCollection(id: string) {
+    const existed = collections.value.some((c) => c.id === id)
     collections.value = collections.value.filter((c) => c.id !== id)
+    if (existed) useToast().success('Collection deleted')
   }
 
   function deleteExpense(id: string) {
+    const existed = expenses.value.some((e) => e.id === id)
     expenses.value = expenses.value.filter((e) => e.id !== id)
+    if (existed) useToast().success('Expense deleted')
   }
 
   // ── Report rows (for export) ───────────────────────────────────────────────

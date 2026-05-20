@@ -53,19 +53,11 @@ watch(
   { deep: true }
 )
 
-const saved = ref(false)
-const saveError = ref('')
-
 async function save() {
-  saveError.value = ''
   try {
     await store.save({ ...draft.value })
-    saved.value = true
-    setTimeout(() => {
-      saved.value = false
-    }, 2500)
   } catch {
-    saveError.value = 'Failed to save. Please try again.'
+    // Store already surfaces an error toast.
   }
 }
 
@@ -150,26 +142,6 @@ function removeSundayDetail(i: number) {
 <template>
   <div class="flex flex-col gap-5">
     <Tabs v-model="activeTab" :tabs="tabs" />
-
-    <!-- Toast -->
-    <Transition name="fade">
-      <div
-        v-if="saved"
-        class="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
-      >
-        <Icon icon="mdi:check-circle-outline" />
-        Settings saved successfully!
-      </div>
-    </Transition>
-    <Transition name="fade">
-      <div
-        v-if="saveError"
-        class="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-      >
-        <Icon icon="mdi:alert-circle-outline" />
-        {{ saveError }}
-      </div>
-    </Transition>
 
     <Transition name="fade" mode="out-in">
       <!-- ── General ──────────────────────────────────────────────────── -->

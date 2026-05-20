@@ -38,4 +38,5 @@ if (import.meta.dev) {
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <ToastContainer />
 </template>

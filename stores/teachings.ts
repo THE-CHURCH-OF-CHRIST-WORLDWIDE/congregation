@@ -44,6 +44,7 @@ export const useTeachingsStore = defineStore('teachings', () => {
           })
           uploading.value = false
           uploadProgress.value = 0
+          useToast().success(`"${data.topic || 'Sermon'}" uploaded`)
           resolve()
         }
       }, 200)
@@ -51,12 +52,16 @@ export const useTeachingsStore = defineStore('teachings', () => {
   }
 
   function deleteSermon(id: string) {
+    const topic = sermons.value.find((s) => s.id === id)?.topic
     sermons.value = sermons.value.filter((s) => s.id !== id)
+    if (topic) useToast().success(`"${topic}" deleted`)
   }
 
   function updateSermon(id: string, updates: Partial<Sermon>) {
     const idx = sermons.value.findIndex((s) => s.id === id)
-    if (idx !== -1) sermons.value[idx] = { ...sermons.value[idx], ...updates } as Sermon
+    if (idx === -1) return
+    sermons.value[idx] = { ...sermons.value[idx], ...updates } as Sermon
+    useToast().success(`"${sermons.value[idx]!.topic}" updated`)
   }
 
   return {
