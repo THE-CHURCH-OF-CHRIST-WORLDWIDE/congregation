@@ -62,6 +62,7 @@ Congregation is a single-page application (SPA) with two distinct areas:
 
 - Firebase Auth with route-guard middleware (`middleware/auth.ts`)
 - Cloud Firestore via a repository layer (`repositories/`)
+- **Cloudinary-backed image uploads** — every image picker (sermons, hero, minister, leaders, gallery) uploads the file to Cloudinary first, then persists the returned `secure_url` to Firestore. Includes a reusable `<ImageUpload>` component and `useCloudinaryUpload` composable with progress, validation, and error states.
 - Pinia stores with optional persistence (`pinia-plugin-persistedstate`)
 - CSV import/export for member data
 - Chart.js visualisations via `vue-chartjs`
@@ -82,6 +83,7 @@ Congregation is a single-page application (SPA) with two distinct areas:
 | Charts     | Chart.js + vue-chartjs              | ^4.5.1   |
 | Dates      | Moment.js                           | ^2.30.1  |
 | Backend    | Firebase (Auth, Firestore, Storage) | ^12.10.0 |
+| Media      | Cloudinary (unsigned uploads)       | —        |
 | Routing    | Vue Router                          | ^4.6.3   |
 | License    | GNU AGPL v3                         | —        |
 
@@ -322,18 +324,45 @@ For the full setup guide including Firebase project creation, see [docs/getting-
 
 ## Environment Variables
 
-Create a `.env` file at the project root with your Firebase project credentials:
+Create a `.env` file at the project root with your Firebase project credentials and Cloudinary upload settings:
 
 ```env
+# Firebase
 VITE_FIREBASE_API_KEY=
 VITE_FIREBASE_AUTH_DOMAIN=
 VITE_FIREBASE_PROJECT_ID=
 VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
+
+# Cloudinary — host for all uploaded images
+VITE_CLOUDINARY_CLOUD_NAME=
+VITE_CLOUDINARY_UPLOAD_PRESET=
+VITE_CLOUDINARY_FOLDER=congregation
 ```
 
 All variables are prefixed with `VITE_` so they are exposed to the browser (SPA mode). Never commit real credentials — `.env` is git-ignored.
+
+### Image uploads (Cloudinary)
+
+Every image picker in the app (sermon thumbnails, hero image, minister and congregation photos, leader avatars, gallery photos) follows the same flow:
+
+1. User picks or drops a file.
+2. The file is POSTed to Cloudinary using an **unsigned upload preset**.
+3. Cloudinary returns a `secure_url`.
+4. That URL is saved to Firestore — never the raw file or a base64 string.
+5. The URL is what's read back whenever the image is rendered.
+
+Setup steps:
+
+1. In the [Cloudinary dashboard](https://cloudinary.com/console), grab your **Cloud name** from Account Details.
+2. Go to **Settings → Upload → Upload presets** and add a new preset with **Signing Mode: Unsigned**. Use its name as `VITE_CLOUDINARY_UPLOAD_PRESET`.
+3. Optionally set `VITE_CLOUDINARY_FOLDER` to keep all church uploads grouped (defaults to `congregation`). Individual uploads are filed into sub-folders like `congregation/sermons`, `congregation/leaders`, `congregation/gallery`, etc.
+
+The integration lives in two places:
+
+- [`composables/useCloudinaryUpload.ts`](composables/useCloudinaryUpload.ts) — handles the upload, exposes `uploading` / `progress` / `error` reactive state, and returns the `secure_url`.
+- [`components/ui/ImageUpload.vue`](components/ui/ImageUpload.vue) — drag-and-drop image picker with live progress, replace/remove overlay, and `shape="circle"` / `compact` variants. Drop it anywhere with `v-model` bound to a URL string.
 
 ---
 

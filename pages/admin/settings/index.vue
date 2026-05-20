@@ -77,10 +77,6 @@ function removeLeader(i: number) {
 }
 
 // ── Gallery helpers ───────────────────────────────────────────────────────
-function galleryAlt(caption: string) {
-  return caption.trim() || 'Preview'
-}
-
 function addPhoto() {
   draft.value.galleryPhotos.push({ id: `g${Date.now()}`, src: '', alt: '' })
 }
@@ -163,17 +159,12 @@ function removePhoto(i: number) {
       >
         <Card>
           <h3 class="mb-4 text-sm font-semibold text-gray-900">Hero Section</h3>
-          <div class="flex flex-col gap-4">
-            <Input
-              v-model="draft.heroImageUrl"
-              label="Building Photo URL"
-              placeholder="https://…/church-building.jpg"
-              helper="Shown as the full-width background image in the hero card."
-            />
-            <div v-if="draft.heroImageUrl" class="overflow-hidden rounded-lg">
-              <img :src="draft.heroImageUrl" alt="Hero preview" class="h-40 w-full object-cover" />
-            </div>
-          </div>
+          <ImageUpload
+            v-model="draft.heroImageUrl"
+            label="Building Photo"
+            folder="congregation/hero"
+            helper="Shown as the full-width background image in the hero card."
+          />
         </Card>
 
         <Card>
@@ -242,18 +233,12 @@ function removePhoto(i: number) {
               label="Title / Role"
               placeholder="Resident Minister"
             />
-            <Input
+            <ImageUpload
               v-model="draft.ministerPhoto"
-              label="Minister Photo URL"
-              placeholder="https://…/minister.jpg"
+              label="Minister Photo"
+              folder="congregation/minister"
+              shape="circle"
             />
-            <div v-if="draft.ministerPhoto" class="flex items-center gap-3">
-              <img
-                :src="draft.ministerPhoto"
-                alt="Minister preview"
-                class="h-20 w-20 rounded-full object-cover border border-gray-200"
-              />
-            </div>
           </div>
         </Card>
 
@@ -262,16 +247,18 @@ function removePhoto(i: number) {
           <p class="mb-3 text-xs text-gray-400">
             These appear as the stacked "fan" cards behind the minister portrait.
           </p>
-          <div class="flex flex-col gap-3">
-            <Input
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <ImageUpload
               v-model="draft.congregationPhotos[0]"
-              label="Back Card Photo URL"
-              placeholder="https://…/congregation1.jpg"
+              label="Back Card Photo"
+              folder="congregation/minister"
+              compact
             />
-            <Input
+            <ImageUpload
               v-model="draft.congregationPhotos[1]"
-              label="Mid Card Photo URL"
-              placeholder="https://…/congregation2.jpg"
+              label="Mid Card Photo"
+              folder="congregation/minister"
+              compact
             />
           </div>
         </Card>
@@ -349,23 +336,9 @@ function removePhoto(i: number) {
             <div
               v-for="(leader, i) in draft.leaders"
               :key="leader.id"
-              class="relative grid grid-cols-[auto_1fr_1fr_1fr] items-center gap-3 rounded-lg border border-gray-200 p-3"
+              class="relative grid grid-cols-[auto_1fr_1fr] items-start gap-3 rounded-lg border border-gray-200 p-3"
             >
-              <!-- Avatar preview -->
-              <div class="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-gray-100">
-                <img
-                  v-if="leader.avatar"
-                  :src="leader.avatar"
-                  :alt="leader.name"
-                  class="h-full w-full object-cover"
-                />
-                <div
-                  v-else
-                  class="flex h-full w-full items-center justify-center text-xs font-bold text-gray-400"
-                >
-                  ?
-                </div>
-              </div>
+              <ImageUpload v-model="leader.avatar" folder="congregation/leaders" shape="circle" />
               <Input v-model="leader.name" label="Name" placeholder="Akpan Lincoln" />
               <div>
                 <label
@@ -385,7 +358,6 @@ function removePhoto(i: number) {
                   <option>Youth Leader</option>
                 </select>
               </div>
-              <Input v-model="leader.avatar" label="Avatar URL" placeholder="https://…/photo.jpg" />
               <button
                 class="absolute right-2 top-2 rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
                 :aria-label="`Remove ${leader.name || 'leader'}`"
@@ -423,21 +395,16 @@ function removePhoto(i: number) {
             <div
               v-for="(img, i) in draft.galleryPhotos"
               :key="img.id"
-              class="relative rounded-lg border border-gray-200 p-3"
+              class="relative flex flex-col gap-2 rounded-lg border border-gray-200 p-3"
             >
-              <div v-if="img.src" class="mb-2 overflow-hidden rounded-md">
-                <img :src="img.src" :alt="galleryAlt(img.alt)" class="h-28 w-full object-cover" />
-              </div>
-              <div class="flex flex-col gap-2">
-                <Input v-model="img.src" label="Image URL" placeholder="https://…/image.jpg" />
-                <Input
-                  v-model="img.alt"
-                  label="Caption / Alt text"
-                  placeholder="Sunday worship service"
-                />
-              </div>
+              <ImageUpload v-model="img.src" folder="congregation/gallery" compact />
+              <Input
+                v-model="img.alt"
+                label="Caption / Alt text"
+                placeholder="Sunday worship service"
+              />
               <button
-                class="absolute right-2 top-2 rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                class="absolute right-2 top-2 rounded bg-white/80 p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
                 :aria-label="`Remove gallery item ${i + 1}`"
                 @click="removePhoto(i)"
               >
