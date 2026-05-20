@@ -42,6 +42,11 @@ function deleteMember(id: string) {
   openMenuId.value = null
 }
 
+function startEdit(member: Member) {
+  emit('edit', member)
+  openMenuId.value = null
+}
+
 function toggleMenu(id: string) {
   openMenuId.value = openMenuId.value === id ? null : id
 }
@@ -115,10 +120,7 @@ onMounted(() => {
               >
                 <button
                   class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  @click="
-                    emit('edit', member)
-                    openMenuId = null
-                  "
+                  @click="startEdit(member)"
                 >
                   <Icon icon="mdi:pencil-outline" />
                   Edit

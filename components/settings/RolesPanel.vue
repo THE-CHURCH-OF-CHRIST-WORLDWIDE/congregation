@@ -91,6 +91,11 @@ function openAssign() {
   showAssign.value = true
 }
 
+function selectMember(m: { id: string; name: string }) {
+  assignForm.memberId = m.id
+  memberSearch.value = m.name
+}
+
 function doAssign() {
   assignErrors.memberId = assignForm.memberId ? '' : 'Select a member'
   assignErrors.roleId = assignForm.roleId ? '' : 'Select a role'
@@ -402,10 +407,7 @@ function permCount(perms: RolePermissions) {
                 ? 'bg-blue-50 text-blue-700 font-medium'
                 : 'text-gray-700',
             ]"
-            @click="
-              assignForm.memberId = m.id
-              memberSearch = m.name
-            "
+            @click="selectMember(m)"
           >
             <Avatar :name="m.name" size="sm" class="flex-shrink-0" />
             <div>

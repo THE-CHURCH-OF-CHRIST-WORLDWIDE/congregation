@@ -31,6 +31,11 @@ function formatDate(d: string) {
     year: 'numeric',
   })
 }
+
+function deleteSermon(id: string) {
+  teachingsStore.deleteSermon(id)
+  showMenu.value = false
+}
 </script>
 
 <template>
@@ -94,10 +99,7 @@ function formatDate(d: string) {
           </button>
           <button
             class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-            @click="
-              teachingsStore.deleteSermon(sermon.id)
-              showMenu = false
-            "
+            @click="deleteSermon(sermon.id)"
           >
             <Icon icon="mdi:trash-can-outline" />Delete
           </button>

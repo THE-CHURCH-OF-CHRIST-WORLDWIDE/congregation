@@ -23,6 +23,11 @@ function closeTeachings() {
   }, 150)
 }
 
+function closeMobileMenu() {
+  mobileOpen.value = false
+  teachingsOpen.value = false
+}
+
 watch(route, () => {
   mobileOpen.value = false
   teachingsOpen.value = false
@@ -313,10 +318,7 @@ onBeforeUnmount(() => {
                     <NuxtLink
                       :to="link.to"
                       class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
-                      @click="
-                        mobileOpen = false
-                        teachingsOpen = false
-                      "
+                      @click="closeMobileMenu"
                     >
                       <Icon :icon="link.icon" class="h-4 w-4 text-accent" />
                       {{ link.label }}
