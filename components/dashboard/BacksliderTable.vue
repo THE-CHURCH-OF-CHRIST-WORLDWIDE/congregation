@@ -34,9 +34,13 @@ function doExport() {
 
 <template>
   <Card padding="none">
-    <div class="p-4 lg:p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div
+      class="p-4 lg:p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+    >
       <div>
-        <h3 class="text-sm font-semibold text-gray-900">Backslider Summary - Members Needing Follow-up</h3>
+        <h3 class="text-sm font-semibold text-gray-900">
+          Backslider Summary - Members Needing Follow-up
+        </h3>
         <p class="text-xs text-gray-400 mt-0.5">Members absent 3 or more times</p>
       </div>
       <Button variant="secondary" size="sm" @click="doExport">
@@ -47,7 +51,10 @@ function doExport() {
 
     <div class="p-4 flex gap-2">
       <div class="relative flex-1">
-        <Icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base" />
+        <Icon
+          icon="mdi:magnify"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+        />
         <input
           v-model="search"
           type="search"
@@ -66,11 +73,21 @@ function doExport() {
       <table class="w-full text-sm" role="table">
         <thead>
           <tr class="bg-gray-50 border-y border-gray-100">
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-10">S/N</th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">Name</th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">Phone Number</th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">Absence Count</th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">Action Required</th>
+            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-10">
+              S/N
+            </th>
+            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+              Name
+            </th>
+            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+              Phone Number
+            </th>
+            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+              Absence Count
+            </th>
+            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+              Action Required
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -113,9 +130,13 @@ function doExport() {
       </table>
     </div>
 
-    <div v-if="totalPages > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+    <div
+      v-if="totalPages > 1"
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-100"
+    >
       <p class="text-xs text-gray-500">
-        Showing {{ (page - 1) * perPage + 1 }}–{{ Math.min(page * perPage, filtered.length) }} of {{ filtered.length }}
+        Showing {{ (page - 1) * perPage + 1 }}–{{ Math.min(page * perPage, filtered.length) }} of
+        {{ filtered.length }}
       </p>
       <div class="flex gap-1">
         <button

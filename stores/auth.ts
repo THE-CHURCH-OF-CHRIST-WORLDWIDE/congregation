@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia'
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  type User,
-} from 'firebase/auth'
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged, type User } from 'firebase/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const { $auth } = useNuxtApp()

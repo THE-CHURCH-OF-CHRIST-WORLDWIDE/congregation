@@ -1,20 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-  compatibilityDate: "2025-07-15",
+  compatibilityDate: '2025-07-15',
   ssr: false,
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== 'production' },
   css: ['~/assets/css/main.css'],
-  modules: [
-    '@nuxt/eslint',
-    '@pinia/nuxt',
-    'pinia-plugin-persistedstate/nuxt',
-  ],
+  modules: ['@nuxt/eslint', '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt'],
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
   },
   runtimeConfig: {
     public: {
@@ -28,34 +22,37 @@ export default defineNuxtConfig({
     },
   },
   components: [
-        {
-        path: '~/components',
-        pathPrefix: false,
-        },
-    ],
-    typescript: {
+    {
+      path: '~/components',
+      pathPrefix: false,
+    },
+  ],
+  typescript: {
     strict: true,
     typeCheck: true,
   },
   pinia: {
-    storesDirs: ["./stores/**"]
+    storesDirs: ['./stores/**'],
   },
   app: {
-        pageTransition: { name: "fade", mode: "out-in" },
-        head: {
-            title: "Congregation",
-            titleTemplate: "%s | Congregation",
-            meta: [
-                { name: "description", content: "Congregation - Your All in one church management solution" },
-                { name: "viewport", content: "width=device-width, initial-scale=1" },
-            ],
-            link: [
-                { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-                {
-                rel: "stylesheet",
-                href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Piedra&family=Poppins:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap",
-                },
-            ],
+    pageTransition: { name: 'fade', mode: 'out-in' },
+    head: {
+      title: 'Congregation',
+      titleTemplate: '%s | Congregation',
+      meta: [
+        {
+          name: 'description',
+          content: 'Congregation - Your All in one church management solution',
         },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Piedra&family=Poppins:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap',
+        },
+      ],
     },
-});
+  },
+})

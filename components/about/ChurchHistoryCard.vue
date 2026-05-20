@@ -21,22 +21,24 @@ const cornerImages = [
     <div class="mx-auto max-w-4xl px-4 sm:px-8 lg:px-8">
       <!-- Outer wrapper that gives room for overflowing corner images -->
       <div class="relative px-4 pt-10 pb-10 md:px-10">
-
         <!-- Corner decorative images (desktop only) -->
         <img
           v-for="img in cornerImages"
           :key="img.seed"
           :src="`https://picsum.photos/seed/${img.seed}/200/200`"
           alt=""
-          :class="[img.pos, 'z-10 hidden h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg md:block']"
+          :class="[
+            img.pos,
+            'z-10 hidden h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg md:block',
+          ]"
         />
 
         <!-- Paper card -->
-        <div class="rounded-xl border border-amber-100 bg-[#FDFCF8] px-6 py-10 shadow-md sm:px-10 sm:py-12">
+        <div
+          class="rounded-xl border border-amber-100 bg-[#FDFCF8] px-6 py-10 shadow-md sm:px-10 sm:py-12"
+        >
           <!-- Eyebrow -->
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
-            History
-          </p>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">History</p>
 
           <!-- Heading -->
           <h2 class="mt-2 text-lg font-bold leading-snug text-gray-900 md:text-xl">
@@ -49,11 +51,10 @@ const cornerImages = [
             The Church of Christ at 7b Esa Atan Extension, Ikot Ekpene, Akwa Ibom State, was
             established in the year 2003 by a group of faithful brethren committed to the
             restoration of New Testament Christianity. Beginning with a small nucleus of seven
-            members who gathered for worship before the construction of the current auditorium,
-            the congregation has grown steadily under the guidance of God's word. The church is
-            identified by the authority of the Scriptures alone, observing the New Testament
-            pattern of worship and organisation as established by the apostles in the first
-            century.
+            members who gathered for worship before the construction of the current auditorium, the
+            congregation has grown steadily under the guidance of God's word. The church is
+            identified by the authority of the Scriptures alone, observing the New Testament pattern
+            of worship and organisation as established by the apostles in the first century.
           </p>
 
           <!-- Founders list -->
@@ -100,9 +101,9 @@ const cornerImages = [
           <!-- Closing paragraph -->
           <p class="mt-8 text-sm leading-relaxed text-gray-700">
             We extend a warm and open invitation to all who seek to worship God in spirit and in
-            truth. Whether you are a member of the Churches of Christ, a visitor to Ikot Ekpene,
-            or someone searching for a congregation rooted in the New Testament pattern, you are
-            most welcome to worship with us. Come, let us reason together from the Scriptures.
+            truth. Whether you are a member of the Churches of Christ, a visitor to Ikot Ekpene, or
+            someone searching for a congregation rooted in the New Testament pattern, you are most
+            welcome to worship with us. Come, let us reason together from the Scriptures.
           </p>
 
           <!-- Signature block -->

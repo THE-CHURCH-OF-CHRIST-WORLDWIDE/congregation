@@ -9,8 +9,7 @@ useSeoMeta({
   description:
     'Upcoming and past church events including Bible studies, gospel meetings, and special seminars.',
   ogTitle: 'Events — Church of Christ',
-  ogDescription:
-    'Browse upcoming and past events at the Church of Christ, Ekot Ekpene.',
+  ogDescription: 'Browse upcoming and past events at the Church of Christ, Ekot Ekpene.',
 })
 
 const route = useRoute()
@@ -27,9 +26,9 @@ onMounted(() => {
 // Sync store → URL (replace so no new history entry)
 watch(
   () => eventsStore.activeTab,
-  async tab => {
+  async (tab) => {
     await navigateTo({ query: { tab } }, { replace: true })
-  },
+  }
 )
 
 const activeTab = computed({
@@ -80,11 +79,7 @@ const activeTab = computed({
         </div>
 
         <!-- ─── PAST EVENTS ─── -->
-        <div
-          v-else
-          key="past"
-          class="flex flex-col gap-4 md:flex-row md:gap-0"
-        >
+        <div v-else key="past" class="flex flex-col gap-4 md:flex-row md:gap-0">
           <!-- Left: featured card (45%) -->
           <div class="w-full md:w-[45%] md:pr-6">
             <PastEventFeatured />
@@ -111,7 +106,9 @@ const activeTab = computed({
 <style scoped>
 .tab-switch-enter-active,
 .tab-switch-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .tab-switch-enter-from {
   opacity: 0;

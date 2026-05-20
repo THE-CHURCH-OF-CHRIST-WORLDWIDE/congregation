@@ -5,13 +5,23 @@ const store = usePublicTeachingsStore()
 const activeFilter = ref('All Sermons')
 const searchQuery = ref('')
 
-const filterTags = ['All Sermons', 'Church', 'Faith', 'Foundation', 'Baptism', 'Salvation', 'Scripture', 'Gospel', 'Grace']
+const filterTags = [
+  'All Sermons',
+  'Church',
+  'Faith',
+  'Foundation',
+  'Baptism',
+  'Salvation',
+  'Scripture',
+  'Gospel',
+  'Grace',
+]
 
-watch(activeFilter, v => {
+watch(activeFilter, (v) => {
   store.setFilter(v === 'All Sermons' ? 'All' : v)
 })
 
-watch(searchQuery, v => store.setSearch(v))
+watch(searchQuery, (v) => store.setSearch(v))
 
 const displayedCount = ref(9)
 const paginated = computed(() => store.filteredSermons.slice(0, displayedCount.value))
@@ -23,7 +33,8 @@ function loadMore() {
 
 useSeoMeta({
   title: 'Sermons — Church of Christ',
-  description: 'Browse our full library of biblical sermons preached at the Church of Christ. Topics include faith, baptism, salvation, gospel, and more.',
+  description:
+    'Browse our full library of biblical sermons preached at the Church of Christ. Topics include faith, baptism, salvation, gospel, and more.',
   ogTitle: 'Sermons — Church of Christ',
   ogDescription: 'Biblical preaching that exalts Christ and proclaims the whole counsel of God.',
   ogImage: '/images/heroImg.png',
@@ -51,11 +62,17 @@ useSeoMeta({
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <!-- Filter bar -->
       <div class="mb-3">
-        <TagFilterBar :tags="filterTags" :active="activeFilter" @update:active="activeFilter = $event" />
+        <TagFilterBar
+          :tags="filterTags"
+          :active="activeFilter"
+          @update:active="activeFilter = $event"
+        />
       </div>
 
       <!-- Search -->
-      <div class="mb-8 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm max-w-md">
+      <div
+        class="mb-8 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm max-w-md"
+      >
         <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
         <input
           v-model="searchQuery"
@@ -102,7 +119,8 @@ useSeoMeta({
       <div class="mx-auto max-w-4xl px-6 text-center text-white">
         <h2 class="font-serif text-3xl font-bold mb-3">Want to Study the Bible?</h2>
         <p class="text-white/70 mb-8 max-w-xl mx-auto">
-          Our Sunday School lessons offer in-depth, structured Bible study for every level of maturity in the faith.
+          Our Sunday School lessons offer in-depth, structured Bible study for every level of
+          maturity in the faith.
         </p>
         <NuxtLink
           to="/teachings/sunday-school"

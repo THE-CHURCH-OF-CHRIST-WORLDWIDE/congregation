@@ -42,9 +42,7 @@ const activities: Activity[] = [
         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
           Form of Worship
         </p>
-        <h2 class="mt-2 font-serif text-3xl font-bold text-white">
-          Our Worship Activities
-        </h2>
+        <h2 class="mt-2 font-serif text-3xl font-bold text-white">Our Worship Activities</h2>
         <p class="mx-auto mt-3 max-w-xl text-sm text-white/60">
           Our worship follows the New Testament pattern — simple, scriptural, and sincere.
         </p>

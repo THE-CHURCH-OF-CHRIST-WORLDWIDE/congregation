@@ -22,14 +22,16 @@
 const authStore = useAuthStore()
 authStore.init()
 
-const { seed } = useMockData()
-const { seedPublic } = usePublicMockData()
-const { seedEvents } = useEventsMockData()
-onMounted(() => {
-  seed()
-  seedPublic()
-  seedEvents()
-})
+if (import.meta.dev) {
+  const { seed } = useMockData()
+  const { seedPublic } = usePublicMockData()
+  const { seedEvents } = useEventsMockData()
+  onMounted(() => {
+    seed()
+    seedPublic()
+    seedEvents()
+  })
+}
 </script>
 
 <template>

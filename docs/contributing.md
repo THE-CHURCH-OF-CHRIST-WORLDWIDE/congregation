@@ -6,19 +6,12 @@ Thank you for your interest in contributing. This document outlines the process 
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
 - [Reporting Bugs](#reporting-bugs)
 - [Requesting Features](#requesting-features)
 - [Development Workflow](#development-workflow)
 - [Commit Convention](#commit-convention)
 - [Pull Request Process](#pull-request-process)
 - [Code Style](#code-style)
-
----
-
-## Code of Conduct
-
-All contributors are expected to maintain a respectful and inclusive environment. Be constructive in feedback, welcoming to newcomers, and considerate of different perspectives.
 
 ---
 
@@ -69,13 +62,13 @@ git checkout -b docs/firebase-setup
 
 **Branch naming conventions:**
 
-| Prefix   | Use for                              |
-|----------|--------------------------------------|
-| `feat/`  | New features                         |
-| `fix/`   | Bug fixes                            |
-| `docs/`  | Documentation changes                |
-| `chore/` | Dependency updates, config changes   |
-| `refactor/` | Code refactoring                  |
+| Prefix      | Use for                            |
+| ----------- | ---------------------------------- |
+| `feat/`     | New features                       |
+| `fix/`      | Bug fixes                          |
+| `docs/`     | Documentation changes              |
+| `chore/`    | Dependency updates, config changes |
+| `refactor/` | Code refactoring                   |
 
 ### 4. Make Your Changes
 
@@ -85,15 +78,27 @@ git checkout -b docs/firebase-setup
 
 ### 5. Test Your Changes
 
+Run the automated checks before opening a PR — these are the same checks CI will run:
+
+```bash
+npm run typecheck     # Type-check
+npm run lint          # ESLint
+npm run format:check  # Prettier
+npm run test          # Vitest unit tests
+```
+
+Then start the dev server and manually verify:
+
 ```bash
 npm run dev
 ```
 
-Manually verify that:
 - The admin dashboard functions correctly
 - The public landing page renders as expected
-- Firebase interactions (Auth, Firestore, Storage) work as intended
+- Firebase interactions (Auth, Firestore, Storage) work as intended for any code you touched
 - No console errors are introduced
+
+If you added a new store, repository function, or non-trivial utility, add a unit test under `tests/` covering the new behaviour.
 
 ---
 
@@ -117,15 +122,15 @@ refactor(stores): simplify giving store state shape
 
 **Types:**
 
-| Type       | When to use                                      |
-|------------|--------------------------------------------------|
-| `feat`     | A new feature                                    |
-| `fix`      | A bug fix                                        |
-| `docs`     | Documentation changes only                       |
-| `chore`    | Build process, dependency, or config changes     |
-| `refactor` | Code change that is not a feature or bug fix     |
-| `style`    | Formatting, missing semicolons, etc.             |
-| `test`     | Adding or updating tests                         |
+| Type       | When to use                                  |
+| ---------- | -------------------------------------------- |
+| `feat`     | A new feature                                |
+| `fix`      | A bug fix                                    |
+| `docs`     | Documentation changes only                   |
+| `chore`    | Build process, dependency, or config changes |
+| `refactor` | Code change that is not a feature or bug fix |
+| `style`    | Formatting, missing semicolons, etc.         |
+| `test`     | Adding or updating tests                     |
 
 ---
 
@@ -157,8 +162,8 @@ refactor(stores): simplify giving store state shape
 
 - **TypeScript**: All new code must be written in TypeScript. Avoid `any` types.
 - **Vue components**: Use `<script setup lang="ts">` with the Composition API.
-- **Components**: Place admin components under `components/admin/` and public components under `components/public/`.
-- **Data access**: All Firebase reads and writes must go through the `repositories/` layer — never directly in components or stores.
+- **Components**: Place components in the appropriate feature folder under `components/` (e.g. `components/nominal-roll/`, `components/events/`, `components/ui/`). Components are auto-imported with `pathPrefix: false`.
+- **Data access**: Any **new** Firebase reads and writes must go through the `repositories/` layer — never directly in components or stores. Several existing stores still hold mock state (see [architecture.md](architecture.md#data-access-via-repositories)); when you migrate one to real Firebase, route it through a repository at the same time.
 - **Icons**: Use `<Icon icon="mdi:some-icon" />` via the globally registered Iconify plugin.
 - **Stores**: Add Pinia stores to `stores/` — they are auto-discovered.
 - **Naming**: Use `camelCase` for functions and variables, `PascalCase` for components and types, `kebab-case` for file names.
@@ -166,4 +171,4 @@ refactor(stores): simplify giving store state shape
 
 ---
 
-For questions or help, open a [GitHub Discussion](https://github.com/mfonidomark/congregation/discussions) or reach out to the maintainers.
+For questions or help, open a [GitHub Discussion](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/discussions) or reach out to the maintainers.

@@ -50,7 +50,7 @@ export const useEventsStore = defineStore('events', () => {
 
   const thisMonthEvents = computed(() => {
     const now = new Date()
-    return pastEvents.value.filter(e => {
+    return pastEvents.value.filter((e) => {
       const d = new Date(e.date)
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
     })
@@ -58,8 +58,8 @@ export const useEventsStore = defineStore('events', () => {
 
   const thisYearEvents = computed(() => {
     const now = new Date()
-    const monthIds = new Set(thisMonthEvents.value.map(e => e.id))
-    return pastEvents.value.filter(e => {
+    const monthIds = new Set(thisMonthEvents.value.map((e) => e.id))
+    return pastEvents.value.filter((e) => {
       const d = new Date(e.date)
       return d.getFullYear() === now.getFullYear() && !monthIds.has(e.id)
     })

@@ -71,19 +71,19 @@ Congregation is a single-page application (SPA) with two distinct areas:
 
 ## Tech Stack
 
-| Area             | Technology                   | Version   |
-|------------------|------------------------------|-----------|
-| Framework        | Nuxt 4 (SPA mode)            | ^4.1.3    |
-| UI Library       | Vue 3                        | ^3.5.22   |
-| Language         | TypeScript (strict)          | —         |
-| Styling          | Tailwind CSS v4              | ^4.1.15   |
-| State            | Pinia + persistedstate       | ^3.0.3    |
-| Icons            | Iconify for Vue              | ^5.0.0    |
-| Charts           | Chart.js + vue-chartjs       | ^4.5.1    |
-| Dates            | Moment.js                    | ^2.30.1   |
-| Backend          | Firebase (Auth, Firestore, Storage) | ^12.10.0 |
-| Routing          | Vue Router                   | ^4.6.3    |
-| License          | GNU AGPL v3                  | —         |
+| Area       | Technology                          | Version  |
+| ---------- | ----------------------------------- | -------- |
+| Framework  | Nuxt 4 (SPA mode)                   | ^4.1.3   |
+| UI Library | Vue 3                               | ^3.5.22  |
+| Language   | TypeScript (strict)                 | —        |
+| Styling    | Tailwind CSS v4                     | ^4.1.15  |
+| State      | Pinia + persistedstate              | ^3.0.3   |
+| Icons      | Iconify for Vue                     | ^5.0.0   |
+| Charts     | Chart.js + vue-chartjs              | ^4.5.1   |
+| Dates      | Moment.js                           | ^2.30.1  |
+| Backend    | Firebase (Auth, Firestore, Storage) | ^12.10.0 |
+| Routing    | Vue Router                          | ^4.6.3   |
+| License    | GNU AGPL v3                         | —        |
 
 ---
 
@@ -275,7 +275,7 @@ congregation/
 
 ## Prerequisites
 
-- **Node.js** v20 or higher
+- **Node.js** v22 or higher (see `.nvmrc`)
 - **npm** (or yarn / pnpm)
 - **Git**
 - **Firebase CLI** — `npm install -g firebase-tools`
@@ -339,12 +339,12 @@ All variables are prefixed with `VITE_` so they are exposed to the browser (SPA 
 
 ## Documentation
 
-| Document | Description |
-|---|---|
-| [Getting Started](docs/getting-started.md) | Full local setup and Firebase configuration |
-| [Firebase Setup](docs/firebase-setup.md) | Firestore rules, Storage config, Auth providers |
-| [Architecture](docs/architecture.md) | Codebase design decisions and patterns |
-| [Contributing](docs/contributing.md) | Branching, commit conventions, PR process |
+| Document                                   | Description                                     |
+| ------------------------------------------ | ----------------------------------------------- |
+| [Getting Started](docs/getting-started.md) | Full local setup and Firebase configuration     |
+| [Firebase Setup](docs/firebase-setup.md)   | Firestore rules, Storage config, Auth providers |
+| [Architecture](docs/architecture.md)       | Codebase design decisions and patterns          |
+| [Contributing](docs/contributing.md)       | Branching, commit conventions, PR process       |
 
 ---
 
@@ -365,15 +365,17 @@ Distributed under the **GNU Affero General Public License v3.0**. See [LICENSE](
 ## Authors
 
 **Mfonido Mark** — Lead Engineer
+
 - GitHub: [@favourmark05](https://github.com/favourmark05)
 - Twitter: [@MfonidoMark](https://twitter.com/MfonidoMark)
 - Email: MfonidoMark@gmail.com
 
 **Abasifreke Antia** — Designer / Product Manager
+
 - GitHub: [@abasifrekeantia](https://github.com/abasifrekeantia)
 - Twitter: [@Seantantiaa](https://twitter.com/Seantantiaa)
 - Email: abasifrekeantiaa@gmail.com
 
 ---
 
-> *"Technology for the Kingdom — because stewardship should be as excellent as worship."*
+> _"Technology for the Kingdom — because stewardship should be as excellent as worship."_

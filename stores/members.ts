@@ -18,11 +18,15 @@ export const useMembersStore = defineStore('members', () => {
     let result = [...members.value]
     const { search, gender, status, tab } = filters.value
 
-    if (tab === 'brothers') result = result.filter((m) => m.gender === 'Male' && !HIDDEN_FROM_ALL.includes(m.status))
-    else if (tab === 'sisters') result = result.filter((m) => m.gender === 'Female' && !HIDDEN_FROM_ALL.includes(m.status))
+    if (tab === 'brothers')
+      result = result.filter((m) => m.gender === 'Male' && !HIDDEN_FROM_ALL.includes(m.status))
+    else if (tab === 'sisters')
+      result = result.filter((m) => m.gender === 'Female' && !HIDDEN_FROM_ALL.includes(m.status))
     else if (tab === 'active') result = result.filter((m) => m.status === 'Active')
-    else if (tab === 'inactive') result = result.filter((m) => !['Active', 'Late'].includes(m.status))
-    else if (tab === 'disfellowshipped') result = result.filter((m) => m.status === 'Disfellowshipped')
+    else if (tab === 'inactive')
+      result = result.filter((m) => !['Active', 'Late'].includes(m.status))
+    else if (tab === 'disfellowshipped')
+      result = result.filter((m) => m.status === 'Disfellowshipped')
     else if (tab === 'transfer') result = result.filter((m) => m.status === 'Transfer')
     else if (tab === 'weak') result = result.filter((m) => m.status === 'Weak')
     else if (tab === 'late') result = result.filter((m) => m.status === 'Late')
@@ -43,24 +47,19 @@ export const useMembersStore = defineStore('members', () => {
     return result
   })
 
-  const backsliders = computed(() =>
-    members.value.filter((m) => m.absenceCount >= 3)
-  )
+  const backsliders = computed(() => members.value.filter((m) => m.absenceCount >= 3))
 
-  const activeCount = computed(() =>
-    members.value.filter((m) => m.status === 'Active').length
-  )
+  const activeCount = computed(() => members.value.filter((m) => m.status === 'Active').length)
 
-  const sisterCount = computed(() =>
-    members.value.filter((m) => m.gender === 'Female').length
-  )
+  const sisterCount = computed(() => members.value.filter((m) => m.gender === 'Female').length)
 
-  const brotherCount = computed(() =>
-    members.value.filter((m) => m.gender === 'Male').length
-  )
+  const brotherCount = computed(() => members.value.filter((m) => m.gender === 'Male').length)
 
-  const weakCount = computed(() =>
-    members.value.filter((m) => m.status === 'Weak' || m.status === 'Distant' || m.status === 'Withdrawal').length
+  const weakCount = computed(
+    () =>
+      members.value.filter(
+        (m) => m.status === 'Weak' || m.status === 'Distant' || m.status === 'Withdrawal'
+      ).length
   )
 
   // Youth: members aged 13–35
@@ -73,16 +72,16 @@ export const useMembersStore = defineStore('members', () => {
     })
   })
 
-  const youthActiveCount = computed(() =>
-    youthMembers.value.filter((m) => m.status === 'Active').length
+  const youthActiveCount = computed(
+    () => youthMembers.value.filter((m) => m.status === 'Active').length
   )
 
-  const youthGirlsCount = computed(() =>
-    youthMembers.value.filter((m) => m.gender === 'Female').length
+  const youthGirlsCount = computed(
+    () => youthMembers.value.filter((m) => m.gender === 'Female').length
   )
 
-  const youthBoysCount = computed(() =>
-    youthMembers.value.filter((m) => m.gender === 'Male').length
+  const youthBoysCount = computed(
+    () => youthMembers.value.filter((m) => m.gender === 'Male').length
   )
 
   function addMember(member: Omit<Member, 'id'>) {

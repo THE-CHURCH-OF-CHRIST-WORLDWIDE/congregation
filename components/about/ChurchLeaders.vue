@@ -4,7 +4,12 @@ onMounted(() => s.load())
 const leaders = computed(() => s.settings.leaders)
 
 function initials(name: string): string {
-  return name.split(' ').map(n => n[0] ?? '').join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((n) => n[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 function onImgError(e: Event) {
@@ -36,11 +41,15 @@ function onImgError(e: Event) {
               class="h-[110px] w-[110px] rounded-full object-cover"
               @error="onImgError"
             />
-            <div class="absolute inset-0 hidden h-[110px] w-[110px] items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-800">
+            <div
+              class="absolute inset-0 hidden h-[110px] w-[110px] items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-800"
+            >
               {{ initials(leader.name) }}
             </div>
           </div>
-          <p class="mt-4 text-center text-[15px] font-semibold leading-snug text-gray-900">{{ leader.name }}</p>
+          <p class="mt-4 text-center text-[15px] font-semibold leading-snug text-gray-900">
+            {{ leader.name }}
+          </p>
           <p class="mt-1 text-center text-[13px] text-gray-500">{{ leader.role }}</p>
         </div>
       </div>

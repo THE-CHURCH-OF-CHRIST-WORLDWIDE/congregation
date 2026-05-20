@@ -7,7 +7,7 @@ interface Props {
 }
 const props = defineProps<Props>()
 const membersStore = useMembersStore()
-const emit = defineEmits<{ 'add': []; 'select': [member: Member]; 'edit': [member: Member] }>()
+const emit = defineEmits<{ add: []; select: [member: Member]; edit: [member: Member] }>()
 
 const page = ref(1)
 const perPage = 10
@@ -22,7 +22,9 @@ const paginated = computed(() =>
 const totalPages = computed(() => Math.ceil(sourceMembers.value.length / perPage))
 
 // Reset to page 1 whenever the source list changes
-watch(sourceMembers, () => { page.value = 1 })
+watch(sourceMembers, () => {
+  page.value = 1
+})
 
 const statusBadge = {
   Active: 'success',
@@ -40,12 +42,19 @@ function deleteMember(id: string) {
   openMenuId.value = null
 }
 
+function startEdit(member: Member) {
+  emit('edit', member)
+  openMenuId.value = null
+}
+
 function toggleMenu(id: string) {
   openMenuId.value = openMenuId.value === id ? null : id
 }
 
 onMounted(() => {
-  document.addEventListener('click', () => { openMenuId.value = null })
+  document.addEventListener('click', () => {
+    openMenuId.value = null
+  })
 })
 </script>
 
@@ -54,13 +63,25 @@ onMounted(() => {
     <div class="overflow-x-auto">
       <table class="w-full text-sm" role="table">
         <thead>
-          <tr class="bg-gray-50 border-b border-gray-100 ">
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800 w-10">S/N</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Name</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Gender</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Phone Number</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Email Address</th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">Attendance Status</th>
+          <tr class="bg-gray-50 border-b border-gray-100">
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800 w-10">
+              S/N
+            </th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+              Name
+            </th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+              Gender
+            </th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+              Phone Number
+            </th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+              Email Address
+            </th>
+            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+              Attendance Status
+            </th>
             <th scope="col" class="w-10 px-4 py-3"></th>
           </tr>
         </thead>
@@ -99,7 +120,7 @@ onMounted(() => {
               >
                 <button
                   class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  @click="emit('edit', member); openMenuId = null"
+                  @click="startEdit(member)"
                 >
                   <Icon icon="mdi:pencil-outline" />
                   Edit
@@ -125,27 +146,44 @@ onMounted(() => {
       </table>
     </div>
 
-    <div v-if="totalPages > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+    <div
+      v-if="totalPages > 1"
+      class="flex items-center justify-between px-4 py-3 border-t border-gray-100"
+    >
       <p class="text-xs text-gray-500">
-        Showing {{ (page - 1) * perPage + 1 }}–{{ Math.min(page * perPage, sourceMembers.length) }} of {{ sourceMembers.length }}
+        Showing {{ (page - 1) * perPage + 1 }}–{{
+          Math.min(page * perPage, sourceMembers.length)
+        }}
+        of {{ sourceMembers.length }}
       </p>
       <div class="flex gap-1">
         <button
           class="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
           :disabled="page <= 1"
           @click="page--"
-        >Prev</button>
+        >
+          Prev
+        </button>
         <button
           v-for="p in totalPages"
           :key="p"
-          :class="['px-2 py-1 text-xs rounded border', p === page ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-200 hover:bg-gray-50']"
+          :class="[
+            'px-2 py-1 text-xs rounded border',
+            p === page
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'border-gray-200 hover:bg-gray-50',
+          ]"
           @click="page = p"
-        >{{ p }}</button>
+        >
+          {{ p }}
+        </button>
         <button
           class="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
           :disabled="page >= totalPages"
           @click="page++"
-        >Next</button>
+        >
+          Next
+        </button>
       </div>
     </div>
   </Card>

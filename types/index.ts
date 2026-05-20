@@ -12,7 +12,15 @@ export interface Member {
   phone: string
   email: string
   dob?: string
-  status: 'Active' | 'Backslider' | 'Weak' | 'Distant' | 'Withdrawal' | 'Disfellowshipped' | 'Transfer' | 'Late'
+  status:
+    | 'Active'
+    | 'Backslider'
+    | 'Weak'
+    | 'Distant'
+    | 'Withdrawal'
+    | 'Disfellowshipped'
+    | 'Transfer'
+    | 'Late'
   absenceCount: number
   avatar?: string
   // Extended profile
@@ -75,7 +83,13 @@ export type ServiceType =
   | 'Evangelism'
   | "Leaders' Class"
 
-export type ExpenseCategory = 'Maintenance' | 'Utilities' | 'Welfare' | 'Outreach' | 'Stationery' | 'Other'
+export type ExpenseCategory =
+  | 'Maintenance'
+  | 'Utilities'
+  | 'Welfare'
+  | 'Outreach'
+  | 'Stationery'
+  | 'Other'
 
 export interface FinanceCollection {
   id: string
@@ -139,7 +153,16 @@ export interface MemberFilters {
   search: string
   gender: string
   status: string
-  tab: 'all' | 'brothers' | 'sisters' | 'active' | 'inactive' | 'disfellowshipped' | 'transfer' | 'weak' | 'late'
+  tab:
+    | 'all'
+    | 'brothers'
+    | 'sisters'
+    | 'active'
+    | 'inactive'
+    | 'disfellowshipped'
+    | 'transfer'
+    | 'weak'
+    | 'late'
 }
 
 export interface ServiceAttendanceStats {

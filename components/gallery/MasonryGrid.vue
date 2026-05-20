@@ -20,12 +20,7 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
       @click="emit('image-click', index)"
       @keydown.enter="emit('image-click', index)"
     >
-      <img
-        :src="img.src"
-        :alt="img.alt"
-        loading="lazy"
-        class="masonry-img"
-      />
+      <img :src="img.src" :alt="img.alt" loading="lazy" class="masonry-img" />
     </div>
   </div>
 </template>
@@ -51,7 +46,9 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
   height: auto;
   display: block;
   object-fit: cover;
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .masonry-item:hover .masonry-img {
@@ -60,10 +57,14 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
 }
 
 @media (max-width: 1023px) {
-  .masonry-grid { column-count: 3; }
+  .masonry-grid {
+    column-count: 3;
+  }
 }
 
 @media (max-width: 639px) {
-  .masonry-grid { column-count: 2; }
+  .masonry-grid {
+    column-count: 2;
+  }
 }
 </style>

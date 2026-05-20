@@ -38,9 +38,7 @@ const filteredYouth = computed(() => {
     const q = search.value.toLowerCase()
     result = result.filter(
       (m) =>
-        m.name.toLowerCase().includes(q) ||
-        m.email.toLowerCase().includes(q) ||
-        m.phone.includes(q)
+        m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q) || m.phone.includes(q)
     )
   }
 
@@ -163,15 +161,13 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     membersStore.addMember({ ...m, absenceCount: 0 })
   }
 }
-
 </script>
 
 <template>
   <div class="flex flex-col gap-5">
-
     <!-- Header -->
     <div class="flex items-center justify-between">
-      <div ></div>
+      <div></div>
       <Button @click="showAddModal = true">
         <template #icon-left><Icon icon="mdi:plus" /></template>
         Add Youth Member
@@ -191,12 +187,20 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
             </div>
             <Badge :variant="card.change >= 0 ? 'success' : 'danger'" size="sm">
               <template #icon>
-                <Icon :icon="card.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'" class="text-[10px]" />
+                <Icon
+                  :icon="card.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'"
+                  class="text-[10px]"
+                />
               </template>
               {{ Math.abs(card.change) }}%
             </Badge>
           </div>
-          <button class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer" @click="viewList(card.tab)">View List</button>
+          <button
+            class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer"
+            @click="viewList(card.tab)"
+          >
+            View List
+          </button>
         </Card>
       </div>
 
@@ -225,7 +229,10 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     <!-- Search -->
     <div class="flex gap-2">
       <div class="relative flex-1">
-        <Icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base" />
+        <Icon
+          icon="mdi:magnify"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+        />
         <input
           v-model="search"
           type="search"
@@ -260,11 +267,7 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     </div>
 
     <!-- Detail panel -->
-    <MemberDetailPanel
-      v-model="panelOpen"
-      :member="selectedMember"
-      :auto-edit="panelAutoEdit"
-    />
+    <MemberDetailPanel v-model="panelOpen" :member="selectedMember" :auto-edit="panelAutoEdit" />
 
     <AddMemberModal
       v-model="showAddModal"
@@ -274,6 +277,5 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     />
 
     <ImportCsvModal v-model="showImport" @import="onImport" />
-
   </div>
 </template>

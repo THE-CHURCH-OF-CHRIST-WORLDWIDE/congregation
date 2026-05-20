@@ -45,11 +45,7 @@ function categoryClass(cat: string): string {
 <template>
   <div class="flex h-full flex-col gap-4">
     <!-- Sub-tabs -->
-    <PastEventMonthYearTabs
-      v-model="subTab"
-      :month-count="monthCount"
-      :year-count="yearCount"
-    />
+    <PastEventMonthYearTabs v-model="subTab" :month-count="monthCount" :year-count="yearCount" />
 
     <!-- Event list -->
     <div class="flex flex-col gap-3 overflow-y-auto pr-1">
@@ -91,7 +87,10 @@ function categoryClass(cat: string): string {
           <div class="min-w-0 flex-1">
             <!-- Category -->
             <span
-              :class="['mb-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium', categoryClass(event.category)]"
+              :class="[
+                'mb-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
+                categoryClass(event.category),
+              ]"
             >
               {{ event.category }}
             </span>

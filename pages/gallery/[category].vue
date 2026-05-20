@@ -19,14 +19,12 @@ useSeoMeta({
 })
 
 // Preview thumbnails for hero (first 2 images)
-const previewImages = computed(() =>
-  (gallery?.images ?? []).slice(0, 2).map(i => i.src)
-)
+const previewImages = computed(() => (gallery?.images ?? []).slice(0, 2).map((i) => i.src))
 
 // Lightbox
 const lightboxOpen = ref(false)
 const lightboxIndex = ref(0)
-const lightboxImages = computed(() => (gallery?.images ?? []).map(i => i.src))
+const lightboxImages = computed(() => (gallery?.images ?? []).map((i) => i.src))
 
 function openLightbox(index: number) {
   lightboxIndex.value = index
@@ -36,7 +34,6 @@ function openLightbox(index: number) {
 
 <template>
   <div v-if="gallery" class="w-full bg-white">
-
     <!-- 1. Hero -->
     <GalleryHero :category-title="gallery.title" :preview-images="previewImages" />
 

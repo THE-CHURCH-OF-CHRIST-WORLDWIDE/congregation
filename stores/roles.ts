@@ -3,8 +3,14 @@ import type { ChurchRole, RoleAssignment, RolePermissions, AppPage, AppAction } 
 
 // ─── All pages and actions ─────────────────────────────────────────────────────
 export const ALL_PAGES: AppPage[] = [
-  'Dashboard', 'Nominal Roll', 'Youth', 'Attendance',
-  'Teachings', 'Events', 'Finance', 'Settings',
+  'Dashboard',
+  'Nominal Roll',
+  'Youth',
+  'Attendance',
+  'Teachings',
+  'Events',
+  'Finance',
+  'Settings',
 ]
 
 export const ALL_ACTIONS: AppAction[] = ['view', 'add', 'edit', 'delete', 'export']
@@ -37,7 +43,10 @@ const DEFAULT_ROLES: ChurchRole[] = [
     color: '#0ea5e9',
     description: 'Oversees church operations. Access to most modules.',
     permissions: {
-      ...perm(['Dashboard', 'Nominal Roll', 'Youth', 'Attendance', 'Teachings', 'Events'], ['view', 'add', 'edit', 'delete', 'export']),
+      ...perm(
+        ['Dashboard', 'Nominal Roll', 'Youth', 'Attendance', 'Teachings', 'Events'],
+        ['view', 'add', 'edit', 'delete', 'export']
+      ),
       ...perm(['Finance'], ['view', 'export']),
       ...perm(['Settings'], ['view']),
     },
@@ -69,7 +78,10 @@ const DEFAULT_ROLES: ChurchRole[] = [
     color: '#10b981',
     description: 'Handles records, correspondence, and administrative tasks.',
     permissions: {
-      ...perm(['Dashboard', 'Nominal Roll', 'Youth', 'Attendance', 'Teachings', 'Events'], ['view', 'add', 'edit', 'export']),
+      ...perm(
+        ['Dashboard', 'Nominal Roll', 'Youth', 'Attendance', 'Teachings', 'Events'],
+        ['view', 'add', 'edit', 'export']
+      ),
       ...perm(['Finance'], ['view', 'export']),
       ...perm(['Settings'], ['view']),
     },
@@ -152,9 +164,7 @@ export const useRolesStore = defineStore('roles', () => {
   // ── Assignment CRUD ─────────────────────────────────────────────────────────
   function assignRole(memberId: string, roleId: string, customPermissions?: RolePermissions) {
     // Prevent duplicate assignment of same role to same member
-    const exists = assignments.value.find(
-      (a) => a.memberId === memberId && a.roleId === roleId
-    )
+    const exists = assignments.value.find((a) => a.memberId === memberId && a.roleId === roleId)
     if (exists) return
 
     assignments.value.push({

@@ -71,7 +71,10 @@ function doExport() {
 
     <div class="flex gap-2 mt-3">
       <div class="relative flex-1">
-        <Icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base" />
+        <Icon
+          icon="mdi:magnify"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+        />
         <input
           :value="membersStore.filters.search"
           type="search"

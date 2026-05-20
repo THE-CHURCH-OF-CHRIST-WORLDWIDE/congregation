@@ -48,10 +48,24 @@ export const useAttendanceStore = defineStore('attendance', () => {
 
   // ── Monthly presence counts by service type ────────────────────────────────
   const monthlyPresenceCounts = computed(() => {
-    const months = ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06',
-                    '2025-07','2025-08','2025-09','2025-10','2025-11','2025-12']
+    const months = [
+      '2025-01',
+      '2025-02',
+      '2025-03',
+      '2025-04',
+      '2025-05',
+      '2025-06',
+      '2025-07',
+      '2025-08',
+      '2025-09',
+      '2025-10',
+      '2025-11',
+      '2025-12',
+    ]
     return months.map((m) => {
-      const monthRecs = records.value.filter((r) => r.date.startsWith(m) && r.serviceType === 'Sunday Worship')
+      const monthRecs = records.value.filter(
+        (r) => r.date.startsWith(m) && r.serviceType === 'Sunday Worship'
+      )
       const uniqueDates = [...new Set(monthRecs.map((r) => r.date))]
       const totalSessions = uniqueDates.length
       const presentCount = monthRecs.filter((r) => r.present).length
@@ -62,10 +76,24 @@ export const useAttendanceStore = defineStore('attendance', () => {
 
   // ── Reactive monthly data for a given service ───────────────────────────────
   function monthlyByService(serviceType: string) {
-    const months = ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06',
-                    '2025-07','2025-08','2025-09','2025-10','2025-11','2025-12']
+    const months = [
+      '2025-01',
+      '2025-02',
+      '2025-03',
+      '2025-04',
+      '2025-05',
+      '2025-06',
+      '2025-07',
+      '2025-08',
+      '2025-09',
+      '2025-10',
+      '2025-11',
+      '2025-12',
+    ]
     return months.map((m) => {
-      const recs = records.value.filter((r) => r.date.startsWith(m) && r.serviceType === serviceType)
+      const recs = records.value.filter(
+        (r) => r.date.startsWith(m) && r.serviceType === serviceType
+      )
       const sessions = [...new Set(recs.map((r) => r.date))].length
       const present = recs.filter((r) => r.present).length
       const total = recs.length
@@ -76,7 +104,13 @@ export const useAttendanceStore = defineStore('attendance', () => {
 
   // ── Weekly data: last 12 weeks for a given service ──────────────────────────
   function weeklyByService(serviceType: string) {
-    const result: Array<{ week: string; label: string; present: number; total: number; rate: number }> = []
+    const result: Array<{
+      week: string
+      label: string
+      present: number
+      total: number
+      rate: number
+    }> = []
     const now = new Date()
 
     for (let w = 11; w >= 0; w--) {

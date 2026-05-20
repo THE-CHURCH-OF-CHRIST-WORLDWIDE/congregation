@@ -20,9 +20,16 @@ const changeIsPositive = computed(() => (props.change ?? 0) >= 0)
         <p class="text-xs text-gray-500 font-medium mb-1 truncate">{{ title }}</p>
         <p class="text-2xl font-bold text-gray-900 leading-tight">{{ value }}</p>
         <div class="flex items-center gap-1.5 mt-1.5">
-          <Badge v-if="change !== undefined" :variant="changeIsPositive ? 'success' : 'danger'" size="sm">
+          <Badge
+            v-if="change !== undefined"
+            :variant="changeIsPositive ? 'success' : 'danger'"
+            size="sm"
+          >
             <template #icon>
-              <Icon :icon="changeIsPositive ? 'mdi:trending-up' : 'mdi:trending-down'" class="text-[10px]" />
+              <Icon
+                :icon="changeIsPositive ? 'mdi:trending-up' : 'mdi:trending-down'"
+                class="text-[10px]"
+              />
             </template>
             {{ Math.abs(change) }}%
           </Badge>

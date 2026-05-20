@@ -13,10 +13,10 @@ function search() {
     return
   }
   results.value = CONGREGATIONS.filter(
-    c =>
+    (c) =>
       c.name.toLowerCase().includes(q) ||
       c.city.toLowerCase().includes(q) ||
-      c.address.toLowerCase().includes(q),
+      c.address.toLowerCase().includes(q)
   )
 }
 
@@ -26,7 +26,7 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section ref="sectionRef" id="congregations" class="bg-[#F8F9FA] py-20">
+  <section id="congregations" ref="sectionRef" class="bg-[#F8F9FA] py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div :class="['reveal', isVisible && 'is-visible']">
         <SectionHeader
@@ -38,7 +38,12 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 
       <!-- Search bar -->
       <div
-        :class="['mx-auto mb-10 flex max-w-2xl items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm', 'reveal', 'delay-150', isVisible && 'is-visible']"
+        :class="[
+          'mx-auto mb-10 flex max-w-2xl items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm',
+          'reveal',
+          'delay-150',
+          isVisible && 'is-visible',
+        ]"
       >
         <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
         <input
@@ -65,7 +70,9 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           :class="['reveal-scale', isVisible && 'is-visible']"
           :style="{ transitionDelay: `${200 + i * 60}ms` }"
         >
-          <div class="rounded-xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3">
+          <div
+            class="rounded-xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3"
+          >
             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1E3A5F]/10">
               <Icon icon="heroicons:building-library" class="h-5 w-5 text-[#1E3A5F]" />
             </div>

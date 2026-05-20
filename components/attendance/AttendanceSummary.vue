@@ -37,18 +37,17 @@ function fmt(n: number) {
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div
-        v-for="svc in services"
-        :key="svc.serviceType"
-        class="bg-gray-50 rounded-xl p-3"
-      >
+      <div v-for="svc in services" :key="svc.serviceType" class="bg-gray-50 rounded-xl p-3">
         <div class="flex items-center justify-between mb-2">
           <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
             <Icon :icon="svc.icon" class="text-blue-600 text-base" />
           </div>
           <Badge :variant="svc.change >= 0 ? 'success' : 'danger'" size="sm">
             <template #icon>
-              <Icon :icon="svc.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'" class="text-[10px]" />
+              <Icon
+                :icon="svc.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'"
+                class="text-[10px]"
+              />
             </template>
             {{ Math.abs(svc.change) }}%
           </Badge>

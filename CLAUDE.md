@@ -14,9 +14,14 @@ npm run dev          # Start dev server
 npm run build        # Production build
 npm run generate     # Static site generation
 npm run preview      # Preview production build
+npm run typecheck    # Type-check with vue-tsc
+npm run lint         # Run ESLint
+npm run lint:fix     # Run ESLint with --fix
+npm run format       # Format with Prettier
+npm run format:check # Verify formatting (used in CI)
+npm run test         # Run Vitest in CI mode
+npm run test:watch   # Run Vitest in watch mode
 ```
-
-There is currently no lint or test script configured in `package.json`.
 
 ## Architecture
 
@@ -27,8 +32,8 @@ There is currently no lint or test script configured in `package.json`.
 - **Pinia stores**: auto-discovered from `./stores/**`
 
 ### Directory Conventions
-- `components/` — split into `admin/` and `public/` subdirectories
-- `pages/` — file-based routing; planned split into `admin/` and `public/` route groups
+- `components/` — organised by feature (e.g. `about/`, `attendance/`, `home/`, `nominal-roll/`, `ui/`). The `admin/` and `public/` folders exist but are mostly empty placeholders; new components go in a feature folder, not under those.
+- `pages/` — file-based routing. Admin routes live under `pages/admin/*`; public routes live at the `pages/` root (`index.vue`, `about-us/`, `events/`, `live-streams/`, `teachings/`).
 - `stores/` — Pinia stores
 - `composables/` — shared Vue composables (e.g., `useAuth`)
 - `plugins/` — Nuxt plugins (client-only plugins use `.client.ts` suffix)
@@ -53,7 +58,7 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 ```
 
-Firebase access is abstracted through the `repositories/` layer — data fetching logic should live there, not directly in components or stores.
+Firebase access is abstracted through the `repositories/` layer. This pattern is the target architecture but only partially in place today: [`churchSettingsRepository.ts`](repositories/churchSettingsRepository.ts) is the only repository implemented. Other domains (members, attendance, events, finance, teachings, roles) currently hold in-memory state seeded from mock composables (`composables/useMockData.ts`, `composables/useEventsMockData.ts`, `composables/usePublicMockData.ts`) and are scheduled to migrate. New Firebase reads/writes should still go through a repository.
 
 ### Runtime Config
 Server-only secrets go under `runtimeConfig` in `nuxt.config.ts`. Public runtime config (accessible in browser) goes under `runtimeConfig.public`. Access via `useRuntimeConfig()` in composables/components.

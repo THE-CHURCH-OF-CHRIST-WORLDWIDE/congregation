@@ -39,8 +39,8 @@ const sizeClasses = {
     ]"
   >
     <Icon v-if="loading" icon="mdi:loading" class="animate-spin" />
-    <slot name="icon-left" ></slot>
-    <slot ></slot>
-    <slot name="icon-right" ></slot>
+    <slot name="icon-left"></slot>
+    <slot></slot>
+    <slot name="icon-right"></slot>
   </button>
 </template>

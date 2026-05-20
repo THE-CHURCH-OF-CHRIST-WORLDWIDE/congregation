@@ -6,7 +6,7 @@ defineProps<{ label: string }>()
   <label class="flex flex-col gap-1">
     <span class="text-xs font-medium text-gray-500">{{ label }}</span>
     <div class="edit-field-slot">
-      <slot ></slot>
+      <slot></slot>
     </div>
   </label>
 </template>
@@ -24,7 +24,9 @@ defineProps<{ label: string }>()
   color: #111827;
   background: #fff;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 .edit-field-slot :deep(input:focus),
 .edit-field-slot :deep(select:focus),

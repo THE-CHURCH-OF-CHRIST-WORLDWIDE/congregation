@@ -26,17 +26,23 @@ const event = computed(() => eventsStore.selectedPastEvent)
       />
 
       <!-- Gradient overlay: strong at bottom, fades up -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" ></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"
+      ></div>
 
       <!-- Content pinned to bottom-left -->
       <div class="relative mt-auto w-full p-5 md:p-7">
         <!-- Category badge -->
-        <span class="mb-3 inline-block rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+        <span
+          class="mb-3 inline-block rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white"
+        >
           {{ event.category }}
         </span>
 
         <!-- Title -->
-        <h2 class="mb-3 font-['Playfair_Display'] text-2xl font-bold leading-snug text-white md:text-3xl">
+        <h2
+          class="mb-3 font-['Playfair_Display'] text-2xl font-bold leading-snug text-white md:text-3xl"
+        >
           {{ event.title }}
         </h2>
 

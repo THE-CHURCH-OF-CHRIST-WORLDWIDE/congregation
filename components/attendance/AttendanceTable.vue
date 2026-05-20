@@ -75,7 +75,13 @@ function doExport() {
   exportCSV(
     filteredMembers.value.map((m) => {
       const summary = getMonthlySummary(m.id)
-      const row: Record<string, unknown> = { Name: m.name, Phone: m.phone, 'Sessions Total': summary.sessionsTotal, 'Sessions Present': summary.sessionsPresent, 'Attendance %': summary.percentage }
+      const row: Record<string, unknown> = {
+        Name: m.name,
+        Phone: m.phone,
+        'Sessions Total': summary.sessionsTotal,
+        'Sessions Present': summary.sessionsPresent,
+        'Attendance %': summary.percentage,
+      }
       sundaysInMonth.value.forEach((d) => {
         row[d] = isPresent(m.id, d) ? 'Present' : 'Absent'
       })
@@ -84,7 +90,6 @@ function doExport() {
     `attendance-${props.month}`
   )
 }
-
 </script>
 
 <template>
@@ -92,7 +97,10 @@ function doExport() {
     <!-- Controls -->
     <div class="flex flex-col sm:flex-row gap-3 mb-4">
       <div class="relative flex-1">
-        <Icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base" />
+        <Icon
+          icon="mdi:magnify"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+        />
         <input
           v-model="searchQuery"
           type="search"
@@ -118,9 +126,21 @@ function doExport() {
         <table class="w-full text-sm" role="table">
           <thead>
             <tr class="bg-gray-50 border-b border-gray-100">
-              <th scope="col" class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 w-10">S/N</th>
-              <th scope="col" class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 min-w-[140px]">Name</th>
-              <th scope="col" class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 min-w-[140px]">Member Monthly Summary</th>
+              <th scope="col" class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 w-10">
+                S/N
+              </th>
+              <th
+                scope="col"
+                class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 min-w-[140px]"
+              >
+                Name
+              </th>
+              <th
+                scope="col"
+                class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 min-w-[140px]"
+              >
+                Member Monthly Summary
+              </th>
               <th
                 v-for="date in sundaysInMonth"
                 :key="date"
@@ -159,15 +179,13 @@ function doExport() {
                     </span>
                   </div>
                   <p class="text-[10px] text-gray-400">
-                    {{ getMonthlySummary(member.id).sessionsPresent }}/{{ getMonthlySummary(member.id).sessionsTotal }}
+                    {{ getMonthlySummary(member.id).sessionsPresent }}/{{
+                      getMonthlySummary(member.id).sessionsTotal
+                    }}
                   </p>
                 </div>
               </td>
-              <td
-                v-for="date in sundaysInMonth"
-                :key="date"
-                class="px-2 py-2.5 text-center"
-              >
+              <td v-for="date in sundaysInMonth" :key="date" class="px-2 py-2.5 text-center">
                 <input
                   type="checkbox"
                   class="attendance-check"
@@ -177,7 +195,10 @@ function doExport() {
                 />
               </td>
               <td class="px-2 py-2.5">
-                <button class="text-gray-400 hover:text-gray-600 p-0.5" :aria-label="`More actions for ${member.name}`">
+                <button
+                  class="text-gray-400 hover:text-gray-600 p-0.5"
+                  :aria-label="`More actions for ${member.name}`"
+                >
                   <Icon icon="mdi:dots-vertical" />
                 </button>
               </td>

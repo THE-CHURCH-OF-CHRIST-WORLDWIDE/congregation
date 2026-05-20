@@ -6,8 +6,8 @@ export interface Speaker {
 export interface UpcomingEvent {
   id: string
   title: string
-  date: string        // "YYYY-MM-DD"
-  time: string        // "7:00 PM"
+  date: string // "YYYY-MM-DD"
+  time: string // "7:00 PM"
   venue: string
   galleryImages: string[]
 }

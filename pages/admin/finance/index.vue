@@ -21,7 +21,20 @@ const periodTabs = [
 ]
 
 // ─── Chart data (income vs expenses by period) ────────────────────────────────
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 function labelFor(key: string, period: string) {
   if (period === 'monthly') {
@@ -89,11 +102,13 @@ const donutData = computed<ChartData<'doughnut'>>(() => {
   const entries = Object.entries(cat) as [ExpenseCategory, number][]
   return {
     labels: entries.map(([k]) => k),
-    datasets: [{
-      data: entries.map(([, v]) => v),
-      backgroundColor: entries.map(([k]) => categoryColors[k]),
-      borderWidth: 0,
-    }],
+    datasets: [
+      {
+        data: entries.map(([, v]) => v),
+        backgroundColor: entries.map(([k]) => categoryColors[k]),
+        borderWidth: 0,
+      },
+    ],
   }
 })
 
@@ -103,16 +118,20 @@ const summaryRows = computed(() => financeStore.reportRows(activePeriod.value))
 // ─── Recent transactions (combined, sorted desc) ──────────────────────────────
 const recentActivity = computed(() => {
   const cols = financeStore.collections.map((c) => ({
-    id: c.id, date: c.date, type: 'income' as const,
-    description: c.description ?? 'Collection', amount: c.amount,
+    id: c.id,
+    date: c.date,
+    type: 'income' as const,
+    description: c.description ?? 'Collection',
+    amount: c.amount,
   }))
   const exps = financeStore.expenses.map((e) => ({
-    id: e.id, date: e.date, type: 'expense' as const,
-    description: `${e.category} – ${e.description}`, amount: e.amount,
+    id: e.id,
+    date: e.date,
+    type: 'expense' as const,
+    description: `${e.category} – ${e.description}`,
+    amount: e.amount,
   }))
-  return [...cols, ...exps]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 15)
+  return [...cols, ...exps].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15)
 })
 
 // ─── Format helpers ───────────────────────────────────────────────────────────
@@ -121,26 +140,35 @@ function fmt(n: number) {
 }
 
 function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  return new Date(d).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 // ─── Export modal ─────────────────────────────────────────────────────────────
 const showExport = ref(false)
 
 const today = new Date().toISOString().slice(0, 10)
-const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().slice(0, 10)
+const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+  .toISOString()
+  .slice(0, 10)
 
 const exportRange = reactive({ from: oneYearAgo, to: today })
 const exportRangeErrors = reactive({ from: '', to: '' })
 
 const exportPreviewIncome = computed(() => {
   if (!exportRange.from || !exportRange.to) return 0
-  return financeStore.collections.filter((c) => c.date >= exportRange.from && c.date <= exportRange.to).length
+  return financeStore.collections.filter(
+    (c) => c.date >= exportRange.from && c.date <= exportRange.to
+  ).length
 })
 
 const exportPreviewExpenses = computed(() => {
   if (!exportRange.from || !exportRange.to) return 0
-  return financeStore.expenses.filter((e) => e.date >= exportRange.from && e.date <= exportRange.to).length
+  return financeStore.expenses.filter((e) => e.date >= exportRange.from && e.date <= exportRange.to)
+    .length
 })
 
 const exportPreviewCount = computed(() => exportPreviewIncome.value + exportPreviewExpenses.value)
@@ -214,9 +242,7 @@ function doExport() {
     }))
 
   // All rows sorted by date
-  const allRows = [...incomeRows, ...expenseRows].sort((a, b) =>
-    a.Date.localeCompare(b.Date)
-  )
+  const allRows = [...incomeRows, ...expenseRows].sort((a, b) => a.Date.localeCompare(b.Date))
 
   // Compute running balance
   let balance = 0
@@ -231,10 +257,42 @@ function doExport() {
 
   const rows: Record<string, unknown>[] = [
     ...withBalance,
-    { Date: '', Type: '', Category: '', Description: '', 'Amount (₦)': '', Collector: '', 'Running Balance (₦)': '' },
-    { Date: 'SUMMARY', Type: '', Category: '', Description: 'Total Income', 'Amount (₦)': totalIncome, Collector: '', 'Running Balance (₦)': '' },
-    { Date: '', Type: '', Category: '', Description: 'Total Expenses', 'Amount (₦)': totalExpenses, Collector: '', 'Running Balance (₦)': '' },
-    { Date: '', Type: '', Category: '', Description: 'Net Balance', 'Amount (₦)': totalIncome - totalExpenses, Collector: '', 'Running Balance (₦)': '' },
+    {
+      Date: '',
+      Type: '',
+      Category: '',
+      Description: '',
+      'Amount (₦)': '',
+      Collector: '',
+      'Running Balance (₦)': '',
+    },
+    {
+      Date: 'SUMMARY',
+      Type: '',
+      Category: '',
+      Description: 'Total Income',
+      'Amount (₦)': totalIncome,
+      Collector: '',
+      'Running Balance (₦)': '',
+    },
+    {
+      Date: '',
+      Type: '',
+      Category: '',
+      Description: 'Total Expenses',
+      'Amount (₦)': totalExpenses,
+      Collector: '',
+      'Running Balance (₦)': '',
+    },
+    {
+      Date: '',
+      Type: '',
+      Category: '',
+      Description: 'Net Balance',
+      'Amount (₦)': totalIncome - totalExpenses,
+      Collector: '',
+      'Running Balance (₦)': '',
+    },
   ]
 
   exportCSV(rows, `finance-report-${from}-to-${to}`)
@@ -243,7 +301,11 @@ function doExport() {
 
 // ─── Add Collection modal ─────────────────────────────────────────────────────
 const showAddCollection = ref(false)
-const newCollection = reactive<Omit<FinanceCollection, 'id'>>({ date: '', amount: 0, description: '' })
+const newCollection = reactive<Omit<FinanceCollection, 'id'>>({
+  date: '',
+  amount: 0,
+  description: '',
+})
 const collectionErrors = reactive({ date: '', amount: '' })
 
 function saveCollection() {
@@ -258,7 +320,12 @@ function saveCollection() {
 
 // ─── Add Expense modal ────────────────────────────────────────────────────────
 const showAddExpense = ref(false)
-const newExpense = reactive<Omit<FinanceExpense, 'id'>>({ date: '', amount: 0, category: 'Other', description: '' })
+const newExpense = reactive<Omit<FinanceExpense, 'id'>>({
+  date: '',
+  amount: 0,
+  category: 'Other',
+  description: '',
+})
 const expenseErrors = reactive({ date: '', amount: '', description: '' })
 
 const expenseCategoryOptions = [
@@ -284,10 +351,9 @@ function saveExpense() {
 
 <template>
   <div class="flex flex-col gap-5">
-
     <!-- Header actions -->
     <div class="flex items-center justify-between flex-wrap gap-3">
-      <div ></div>
+      <div></div>
       <div class="flex gap-2">
         <Button variant="secondary" @click="showAddExpense = true">
           <template #icon-left><Icon icon="mdi:minus-circle-outline" /></template>
@@ -309,7 +375,9 @@ function saveExpense() {
             <p class="text-2xl font-bold text-gray-900 mt-1">{{ fmt(financeStore.totalIncome) }}</p>
             <p class="text-xs text-gray-400 mt-1">All time</p>
           </div>
-          <div class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+          <div
+            class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"
+          >
             <Icon icon="mdi:trending-up" class="text-blue-600 text-lg" />
           </div>
         </div>
@@ -319,7 +387,9 @@ function saveExpense() {
         <div class="flex items-start justify-between">
           <div>
             <p class="text-xs text-gray-500 font-medium">Total Expenses</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">{{ fmt(financeStore.totalExpenses) }}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">
+              {{ fmt(financeStore.totalExpenses) }}
+            </p>
             <p class="text-xs text-gray-400 mt-1">All time</p>
           </div>
           <div class="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
@@ -335,7 +405,9 @@ function saveExpense() {
             <p
               class="text-2xl font-bold mt-1"
               :class="financeStore.netBalance >= 0 ? 'text-green-600' : 'text-red-500'"
-            >{{ fmt(financeStore.netBalance) }}</p>
+            >
+              {{ fmt(financeStore.netBalance) }}
+            </p>
             <p class="text-xs text-gray-400 mt-1">All time</p>
           </div>
           <div
@@ -343,7 +415,11 @@ function saveExpense() {
             :class="financeStore.netBalance >= 0 ? 'bg-green-100' : 'bg-red-100'"
           >
             <Icon
-              :icon="financeStore.netBalance >= 0 ? 'mdi:check-circle-outline' : 'mdi:alert-circle-outline'"
+              :icon="
+                financeStore.netBalance >= 0
+                  ? 'mdi:check-circle-outline'
+                  : 'mdi:alert-circle-outline'
+              "
               :class="financeStore.netBalance >= 0 ? 'text-green-600' : 'text-red-500'"
               class="text-lg"
             />
@@ -358,12 +434,17 @@ function saveExpense() {
             <p
               class="text-2xl font-bold mt-1"
               :class="financeStore.thisMonthNet >= 0 ? 'text-green-600' : 'text-red-500'"
-            >{{ fmt(financeStore.thisMonthNet) }}</p>
+            >
+              {{ fmt(financeStore.thisMonthNet) }}
+            </p>
             <p class="text-xs text-gray-400 mt-1">
-              In: {{ fmt(financeStore.thisMonthIncome) }} / Out: {{ fmt(financeStore.thisMonthExpenses) }}
+              In: {{ fmt(financeStore.thisMonthIncome) }} / Out:
+              {{ fmt(financeStore.thisMonthExpenses) }}
             </p>
           </div>
-          <div class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+          <div
+            class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"
+          >
             <Icon icon="mdi:calendar-month-outline" class="text-purple-600 text-lg" />
           </div>
         </div>
@@ -390,7 +471,7 @@ function saveExpense() {
         <DonutChart :data="donutData" :height="180" />
         <div class="mt-3 space-y-1.5">
           <div
-            v-for="([cat, amount]) in Object.entries(financeStore.expenseByCategory)"
+            v-for="[cat, amount] in Object.entries(financeStore.expenseByCategory)"
             :key="cat"
             class="flex items-center justify-between"
           >
@@ -434,12 +515,18 @@ function saveExpense() {
               class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
             >
               <td class="px-4 py-3 font-medium text-gray-700">{{ row.Period }}</td>
-              <td class="px-4 py-3 text-right text-gray-600">{{ row.Income.toLocaleString('en-NG') }}</td>
-              <td class="px-4 py-3 text-right text-gray-600">{{ row.Expenses.toLocaleString('en-NG') }}</td>
+              <td class="px-4 py-3 text-right text-gray-600">
+                {{ row.Income.toLocaleString('en-NG') }}
+              </td>
+              <td class="px-4 py-3 text-right text-gray-600">
+                {{ row.Expenses.toLocaleString('en-NG') }}
+              </td>
               <td
                 class="px-4 py-3 text-right font-semibold"
                 :class="row.Net >= 0 ? 'text-green-600' : 'text-red-500'"
-              >{{ row.Net.toLocaleString('en-NG') }}</td>
+              >
+                {{ row.Net.toLocaleString('en-NG') }}
+              </td>
               <td class="px-4 py-3 text-right">
                 <Badge
                   :variant="row.Income === 0 ? 'neutral' : row.Net >= 0 ? 'success' : 'danger'"
@@ -450,7 +537,9 @@ function saveExpense() {
               </td>
             </tr>
             <tr v-if="!summaryRows.length">
-              <td colspan="5" class="px-4 py-10 text-center text-gray-400">No data for this period</td>
+              <td colspan="5" class="px-4 py-10 text-center text-gray-400">
+                No data for this period
+              </td>
             </tr>
           </tbody>
         </table>
@@ -470,7 +559,7 @@ function saveExpense() {
               <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Type</th>
               <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Description</th>
               <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Amount (₦)</th>
-              <th class="w-10 px-4 py-3" ></th>
+              <th class="w-10 px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -483,7 +572,10 @@ function saveExpense() {
               <td class="px-4 py-3">
                 <Badge :variant="tx.type === 'income' ? 'success' : 'danger'" size="sm">
                   <template #icon>
-                    <Icon :icon="tx.type === 'income' ? 'mdi:arrow-down' : 'mdi:arrow-up'" class="text-[10px]" />
+                    <Icon
+                      :icon="tx.type === 'income' ? 'mdi:arrow-down' : 'mdi:arrow-up'"
+                      class="text-[10px]"
+                    />
                   </template>
                   {{ tx.type === 'income' ? 'Income' : 'Expense' }}
                 </Badge>
@@ -499,7 +591,11 @@ function saveExpense() {
                 <button
                   class="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
                   :aria-label="`Delete ${tx.description}`"
-                  @click="tx.type === 'income' ? financeStore.deleteCollection(tx.id) : financeStore.deleteExpense(tx.id)"
+                  @click="
+                    tx.type === 'income'
+                      ? financeStore.deleteCollection(tx.id)
+                      : financeStore.deleteExpense(tx.id)
+                  "
                 >
                   <Icon icon="mdi:trash-can-outline" class="text-base" />
                 </button>
@@ -514,16 +610,22 @@ function saveExpense() {
     <Modal v-model="showAddCollection" title="Record Weekly Collection" size="md">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Date<span class="text-red-500 ml-0.5">*</span></label>
+          <label class="text-sm font-medium text-gray-700"
+            >Date<span class="text-red-500 ml-0.5">*</span></label
+          >
           <input
             v-model="newCollection.date"
             type="date"
             class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
-          <p v-if="collectionErrors.date" class="text-xs text-red-500">{{ collectionErrors.date }}</p>
+          <p v-if="collectionErrors.date" class="text-xs text-red-500">
+            {{ collectionErrors.date }}
+          </p>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Amount (₦)<span class="text-red-500 ml-0.5">*</span></label>
+          <label class="text-sm font-medium text-gray-700"
+            >Amount (₦)<span class="text-red-500 ml-0.5">*</span></label
+          >
           <input
             v-model.number="newCollection.amount"
             type="number"
@@ -531,7 +633,9 @@ function saveExpense() {
             placeholder="e.g. 75000"
             class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
-          <p v-if="collectionErrors.amount" class="text-xs text-red-500">{{ collectionErrors.amount }}</p>
+          <p v-if="collectionErrors.amount" class="text-xs text-red-500">
+            {{ collectionErrors.amount }}
+          </p>
         </div>
         <div class="sm:col-span-2 flex flex-col gap-1">
           <label class="text-sm font-medium text-gray-700">Description</label>
@@ -558,7 +662,9 @@ function saveExpense() {
     <Modal v-model="showAddExpense" title="Record Expense" size="md">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Date<span class="text-red-500 ml-0.5">*</span></label>
+          <label class="text-sm font-medium text-gray-700"
+            >Date<span class="text-red-500 ml-0.5">*</span></label
+          >
           <input
             v-model="newExpense.date"
             type="date"
@@ -567,7 +673,9 @@ function saveExpense() {
           <p v-if="expenseErrors.date" class="text-xs text-red-500">{{ expenseErrors.date }}</p>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Amount (₦)<span class="text-red-500 ml-0.5">*</span></label>
+          <label class="text-sm font-medium text-gray-700"
+            >Amount (₦)<span class="text-red-500 ml-0.5">*</span></label
+          >
           <input
             v-model.number="newExpense.amount"
             type="number"
@@ -578,23 +686,31 @@ function saveExpense() {
           <p v-if="expenseErrors.amount" class="text-xs text-red-500">{{ expenseErrors.amount }}</p>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Category<span class="text-red-500 ml-0.5">*</span></label>
+          <label class="text-sm font-medium text-gray-700"
+            >Category<span class="text-red-500 ml-0.5">*</span></label
+          >
           <select
             v-model="newExpense.category"
             class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
           >
-            <option v-for="opt in expenseCategoryOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            <option v-for="opt in expenseCategoryOptions" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Description<span class="text-red-500 ml-0.5">*</span></label>
+          <label class="text-sm font-medium text-gray-700"
+            >Description<span class="text-red-500 ml-0.5">*</span></label
+          >
           <input
             v-model="newExpense.description"
             type="text"
             placeholder="Brief description"
             class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
-          <p v-if="expenseErrors.description" class="text-xs text-red-500">{{ expenseErrors.description }}</p>
+          <p v-if="expenseErrors.description" class="text-xs text-red-500">
+            {{ expenseErrors.description }}
+          </p>
         </div>
       </div>
       <template #footer>
@@ -611,7 +727,6 @@ function saveExpense() {
     <!-- ── Export modal ─────────────────────────────────────────────────────── -->
     <Modal v-model="showExport" title="Export Financial Report" size="md">
       <div class="flex flex-col gap-5">
-
         <!-- Date range -->
         <div>
           <p class="text-sm font-medium text-gray-700 mb-3">Select Date Range</p>
@@ -623,7 +738,9 @@ function saveExpense() {
                 type="date"
                 class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
-              <p v-if="exportRangeErrors.from" class="text-xs text-red-500">{{ exportRangeErrors.from }}</p>
+              <p v-if="exportRangeErrors.from" class="text-xs text-red-500">
+                {{ exportRangeErrors.from }}
+              </p>
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-medium text-gray-500">To</label>
@@ -632,7 +749,9 @@ function saveExpense() {
                 type="date"
                 class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
-              <p v-if="exportRangeErrors.to" class="text-xs text-red-500">{{ exportRangeErrors.to }}</p>
+              <p v-if="exportRangeErrors.to" class="text-xs text-red-500">
+                {{ exportRangeErrors.to }}
+              </p>
             </div>
           </div>
         </div>
@@ -653,7 +772,9 @@ function saveExpense() {
               :key="preset.label"
               class="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors"
               @click="preset.fn()"
-            >{{ preset.label }}</button>
+            >
+              {{ preset.label }}
+            </button>
           </div>
         </div>
 
@@ -675,10 +796,10 @@ function saveExpense() {
             </div>
           </div>
           <p class="text-xs text-gray-400 mt-3 text-center">
-            CSV will include: Date, Type, Category, Description, Amount, Running Balance + Summary footer
+            CSV will include: Date, Type, Category, Description, Amount, Running Balance + Summary
+            footer
           </p>
         </div>
-
       </div>
 
       <template #footer>
@@ -691,6 +812,5 @@ function saveExpense() {
         </div>
       </template>
     </Modal>
-
   </div>
 </template>

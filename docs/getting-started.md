@@ -8,7 +8,7 @@ This guide walks you through setting up Congregation for local development.
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** v20 or higher — [nodejs.org](https://nodejs.org)
+- **Node.js** v22 or higher — [nodejs.org](https://nodejs.org)
 - **npm** v10 or higher (bundled with Node.js)
 - **Git** — [git-scm.com](https://git-scm.com)
 - **Firebase CLI** — `npm install -g firebase-tools`
@@ -19,7 +19,7 @@ Before you begin, ensure you have the following installed:
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/mfonidomark/congregation.git
+git clone https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation.git
 cd congregation
 ```
 
@@ -83,12 +83,12 @@ This starts local emulators for Firestore, Authentication, and Storage. Make sur
 
 ## Available Scripts
 
-| Command             | Description                            |
-|---------------------|----------------------------------------|
-| `npm run dev`       | Start development server               |
-| `npm run build`     | Build for production                   |
-| `npm run generate`  | Generate a static site                 |
-| `npm run preview`   | Preview the production build locally   |
+| Command            | Description                          |
+| ------------------ | ------------------------------------ |
+| `npm run dev`      | Start development server             |
+| `npm run build`    | Build for production                 |
+| `npm run generate` | Generate a static site               |
+| `npm run preview`  | Preview the production build locally |
 
 ---
 

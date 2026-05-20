@@ -33,10 +33,34 @@ function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
 }
 
 const statCards = computed(() => [
-  { label: 'Active Members', value: membersStore.activeCount, change: 10, subtitle: `${membersStore.members.length - membersStore.activeCount} inactive`, tab: 'active' as const },
-  { label: 'Sisters', value: membersStore.sisterCount, change: -10, subtitle: `${membersStore.brotherCount} brothers`, tab: 'sisters' as const },
-  { label: 'Brothers', value: membersStore.brotherCount, change: 10, subtitle: `${membersStore.sisterCount} sisters`, tab: 'brothers' as const },
-  { label: 'Weak Brethren', value: membersStore.weakCount, change: 10, subtitle: `${membersStore.members.length - membersStore.weakCount} stable`, tab: 'inactive' as const },
+  {
+    label: 'Active Members',
+    value: membersStore.activeCount,
+    change: 10,
+    subtitle: `${membersStore.members.length - membersStore.activeCount} inactive`,
+    tab: 'active' as const,
+  },
+  {
+    label: 'Sisters',
+    value: membersStore.sisterCount,
+    change: -10,
+    subtitle: `${membersStore.brotherCount} brothers`,
+    tab: 'sisters' as const,
+  },
+  {
+    label: 'Brothers',
+    value: membersStore.brotherCount,
+    change: 10,
+    subtitle: `${membersStore.sisterCount} sisters`,
+    tab: 'brothers' as const,
+  },
+  {
+    label: 'Weak Brethren',
+    value: membersStore.weakCount,
+    change: 10,
+    subtitle: `${membersStore.members.length - membersStore.weakCount} stable`,
+    tab: 'inactive' as const,
+  },
 ])
 
 const tableRef = ref<HTMLElement | null>(null)
@@ -53,7 +77,7 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
   <div class="flex flex-col gap-5">
     <!-- Header -->
     <div class="flex items-center justify-between">
-      <div ></div>
+      <div></div>
       <Button @click="showAddModal = true">
         <template #icon-left><Icon icon="mdi:plus" /></template>
         Add New Member
@@ -72,12 +96,20 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
             </div>
             <Badge :variant="card.change >= 0 ? 'success' : 'danger'" size="sm">
               <template #icon>
-                <Icon :icon="card.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'" class="text-[10px]" />
+                <Icon
+                  :icon="card.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'"
+                  class="text-[10px]"
+                />
               </template>
               {{ Math.abs(card.change) }}%
             </Badge>
           </div>
-          <button class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer" @click="viewList(card.tab)">View List</button>
+          <button
+            class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer"
+            @click="viewList(card.tab)"
+          >
+            View List
+          </button>
         </Card>
       </div>
       <RoleSummaryChart />
@@ -92,16 +124,8 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
     <MemberTable @select="openPanel" @edit="openPanelEdit" />
 
     <!-- Member detail panel -->
-    <MemberDetailPanel
-      v-model="panelOpen"
-      :member="selectedMember"
-      :auto-edit="panelAutoEdit"
-    />
+    <MemberDetailPanel v-model="panelOpen" :member="selectedMember" :auto-edit="panelAutoEdit" />
 
-    <AddMemberModal
-      v-model="showAddModal"
-      title="Add New Member"
-      @save="onMemberSaved"
-    />
+    <AddMemberModal v-model="showAddModal" title="Add New Member" @save="onMemberSaved" />
   </div>
 </template>

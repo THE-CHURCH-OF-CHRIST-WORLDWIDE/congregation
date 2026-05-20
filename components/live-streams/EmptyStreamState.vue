@@ -5,11 +5,25 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-[#F8F9FA] px-6 py-20 text-center">
+  <div
+    class="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-[#F8F9FA] px-6 py-20 text-center"
+  >
     <!-- Play icon (outlined) -->
-    <div class="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-gray-300">
-      <svg class="ml-2 h-10 w-10 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+    <div
+      class="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-gray-300"
+    >
+      <svg
+        class="ml-2 h-10 w-10 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"
+        />
       </svg>
     </div>
 
@@ -17,7 +31,8 @@ const emit = defineEmits<{
       The last live stream has ended
     </h3>
     <p class="text-gray-500 max-w-md mb-8 leading-relaxed">
-      Our live worship service has concluded. Join us next Sunday for our next service or browse our recorded streams and sermons below.
+      Our live worship service has concluded. Join us next Sunday for our next service or browse our
+      recorded streams and sermons below.
     </p>
 
     <div class="flex flex-col gap-3 sm:flex-row">

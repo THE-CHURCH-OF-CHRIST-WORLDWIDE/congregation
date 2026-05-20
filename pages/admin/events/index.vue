@@ -16,7 +16,8 @@ onMounted(() => {
     </div>
     <h2 class="text-xl font-semibold text-gray-600 mb-2">Events Coming Soon</h2>
     <p class="text-sm text-gray-400 max-w-xs">
-      The Events module is under development. You'll be able to manage church programmes, schedule events, and send notifications.
+      The Events module is under development. You'll be able to manage church programmes, schedule
+      events, and send notifications.
     </p>
   </div>
 </template>

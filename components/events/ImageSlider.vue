@@ -10,22 +10,26 @@ const emit = defineEmits<{
 
 const currentIndex = ref(props.startIndex ?? 0)
 
-watch(() => props.startIndex, val => {
-  if (val !== undefined) currentIndex.value = val
-})
+watch(
+  () => props.startIndex,
+  (val) => {
+    if (val !== undefined) currentIndex.value = val
+  }
+)
 
-watch(() => props.images, () => {
-  currentIndex.value = 0
-})
+watch(
+  () => props.images,
+  () => {
+    currentIndex.value = 0
+  }
+)
 
 function prev() {
-  currentIndex.value =
-    currentIndex.value === 0 ? props.images.length - 1 : currentIndex.value - 1
+  currentIndex.value = currentIndex.value === 0 ? props.images.length - 1 : currentIndex.value - 1
 }
 
 function next() {
-  currentIndex.value =
-    currentIndex.value === props.images.length - 1 ? 0 : currentIndex.value + 1
+  currentIndex.value = currentIndex.value === props.images.length - 1 ? 0 : currentIndex.value + 1
 }
 
 let touchStartX = 0
@@ -36,7 +40,10 @@ function onTouchStart(e: TouchEvent) {
 
 function onTouchEnd(e: TouchEvent) {
   const delta = touchStartX - (e.changedTouches[0]?.clientX ?? 0)
-  if (Math.abs(delta) > 50) { if (delta > 0) next(); else prev() }
+  if (Math.abs(delta) > 50) {
+    if (delta > 0) next()
+    else prev()
+  }
 }
 </script>
 
@@ -100,7 +107,9 @@ function onTouchEnd(e: TouchEvent) {
     </button>
 
     <!-- Counter strip -->
-    <div class="absolute bottom-0 left-0 right-0 z-10 bg-black/40 py-1.5 text-center text-sm text-white">
+    <div
+      class="absolute bottom-0 left-0 right-0 z-10 bg-black/40 py-1.5 text-center text-sm text-white"
+    >
       {{ currentIndex + 1 }}/{{ images.length }}
     </div>
   </div>

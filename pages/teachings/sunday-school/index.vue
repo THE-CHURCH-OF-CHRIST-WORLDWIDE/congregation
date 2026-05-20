@@ -5,10 +5,21 @@ const store = usePublicTeachingsStore()
 const activeFilter = ref('All')
 const searchQuery = ref('')
 
-const filterTags = ['All', 'Attendance', 'Court', 'Truth', 'Backsliders', 'Baptist', 'Sermons', 'Mission', 'Talent', 'Others']
+const filterTags = [
+  'All',
+  'Attendance',
+  'Court',
+  'Truth',
+  'Backsliders',
+  'Baptist',
+  'Sermons',
+  'Mission',
+  'Talent',
+  'Others',
+]
 
-watch(activeFilter, v => store.setFilter(v))
-watch(searchQuery, v => store.setSearch(v))
+watch(activeFilter, (v) => store.setFilter(v))
+watch(searchQuery, (v) => store.setSearch(v))
 
 const displayedCount = ref(9)
 const paginated = computed(() => store.filteredLessons.slice(0, displayedCount.value))
@@ -20,7 +31,8 @@ function loadMore() {
 
 useSeoMeta({
   title: 'Sunday School — Church of Christ',
-  description: 'In-depth Sunday School lessons from the Church of Christ. Explore topics on attendance, baptism, mission, soul-winning, church duties, and more.',
+  description:
+    'In-depth Sunday School lessons from the Church of Christ. Explore topics on attendance, baptism, mission, soul-winning, church duties, and more.',
   ogTitle: 'Sunday School — Church of Christ',
   ogDescription: 'In-depth Scripture study for every member of the congregation.',
   ogImage: '/images/heroImg.png',
@@ -48,11 +60,17 @@ useSeoMeta({
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <!-- Filter bar -->
       <div class="mb-3">
-        <TagFilterBar :tags="filterTags" :active="activeFilter" @update:active="activeFilter = $event" />
+        <TagFilterBar
+          :tags="filterTags"
+          :active="activeFilter"
+          @update:active="activeFilter = $event"
+        />
       </div>
 
       <!-- Search -->
-      <div class="mb-8 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm max-w-md">
+      <div
+        class="mb-8 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm max-w-md"
+      >
         <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
         <input
           v-model="searchQuery"

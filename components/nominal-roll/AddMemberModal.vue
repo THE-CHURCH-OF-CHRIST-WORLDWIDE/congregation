@@ -15,23 +15,41 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:modelValue': [val: boolean]
-  'save': [member: Omit<Member, 'id' | 'absenceCount'>]
+  save: [member: Omit<Member, 'id' | 'absenceCount'>]
 }>()
 
 // ─── Form state ───────────────────────────────────────────────────────────────
-const form = reactive<Omit<Member, 'id' | 'absenceCount'> & {
-  ecName: string; ecRelationship: string; ecPhone: string; ecAddress: string
-}>({
+const form = reactive<
+  Omit<Member, 'id' | 'absenceCount'> & {
+    ecName: string
+    ecRelationship: string
+    ecPhone: string
+    ecAddress: string
+  }
+>({
   // Personal
-  name: '', gender: 'Male', phone: '', email: '', dob: '',
-  status: 'Active', maritalStatus: '', dateOfBaptism: '', dateJoined: '',
+  name: '',
+  gender: 'Male',
+  phone: '',
+  email: '',
+  dob: '',
+  status: 'Active',
+  maritalStatus: '',
+  dateOfBaptism: '',
+  dateJoined: '',
   occupation: '',
   // Place of origin
-  country: '', state: '', localGovernment: '', village: '',
+  country: '',
+  state: '',
+  localGovernment: '',
+  village: '',
   // Residential
   address: '',
   // Emergency contact (flat)
-  ecName: '', ecRelationship: '', ecPhone: '', ecAddress: '',
+  ecName: '',
+  ecRelationship: '',
+  ecPhone: '',
+  ecAddress: '',
 })
 
 const errors = reactive({ name: '', email: '', phone: '' })
@@ -69,16 +87,31 @@ function save() {
 
   const emergencyContact: EmergencyContact | undefined =
     form.ecName || form.ecPhone
-      ? { name: form.ecName, relationship: form.ecRelationship, phone: form.ecPhone, address: form.ecAddress }
+      ? {
+          name: form.ecName,
+          relationship: form.ecRelationship,
+          phone: form.ecPhone,
+          address: form.ecAddress,
+        }
       : undefined
 
   emit('save', {
-    name: form.name, gender: form.gender, phone: form.phone, email: form.email,
-    dob: form.dob, status: form.status, maritalStatus: form.maritalStatus,
-    dateOfBaptism: form.dateOfBaptism, dateJoined: form.dateJoined,
-    occupation: form.occupation, country: form.country, state: form.state,
-    localGovernment: form.localGovernment, village: form.village,
-    address: form.address, emergencyContact,
+    name: form.name,
+    gender: form.gender,
+    phone: form.phone,
+    email: form.email,
+    dob: form.dob,
+    status: form.status,
+    maritalStatus: form.maritalStatus,
+    dateOfBaptism: form.dateOfBaptism,
+    dateJoined: form.dateJoined,
+    occupation: form.occupation,
+    country: form.country,
+    state: form.state,
+    localGovernment: form.localGovernment,
+    village: form.village,
+    address: form.address,
+    emergencyContact,
   })
   close()
 }
@@ -91,27 +124,45 @@ function close() {
 
 function reset() {
   Object.assign(form, {
-    name: '', gender: 'Male', phone: '', email: '', dob: '',
-    status: 'Active', maritalStatus: '', dateOfBaptism: '', dateJoined: '',
-    occupation: '', country: '', state: '', localGovernment: '', village: '',
-    address: '', ecName: '', ecRelationship: '', ecPhone: '', ecAddress: '',
+    name: '',
+    gender: 'Male',
+    phone: '',
+    email: '',
+    dob: '',
+    status: 'Active',
+    maritalStatus: '',
+    dateOfBaptism: '',
+    dateJoined: '',
+    occupation: '',
+    country: '',
+    state: '',
+    localGovernment: '',
+    village: '',
+    address: '',
+    ecName: '',
+    ecRelationship: '',
+    ecPhone: '',
+    ecAddress: '',
   })
   Object.assign(errors, { name: '', email: '', phone: '' })
 }
 
 // Reset when closed externally
-watch(() => props.modelValue, (v) => { if (!v) setTimeout(reset, 300) })
+watch(
+  () => props.modelValue,
+  (v) => {
+    if (!v) setTimeout(reset, 300)
+  }
+)
 </script>
 
 <template>
-  <Modal :model-value="modelValue" :title="title" size="xl" @update:model-value="close" >
+  <Modal :model-value="modelValue" :title="title" size="xl" @update:model-value="close">
     <div class="flex flex-col gap-6">
-
       <!-- ── Personal Information ──────────────────────────────────────────── -->
       <section>
         <h3 class="text-sm font-semibold text-gray-800 mb-4">Personal Information</h3>
         <div class="space-y-4">
-
           <!-- Name | Email -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <EditField label="Full Name *">
@@ -157,13 +208,17 @@ watch(() => props.modelValue, (v) => { if (!v) setTimeout(reset, 300) })
             </EditField>
             <EditField label="Gender" class="col-span-1">
               <select v-model="form.gender">
-                <option v-for="o in genderOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                <option v-for="o in genderOptions" :key="o.value" :value="o.value">
+                  {{ o.label }}
+                </option>
               </select>
             </EditField>
             <EditField label="Marital Status" class="col-span-1">
               <select v-model="form.maritalStatus">
                 <option value="">— Select —</option>
-                <option v-for="o in maritalOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                <option v-for="o in maritalOptions" :key="o.value" :value="o.value">
+                  {{ o.label }}
+                </option>
               </select>
             </EditField>
           </div>
@@ -172,18 +227,21 @@ watch(() => props.modelValue, (v) => { if (!v) setTimeout(reset, 300) })
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <EditField label="Date of Birth">
               <input v-model="form.dob" type="date" />
-              <p v-if="youthMode" class="text-xs text-gray-400 mt-1">Must be 13–35 yrs to appear in Youth</p>
+              <p v-if="youthMode" class="text-xs text-gray-400 mt-1">
+                Must be 13–35 yrs to appear in Youth
+              </p>
             </EditField>
             <EditField label="Member Status">
               <select v-model="form.status">
-                <option v-for="o in statusOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                <option v-for="o in statusOptions" :key="o.value" :value="o.value">
+                  {{ o.label }}
+                </option>
               </select>
             </EditField>
             <EditField label="Occupation">
               <input v-model="form.occupation" type="text" placeholder="e.g. Teacher" />
             </EditField>
           </div>
-
         </div>
       </section>
 
@@ -221,7 +279,11 @@ watch(() => props.modelValue, (v) => { if (!v) setTimeout(reset, 300) })
             <input v-model="form.state" type="text" placeholder="Akwa Ibom State" />
           </EditField>
           <EditField label="Full Address" class="sm:col-span-2">
-            <input v-model="form.address" type="text" placeholder="No. 8 Convent Road, Ikot Ekpene" />
+            <input
+              v-model="form.address"
+              type="text"
+              placeholder="No. 8 Convent Road, Ikot Ekpene"
+            />
           </EditField>
         </div>
       </section>
@@ -230,7 +292,9 @@ watch(() => props.modelValue, (v) => { if (!v) setTimeout(reset, 300) })
 
       <!-- ── Emergency Contact ─────────────────────────────────────────────── -->
       <section>
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">Emergency Contact <span class="text-gray-400 font-normal text-xs">(optional)</span></h3>
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">
+          Emergency Contact <span class="text-gray-400 font-normal text-xs">(optional)</span>
+        </h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <EditField label="Name">
             <input v-model="form.ecName" type="text" placeholder="Brother John Adebayo" />
@@ -246,7 +310,6 @@ watch(() => props.modelValue, (v) => { if (!v) setTimeout(reset, 300) })
           </EditField>
         </div>
       </section>
-
     </div>
 
     <template #footer>

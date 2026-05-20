@@ -55,7 +55,14 @@ function seedCollections(): FinanceCollection[] {
   return entries
 }
 
-const EXPENSE_CATEGORIES: ExpenseCategory[] = ['Maintenance', 'Utilities', 'Welfare', 'Outreach', 'Stationery', 'Other']
+const EXPENSE_CATEGORIES: ExpenseCategory[] = [
+  'Maintenance',
+  'Utilities',
+  'Welfare',
+  'Outreach',
+  'Stationery',
+  'Other',
+]
 const EXPENSE_DESCS: Record<ExpenseCategory, string[]> = {
   Maintenance: ['Building repairs', 'Generator service', 'Painting', 'Plumbing'],
   Utilities: ['Electricity bill', 'Water bill', 'Internet subscription'],

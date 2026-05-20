@@ -39,7 +39,10 @@ const filterOptions = [
       </div>
       <div class="flex gap-2 flex-shrink-0">
         <div class="relative">
-          <Icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base" />
+          <Icon
+            icon="mdi:magnify"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+          />
           <input
             v-model="teachingsStore.searchQuery"
             type="search"
@@ -58,7 +61,10 @@ const filterOptions = [
     </div>
 
     <!-- Grid -->
-    <div v-if="teachingsStore.filteredSermons.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div
+      v-if="teachingsStore.filteredSermons.length"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+    >
       <SermonCard
         v-for="sermon in teachingsStore.filteredSermons"
         :key="sermon.id"
