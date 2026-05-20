@@ -161,14 +161,7 @@ useSeoMeta({
               <div class="mt-1 flex items-center gap-3 text-sm text-gray-500">
                 <span class="flex items-center gap-1">
                   <Icon icon="heroicons:calendar" class="h-4 w-4" />
-                  {{
-                    new Date().toLocaleDateString('en-GB', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  }}
+                  {{ formatDate(new Date(), 'full') }}
                 </span>
               </div>
             </div>

@@ -24,14 +24,6 @@ function getCategoryColor(cat: string) {
   return categoryColors[cat] ?? 'bg-gray-100 text-gray-700'
 }
 
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
 function deleteSermon(id: string) {
   teachingsStore.deleteSermon(id)
   showMenu.value = false

@@ -140,11 +140,7 @@ function fmt(n: number) {
 }
 
 function fmtDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
+  return formatDate(d, 'short')
 }
 
 // ─── Export modal ─────────────────────────────────────────────────────────────

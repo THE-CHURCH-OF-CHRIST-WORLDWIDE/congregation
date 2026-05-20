@@ -129,8 +129,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
       const total = recs.length
       const rate = total ? Math.round((present / total) * 100) : 0
 
-      // Label: "Jan 5" format
-      const label = weekStart.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      const label = formatDate(weekStart, 'dayMonth')
       result.push({ week: startStr, label, present, total, rate })
     }
 

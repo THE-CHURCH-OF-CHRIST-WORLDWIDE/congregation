@@ -18,6 +18,7 @@ An open-source **Church Management System (CMS)** built with Nuxt 4, Vue 3, Type
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
+- [Date Formatting](#date-formatting)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [License](#license)
@@ -81,7 +82,7 @@ Congregation is a single-page application (SPA) with two distinct areas:
 | State      | Pinia + persistedstate              | ^3.0.3   |
 | Icons      | Iconify for Vue                     | ^5.0.0   |
 | Charts     | Chart.js + vue-chartjs              | ^4.5.1   |
-| Dates      | Moment.js                           | ^2.30.1  |
+| Dates      | date-fns (via `utils/date.ts`)      | ^4.2.1   |
 | Backend    | Firebase (Auth, Firestore, Storage) | ^12.10.0 |
 | Media      | Cloudinary (unsigned uploads)       | —        |
 | Routing    | Vue Router                          | ^4.6.3   |
@@ -267,6 +268,9 @@ congregation/
 │   ├── events.ts                     # Events page types (UpcomingEvent, PastEvent, Speaker)
 │   └── iconify.d.ts                  # Global <Icon> component declaration
 │
+├── utils/
+│   └── date.ts                       # Date formatting helpers (date-fns wrapper)
+│
 ├── app.vue                           # Root — initialises auth + seeds mock data
 ├── nuxt.config.ts                    # Nuxt configuration
 ├── tsconfig.json
@@ -363,6 +367,67 @@ The integration lives in two places:
 
 - [`composables/useCloudinaryUpload.ts`](composables/useCloudinaryUpload.ts) — handles the upload, exposes `uploading` / `progress` / `error` reactive state, and returns the `secure_url`.
 - [`components/ui/ImageUpload.vue`](components/ui/ImageUpload.vue) — drag-and-drop image picker with live progress, replace/remove overlay, and `shape="circle"` / `compact` variants. Drop it anywhere with `v-model` bound to a URL string.
+
+---
+
+## Date Formatting
+
+All date display in the app goes through [`utils/date.ts`](utils/date.ts), a thin wrapper over [`date-fns`](https://date-fns.org/). The wrapper is auto-imported by Nuxt, so the helpers are available anywhere — components, pages, stores, composables — without an `import` statement.
+
+**Why a wrapper?**
+
+- Single source of truth for formatting patterns — changing `"d MMM yyyy"` to `"d MMM, yyyy"` is a one-line change in `utils/date.ts`, not a grep-and-replace across 8 files.
+- Inputs are forgiving (`Date | string | number | null | undefined`) and invalid input returns `''` instead of `"Invalid Date"`, so the UI never blows up on missing data.
+- ISO strings (`"2026-03-05"`) are parsed without timezone shift via `parseISO`.
+- The underlying library can be swapped later (e.g. to Day.js or Luxon) without touching call sites.
+
+### API
+
+```ts
+formatDate(input, style?)        // Format a date
+formatRelative(input)            // "2 days ago", "in 5 minutes"
+formatDateRange(start, end)      // "5 – 11 Mar 2026"
+toISODate(input)                 // "2026-03-05" (storage / <input type="date">)
+```
+
+### Styles
+
+`formatDate(input, style)` accepts the following styles (default: `'short'`):
+
+| Style       | Output                 | Use case                                |
+| ----------- | ---------------------- | --------------------------------------- |
+| `short`     | `5 Mar 2026`           | Compact display — sermons, finance rows |
+| `long`      | `5 March 2026`         | Formal — member profile fields          |
+| `full`      | `Friday, 5 March 2026` | Headline date — live stream banner      |
+| `numeric`   | `05/03/2026`           | Tight columns — dashboard widgets       |
+| `dayMonth`  | `5 Mar`                | No-year labels — attendance week ticks  |
+| `monthYear` | `March 2026`           | Page headings — attendance per service  |
+| `iso`       | `2026-03-05`           | Storage and `<input type="date">`       |
+
+### Examples
+
+```vue
+<template>
+  <p>Uploaded {{ formatDate(sermon.date, 'numeric') }}</p>
+  <p>Joined {{ formatDate(member.dateJoined, 'long') }}</p>
+  <p>{{ formatRelative(event.createdAt) }}</p>
+  <p>{{ formatDateRange(event.start, event.end) }}</p>
+</template>
+```
+
+```ts
+// stores/attendance.ts
+const label = formatDate(weekStart, 'dayMonth') // "5 Mar"
+```
+
+### Adding a new style
+
+Edit [`utils/date.ts`](utils/date.ts):
+
+1. Add the variant to the `DateStyle` union.
+2. Add the corresponding [date-fns format token](https://date-fns.org/docs/format) to the `PATTERNS` map.
+
+That's it — TypeScript will then offer the new style at every call site.
 
 ---
 

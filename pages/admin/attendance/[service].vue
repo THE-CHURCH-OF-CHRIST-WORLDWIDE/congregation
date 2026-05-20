@@ -10,7 +10,7 @@ const month = computed(() => String(route.query.month ?? '2025-12'))
 const monthLabel = computed(() => {
   const year = parseInt(month.value.substring(0, 4), 10)
   const mon = parseInt(month.value.substring(5, 7), 10)
-  return new Date(year, mon - 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+  return formatDate(new Date(year, mon - 1), 'monthYear')
 })
 
 const serviceLabel = computed(() =>
