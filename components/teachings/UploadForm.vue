@@ -53,6 +53,11 @@ function setThumbnail(file: File) {
   reader.readAsDataURL(file)
 }
 
+function clearThumbnail() {
+  thumbnailFile.value = null
+  thumbnailPreview.value = null
+}
+
 function onDocChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (file) {
@@ -205,10 +210,7 @@ async function submit() {
           <button
             class="absolute top-1 right-1 bg-white rounded-full p-0.5 text-gray-500 hover:text-red-500"
             aria-label="Remove thumbnail"
-            @click.stop="
-              thumbnailFile = null
-              thumbnailPreview = null
-            "
+            @click.stop="clearThumbnail"
           >
             <Icon icon="mdi:close-circle" />
           </button>
