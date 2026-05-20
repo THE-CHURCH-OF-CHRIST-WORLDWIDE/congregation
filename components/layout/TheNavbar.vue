@@ -6,6 +6,10 @@ const teachingsOpen = ref(false)
 const mobileOpen = ref(false)
 let teachingsTimer: ReturnType<typeof setTimeout> | null = null
 
+const scrolled = ref(false)
+function handleScroll() { scrolled.value = window.scrollY > 24 }
+onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
+
 function openTeachings() {
   if (teachingsTimer) clearTimeout(teachingsTimer)
   teachingsOpen.value = true
@@ -29,11 +33,17 @@ const teachingLinks = [
 
 onBeforeUnmount(() => {
   if (teachingsTimer) clearTimeout(teachingsTimer)
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 w-full border-b border-gray-100 bg-white shadow-sm">
+  <header
+    class="sticky top-0 z-50 w-full transition-[background-color,box-shadow,border-color] duration-300"
+    :class="scrolled
+      ? 'bg-white border-b border-gray-100 shadow-md'
+      : 'bg-white/90 backdrop-blur-md border-b border-transparent shadow-sm'"
+  >
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
 
       <!-- Logo: church seal -->
@@ -177,6 +187,14 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
         </li>
         <li>
           <NuxtLink
+            to="/gallery/sunday-service"
+            class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
+            active-class="text-blue-600"
+            aria-label="Gallery"
+          >Gallery</NuxtLink>
+        </li>
+        <li>
+          <NuxtLink
             to="/about-us"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             active-class="text-blue-600"
@@ -267,6 +285,14 @@ to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm
                 class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 @click="mobileOpen = false"
               >Events</NuxtLink>
+            </li>
+            <li>
+              <NuxtLink
+                to="/gallery/sunday-service"
+                active-class="text-blue-600 bg-blue-50"
+                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false"
+              >Gallery</NuxtLink>
             </li>
             <li>
               <NuxtLink

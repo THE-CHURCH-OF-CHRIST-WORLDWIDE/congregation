@@ -1,13 +1,15 @@
 <script setup lang="ts">
 const store = usePublicTeachingsStore()
 const featured = computed(() => store.sermons.slice(0, 3))
+
+const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section class="py-20">
+  <section ref="sectionRef" class="py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Header row -->
-      <div class="mb-10 flex items-end justify-between">
+      <div :class="['mb-10 flex items-end justify-between', 'reveal', isVisible && 'is-visible']">
         <SectionHeader title="Sermons & Teachings" subtitle="Biblical preaching for every season of life." />
         <NuxtLink
           to="/teachings/sermons"
@@ -21,17 +23,22 @@ const featured = computed(() => store.sermons.slice(0, 3))
 
       <!-- 3-column grid -->
       <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <ContentCard
-          v-for="sermon in featured"
+        <div
+          v-for="(sermon, i) in featured"
           :key="sermon.id"
-          :thumbnail="sermon.thumbnailSrc"
-          :tags="sermon.tags"
-          :title="sermon.title"
-          :author="sermon.preacher"
-          :date="sermon.date"
-          :slug="sermon.slug"
-          type="sermon"
-        />
+          :class="['reveal-scale', isVisible && 'is-visible']"
+          :style="{ transitionDelay: `${150 + i * 100}ms` }"
+        >
+          <ContentCard
+            :thumbnail="sermon.thumbnailSrc"
+            :tags="sermon.tags"
+            :title="sermon.title"
+            :author="sermon.preacher"
+            :date="sermon.date"
+            :slug="sermon.slug"
+            type="sermon"
+          />
+        </div>
       </div>
 
       <div class="mt-8 text-center sm:hidden">

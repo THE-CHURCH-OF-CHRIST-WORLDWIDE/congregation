@@ -21,19 +21,25 @@ function search() {
 }
 
 watch(query, search)
+
+const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section id="congregations" class="bg-[#F8F9FA] py-20">
+  <section ref="sectionRef" id="congregations" class="bg-[#F8F9FA] py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <SectionHeader
-        title="Find a Congregation Near You"
-        subtitle="Search for a Church of Christ congregation in your city or state."
-        centered
-      />
+      <div :class="['reveal', isVisible && 'is-visible']">
+        <SectionHeader
+          title="Find a Congregation Near You"
+          subtitle="Search for a Church of Christ congregation in your city or state."
+          centered
+        />
+      </div>
 
       <!-- Search bar -->
-      <div class="mx-auto mb-10 flex max-w-2xl items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+      <div
+        :class="['mx-auto mb-10 flex max-w-2xl items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm', 'reveal', 'delay-150', isVisible && 'is-visible']"
+      >
         <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
         <input
           v-model="query"
@@ -54,25 +60,28 @@ watch(query, search)
       <!-- Results grid -->
       <div v-if="results.length" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <div
-          v-for="cg in results"
+          v-for="(cg, i) in results"
           :key="cg.id"
-          class="rounded-xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3"
+          :class="['reveal-scale', isVisible && 'is-visible']"
+          :style="{ transitionDelay: `${200 + i * 60}ms` }"
         >
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1E3A5F]/10">
-            <Icon icon="heroicons:building-library" class="h-5 w-5 text-[#1E3A5F]" />
+          <div class="rounded-xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1E3A5F]/10">
+              <Icon icon="heroicons:building-library" class="h-5 w-5 text-[#1E3A5F]" />
+            </div>
+            <h3 class="font-semibold text-[#1E3A5F] text-sm leading-snug">{{ cg.name }}</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">{{ cg.address }}</p>
+            <div class="flex items-center gap-1.5 text-xs text-gray-400">
+              <Icon icon="heroicons:clock" class="h-3.5 w-3.5" />
+              {{ cg.serviceTime }}
+            </div>
+            <button
+              class="mt-auto w-full rounded-lg bg-[#1E3A5F] py-2 text-xs font-semibold text-white hover:bg-[#2563EB] transition-colors"
+              aria-label="Visit congregation"
+            >
+              Visit
+            </button>
           </div>
-          <h3 class="font-semibold text-[#1E3A5F] text-sm leading-snug">{{ cg.name }}</h3>
-          <p class="text-xs text-gray-500 leading-relaxed">{{ cg.address }}</p>
-          <div class="flex items-center gap-1.5 text-xs text-gray-400">
-            <Icon icon="heroicons:clock" class="h-3.5 w-3.5" />
-            {{ cg.serviceTime }}
-          </div>
-          <button
-            class="mt-auto w-full rounded-lg bg-[#1E3A5F] py-2 text-xs font-semibold text-white hover:bg-[#2563EB] transition-colors"
-            aria-label="Visit congregation"
-          >
-            Visit
-          </button>
         </div>
       </div>
 
