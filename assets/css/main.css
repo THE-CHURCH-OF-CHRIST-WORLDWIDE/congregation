@@ -84,3 +84,84 @@ input[type="checkbox"].attendance-check {
   background: #2563eb;
   transition: width 0.3s ease;
 }
+
+/* ── Scroll Reveal ────────────────────────────────────────────────────────── */
+/* Base hidden states — opacity + transform only (GPU-composited, no layout) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-36px);
+}
+.reveal-right {
+  opacity: 0;
+  transform: translateX(36px);
+}
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.93);
+}
+
+/* Shared smooth easing (spring-like) */
+.reveal,
+.reveal-left,
+.reveal-right {
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale {
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Visible state: reset both properties */
+.reveal.is-visible,
+.reveal-left.is-visible,
+.reveal-right.is-visible,
+.reveal-scale.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger delay utilities (applied alongside reveal classes) */
+.delay-75  { transition-delay: 75ms; }
+.delay-100 { transition-delay: 100ms; }
+.delay-150 { transition-delay: 150ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+
+/* ── Hero entrance animation ─────────────────────────────────────────────── */
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-animate {
+  animation: hero-fade-up 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Respect user's motion preference ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-animate {
+    animation: none;
+  }
+}
