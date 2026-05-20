@@ -19,6 +19,94 @@ export interface GalleryPhoto {
   alt: string
 }
 
+export interface LiveWorshipSettings {
+  heading: string
+  subheading: string
+  nextTitle: string
+  nextSchedule: string
+  moderatorLabel: string
+  recentHeading: string
+  watchCtaLabel: string
+  reminderCtaLabel: string
+}
+
+export interface AboutHeroSettings {
+  scriptureRef: string
+  title: string
+  subtitle: string
+  backgroundImage: string
+}
+
+export interface HistoryScheduleRow {
+  label: string
+  time: string
+}
+
+export interface FounderEntry {
+  id: string
+  name: string
+}
+
+export interface AboutHistorySettings {
+  eyebrow: string
+  heading: string
+  openingParagraph: string
+  foundersHeading: string
+  founders: FounderEntry[]
+  growthParagraph: string
+  scheduleHeading: string
+  schedule: HistoryScheduleRow[]
+  closingParagraph: string
+  signatureName: string
+  signatureRole: string
+  cornerImages: string[]
+}
+
+export interface WorshipActivityItem {
+  id: string
+  name: string
+  icon: string
+  scripture: string
+}
+
+export interface WorshipActivitiesSettings {
+  eyebrow: string
+  heading: string
+  subtitle: string
+  items: WorshipActivityItem[]
+}
+
+export interface ActivityCalendarRow {
+  id: string
+  day: string
+  activity: string
+  time: string
+}
+
+export interface ActivityCalendarSettings {
+  eyebrow: string
+  heading: string
+  subtitle: string
+  rows: ActivityCalendarRow[]
+}
+
+export interface WorshipServiceDetail {
+  id: string
+  icon: string
+  primary: string
+  secondary: string
+}
+
+export interface WorshipThisSundaySettings {
+  eyebrow: string
+  heading: string
+  cardChurchName: string
+  cardChurchSubtitle: string
+  details: WorshipServiceDetail[]
+  directionsUrl: string
+  mapAddress: string
+}
+
 export interface ChurchSettings {
   // ── General ──────────────────────────────────────────────────────────────
   name: string
@@ -28,6 +116,12 @@ export interface ChurchSettings {
 
   // ── Hero (Landing Page) ───────────────────────────────────────────────────
   heroImageUrl: string
+  heroEyebrow: string
+  heroTagline: string
+  heroPrimaryCtaLabel: string
+  heroPrimaryCtaHref: string
+  heroSecondaryCtaLabel: string
+  heroSecondaryCtaHref: string
   activities: Activity[]
 
   // ── Minister Welcome ──────────────────────────────────────────────────────
@@ -35,10 +129,30 @@ export interface ChurchSettings {
   ministerTitle: string
   ministerPhoto: string
   congregationPhotos: string[]
+  ministerLetterHeading: string
+  ministerLetterGreeting: string
   ministerLetterP1: string
   ministerLetterP2: string
   ministerLetterP3: string
   ministerLetterP4: string
+
+  // ── Live Worship Teaser ───────────────────────────────────────────────────
+  liveWorship: LiveWorshipSettings
+
+  // ── About Page: Hero ──────────────────────────────────────────────────────
+  aboutHero: AboutHeroSettings
+
+  // ── About Page: Church History ────────────────────────────────────────────
+  aboutHistory: AboutHistorySettings
+
+  // ── About Page: Worship Activities ────────────────────────────────────────
+  worshipActivities: WorshipActivitiesSettings
+
+  // ── About Page: Activity Calendar ─────────────────────────────────────────
+  activityCalendar: ActivityCalendarSettings
+
+  // ── About Page: Worship This Sunday ───────────────────────────────────────
+  worshipThisSunday: WorshipThisSundaySettings
 
   // ── Leaders ───────────────────────────────────────────────────────────────
   leaders: Leader[]

@@ -1,12 +1,21 @@
+<script setup lang="ts">
+const s = useChurchSettingsStore()
+onMounted(() => s.load())
+const cfg = computed(() => s.settings.worshipThisSunday)
+</script>
+
 <template>
   <section class="bg-white py-16">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Heading -->
       <div class="mb-10 text-center">
-        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Join Us</p>
-        <h2 class="mt-2 font-serif text-3xl font-bold text-gray-900">
-          Worship With Us This Sunday
-        </h2>
+        <p
+          v-if="cfg.eyebrow"
+          class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400"
+        >
+          {{ cfg.eyebrow }}
+        </p>
+        <h2 class="mt-2 font-serif text-3xl font-bold text-gray-900">{{ cfg.heading }}</h2>
       </div>
 
       <!-- Two-column layout -->
@@ -58,8 +67,8 @@
               </svg>
             </div>
             <div>
-              <p class="font-bold text-gray-900">Church of Christ</p>
-              <p class="text-sm text-gray-500">7b Esa Atan Extension</p>
+              <p class="font-bold text-gray-900">{{ cfg.cardChurchName }}</p>
+              <p class="text-sm text-gray-500">{{ cfg.cardChurchSubtitle }}</p>
             </div>
           </div>
 
@@ -67,40 +76,19 @@
 
           <!-- Service details -->
           <ul class="space-y-4">
-            <li class="flex items-start gap-3">
-              <Icon icon="mdi:calendar-outline" class="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
+            <li v-for="detail in cfg.details" :key="detail.id" class="flex items-start gap-3">
+              <Icon :icon="detail.icon" class="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
               <div>
-                <p class="text-sm font-medium text-gray-900">Every Sunday Morning</p>
-                <p class="text-xs text-gray-500">Weekly worship service</p>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <Icon icon="mdi:clock-outline" class="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
-              <div>
-                <p class="text-sm font-medium text-gray-900">9:00 AM – 12:00 PM</p>
-                <p class="text-xs text-gray-500">Bible class starts at 7:30 AM</p>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <Icon icon="mdi:map-marker-outline" class="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
-              <div>
-                <p class="text-sm font-medium text-gray-900">7b Esa Atan, Ext. Ikot Ekpene</p>
-                <p class="text-xs text-gray-500">Akwa Ibom State, Nigeria</p>
-              </div>
-            </li>
-            <li class="flex items-start gap-3">
-              <Icon icon="mdi:phone-outline" class="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
-              <div>
-                <p class="text-sm font-medium text-gray-900">+234 803 000 0000</p>
-                <p class="text-xs text-gray-500">Mon – Sat, 8:00 AM – 6:00 PM</p>
+                <p class="text-sm font-medium text-gray-900">{{ detail.primary }}</p>
+                <p class="text-xs text-gray-500">{{ detail.secondary }}</p>
               </div>
             </li>
           </ul>
 
           <!-- CTA -->
-          <div class="mt-6 pt-5 border-t border-gray-100">
+          <div v-if="cfg.directionsUrl" class="mt-6 pt-5 border-t border-gray-100">
             <a
-              href="https://maps.google.com/maps?q=7b+Esa+Atan,+Ikot+Ekpene,+Akwa+Ibom,+Nigeria"
+              :href="cfg.directionsUrl"
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
@@ -113,14 +101,14 @@
 
         <!-- Right: Map embed -->
         <div class="flex-1">
-          <MapEmbed address="7b Esa Atan, Ikot Ekpene, Akwa Ibom State, Nigeria" height="100%" />
+          <MapEmbed :address="cfg.mapAddress" height="100%" />
           <!-- Fallback visible if iframe is blocked -->
           <noscript>
             <div
               class="flex h-[280px] flex-col items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-400"
             >
               <Icon icon="mdi:map-marker-outline" class="mb-2 h-10 w-10" />
-              <p class="text-sm">7b Esa Atan, Ikot Ekpene, Akwa Ibom State</p>
+              <p class="text-sm">{{ cfg.mapAddress }}</p>
             </div>
           </noscript>
         </div>

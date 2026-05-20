@@ -1,37 +1,7 @@
 <script setup lang="ts">
-interface Activity {
-  name: string
-  icon: string
-  description: string
-}
-
-const activities: Activity[] = [
-  {
-    name: 'Prayer',
-    icon: 'mdi:hands-pray',
-    description: '1 Thessalonians 5:17',
-  },
-  {
-    name: 'Singing',
-    icon: 'mdi:music',
-    description: 'Ephesians 5:19',
-  },
-  {
-    name: 'Teaching',
-    icon: 'mdi:book-open-variant',
-    description: 'Acts 2:42',
-  },
-  {
-    name: 'Giving',
-    icon: 'mdi:hand-heart',
-    description: '1 Corinthians 16:2',
-  },
-  {
-    name: 'Communion',
-    icon: 'mdi:cup-outline',
-    description: 'Acts 20:7',
-  },
-]
+const s = useChurchSettingsStore()
+onMounted(() => s.load())
+const cfg = computed(() => s.settings.worshipActivities)
 </script>
 
 <template>
@@ -39,20 +9,23 @@ const activities: Activity[] = [
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="mb-12 text-center">
-        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
-          Form of Worship
+        <p
+          v-if="cfg.eyebrow"
+          class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300"
+        >
+          {{ cfg.eyebrow }}
         </p>
-        <h2 class="mt-2 font-serif text-3xl font-bold text-white">Our Worship Activities</h2>
-        <p class="mx-auto mt-3 max-w-xl text-sm text-white/60">
-          Our worship follows the New Testament pattern — simple, scriptural, and sincere.
+        <h2 class="mt-2 font-serif text-3xl font-bold text-white">{{ cfg.heading }}</h2>
+        <p v-if="cfg.subtitle" class="mx-auto mt-3 max-w-xl text-sm text-white/60">
+          {{ cfg.subtitle }}
         </p>
       </div>
 
       <!-- Cards row -->
       <div class="flex flex-wrap justify-center gap-4">
         <div
-          v-for="activity in activities"
-          :key="activity.name"
+          v-for="activity in cfg.items"
+          :key="activity.id"
           class="flex min-w-[130px] flex-1 basis-[130px] flex-col items-center rounded-xl bg-white px-5 py-7 shadow-sm transition-shadow hover:shadow-md sm:basis-[150px]"
         >
           <!-- Icon -->
@@ -64,7 +37,7 @@ const activities: Activity[] = [
           <span class="text-[14px] font-semibold text-gray-900">{{ activity.name }}</span>
 
           <!-- Scripture ref -->
-          <span class="mt-1 text-[11px] text-gray-400">{{ activity.description }}</span>
+          <span class="mt-1 text-[11px] text-gray-400">{{ activity.scripture }}</span>
         </div>
       </div>
     </div>
