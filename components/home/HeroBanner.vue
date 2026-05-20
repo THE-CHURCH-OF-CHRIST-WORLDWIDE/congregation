@@ -19,6 +19,12 @@ const addr = computed(() => props.address ?? settingsStore.settings.address)
 const image = computed(
   () => props.buildingImage ?? (settingsStore.settings.heroImageUrl || '/images/heroImg.png')
 )
+const eyebrow = computed(() => settingsStore.settings.heroEyebrow)
+const tagline = computed(() => settingsStore.settings.heroTagline)
+const primaryCtaLabel = computed(() => settingsStore.settings.heroPrimaryCtaLabel)
+const primaryCtaHref = computed(() => settingsStore.settings.heroPrimaryCtaHref)
+const secondaryCtaLabel = computed(() => settingsStore.settings.heroSecondaryCtaLabel)
+const secondaryCtaHref = computed(() => settingsStore.settings.heroSecondaryCtaHref)
 </script>
 
 <template>
@@ -43,7 +49,7 @@ const image = computed(
         class="hero-animate mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-white/70"
         style="animation-delay: 0ms"
       >
-        Welcome to
+        {{ eyebrow }}
       </p>
       <h1
         class="hero-animate font-serif text-5xl font-bold leading-tight drop-shadow-lg md:text-7xl"
@@ -55,10 +61,11 @@ const image = computed(
         {{ addr }}
       </p>
       <p
+        v-if="tagline"
         class="hero-animate mt-3 text-base italic text-white/60 md:text-lg"
         style="animation-delay: 360ms"
       >
-        "Believe God. Read Silence. Above Every State."
+        {{ tagline }}
       </p>
 
       <div
@@ -66,20 +73,22 @@ const image = computed(
         style="animation-delay: 500ms"
       >
         <a
-          href="#welcome"
+          v-if="primaryCtaLabel"
+          :href="primaryCtaHref || '#'"
           class="inline-flex items-center gap-2 rounded-full bg-[#2563EB] px-8 py-3.5 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 transition-colors"
-          aria-label="Visit Sunday Worship"
+          :aria-label="primaryCtaLabel"
         >
           <Icon icon="heroicons:sun" class="h-5 w-5" />
-          Visit Sunday Worship
+          {{ primaryCtaLabel }}
         </a>
         <a
-          href="#events"
+          v-if="secondaryCtaLabel"
+          :href="secondaryCtaHref || '#'"
           class="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
-          aria-label="View service times"
+          :aria-label="secondaryCtaLabel"
         >
           <Icon icon="heroicons:clock" class="h-5 w-5" />
-          Service Times
+          {{ secondaryCtaLabel }}
         </a>
       </div>
     </div>

@@ -60,11 +60,14 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           </svg>
         </div>
 
-        <h2 class="letter-heading">A Welcome Letter From Our Minister</h2>
+        <h2 class="letter-heading">{{ cfg.ministerLetterHeading }}</h2>
 
         <div class="letter-body">
           <p class="first-paragraph">
-            <span aria-hidden="true" class="drop-cap">D</span>ear Friend,<br /><br />
+            <span aria-hidden="true" class="drop-cap">{{
+              (cfg.ministerLetterGreeting || 'D').charAt(0)
+            }}</span
+            >{{ (cfg.ministerLetterGreeting || 'Dear Friend,').slice(1) }}<br /><br />
             {{ cfg.ministerLetterP1 }}
           </p>
           <p>{{ cfg.ministerLetterP2 }}</p>

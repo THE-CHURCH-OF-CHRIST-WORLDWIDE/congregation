@@ -1,9 +1,12 @@
 <script setup lang="ts">
 const liveStore = usePublicLiveStreamStore()
+const settingsStore = useChurchSettingsStore()
+onMounted(() => settingsStore.load())
 
 const isLive = computed(() => liveStore.isLive && !!liveStore.currentStream)
 const stream = computed(() => liveStore.currentStream)
 const recentStreams = computed(() => liveStore.recordedStreams.slice(0, 4))
+const lw = computed(() => settingsStore.settings.liveWorship)
 
 const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
@@ -13,11 +16,10 @@ const { el: sectionRef, isVisible } = useScrollReveal()
     <div class="teaser-container">
       <!-- Heading -->
       <h2 :class="['teaser-heading', 'reveal', isVisible && 'is-visible']">
-        Join Our Live Worship
+        {{ lw.heading }}
       </h2>
       <p :class="['teaser-sub', 'reveal', 'delay-100', isVisible && 'is-visible']">
-        Join us for live sessions to explore the teachings of God, or catch up by watching
-        recordings of previous sessions.
+        {{ lw.subheading }}
       </p>
 
       <!-- Two-column grid -->
@@ -147,12 +149,12 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           <!-- White info bar -->
           <div class="live-info-bar">
             <div v-if="isLive">
-              <p class="live-stream-name">Sunday Morning Worship</p>
-              <p class="live-moderator">Moderator: Minister Friday Asuquo</p>
+              <p class="live-stream-name">{{ lw.nextTitle }}</p>
+              <p class="live-moderator">{{ lw.moderatorLabel }}</p>
             </div>
             <div v-else>
-              <p class="live-stream-name">Next: Sunday Morning Worship</p>
-              <p class="live-moderator">Every Sunday · 9:00 AM</p>
+              <p class="live-stream-name">Next: {{ lw.nextTitle }}</p>
+              <p class="live-moderator">{{ lw.nextSchedule }}</p>
             </div>
 
             <NuxtLink
@@ -161,22 +163,22 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               class="watch-btn"
               :aria-label="`Watch ${stream?.title ?? 'live stream'} live now`"
             >
-              Watch live Now
+              {{ lw.watchCtaLabel }}
             </NuxtLink>
             <NuxtLink
               v-else
               to="/live-streams"
               class="reminder-btn"
-              aria-label="Set reminder for Sunday Morning Worship"
+              :aria-label="`Set reminder for ${lw.nextTitle}`"
             >
-              Set Reminder
+              {{ lw.reminderCtaLabel }}
             </NuxtLink>
           </div>
         </div>
 
         <!-- ── Right: recent streams ─────────────────────────────────── -->
         <div :class="['reveal-right', 'delay-300', isVisible && 'is-visible']">
-          <h3 class="recent-heading">Recent Streams</h3>
+          <h3 class="recent-heading">{{ lw.recentHeading }}</h3>
 
           <NuxtLink
             v-for="(rs, i) in recentStreams"
