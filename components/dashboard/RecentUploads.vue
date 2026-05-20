@@ -2,14 +2,6 @@
 const teachingsStore = useTeachingsStore()
 
 const sermons = computed(() => teachingsStore.recentSermons)
-
-function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-}
 </script>
 
 <template>
@@ -29,7 +21,7 @@ function formatDate(d: string) {
           </p>
           <div class="flex items-center gap-1 mt-1 text-gray-400">
             <Icon icon="mdi:calendar-outline" class="text-xs flex-shrink-0" />
-            <span class="text-xs">{{ formatDate(sermon.date) }}</span>
+            <span class="text-xs">{{ formatDate(sermon.date, 'numeric') }}</span>
           </div>
         </div>
       </div>

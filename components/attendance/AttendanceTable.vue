@@ -57,10 +57,6 @@ function getMonthlySummary(memberId: string) {
   return attendanceStore.memberMonthlySummary(memberId, props.month, props.serviceType)
 }
 
-function formatDate(d: string) {
-  return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
-}
-
 function save() {
   attendanceStore.saveChanges()
   hasChanged.value = false
@@ -147,7 +143,7 @@ function doExport() {
                 scope="col"
                 class="text-center px-2 py-2.5 text-xs font-medium text-gray-500 w-16"
               >
-                {{ formatDate(date) }}
+                {{ formatDate(date, 'dayMonth') }}
               </th>
               <th scope="col" class="w-8 px-2 py-2.5"></th>
             </tr>

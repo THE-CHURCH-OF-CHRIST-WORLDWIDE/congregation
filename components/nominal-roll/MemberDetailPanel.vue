@@ -126,8 +126,7 @@ function onDelete() {
 }
 
 function fmt(d?: string) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
+  return formatDate(d, 'long') || '—'
 }
 
 const statusConfig = {
