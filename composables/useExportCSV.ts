@@ -6,11 +6,13 @@ export function useExportCSV() {
     if (!firstRow) return
     const headers = Object.keys(firstRow)
     const rows = data.map((row) =>
-      headers.map((h) => {
-        const val = row[h]
-        const str = val === null || val === undefined ? '' : String(val)
-        return `"${str.replace(/"/g, '""')}"`
-      }).join(',')
+      headers
+        .map((h) => {
+          const val = row[h]
+          const str = val === null || val === undefined ? '' : String(val)
+          return `"${str.replace(/"/g, '""')}"`
+        })
+        .join(',')
     )
 
     const csv = [headers.join(','), ...rows].join('\n')

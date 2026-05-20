@@ -25,15 +25,26 @@ function getCategoryColor(cat: string) {
 }
 
 function formatDate(d: string) {
-  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  return new Date(d).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 </script>
 
 <template>
   <Card class="flex flex-col gap-3">
     <!-- Thumbnail -->
-    <div class="w-full h-36 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 overflow-hidden flex items-center justify-center">
-      <img v-if="sermon.thumbnail" :src="sermon.thumbnail" :alt="sermon.topic" class="w-full h-full object-cover" />
+    <div
+      class="w-full h-36 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 overflow-hidden flex items-center justify-center"
+    >
+      <img
+        v-if="sermon.thumbnail"
+        :src="sermon.thumbnail"
+        :alt="sermon.topic"
+        class="w-full h-full object-cover"
+      />
       <Icon v-else icon="mdi:play-circle-outline" class="text-white text-5xl opacity-70" />
     </div>
 
@@ -50,8 +61,12 @@ function formatDate(d: string) {
 
     <!-- Content -->
     <div class="flex-1">
-      <h4 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">{{ sermon.topic }}</h4>
-      <p class="text-xs text-gray-500 mt-1">{{ sermon.preacher }} · {{ formatDate(sermon.date) }}</p>
+      <h4 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">
+        {{ sermon.topic }}
+      </h4>
+      <p class="text-xs text-gray-500 mt-1">
+        {{ sermon.preacher }} · {{ formatDate(sermon.date) }}
+      </p>
     </div>
 
     <div class="flex items-center justify-between">
@@ -72,12 +87,17 @@ function formatDate(d: string) {
           class="absolute right-0 bottom-8 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-28"
           @click.stop
         >
-          <button class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+          <button
+            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+          >
             <Icon icon="mdi:pencil-outline" />Edit
           </button>
           <button
             class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-            @click="teachingsStore.deleteSermon(sermon.id); showMenu = false"
+            @click="
+              teachingsStore.deleteSermon(sermon.id)
+              showMenu = false
+            "
           >
             <Icon icon="mdi:trash-can-outline" />Delete
           </button>

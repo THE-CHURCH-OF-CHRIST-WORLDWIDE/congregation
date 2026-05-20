@@ -1,5 +1,8 @@
 <script setup lang="ts">
-interface Tab { label: string; value: string }
+interface Tab {
+  label: string
+  value: string
+}
 interface Props {
   modelValue: string
   tabs: Tab[]

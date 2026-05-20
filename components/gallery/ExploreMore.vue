@@ -1,8 +1,12 @@
 <script setup lang="ts">
 const categories = [
-  { label: 'Gospel Meeting', slug: 'gospel-meeting', src: 'https://picsum.photos/seed/gm1/600/300' },
-  { label: 'Bible Class',    slug: 'bible-class',    src: 'https://picsum.photos/seed/bc1/600/300' },
-  { label: 'Evangelism',     slug: 'evangelism',     src: 'https://picsum.photos/seed/ev1/600/300' },
+  {
+    label: 'Gospel Meeting',
+    slug: 'gospel-meeting',
+    src: 'https://picsum.photos/seed/gm1/600/300',
+  },
+  { label: 'Bible Class', slug: 'bible-class', src: 'https://picsum.photos/seed/bc1/600/300' },
+  { label: 'Evangelism', slug: 'evangelism', src: 'https://picsum.photos/seed/ev1/600/300' },
 ]
 </script>
 
@@ -18,7 +22,12 @@ const categories = [
         class="explore-card group"
         :aria-label="`${cat.label} gallery`"
       >
-        <img :src="cat.src" :alt="cat.label" class="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+        <img
+          :src="cat.src"
+          :alt="cat.label"
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
         <div class="explore-overlay group-hover:bg-black/60"></div>
         <span class="explore-label">{{ cat.label }}</span>
       </NuxtLink>
@@ -59,6 +68,8 @@ const categories = [
 }
 
 @media (max-width: 480px) {
-  .explore-card { height: 80px; }
+  .explore-card {
+    height: 80px;
+  }
 }
 </style>

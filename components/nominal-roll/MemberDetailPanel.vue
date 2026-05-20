@@ -9,7 +9,7 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   'update:modelValue': [val: boolean]
-  'delete': [member: Member]
+  delete: [member: Member]
 }>()
 
 const membersStore = useMembersStore()
@@ -18,24 +18,49 @@ const membersStore = useMembersStore()
 const mode = ref<'view' | 'edit'>('view')
 
 // ─── Edit form state ─────────────────────────────────────────────────────────
-const ef = reactive<Partial<Member> & { ecName: string; ecRelationship: string; ecPhone: string; ecAddress: string }>({
-  name: '', gender: 'Male', phone: '', email: '', dob: '',
-  status: 'Active', maritalStatus: '', dateOfBaptism: '', dateJoined: '',
-  country: '', state: '', localGovernment: '', village: '',
-  address: '', occupation: '',
-  ecName: '', ecRelationship: '', ecPhone: '', ecAddress: '',
+const ef = reactive<
+  Partial<Member> & { ecName: string; ecRelationship: string; ecPhone: string; ecAddress: string }
+>({
+  name: '',
+  gender: 'Male',
+  phone: '',
+  email: '',
+  dob: '',
+  status: 'Active',
+  maritalStatus: '',
+  dateOfBaptism: '',
+  dateJoined: '',
+  country: '',
+  state: '',
+  localGovernment: '',
+  village: '',
+  address: '',
+  occupation: '',
+  ecName: '',
+  ecRelationship: '',
+  ecPhone: '',
+  ecAddress: '',
 })
 
 function startEdit() {
   if (!props.member) return
   const m = props.member
   Object.assign(ef, {
-    name: m.name ?? '', gender: m.gender ?? 'Male', phone: m.phone ?? '',
-    email: m.email ?? '', dob: m.dob ?? '', status: m.status ?? 'Active',
-    maritalStatus: m.maritalStatus ?? '', dateOfBaptism: m.dateOfBaptism ?? '',
-    dateJoined: m.dateJoined ?? '', country: m.country ?? '',
-    state: m.state ?? '', localGovernment: m.localGovernment ?? '',
-    village: m.village ?? '', address: m.address ?? '', occupation: m.occupation ?? '',
+    name: m.name ?? '',
+    gender: m.gender ?? 'Male',
+    phone: m.phone ?? '',
+    email: m.email ?? '',
+    dob: m.dob ?? '',
+    status: m.status ?? 'Active',
+    maritalStatus: m.maritalStatus ?? '',
+    dateOfBaptism: m.dateOfBaptism ?? '',
+    dateJoined: m.dateJoined ?? '',
+    country: m.country ?? '',
+    state: m.state ?? '',
+    localGovernment: m.localGovernment ?? '',
+    village: m.village ?? '',
+    address: m.address ?? '',
+    occupation: m.occupation ?? '',
     ecName: m.emergencyContact?.name ?? '',
     ecRelationship: m.emergencyContact?.relationship ?? '',
     ecPhone: m.emergencyContact?.phone ?? '',
@@ -47,12 +72,21 @@ function startEdit() {
 function saveEdit() {
   if (!props.member) return
   membersStore.updateMember(props.member.id, {
-    name: ef.name, gender: ef.gender, phone: ef.phone, email: ef.email,
-    dob: ef.dob, status: ef.status, maritalStatus: ef.maritalStatus,
-    dateOfBaptism: ef.dateOfBaptism, dateJoined: ef.dateJoined,
-    country: ef.country, state: ef.state,
-    localGovernment: ef.localGovernment, village: ef.village,
-    address: ef.address, occupation: ef.occupation,
+    name: ef.name,
+    gender: ef.gender,
+    phone: ef.phone,
+    email: ef.email,
+    dob: ef.dob,
+    status: ef.status,
+    maritalStatus: ef.maritalStatus,
+    dateOfBaptism: ef.dateOfBaptism,
+    dateJoined: ef.dateJoined,
+    country: ef.country,
+    state: ef.state,
+    localGovernment: ef.localGovernment,
+    village: ef.village,
+    address: ef.address,
+    occupation: ef.occupation,
     emergencyContact: {
       name: ef.ecName ?? '',
       relationship: ef.ecRelationship ?? '',
@@ -63,19 +97,26 @@ function saveEdit() {
   mode.value = 'view'
 }
 
-function cancelEdit() { mode.value = 'view' }
+function cancelEdit() {
+  mode.value = 'view'
+}
 
 // Reset to view when panel closes; jump to edit when autoEdit is set
-watch(() => props.modelValue, (open) => {
-  if (!open) {
-    mode.value = 'view'
-  } else if (props.autoEdit) {
-    nextTick(() => startEdit())
+watch(
+  () => props.modelValue,
+  (open) => {
+    if (!open) {
+      mode.value = 'view'
+    } else if (props.autoEdit) {
+      nextTick(() => startEdit())
+    }
   }
-})
+)
 
 // ─── View helpers ─────────────────────────────────────────────────────────────
-function close() { emit('update:modelValue', false) }
+function close() {
+  emit('update:modelValue', false)
+}
 
 function onDelete() {
   if (!props.member) return
@@ -100,12 +141,14 @@ const statusConfig = {
   Late: { variant: 'warning', label: 'Late Brethren' },
 } as const
 
-const memberStatus = computed(() =>
-  statusConfig[props.member?.status ?? 'Active'] ?? statusConfig.Active
+const memberStatus = computed(
+  () => statusConfig[props.member?.status ?? 'Active'] ?? statusConfig.Active
 )
 
 onMounted(() => {
-  const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') close() }
+  const handler = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') close()
+  }
   document.addEventListener('keydown', handler)
   onUnmounted(() => document.removeEventListener('keydown', handler))
 })
@@ -157,7 +200,6 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
         ]"
         :aria-label="mode === 'edit' ? `Edit ${member.name}` : `${member.name} profile`"
       >
-
         <!-- ══════════════════════════════════════════════════
              VIEW MODE
         ═══════════════════════════════════════════════════ -->
@@ -171,7 +213,10 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
             >
               <Icon icon="mdi:close" class="text-lg" />
             </button>
-            <button class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition-colors" aria-label="More options">
+            <button
+              class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition-colors"
+              aria-label="More options"
+            >
               <Icon icon="mdi:dots-vertical" class="text-lg" />
             </button>
           </div>
@@ -180,21 +225,31 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
           <div class="flex-1 overflow-y-auto px-4 pb-6 space-y-3 sidebar-scroll bg-white pt-4">
             <!-- Hero card -->
             <div class="bg-[#F0F9FF] rounded-2xl px-4 py-2 flex items-center gap-4">
-              <img :src="img" alt="profile-img" class="w-30 h-30 mb-3 shadow-2xl rounded-2xl object-cover object-center" />
+              <img
+                :src="img"
+                alt="profile-img"
+                class="w-30 h-30 mb-3 shadow-2xl rounded-2xl object-cover object-center"
+              />
               <div class="space-y-1">
                 <div class="flex gap-4 items-center">
-                  <h2 class=" font-montserrat text-base font-bold leading-6">{{ member.name }}</h2>
-                  <button class=" flex items-center justify-center hover:bg-gray-50" aria-label="Edit avatar">
+                  <h2 class="font-montserrat text-base font-bold leading-6">{{ member.name }}</h2>
+                  <button
+                    class="flex items-center justify-center hover:bg-gray-50"
+                    aria-label="Edit avatar"
+                  >
                     <Icon icon="mdi:square-edit-outline" class="text-[20px] text-black" />
                   </button>
                 </div>
-              <p class="text-[#717680] text-base font-normal leading-6">
-                Church Number: <span class="text-[#717680] text-base font-semibold leading-[145%]">{{ member.churchNumber ?? '—' }}</span>
-              </p>
-              <Badge :variant="memberStatus.variant" size="md">
-                <template #icon><Icon icon="mdi:check" class="text-[10px]" /></template>
-                {{ memberStatus.label }}
-              </Badge>
+                <p class="text-[#717680] text-base font-normal leading-6">
+                  Church Number:
+                  <span class="text-[#717680] text-base font-semibold leading-[145%]">{{
+                    member.churchNumber ?? '—'
+                  }}</span>
+                </p>
+                <Badge :variant="memberStatus.variant" size="md">
+                  <template #icon><Icon icon="mdi:check" class="text-[10px]" /></template>
+                  {{ memberStatus.label }}
+                </Badge>
               </div>
             </div>
 
@@ -206,10 +261,27 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                 <InfoField icon="mdi:email-outline" label="Email Address" :value="member.email" />
                 <InfoField icon="mdi:phone-outline" label="Phone Number" :value="member.phone" />
                 <InfoField icon="mdi:gender-male-female" label="Gender" :value="member.gender" />
-                <InfoField icon="mdi:ring" label="Marital Status" :value="member.maritalStatus ?? '—'" />
-                <InfoField icon="mdi:water-outline" label="Date of Baptism" :value="fmt(member.dateOfBaptism)" />
-                <InfoField icon="mdi:calendar-account-outline" label="Date Joined" :value="fmt(member.dateJoined)" />
-                <InfoField v-if="member.dob" icon="mdi:cake-variant-outline" label="Date of Birth" :value="fmt(member.dob)" />
+                <InfoField
+                  icon="mdi:ring"
+                  label="Marital Status"
+                  :value="member.maritalStatus ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:water-outline"
+                  label="Date of Baptism"
+                  :value="fmt(member.dateOfBaptism)"
+                />
+                <InfoField
+                  icon="mdi:calendar-account-outline"
+                  label="Date Joined"
+                  :value="fmt(member.dateJoined)"
+                />
+                <InfoField
+                  v-if="member.dob"
+                  icon="mdi:cake-variant-outline"
+                  label="Date of Birth"
+                  :value="fmt(member.dob)"
+                />
               </div>
             </div>
 
@@ -218,8 +290,16 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
               <h3 class="text-xs font-bold text-gray-700 mb-3">Place of Origin</h3>
               <div class="grid grid-cols-2 gap-x-3 gap-y-3">
                 <InfoField icon="mdi:earth" label="Country" :value="member.country ?? '—'" />
-                <InfoField icon="mdi:map-marker-outline" label="State" :value="member.state ?? '—'" />
-                <InfoField icon="mdi:city-variant-outline" label="Local Government" :value="member.localGovernment ?? '—'" />
+                <InfoField
+                  icon="mdi:map-marker-outline"
+                  label="State"
+                  :value="member.state ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:city-variant-outline"
+                  label="Local Government"
+                  :value="member.localGovernment ?? '—'"
+                />
                 <InfoField icon="mdi:home-outline" label="Village" :value="member.village ?? '—'" />
               </div>
             </div>
@@ -229,20 +309,57 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
               <h3 class="text-xs font-bold text-gray-700 mb-3">Place of Residence</h3>
               <div class="grid grid-cols-2 gap-x-3 gap-y-3">
                 <InfoField icon="mdi:earth" label="Country" :value="member.country ?? '—'" />
-                <InfoField icon="mdi:map-marker-outline" label="State" :value="member.state ?? '—'" />
-                <InfoField icon="mdi:map-marker-radius-outline" label="Address" :value="member.address ?? '—'" class="col-span-2" />
-                <InfoField icon="mdi:briefcase-outline" label="Occupation" :value="member.occupation ?? '—'" />
+                <InfoField
+                  icon="mdi:map-marker-outline"
+                  label="State"
+                  :value="member.state ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:map-marker-radius-outline"
+                  label="Address"
+                  :value="member.address ?? '—'"
+                  class="col-span-2"
+                />
+                <InfoField
+                  icon="mdi:briefcase-outline"
+                  label="Occupation"
+                  :value="member.occupation ?? '—'"
+                />
               </div>
             </div>
 
             <!-- Emergency Contact -->
-            <div v-if="member.emergencyContact" class="bg-white rounded-2xl p-4 border-[#F3A218] border">
+            <div
+              v-if="member.emergencyContact"
+              class="bg-white rounded-2xl p-4 border-[#F3A218] border"
+            >
               <h3 class="text-xs font-bold text-gray-700 mb-3">Emergency Contact</h3>
               <div class="grid grid-cols-2 gap-x-3 gap-y-3">
-                <InfoField icon="mdi:account-outline" label="Name" :value="member.emergencyContact.name" variant="warning"/>
-                <InfoField icon="mdi:account-heart-outline" label="Relationship" :value="member.emergencyContact.relationship" variant="warning"/>
-                <InfoField icon="mdi:phone-outline" label="Phone Number" :value="member.emergencyContact.phone" variant="warning"/>
-                <InfoField icon="mdi:map-marker-radius-outline" label="Address" :value="member.emergencyContact.address" class="col-span-2" variant="warning"/>
+                <InfoField
+                  icon="mdi:account-outline"
+                  label="Name"
+                  :value="member.emergencyContact.name"
+                  variant="warning"
+                />
+                <InfoField
+                  icon="mdi:account-heart-outline"
+                  label="Relationship"
+                  :value="member.emergencyContact.relationship"
+                  variant="warning"
+                />
+                <InfoField
+                  icon="mdi:phone-outline"
+                  label="Phone Number"
+                  :value="member.emergencyContact.phone"
+                  variant="warning"
+                />
+                <InfoField
+                  icon="mdi:map-marker-radius-outline"
+                  label="Address"
+                  :value="member.emergencyContact.address"
+                  class="col-span-2"
+                  variant="warning"
+                />
               </div>
             </div>
 
@@ -271,7 +388,9 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
         ═══════════════════════════════════════════════════ -->
         <template v-else>
           <!-- Edit header -->
-          <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+          <div
+            class="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0"
+          >
             <div class="flex items-center gap-3">
               <button
                 class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
@@ -281,7 +400,9 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                 <Icon icon="mdi:arrow-top-left" class="text-lg" />
               </button>
               <div>
-                <h2 class="text-base font-bold text-gray-900 leading-tight">Edit Members Information</h2>
+                <h2 class="text-base font-bold text-gray-900 leading-tight">
+                  Edit Members Information
+                </h2>
                 <p class="text-xs text-gray-400 mt-0.5">Update the member information below.</p>
               </div>
             </div>
@@ -295,7 +416,6 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
 
           <!-- Edit form (scrollable) -->
           <div class="flex-1 overflow-y-auto px-5 py-5 space-y-6 sidebar-scroll">
-
             <!-- ── Personal Information ─────────────────────── -->
             <section>
               <h3 class="text-base font-bold text-gray-900 mb-4">Personal Information</h3>
@@ -327,7 +447,9 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                   </EditField>
                   <EditField label="Gender" class="col-span-1">
                     <select v-model="ef.gender">
-                      <option v-for="o in genderOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                      <option v-for="o in genderOptions" :key="o.value" :value="o.value">
+                        {{ o.label }}
+                      </option>
                     </select>
                   </EditField>
                   <EditField label="Marital Status" class="col-span-1">
@@ -339,7 +461,9 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                 <div class="grid grid-cols-2 gap-3">
                   <EditField label="Member Status">
                     <select v-model="ef.status">
-                      <option v-for="o in statusOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                      <option v-for="o in statusOptions" :key="o.value" :value="o.value">
+                        {{ o.label }}
+                      </option>
                     </select>
                   </EditField>
                   <EditField label="Occupation">
@@ -385,7 +509,11 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                   </EditField>
                 </div>
                 <EditField label="Address">
-                  <input v-model="ef.address" type="text" placeholder="No. 8 Convent Road, Ikot Ekpene" />
+                  <input
+                    v-model="ef.address"
+                    type="text"
+                    placeholder="No. 8 Convent Road, Ikot Ekpene"
+                  />
                 </EditField>
               </div>
             </section>
@@ -428,10 +556,8 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                 </div>
               </div>
             </section>
-
           </div>
         </template>
-
       </aside>
     </Transition>
   </Teleport>

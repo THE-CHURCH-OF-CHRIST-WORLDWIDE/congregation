@@ -8,9 +8,9 @@ const lesson = computed(() => store.getLessonBySlug(route.params.slug as string)
 const related = computed(() =>
   lesson.value
     ? lesson.value.relatedIds
-        .map(id => store.sundaySchool.find(l => l.id === id))
+        .map((id) => store.sundaySchool.find((l) => l.id === id))
         .filter(Boolean)
-    : [],
+    : []
 )
 
 watchEffect(() => {
@@ -23,18 +23,20 @@ watchEffect(() => {
       ogImage: lesson.value.thumbnailSrc,
     })
     useHead({
-      script: [{
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'VideoObject',
-          name: lesson.value.title,
-          description: lesson.value.overviewGoals[0] ?? '',
-          thumbnailUrl: lesson.value.thumbnailSrc,
-          uploadDate: lesson.value.date,
-          author: { '@type': 'Person', name: lesson.value.preacher },
-        }),
-      }],
+      script: [
+        {
+          type: 'application/ld+json',
+          innerHTML: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'VideoObject',
+            name: lesson.value.title,
+            description: lesson.value.overviewGoals[0] ?? '',
+            thumbnailUrl: lesson.value.thumbnailSrc,
+            uploadDate: lesson.value.date,
+            author: { '@type': 'Person', name: lesson.value.preacher },
+          }),
+        },
+      ],
     })
   }
 })
@@ -52,10 +54,15 @@ function share() {
 <template>
   <div class="pt-16 pb-20">
     <!-- Not found -->
-    <div v-if="!lesson" class="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+    <div
+      v-if="!lesson"
+      class="flex flex-col items-center justify-center min-h-[60vh] text-center px-6"
+    >
       <Icon icon="heroicons:exclamation-circle" class="h-16 w-16 text-gray-300 mb-4" />
       <h1 class="font-serif text-3xl font-bold text-[#1E3A5F] mb-3">Lesson Not Found</h1>
-      <p class="text-gray-500 mb-6">The lesson you're looking for doesn't exist or has been removed.</p>
+      <p class="text-gray-500 mb-6">
+        The lesson you're looking for doesn't exist or has been removed.
+      </p>
       <NuxtLink
         to="/teachings/sunday-school"
         class="rounded-full bg-[#2563EB] px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
@@ -71,7 +78,9 @@ function share() {
         <nav class="flex items-center gap-2 text-xs text-gray-400" aria-label="Breadcrumb">
           <NuxtLink to="/" class="hover:text-[#2563EB] transition-colors">Home</NuxtLink>
           <Icon icon="heroicons:chevron-right" class="h-3 w-3" />
-          <NuxtLink to="/teachings/sunday-school" class="hover:text-[#2563EB] transition-colors">Sunday School</NuxtLink>
+          <NuxtLink to="/teachings/sunday-school" class="hover:text-[#2563EB] transition-colors"
+            >Sunday School</NuxtLink
+          >
           <Icon icon="heroicons:chevron-right" class="h-3 w-3" />
           <span class="text-gray-600 line-clamp-1">{{ lesson.title }}</span>
         </nav>
@@ -79,11 +88,10 @@ function share() {
 
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="grid gap-10 lg:grid-cols-3">
-
           <!-- Main content (2/3) -->
           <div class="lg:col-span-2">
             <!-- Lesson thumbnail -->
-            <div class="relative overflow-hidden rounded-2xl" style="aspect-ratio:16/9">
+            <div class="relative overflow-hidden rounded-2xl" style="aspect-ratio: 16/9">
               <img
                 :src="lesson.thumbnailSrc"
                 :alt="lesson.title"
@@ -91,7 +99,9 @@ function share() {
                 class="h-full w-full object-cover"
               />
               <div class="absolute inset-0 bg-[#1E3A5F]/40 flex items-center justify-center">
-                <span class="rounded-full bg-white/90 px-4 py-1.5 text-xs font-bold text-[#1E3A5F] uppercase tracking-wider">
+                <span
+                  class="rounded-full bg-white/90 px-4 py-1.5 text-xs font-bold text-[#1E3A5F] uppercase tracking-wider"
+                >
                   Sunday School
                 </span>
               </div>
@@ -134,14 +144,19 @@ function share() {
                     :key="i"
                     class="flex items-start gap-3 text-sm text-gray-600"
                   >
-                    <Icon icon="heroicons:check-circle" class="mt-0.5 h-5 w-5 shrink-0 text-[#2563EB]" />
+                    <Icon
+                      icon="heroicons:check-circle"
+                      class="mt-0.5 h-5 w-5 shrink-0 text-[#2563EB]"
+                    />
                     {{ goal }}
                   </li>
                 </ul>
               </div>
 
               <!-- Scripture pull-quote -->
-              <blockquote class="border-l-4 border-[#2563EB] pl-6 my-8 italic text-[#1E3A5F] text-base leading-relaxed font-serif">
+              <blockquote
+                class="border-l-4 border-[#2563EB] pl-6 my-8 italic text-[#1E3A5F] text-base leading-relaxed font-serif"
+              >
                 {{ lesson.scripture }}
               </blockquote>
 
@@ -157,7 +172,10 @@ function share() {
                     :key="i"
                     class="flex items-start gap-3 text-sm text-gray-600"
                   >
-                    <Icon icon="heroicons:check-circle" class="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+                    <Icon
+                      icon="heroicons:check-circle"
+                      class="mt-0.5 h-5 w-5 shrink-0 text-green-500"
+                    />
                     {{ duty }}
                   </li>
                 </ul>
@@ -179,10 +197,18 @@ function share() {
                 {{ copied ? 'Link Copied!' : 'Share Lesson' }}
               </button>
               <div class="mt-3 flex gap-3">
-                <a href="#" aria-label="Share on Facebook" class="flex-1 flex items-center justify-center gap-1 rounded-lg bg-[#1877F2]/10 py-2.5 text-xs font-medium text-[#1877F2] hover:bg-[#1877F2]/20 transition-colors">
+                <a
+                  href="#"
+                  aria-label="Share on Facebook"
+                  class="flex-1 flex items-center justify-center gap-1 rounded-lg bg-[#1877F2]/10 py-2.5 text-xs font-medium text-[#1877F2] hover:bg-[#1877F2]/20 transition-colors"
+                >
                   <Icon icon="mdi:facebook" class="h-4 w-4" /> Facebook
                 </a>
-                <a href="#" aria-label="Share on WhatsApp" class="flex-1 flex items-center justify-center gap-1 rounded-lg bg-[#25D366]/10 py-2.5 text-xs font-medium text-[#25D366] hover:bg-[#25D366]/20 transition-colors">
+                <a
+                  href="#"
+                  aria-label="Share on WhatsApp"
+                  class="flex-1 flex items-center justify-center gap-1 rounded-lg bg-[#25D366]/10 py-2.5 text-xs font-medium text-[#25D366] hover:bg-[#25D366]/20 transition-colors"
+                >
                   <Icon icon="mdi:whatsapp" class="h-4 w-4" /> WhatsApp
                 </a>
               </div>
@@ -192,11 +218,7 @@ function share() {
             <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
               <h3 class="font-serif font-bold text-[#1E3A5F] mb-5">Related Lessons</h3>
               <div class="flex flex-col gap-4">
-                <div
-                  v-for="rel in related.slice(0, 3)"
-                  :key="rel!.id"
-                  class="group"
-                >
+                <div v-for="rel in related.slice(0, 3)" :key="rel!.id" class="group">
                   <NuxtLink :to="`/teachings/sunday-school/${rel!.slug}`" class="flex gap-3">
                     <img
                       :src="rel!.thumbnailSrc"
@@ -206,9 +228,15 @@ function share() {
                     />
                     <div class="flex-1 min-w-0">
                       <div class="flex flex-wrap gap-1 mb-1">
-                        <CategoryBadge v-for="tag in rel!.tags.slice(0, 1)" :key="tag" :label="tag" />
+                        <CategoryBadge
+                          v-for="tag in rel!.tags.slice(0, 1)"
+                          :key="tag"
+                          :label="tag"
+                        />
                       </div>
-                      <p class="text-sm font-semibold text-[#1E3A5F] line-clamp-2 group-hover:text-[#2563EB] transition-colors">
+                      <p
+                        class="text-sm font-semibold text-[#1E3A5F] line-clamp-2 group-hover:text-[#2563EB] transition-colors"
+                      >
                         {{ rel!.title }}
                       </p>
                       <p class="mt-1 text-xs text-[#2563EB] flex items-center gap-1">

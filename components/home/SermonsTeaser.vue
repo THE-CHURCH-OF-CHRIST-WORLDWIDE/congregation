@@ -10,7 +10,10 @@ const { el: sectionRef, isVisible } = useScrollReveal()
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Header row -->
       <div :class="['mb-10 flex items-end justify-between', 'reveal', isVisible && 'is-visible']">
-        <SectionHeader title="Sermons & Teachings" subtitle="Biblical preaching for every season of life." />
+        <SectionHeader
+          title="Sermons & Teachings"
+          subtitle="Biblical preaching for every season of life."
+        />
         <NuxtLink
           to="/teachings/sermons"
           class="hidden shrink-0 items-center gap-1 text-sm font-medium text-[#2563EB] hover:underline sm:flex"

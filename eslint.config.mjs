@@ -10,7 +10,10 @@ export default withNuxt({
     '@typescript-eslint/no-explicit-any': 'warn',
 
     // Allow unused vars prefixed with _ (conventional for ignored params)
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+    ],
 
     // TypeScript already enforces optional prop types — explicit undefined defaults are noise
     'vue/require-default-prop': 'off',
@@ -19,8 +22,11 @@ export default withNuxt({
     'vue/component-api-style': ['error', ['script-setup']],
 
     // Enforce self-closing tags for void elements and components
-    'vue/html-self-closing': ['error', {
-      html: { void: 'always', normal: 'never', component: 'always' },
-    }],
+    'vue/html-self-closing': [
+      'error',
+      {
+        html: { void: 'always', normal: 'never', component: 'always' },
+      },
+    ],
   },
 })

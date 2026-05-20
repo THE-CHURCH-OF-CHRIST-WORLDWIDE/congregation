@@ -43,11 +43,7 @@ const rows: ActivityRow[] = [
 
           <!-- Body -->
           <tbody>
-            <tr
-              v-for="(row, i) in rows"
-              :key="i"
-              :class="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'"
-            >
+            <tr v-for="(row, i) in rows" :key="i" :class="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
               <td class="py-3 px-6 text-gray-600">{{ row.day }}</td>
               <td class="py-3 px-6 font-medium text-gray-900">{{ row.activity }}</td>
               <td class="py-3 px-6 text-gray-600">{{ row.time }}</td>

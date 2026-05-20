@@ -13,7 +13,16 @@ import {
 } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js'
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+)
 
 interface Props {
   data: ChartData<'line'>

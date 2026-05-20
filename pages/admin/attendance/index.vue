@@ -8,7 +8,20 @@ const { setHeader } = usePageHeader()
 const attendanceStore = useAttendanceStore()
 const { exportCSV } = useExportCSV()
 
-const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTH_LABELS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 onMounted(() => {
   setHeader('Attendance Tracker', 'Attendance summaries by activity')
@@ -42,7 +55,14 @@ const lineChartData = computed<ChartData<'line'>>(() => {
 })
 
 const performanceData = computed<ChartData<'bar'>>(() => ({
-  labels: ['Sunday Worship', 'Bible Class', 'Youth Class', 'Singing Practice', "Leaders' Class", 'Evangelism'],
+  labels: [
+    'Sunday Worship',
+    'Bible Class',
+    'Youth Class',
+    'Singing Practice',
+    "Leaders' Class",
+    'Evangelism',
+  ],
   datasets: [
     {
       label: 'Attendance %',
@@ -59,7 +79,11 @@ const horizontalBarOptions: ChartOptions<'bar'> = {
   maintainAspectRatio: false,
   plugins: { legend: { display: false }, tooltip: { mode: 'index' } },
   scales: {
-    x: { grid: { color: '#f3f4f6' }, ticks: { callback: (v) => `${v}%`, font: { size: 10 } }, max: 100 },
+    x: {
+      grid: { color: '#f3f4f6' },
+      ticks: { callback: (v) => `${v}%`, font: { size: 10 } },
+      max: 100,
+    },
     y: { grid: { display: false }, ticks: { font: { size: 10 } } },
   },
 }
@@ -68,9 +92,9 @@ function doExport() {
   exportCSV(
     attendanceStore.monthlyPresenceCounts.map((m, i) => ({
       Month: MONTH_LABELS[i],
-      'Sessions': m.totalSessions,
-      'Present': m.presentCount,
-      'Listed': m.listedCount,
+      Sessions: m.totalSessions,
+      Present: m.presentCount,
+      Listed: m.listedCount,
       'Rate %': m.listedCount ? Math.round((m.presentCount / m.listedCount) * 100) : 0,
     })),
     'attendance-summary'
@@ -79,7 +103,9 @@ function doExport() {
 
 function doImport() {
   const el = document.createElement('input')
-  el.type = 'file'; el.accept = '.csv'; el.click()
+  el.type = 'file'
+  el.accept = '.csv'
+  el.click()
 }
 </script>
 
@@ -108,7 +134,9 @@ function doImport() {
       </Card>
 
       <Card>
-        <h3 class="text-sm font-semibold text-gray-900 mb-4">Attendance Performance per Activity for 2025</h3>
+        <h3 class="text-sm font-semibold text-gray-900 mb-4">
+          Attendance Performance per Activity for 2025
+        </h3>
         <BarChart :data="performanceData" :options="horizontalBarOptions" :height="260" />
       </Card>
     </div>

@@ -95,7 +95,7 @@ const PAST_EVENTS: PastEvent[] = [
   },
   {
     id: 'pe-3',
-    title: "Women of Faith: Building Stronger Bonds",
+    title: 'Women of Faith: Building Stronger Bonds',
     date: '2023-11-15',
     time: '10:00 AM',
     venue: 'Church Hall',

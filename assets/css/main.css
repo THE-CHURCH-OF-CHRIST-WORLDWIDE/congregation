@@ -1,22 +1,28 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-navy: #1E3A5F;
-  --color-accent: #2563EB;
-  --color-live: #EF4444;
-  --color-bg-alt: #F8F9FA;
-  --font-family-serif: "Playfair Display", Georgia, serif;
+  --color-navy: #1e3a5f;
+  --color-accent: #2563eb;
+  --color-live: #ef4444;
+  --color-bg-alt: #f8f9fa;
+  --font-family-serif: 'Playfair Display', Georgia, serif;
 }
 
 /* Public site typography */
 .font-serif {
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 /* Pulse ring animation for live badge */
 @keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 1; }
-  100% { transform: scale(2); opacity: 0; }
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 .pulse-ring::before,
 .pulse-ring::after {
@@ -24,7 +30,7 @@
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  background: #EF4444;
+  background: #ef4444;
   animation: pulse-ring 1.5s ease-out infinite;
 }
 .pulse-ring::after {
@@ -32,8 +38,13 @@
 }
 
 /* Hide scrollbar for filter bar */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 /* Page transitions */
 .fade-enter-active,
@@ -64,7 +75,7 @@
 }
 
 /* Custom checkbox styling */
-input[type="checkbox"].attendance-check {
+input[type='checkbox'].attendance-check {
   width: 16px;
   height: 16px;
   accent-color: #2563eb;
@@ -128,12 +139,24 @@ input[type="checkbox"].attendance-check {
 }
 
 /* Stagger delay utilities (applied alongside reveal classes) */
-.delay-75  { transition-delay: 75ms; }
-.delay-100 { transition-delay: 100ms; }
-.delay-150 { transition-delay: 150ms; }
-.delay-200 { transition-delay: 200ms; }
-.delay-300 { transition-delay: 300ms; }
-.delay-400 { transition-delay: 400ms; }
+.delay-75 {
+  transition-delay: 75ms;
+}
+.delay-100 {
+  transition-delay: 100ms;
+}
+.delay-150 {
+  transition-delay: 150ms;
+}
+.delay-200 {
+  transition-delay: 200ms;
+}
+.delay-300 {
+  transition-delay: 300ms;
+}
+.delay-400 {
+  transition-delay: 400ms;
+}
 
 /* ── Hero entrance animation ─────────────────────────────────────────────── */
 @keyframes hero-fade-up {

@@ -7,10 +7,16 @@ const { isLive, currentStream, filteredRecorded, activeTab, setTab } = useLiveSt
 const searchQuery = ref('')
 const activityFilter = ref('All Church Activities')
 
-const activityOptions = ['All Church Activities', 'Sunday Worship', 'Bible Class', 'Sunday School', 'Evangelism']
+const activityOptions = [
+  'All Church Activities',
+  'Sunday Worship',
+  'Bible Class',
+  'Sunday School',
+  'Evangelism',
+]
 
-watch(searchQuery, v => store.setSearch(v))
-watch(activityFilter, v => store.setFilter(v))
+watch(searchQuery, (v) => store.setSearch(v))
+watch(activityFilter, (v) => store.setFilter(v))
 
 function onWatchRecorded() {
   setTab('recorded')
@@ -20,14 +26,30 @@ function onWatchRecorded() {
 }
 
 const howToSteps = [
-  { number: 1, title: 'Find a Congregation', description: 'Search for your nearest Church of Christ congregation to find local worship services and live streams.' },
-  { number: 2, title: 'Click to Join', description: 'Click the Watch Live Now button when a service is active. Our streams run every Sunday at 9:00 AM.' },
-  { number: 3, title: 'Worship Together', description: 'Participate in the service, follow along with the message, and fellowship with believers worldwide.' },
+  {
+    number: 1,
+    title: 'Find a Congregation',
+    description:
+      'Search for your nearest Church of Christ congregation to find local worship services and live streams.',
+  },
+  {
+    number: 2,
+    title: 'Click to Join',
+    description:
+      'Click the Watch Live Now button when a service is active. Our streams run every Sunday at 9:00 AM.',
+  },
+  {
+    number: 3,
+    title: 'Worship Together',
+    description:
+      'Participate in the service, follow along with the message, and fellowship with believers worldwide.',
+  },
 ]
 
 useSeoMeta({
   title: 'Live Streams — Church of Christ',
-  description: 'Watch live Sunday worship services and recorded Bible classes from Church of Christ congregations. Join thousands of believers worshipping online.',
+  description:
+    'Watch live Sunday worship services and recorded Bible classes from Church of Christ congregations. Join thousands of believers worshipping online.',
   ogTitle: 'Live Streams — Church of Christ',
   ogDescription: 'Watch live and recorded worship services from the Church of Christ, worldwide.',
   ogImage: '/images/heroImg.png',
@@ -45,16 +67,23 @@ useSeoMeta({
         loading="lazy"
       />
       <div class="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
-        <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-[#EF4444]/20 px-4 py-1.5 border border-[#EF4444]/30">
+        <div
+          class="mb-4 inline-flex items-center gap-2 rounded-full bg-[#EF4444]/20 px-4 py-1.5 border border-[#EF4444]/30"
+        >
           <span class="relative flex h-2.5 w-2.5">
-            <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" ></span>
-            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#EF4444]" ></span>
+            <span
+              class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping"
+            ></span>
+            <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#EF4444]"></span>
           </span>
-          <span class="text-xs font-bold text-[#EF4444] tracking-widest uppercase">Live Streams</span>
+          <span class="text-xs font-bold text-[#EF4444] tracking-widest uppercase"
+            >Live Streams</span
+          >
         </div>
         <h1 class="font-serif text-5xl font-bold drop-shadow-lg md:text-6xl">Live Streams</h1>
         <p class="mt-4 text-white/70 text-lg max-w-2xl mx-auto">
-          Watch live Sunday worship services or browse our library of recorded Bible classes, sermons, and special services.
+          Watch live Sunday worship services or browse our library of recorded Bible classes,
+          sermons, and special services.
         </p>
       </div>
     </section>
@@ -62,7 +91,9 @@ useSeoMeta({
     <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <!-- Search + filter bar -->
       <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div class="flex flex-1 items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+        <div
+          class="flex flex-1 items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm"
+        >
           <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
           <input
             v-model="searchQuery"
@@ -86,15 +117,19 @@ useSeoMeta({
         <button
           :class="[
             'rounded-lg px-6 py-2.5 text-sm font-semibold transition-all',
-            activeTab === 'live' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-gray-500 hover:text-gray-700',
+            activeTab === 'live'
+              ? 'bg-white text-[#1E3A5F] shadow-sm'
+              : 'text-gray-500 hover:text-gray-700',
           ]"
           aria-label="Live Now tab"
           @click="setTab('live')"
         >
           <span class="flex items-center gap-2">
             <span v-if="isLive" class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping" ></span>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#EF4444]" ></span>
+              <span
+                class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping"
+              ></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-[#EF4444]"></span>
             </span>
             Live Now
           </span>
@@ -102,7 +137,9 @@ useSeoMeta({
         <button
           :class="[
             'rounded-lg px-6 py-2.5 text-sm font-semibold transition-all',
-            activeTab === 'recorded' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-gray-500 hover:text-gray-700',
+            activeTab === 'recorded'
+              ? 'bg-white text-[#1E3A5F] shadow-sm'
+              : 'text-gray-500 hover:text-gray-700',
           ]"
           aria-label="Recorded tab"
           @click="setTab('recorded')"
@@ -124,7 +161,14 @@ useSeoMeta({
               <div class="mt-1 flex items-center gap-3 text-sm text-gray-500">
                 <span class="flex items-center gap-1">
                   <Icon icon="heroicons:calendar" class="h-4 w-4" />
-                  {{ new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
+                  {{
+                    new Date().toLocaleDateString('en-GB', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  }}
                 </span>
               </div>
             </div>
@@ -156,11 +200,7 @@ useSeoMeta({
       <!-- Recorded tab -->
       <div v-if="activeTab === 'recorded'" id="streams-grid">
         <div v-if="filteredRecorded.length" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <StreamCard
-            v-for="stream in filteredRecorded"
-            :key="stream.id"
-            :stream="stream"
-          />
+          <StreamCard v-for="stream in filteredRecorded" :key="stream.id" :stream="stream" />
         </div>
         <div v-else class="py-16 text-center text-gray-400">
           <Icon icon="heroicons:video-camera-slash" class="h-12 w-12 mx-auto mb-3 text-gray-300" />

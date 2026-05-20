@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Report a reproducible bug to help us improve Congregation
-title: "[Bug] "
+title: '[Bug] '
 labels: bug
 assignees: ''
 ---
@@ -42,7 +42,7 @@ assignees: ''
 ## Environment
 
 | Field        | Value                        |
-|--------------|------------------------------|
+| ------------ | ---------------------------- |
 | OS           | e.g. macOS 14, Windows 11    |
 | Browser      | e.g. Chrome 123, Firefox 124 |
 | Node version | e.g. 20.11.0                 |

@@ -22,6 +22,7 @@ Fixes # <!-- Link the issue this PR closes, e.g. "Fixes #123" -->
 ## Changes Made
 
 ### Public Website
+
 - **Home page** — Hero banner, minister welcome, live stream teaser, sermons teaser, events list, congregation search, contact form, photo gallery
 - **About Us page** (`/about-us`) — Church history card with decorative corner images, worship activities (5 cards), leaders grid with circular avatars, activity calendar table, worship-this-sunday section with embedded Google Map
 - **Events page** (`/events`) — Upcoming/past tab toggle with URL query sync (`?tab=`), upcoming events list with image gallery preview slider, past events with featured card + month/year sub-tabs, full-screen gallery lightbox with keyboard + touch navigation
@@ -30,6 +31,7 @@ Fixes # <!-- Link the issue this PR closes, e.g. "Fixes #123" -->
 - **Navbar** — Fixed `About Us` and `Events` links from `/#anchor` to proper `NuxtLink` routes with `active-class`
 
 ### Admin Dashboard
+
 - **Dashboard** (`/admin`) — Stats cards, bar/line/donut/sparkline charts, backslider table, recent uploads widget
 - **Nominal Roll** (`/admin/nominal-roll`) — Member table with search/filter, detail side-panel, add member modal, CSV import modal, role summary chart
 - **Attendance** (`/admin/attendance`) — Service attendance recording, monthly grid view, summary stats
@@ -39,6 +41,7 @@ Fixes # <!-- Link the issue this PR closes, e.g. "Fixes #123" -->
 - **Youth** (`/admin/youth`) — Youth ministry member list and management
 
 ### State Management (Pinia stores)
+
 - `events.ts` — Upcoming/past tabs, gallery lightbox, month/year filtering
 - `members.ts` — Member CRUD, complex filtering (search, gender, status, tab)
 - `attendance.ts` — Service attendance records
@@ -51,16 +54,19 @@ Fixes # <!-- Link the issue this PR closes, e.g. "Fixes #123" -->
 - `useChurchSettingsStore.ts` — Church configuration
 
 ### Shared UI Component Library (`components/ui/`)
+
 - `Button`, `Modal`, `Avatar`, `Badge`, `Card`, `Input`, `Select`, `Tabs`
 - `MapEmbed`, `VideoPlayer`, `CategoryBadge`, `ContentCard`
 - `SectionHeader`, `TagFilterBar`, `HowToSteps`, `EditField`, `InfoField`
 
 ### Types (`types/`)
+
 - `types/index.ts` — Admin domain types: `Member`, `Sermon`, `AttendanceRecord`, `ServiceType`, `ExpenseCategory`, `RoleName`, `ChurchRole`, and more
 - `types/public.ts` — Public site types: `LiveStream`, `PublicSermon`, `Lesson`, `ChurchEvent`, `Congregation`
 - `types/events.ts` — Events page types: `UpcomingEvent`, `PastEvent`, `Speaker`
 
 ### Developer Tooling & Infrastructure
+
 - **ESLint** — `eslint.config.mjs` with `@nuxt/eslint`, Vue `script-setup` enforcement, `multi-word-component-names` disabled for Nuxt conventions
 - **Prettier** — `.prettierrc` (no semi, single quotes, 100 print width) + `.prettierignore`
 - **CI/CD** — `.github/workflows/ci.yml` running typecheck → lint → build on every PR and push to `main`

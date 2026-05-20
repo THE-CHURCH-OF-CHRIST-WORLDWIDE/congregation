@@ -26,9 +26,7 @@ export const useTeachingsStore = defineStore('teachings', () => {
   })
 
   const recentSermons = computed(() =>
-    [...sermons.value]
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-      .slice(0, 4)
+    [...sermons.value].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 4)
   )
 
   function uploadSermon(data: Omit<Sermon, 'id' | 'createdAt'>) {

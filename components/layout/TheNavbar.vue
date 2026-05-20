@@ -7,7 +7,9 @@ const mobileOpen = ref(false)
 let teachingsTimer: ReturnType<typeof setTimeout> | null = null
 
 const scrolled = ref(false)
-function handleScroll() { scrolled.value = window.scrollY > 24 }
+function handleScroll() {
+  scrolled.value = window.scrollY > 24
+}
 onMounted(() => window.addEventListener('scroll', handleScroll, { passive: true }))
 
 function openTeachings() {
@@ -27,8 +29,18 @@ watch(route, () => {
 })
 
 const teachingLinks = [
-  { icon: 'heroicons:microphone', label: 'Sermons', desc: 'A curated library of biblical sermons', to: '/teachings/sermons' },
-  { icon: 'heroicons:academic-cap', label: 'Sunday School', desc: 'In-depth Bible study lessons', to: '/teachings/sunday-school' },
+  {
+    icon: 'heroicons:microphone',
+    label: 'Sermons',
+    desc: 'A curated library of biblical sermons',
+    to: '/teachings/sermons',
+  },
+  {
+    icon: 'heroicons:academic-cap',
+    label: 'Sunday School',
+    desc: 'In-depth Bible study lessons',
+    to: '/teachings/sunday-school',
+  },
 ]
 
 onBeforeUnmount(() => {
@@ -40,53 +52,70 @@ onBeforeUnmount(() => {
 <template>
   <header
     class="sticky top-0 z-50 w-full transition-[background-color,box-shadow,border-color] duration-300"
-    :class="scrolled
-      ? 'bg-white border-b border-gray-100 shadow-md'
-      : 'bg-white/90 backdrop-blur-md border-b border-transparent shadow-sm'"
+    :class="
+      scrolled
+        ? 'bg-white border-b border-gray-100 shadow-md'
+        : 'bg-white/90 backdrop-blur-md border-b border-transparent shadow-sm'
+    "
   >
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-
       <!-- Logo: church seal -->
       <NuxtLink to="/" class="flex shrink-0 items-center" aria-label="Church of Christ home">
-        <div class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-navy">
+        <div
+          class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-navy"
+        >
           <!-- Church seal SVG -->
           <svg viewBox="0 0 100 100" class="h-full w-full" xmlns="http://www.w3.org/2000/svg">
             <!-- Background -->
-            <circle cx="50" cy="50" r="50" fill="white"/>
+            <circle cx="50" cy="50" r="50" fill="white" />
             <!-- Inner ring -->
-            <circle cx="50" cy="50" r="44" fill="none" stroke="#1E3A5F" stroke-width="0.8"/>
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#1E3A5F" stroke-width="0.8" />
 
             <!-- Open Bible (center) -->
             <g transform="translate(50,50)">
               <!-- Left page -->
               <path
-d="M-18,-12 Q-18,-15 -12,-15 L0,-15 L0,15 L-12,15 Q-18,15 -18,12 Z"
-                    fill="#f5e6c8" stroke="#8B6914" stroke-width="1.2"/>
+                d="M-18,-12 Q-18,-15 -12,-15 L0,-15 L0,15 L-12,15 Q-18,15 -18,12 Z"
+                fill="#f5e6c8"
+                stroke="#8B6914"
+                stroke-width="1.2"
+              />
               <!-- Right page -->
               <path
-d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
-                    fill="#f5e6c8" stroke="#8B6914" stroke-width="1.2"/>
+                d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
+                fill="#f5e6c8"
+                stroke="#8B6914"
+                stroke-width="1.2"
+              />
               <!-- Spine -->
-              <rect x="-1.5" y="-15" width="3" height="30" fill="#8B6914"/>
+              <rect x="-1.5" y="-15" width="3" height="30" fill="#8B6914" />
               <!-- Lines left -->
-              <line x1="-15" y1="-6" x2="-3" y2="-6" stroke="#8B6914" stroke-width="0.8"/>
-              <line x1="-15" y1="-1" x2="-3" y2="-1" stroke="#8B6914" stroke-width="0.8"/>
-              <line x1="-15" y1="4"  x2="-3" y2="4"  stroke="#8B6914" stroke-width="0.8"/>
-              <line x1="-15" y1="9"  x2="-3" y2="9"  stroke="#8B6914" stroke-width="0.8"/>
+              <line x1="-15" y1="-6" x2="-3" y2="-6" stroke="#8B6914" stroke-width="0.8" />
+              <line x1="-15" y1="-1" x2="-3" y2="-1" stroke="#8B6914" stroke-width="0.8" />
+              <line x1="-15" y1="4" x2="-3" y2="4" stroke="#8B6914" stroke-width="0.8" />
+              <line x1="-15" y1="9" x2="-3" y2="9" stroke="#8B6914" stroke-width="0.8" />
               <!-- Lines right -->
-              <line x1="3" y1="-6" x2="15" y2="-6" stroke="#8B6914" stroke-width="0.8"/>
-              <line x1="3" y1="-1" x2="15" y2="-1" stroke="#8B6914" stroke-width="0.8"/>
-              <line x1="3" y1="4"  x2="15" y2="4"  stroke="#8B6914" stroke-width="0.8"/>
-              <line x1="3" y1="9"  x2="15" y2="9"  stroke="#8B6914" stroke-width="0.8"/>
+              <line x1="3" y1="-6" x2="15" y2="-6" stroke="#8B6914" stroke-width="0.8" />
+              <line x1="3" y1="-1" x2="15" y2="-1" stroke="#8B6914" stroke-width="0.8" />
+              <line x1="3" y1="4" x2="15" y2="4" stroke="#8B6914" stroke-width="0.8" />
+              <line x1="3" y1="9" x2="15" y2="9" stroke="#8B6914" stroke-width="0.8" />
             </g>
 
             <!-- "CHURCH OF CHRIST" curved top text -->
             <defs>
-              <path id="topCurve" d="M 16,50 A 34,34 0 0 1 84,50"/>
-              <path id="botCurve" d="M 22,56 A 28,28 0 0 0 78,56"/>
+              <path id="topCurve" d="M 16,50 A 34,34 0 0 1 84,50" />
+              <path id="botCurve" d="M 22,56 A 28,28 0 0 0 78,56" />
             </defs>
-            <text font-size="8.5" font-family="Georgia, serif" fill="#1E3A5F" font-weight="bold" letter-spacing="1.5">
-              <textPath href="#topCurve" startOffset="50%" text-anchor="middle">CHURCH OF CHRIST</textPath>
+            <text
+              font-size="8.5"
+              font-family="Georgia, serif"
+              fill="#1E3A5F"
+              font-weight="bold"
+              letter-spacing="1.5"
+            >
+              <textPath href="#topCurve" startOffset="50%" text-anchor="middle">
+                CHURCH OF CHRIST
+              </textPath>
             </text>
 
             <!-- Stars bottom left & right -->
@@ -109,7 +138,8 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
             to="/"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             aria-label="Home"
-          >Home</NuxtLink>
+            >Home</NuxtLink
+          >
         </li>
         <li>
           <NuxtLink
@@ -119,7 +149,9 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
             aria-label="Live Streams"
           >
             <span v-if="liveStore.isLive" class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"></span>
+              <span
+                class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"
+              ></span>
               <span class="relative inline-flex h-2 w-2 rounded-full bg-live"></span>
             </span>
             Live Streams
@@ -127,11 +159,7 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
         </li>
 
         <!-- Teachings dropdown (hover) -->
-        <li
-          class="relative"
-          @mouseenter="openTeachings"
-          @mouseleave="closeTeachings"
-        >
+        <li class="relative" @mouseenter="openTeachings" @mouseleave="closeTeachings">
           <button
             class="flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             :aria-expanded="teachingsOpen"
@@ -165,8 +193,10 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
                 :href="link.to"
                 class="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50"
               >
-                <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-                  <Icon :icon="link.icon" class="h-4 w-4 text-accent"/>
+                <div
+                  class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50"
+                >
+                  <Icon :icon="link.icon" class="h-4 w-4 text-accent" />
                 </div>
                 <div>
                   <p class="text-sm font-semibold text-gray-900">{{ link.label }}</p>
@@ -183,7 +213,8 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             active-class="text-blue-600"
             aria-label="Events"
-          >Events</NuxtLink>
+            >Events</NuxtLink
+          >
         </li>
         <li>
           <NuxtLink
@@ -191,7 +222,8 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             active-class="text-blue-600"
             aria-label="Gallery"
-          >Gallery</NuxtLink>
+            >Gallery</NuxtLink
+          >
         </li>
         <li>
           <NuxtLink
@@ -199,14 +231,16 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             active-class="text-blue-600"
             aria-label="About Us"
-          >About Us</NuxtLink>
+            >About Us</NuxtLink
+          >
         </li>
         <li>
           <a
             href="/#contact"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             aria-label="Contact Us"
-          >Contact Us</a>
+            >Contact Us</a
+          >
         </li>
       </ul>
 
@@ -217,7 +251,7 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
         aria-label="Toggle menu"
         @click="mobileOpen = !mobileOpen"
       >
-        <Icon :icon="mobileOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'" class="h-6 w-6"/>
+        <Icon :icon="mobileOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'" class="h-6 w-6" />
       </button>
     </nav>
 
@@ -235,17 +269,23 @@ d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
           <ul class="flex flex-col gap-1">
             <li>
               <NuxtLink
-to="/" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                @click="mobileOpen = false">
+                to="/"
+                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false"
+              >
                 Home
               </NuxtLink>
             </li>
             <li>
               <NuxtLink
-to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                @click="mobileOpen = false">
+                to="/live-streams"
+                class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false"
+              >
                 <span v-if="liveStore.isLive" class="relative flex h-2 w-2">
-                  <span class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"></span>
+                  <span
+                    class="absolute inline-flex h-full w-full rounded-full bg-live opacity-75 animate-ping"
+                  ></span>
                   <span class="relative inline-flex h-2 w-2 rounded-full bg-live"></span>
                 </span>
                 Live Streams
@@ -257,7 +297,11 @@ to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm
                 @click="teachingsOpen = !teachingsOpen"
               >
                 Teachings
-                <Icon icon="heroicons:chevron-down" class="h-4 w-4 transition-transform" :class="teachingsOpen ? 'rotate-180' : ''"/>
+                <Icon
+                  icon="heroicons:chevron-down"
+                  class="h-4 w-4 transition-transform"
+                  :class="teachingsOpen ? 'rotate-180' : ''"
+                />
               </button>
               <Transition
                 enter-active-class="transition duration-150 ease-out"
@@ -269,9 +313,12 @@ to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm
                     <NuxtLink
                       :to="link.to"
                       class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
-                      @click="mobileOpen = false; teachingsOpen = false"
+                      @click="
+                        mobileOpen = false
+                        teachingsOpen = false
+                      "
                     >
-                      <Icon :icon="link.icon" class="h-4 w-4 text-accent"/>
+                      <Icon :icon="link.icon" class="h-4 w-4 text-accent" />
                       {{ link.label }}
                     </NuxtLink>
                   </li>
@@ -284,7 +331,8 @@ to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm
                 active-class="text-blue-600 bg-blue-50"
                 class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 @click="mobileOpen = false"
-              >Events</NuxtLink>
+                >Events</NuxtLink
+              >
             </li>
             <li>
               <NuxtLink
@@ -292,7 +340,8 @@ to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm
                 active-class="text-blue-600 bg-blue-50"
                 class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 @click="mobileOpen = false"
-              >Gallery</NuxtLink>
+                >Gallery</NuxtLink
+              >
             </li>
             <li>
               <NuxtLink
@@ -300,12 +349,15 @@ to="/live-streams" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm
                 active-class="text-blue-600 bg-blue-50"
                 class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 @click="mobileOpen = false"
-              >About Us</NuxtLink>
+                >About Us</NuxtLink
+              >
             </li>
             <li>
               <a
-href="/#contact" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                @click="mobileOpen = false">
+                href="/#contact"
+                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false"
+              >
                 Contact Us
               </a>
             </li>

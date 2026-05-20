@@ -20,16 +20,14 @@ export const usePublicTeachingsStore = defineStore('publicTeachings', {
     filteredSermons(state): PublicSermon[] {
       let items = state.sermons
       if (state.activeFilter !== 'All') {
-        items = items.filter(s =>
-          s.tags.some(t => t.toLowerCase() === state.activeFilter.toLowerCase()),
+        items = items.filter((s) =>
+          s.tags.some((t) => t.toLowerCase() === state.activeFilter.toLowerCase())
         )
       }
       if (state.searchQuery.trim()) {
         const q = state.searchQuery.toLowerCase()
         items = items.filter(
-          s =>
-            s.title.toLowerCase().includes(q) ||
-            s.preacher.toLowerCase().includes(q),
+          (s) => s.title.toLowerCase().includes(q) || s.preacher.toLowerCase().includes(q)
         )
       }
       return items
@@ -38,27 +36,25 @@ export const usePublicTeachingsStore = defineStore('publicTeachings', {
     filteredLessons(state): Lesson[] {
       let items = state.sundaySchool
       if (state.activeFilter !== 'All') {
-        items = items.filter(l =>
-          l.tags.some(t => t.toLowerCase() === state.activeFilter.toLowerCase()),
+        items = items.filter((l) =>
+          l.tags.some((t) => t.toLowerCase() === state.activeFilter.toLowerCase())
         )
       }
       if (state.searchQuery.trim()) {
         const q = state.searchQuery.toLowerCase()
         items = items.filter(
-          l =>
-            l.title.toLowerCase().includes(q) ||
-            l.preacher.toLowerCase().includes(q),
+          (l) => l.title.toLowerCase().includes(q) || l.preacher.toLowerCase().includes(q)
         )
       }
       return items
     },
 
     getSermonBySlug(state) {
-      return (slug: string) => state.sermons.find(s => s.slug === slug) ?? null
+      return (slug: string) => state.sermons.find((s) => s.slug === slug) ?? null
     },
 
     getLessonBySlug(state) {
-      return (slug: string) => state.sundaySchool.find(l => l.slug === slug) ?? null
+      return (slug: string) => state.sundaySchool.find((l) => l.slug === slug) ?? null
     },
   },
 

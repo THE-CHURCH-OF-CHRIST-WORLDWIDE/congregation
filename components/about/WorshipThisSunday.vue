@@ -11,28 +11,50 @@
 
       <!-- Two-column layout -->
       <div class="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-8">
-
         <!-- Left: service info card -->
         <div class="flex flex-1 flex-col rounded-xl border border-gray-100 bg-white p-7 shadow-sm">
           <!-- Church seal + name -->
           <div class="flex items-center gap-4">
             <!-- Church seal SVG (same as navbar, scaled to 48px) -->
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#1E3A5F]">
+            <div
+              class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-[#1E3A5F]"
+            >
               <svg viewBox="0 0 100 100" class="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="50" fill="white"/>
-                <circle cx="50" cy="50" r="44" fill="none" stroke="#1E3A5F" stroke-width="0.8"/>
+                <circle cx="50" cy="50" r="50" fill="white" />
+                <circle cx="50" cy="50" r="44" fill="none" stroke="#1E3A5F" stroke-width="0.8" />
                 <g transform="translate(50,50)">
-                  <path d="M-18,-12 Q-18,-15 -12,-15 L0,-15 L0,15 L-12,15 Q-18,15 -18,12 Z" fill="#f5e6c8" stroke="#8B6914" stroke-width="1.2"/>
-                  <path d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z" fill="#f5e6c8" stroke="#8B6914" stroke-width="1.2"/>
-                  <rect x="-1.5" y="-15" width="3" height="30" fill="#8B6914"/>
-                  <line x1="-15" y1="-6" x2="-3" y2="-6" stroke="#8B6914" stroke-width="0.8"/>
-                  <line x1="-15" y1="-1" x2="-3" y2="-1" stroke="#8B6914" stroke-width="0.8"/>
-                  <line x1="-15" y1="4"  x2="-3" y2="4"  stroke="#8B6914" stroke-width="0.8"/>
-                  <line x1="3"  y1="-6" x2="15" y2="-6" stroke="#8B6914" stroke-width="0.8"/>
-                  <line x1="3"  y1="-1" x2="15" y2="-1" stroke="#8B6914" stroke-width="0.8"/>
-                  <line x1="3"  y1="4"  x2="15" y2="4"  stroke="#8B6914" stroke-width="0.8"/>
+                  <path
+                    d="M-18,-12 Q-18,-15 -12,-15 L0,-15 L0,15 L-12,15 Q-18,15 -18,12 Z"
+                    fill="#f5e6c8"
+                    stroke="#8B6914"
+                    stroke-width="1.2"
+                  />
+                  <path
+                    d="M18,-12 Q18,-15 12,-15 L0,-15 L0,15 L12,15 Q18,15 18,12 Z"
+                    fill="#f5e6c8"
+                    stroke="#8B6914"
+                    stroke-width="1.2"
+                  />
+                  <rect x="-1.5" y="-15" width="3" height="30" fill="#8B6914" />
+                  <line x1="-15" y1="-6" x2="-3" y2="-6" stroke="#8B6914" stroke-width="0.8" />
+                  <line x1="-15" y1="-1" x2="-3" y2="-1" stroke="#8B6914" stroke-width="0.8" />
+                  <line x1="-15" y1="4" x2="-3" y2="4" stroke="#8B6914" stroke-width="0.8" />
+                  <line x1="3" y1="-6" x2="15" y2="-6" stroke="#8B6914" stroke-width="0.8" />
+                  <line x1="3" y1="-1" x2="15" y2="-1" stroke="#8B6914" stroke-width="0.8" />
+                  <line x1="3" y1="4" x2="15" y2="4" stroke="#8B6914" stroke-width="0.8" />
                 </g>
-                <text x="50" y="82" text-anchor="middle" font-size="6.5" font-weight="bold" fill="#1E3A5F" font-family="serif" letter-spacing="0.5">CHURCH OF CHRIST</text>
+                <text
+                  x="50"
+                  y="82"
+                  text-anchor="middle"
+                  font-size="6.5"
+                  font-weight="bold"
+                  fill="#1E3A5F"
+                  font-family="serif"
+                  letter-spacing="0.5"
+                >
+                  CHURCH OF CHRIST
+                </text>
               </svg>
             </div>
             <div>
@@ -62,9 +84,7 @@
             <li class="flex items-start gap-3">
               <Icon icon="mdi:map-marker-outline" class="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
               <div>
-                <p class="text-sm font-medium text-gray-900">
-                  7b Esa Atan, Ext. Ikot Ekpene
-                </p>
+                <p class="text-sm font-medium text-gray-900">7b Esa Atan, Ext. Ikot Ekpene</p>
                 <p class="text-xs text-gray-500">Akwa Ibom State, Nigeria</p>
               </div>
             </li>
@@ -93,13 +113,12 @@
 
         <!-- Right: Map embed -->
         <div class="flex-1">
-          <MapEmbed
-            address="7b Esa Atan, Ikot Ekpene, Akwa Ibom State, Nigeria"
-            height="100%"
-          />
+          <MapEmbed address="7b Esa Atan, Ikot Ekpene, Akwa Ibom State, Nigeria" height="100%" />
           <!-- Fallback visible if iframe is blocked -->
           <noscript>
-            <div class="flex h-[280px] flex-col items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-400">
+            <div
+              class="flex h-[280px] flex-col items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-400"
+            >
               <Icon icon="mdi:map-marker-outline" class="mb-2 h-10 w-10" />
               <p class="text-sm">7b Esa Atan, Ikot Ekpene, Akwa Ibom State</p>
             </div>

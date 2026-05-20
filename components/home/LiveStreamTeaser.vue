@@ -11,23 +11,25 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 <template>
   <section ref="sectionRef" class="teaser-section" aria-label="Live worship stream">
     <div class="teaser-container">
-
       <!-- Heading -->
-      <h2 :class="['teaser-heading', 'reveal', isVisible && 'is-visible']">Join Our Live Worship</h2>
+      <h2 :class="['teaser-heading', 'reveal', isVisible && 'is-visible']">
+        Join Our Live Worship
+      </h2>
       <p :class="['teaser-sub', 'reveal', 'delay-100', isVisible && 'is-visible']">
-        Join us for live sessions to explore the teachings of God, or catch up by watching recordings of previous sessions.
+        Join us for live sessions to explore the teachings of God, or catch up by watching
+        recordings of previous sessions.
       </p>
 
       <!-- Two-column grid -->
       <div class="teaser-grid">
-
         <!-- ── Left: live card ───────────────────────────────────────── -->
         <div :class="['live-card', 'reveal-left', 'delay-200', isVisible && 'is-visible']">
-
           <!-- Dark preview area -->
           <div
             class="live-preview"
-            :aria-label="isLive && stream ? `Current live stream: ${stream.title}` : 'No live stream active'"
+            :aria-label="
+              isLive && stream ? `Current live stream: ${stream.title}` : 'No live stream active'
+            "
           >
             <!-- Background image -->
             <img
@@ -44,22 +46,61 @@ const { el: sectionRef, isVisible } = useScrollReveal()
             <div class="live-content">
               <!-- Radio wave SVG -->
               <svg
-                width="52" height="52" viewBox="0 0 52 52"
-                fill="none" xmlns="http://www.w3.org/2000/svg"
+                width="52"
+                height="52"
+                viewBox="0 0 52 52"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
                 :style="isLive ? '' : 'opacity: 0.4'"
               >
                 <!-- Center dot -->
                 <circle cx="26" cy="26" r="4" fill="white" />
                 <!-- Inner arc -->
-                <path d="M18 26 a8 8 0 0 1 8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="1" />
-                <path d="M34 26 a8 8 0 0 0-8-8" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="1" />
+                <path
+                  d="M18 26 a8 8 0 0 1 8-8"
+                  stroke="white"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  opacity="1"
+                />
+                <path
+                  d="M34 26 a8 8 0 0 0-8-8"
+                  stroke="white"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  opacity="1"
+                />
                 <!-- Mid arc -->
-                <path d="M12 26 a14 14 0 0 1 14-14" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7" />
-                <path d="M40 26 a14 14 0 0 0-14-14" stroke="white" stroke-width="2" stroke-linecap="round" opacity="0.7" />
+                <path
+                  d="M12 26 a14 14 0 0 1 14-14"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  opacity="0.7"
+                />
+                <path
+                  d="M40 26 a14 14 0 0 0-14-14"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  opacity="0.7"
+                />
                 <!-- Outer arc -->
-                <path d="M6 26 a20 20 0 0 1 20-20" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
-                <path d="M46 26 a20 20 0 0 0-20-20" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+                <path
+                  d="M6 26 a20 20 0 0 1 20-20"
+                  stroke="white"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  opacity="0.4"
+                />
+                <path
+                  d="M46 26 a20 20 0 0 0-20-20"
+                  stroke="white"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  opacity="0.4"
+                />
               </svg>
 
               <!-- LIVE NOW badge or offline -->
@@ -73,12 +114,26 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               <p v-else class="live-title">No Live Stream Currently</p>
 
               <!-- Location / offline sub -->
-              <p v-if="isLive" class="live-location">{{ stream?.city ?? 'Ekot Ekpene' }}, Nigeria</p>
-              <p v-else class="live-location" style="opacity: 0.7;">Check back on Sundays at 9:00 AM</p>
+              <p v-if="isLive" class="live-location">
+                {{ stream?.city ?? 'Ekot Ekpene' }}, Nigeria
+              </p>
+              <p v-else class="live-location" style="opacity: 0.7">
+                Check back on Sundays at 9:00 AM
+              </p>
 
               <!-- Viewer count -->
               <div v-if="isLive" class="live-viewers">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -131,11 +186,12 @@ const { el: sectionRef, isVisible } = useScrollReveal()
             :style="{ transitionDelay: isVisible ? `${350 + i * 75}ms` : '0ms' }"
             :aria-label="`${rs.title}, ${rs.date}, ${rs.views} views`"
           >
-            <p class="recent-meta">{{ rs.date }}&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ rs.views.toLocaleString() }} views</p>
+            <p class="recent-meta">
+              {{ rs.date }}&nbsp;&nbsp;&bull;&nbsp;&nbsp;{{ rs.views.toLocaleString() }} views
+            </p>
             <p class="recent-title">{{ rs.title }}</p>
           </NuxtLink>
         </div>
-
       </div>
     </div>
   </section>
@@ -243,8 +299,15 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.4; transform: scale(0.75); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
 }
 
 .live-title {
@@ -304,7 +367,9 @@ const { el: sectionRef, isVisible } = useScrollReveal()
   flex-shrink: 0;
 }
 
-.watch-btn:hover { background: #b91c1c; }
+.watch-btn:hover {
+  background: #b91c1c;
+}
 
 .reminder-btn {
   border: 1px solid #dc2626;
@@ -316,7 +381,9 @@ const { el: sectionRef, isVisible } = useScrollReveal()
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
   flex-shrink: 0;
 }
 
@@ -355,7 +422,9 @@ const { el: sectionRef, isVisible } = useScrollReveal()
   transform: none;
 }
 
-.recent-row:hover { border-color: #93c5fd; }
+.recent-row:hover {
+  border-color: #93c5fd;
+}
 
 .recent-meta {
   font-size: 12px;
@@ -370,7 +439,11 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 }
 
 @media (max-width: 680px) {
-  .teaser-grid { grid-template-columns: 1fr; }
-  .live-preview { height: 220px; }
+  .teaser-grid {
+    grid-template-columns: 1fr;
+  }
+  .live-preview {
+    height: 220px;
+  }
 }
 </style>

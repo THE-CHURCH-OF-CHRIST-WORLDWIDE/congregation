@@ -32,21 +32,41 @@ function normalise(s: string) {
 
 // Map of possible CSV header names → field key
 const HEADER_MAP: Record<string, keyof Omit<ParsedRow, 'raw' | 'errors' | 'valid'>> = {
-  name: 'name', fullname: 'name',
-  gender: 'gender', sex: 'gender',
-  phone: 'phone', phonenumber: 'phone', mobile: 'phone', tel: 'phone',
-  email: 'email', emailaddress: 'email',
-  dob: 'dob', dateofbirth: 'dob', birthdate: 'dob',
-  status: 'status', attendancestatus: 'status', memberstatus: 'status',
-  maritalstatus: 'maritalStatus', marital: 'maritalStatus',
-  dateofbaptism: 'dateOfBaptism', baptismdate: 'dateOfBaptism',
-  dateofregistration: 'dateJoined', datejoined: 'dateJoined', registrationdate: 'dateJoined',
+  name: 'name',
+  fullname: 'name',
+  gender: 'gender',
+  sex: 'gender',
+  phone: 'phone',
+  phonenumber: 'phone',
+  mobile: 'phone',
+  tel: 'phone',
+  email: 'email',
+  emailaddress: 'email',
+  dob: 'dob',
+  dateofbirth: 'dob',
+  birthdate: 'dob',
+  status: 'status',
+  attendancestatus: 'status',
+  memberstatus: 'status',
+  maritalstatus: 'maritalStatus',
+  marital: 'maritalStatus',
+  dateofbaptism: 'dateOfBaptism',
+  baptismdate: 'dateOfBaptism',
+  dateofregistration: 'dateJoined',
+  datejoined: 'dateJoined',
+  registrationdate: 'dateJoined',
   country: 'country',
-  state: 'state', stateoforigin: 'state',
-  lga: 'localGovernment', localgovernment: 'localGovernment', localgovernmentarea: 'localGovernment',
+  state: 'state',
+  stateoforigin: 'state',
+  lga: 'localGovernment',
+  localgovernment: 'localGovernment',
+  localgovernmentarea: 'localGovernment',
   village: 'village',
-  address: 'address', residentialaddress: 'address', fulladdress: 'address',
-  occupation: 'occupation', job: 'occupation',
+  address: 'address',
+  residentialaddress: 'address',
+  fulladdress: 'address',
+  occupation: 'occupation',
+  job: 'occupation',
 }
 
 function parseCSVLine(line: string): string[] {
@@ -56,8 +76,10 @@ function parseCSVLine(line: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i]
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { current += '"'; i++ }
-      else inQuotes = !inQuotes
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"'
+        i++
+      } else inQuotes = !inQuotes
     } else if (ch === ',' && !inQuotes) {
       result.push(current.trim())
       current = ''
@@ -96,11 +118,23 @@ export function useImportCsv() {
 
       const row: ParsedRow = {
         raw,
-        name: '', gender: '', phone: '', email: '', dob: '', status: '',
-        maritalStatus: '', dateOfBaptism: '', dateJoined: '',
-        country: '', state: '', localGovernment: '', village: '',
-        address: '', occupation: '',
-        errors: [], valid: false,
+        name: '',
+        gender: '',
+        phone: '',
+        email: '',
+        dob: '',
+        status: '',
+        maritalStatus: '',
+        dateOfBaptism: '',
+        dateJoined: '',
+        country: '',
+        state: '',
+        localGovernment: '',
+        village: '',
+        address: '',
+        occupation: '',
+        errors: [],
+        valid: false,
       }
 
       for (const [idxStr, field] of Object.entries(colMap)) {
@@ -111,8 +145,7 @@ export function useImportCsv() {
       const errs: string[] = []
       if (!row.name.trim()) errs.push('Name is required')
       if (!row.phone.trim()) errs.push('Phone is required')
-      if (row.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email))
-        errs.push('Invalid email')
+      if (row.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.email)) errs.push('Invalid email')
       if (row.gender && !VALID_GENDERS.includes(row.gender))
         errs.push(`Gender must be Male or Female`)
       if (row.status && !VALID_STATUSES.includes(row.status))

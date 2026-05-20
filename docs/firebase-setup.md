@@ -23,13 +23,13 @@ This guide covers creating a Firebase project and configuring it for use with Co
 
 ```js
 const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
-};
+  apiKey: '...',
+  authDomain: '...',
+  projectId: '...',
+  storageBucket: '...',
+  messagingSenderId: '...',
+  appId: '...',
+}
 ```
 
 Map each value to its corresponding environment variable in `.env`:

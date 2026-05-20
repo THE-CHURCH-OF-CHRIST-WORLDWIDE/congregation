@@ -7,7 +7,12 @@ defineProps<{
 }>()
 
 function initials(name: string): string {
-  return name.split(' ').map(n => n[0] ?? '').join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((n) => n[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 
 function onImgError(e: Event) {
@@ -44,7 +49,7 @@ function onImgError(e: Event) {
     </div>
 
     <!-- Divider -->
-    <div class="w-px bg-white/20 self-stretch" ></div>
+    <div class="w-px bg-white/20 self-stretch"></div>
 
     <!-- Speakers group -->
     <div>

@@ -12,7 +12,20 @@ const chartMode = ref<'weekly' | 'monthly'>('monthly')
 const chartService = ref('Sunday Worship')
 
 const serviceOptions = ['Sunday Worship', 'Sunday School', 'Bible Class', 'Prayer Meeting']
-const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTH_LABELS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 // ─── Live chart data reacts to both chartMode and chartService ─────────────
 const chartTitle = computed(() =>
@@ -27,7 +40,10 @@ const greeting = computed(() => {
 })
 
 onMounted(() => {
-  setHeader(`Welcome - ${greeting.value}`, 'Showing summary and daily attendance for all Sundays in December 2025')
+  setHeader(
+    `Welcome - ${greeting.value}`,
+    'Showing summary and daily attendance for all Sundays in December 2025'
+  )
 })
 
 const sparkBase = [40, 55, 45, 70, 60, 80, 75, 90, 85, 95, 88, 100]
@@ -82,17 +98,13 @@ const barChartData = computed<ChartData<'bar'>>(() => {
         {
           label: 'Present',
           data: data.map((d) => d.present),
-          backgroundColor: data.map((_, i) =>
-            i === currentMonthIdx ? '#2563eb' : '#bfdbfe'
-          ),
+          backgroundColor: data.map((_, i) => (i === currentMonthIdx ? '#2563eb' : '#bfdbfe')),
           borderRadius: 4,
         },
         {
           label: 'Absent',
           data: data.map((d) => d.total - d.present),
-          backgroundColor: data.map((_, i) =>
-            i === currentMonthIdx ? '#f87171' : '#fecaca'
-          ),
+          backgroundColor: data.map((_, i) => (i === currentMonthIdx ? '#f87171' : '#fecaca')),
           borderRadius: 4,
         },
       ],
@@ -105,17 +117,13 @@ const barChartData = computed<ChartData<'bar'>>(() => {
         {
           label: 'Present',
           data: data.map((d) => d.present),
-          backgroundColor: data.map((_, i) =>
-            i === data.length - 1 ? '#2563eb' : '#bfdbfe'
-          ),
+          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#2563eb' : '#bfdbfe')),
           borderRadius: 4,
         },
         {
           label: 'Absent',
           data: data.map((d) => d.total - d.present),
-          backgroundColor: data.map((_, i) =>
-            i === data.length - 1 ? '#f87171' : '#fecaca'
-          ),
+          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#f87171' : '#fecaca')),
           borderRadius: 4,
         },
       ],
@@ -156,11 +164,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
   <div class="flex flex-col gap-5">
     <!-- Stats row -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      <StatsCard
-        v-for="card in statsCards"
-        :key="card.title"
-        v-bind="card"
-      />
+      <StatsCard v-for="card in statsCards" :key="card.title" v-bind="card" />
     </div>
 
     <!-- Middle row: chart + recent uploads -->
@@ -189,7 +193,12 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
             <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
           </select>
         </div>
-        <BarChart :key="`${chartMode}-${chartService}`" :data="barChartData" :options="barOptions" :height="240" />
+        <BarChart
+          :key="`${chartMode}-${chartService}`"
+          :data="barChartData"
+          :options="barOptions"
+          :height="240"
+        />
       </Card>
 
       <!-- Recent uploads -->

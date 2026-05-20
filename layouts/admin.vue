@@ -45,7 +45,9 @@ async function logout() {
       <!-- Logo -->
       <div class="px-4 pt-5 pb-4 border-b border-gray-100">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
+          <div
+            class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0"
+          >
             <Icon icon="mdi:church" class="text-white text-lg" />
           </div>
           <div>
@@ -80,7 +82,9 @@ async function logout() {
 
       <!-- Bottom section -->
       <div class="border-t border-gray-100 px-3 py-4">
-        <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wide px-3 mb-2">Section Title</p>
+        <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wide px-3 mb-2">
+          Section Title
+        </p>
         <NuxtLink
           to="/"
           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
@@ -101,7 +105,9 @@ async function logout() {
     <!-- Main area -->
     <div class="flex flex-col flex-1 min-w-0 lg:ml-60">
       <!-- Topbar -->
-      <header class="sticky top-0 z-10 h-14 bg-white border-b border-gray-200 flex items-center px-4 lg:px-6 gap-3">
+      <header
+        class="sticky top-0 z-10 h-14 bg-white border-b border-gray-200 flex items-center px-4 lg:px-6 gap-3"
+      >
         <button
           class="lg:hidden p-1.5 rounded-md hover:bg-gray-100 text-gray-500"
           aria-label="Toggle sidebar"
@@ -118,7 +124,7 @@ async function logout() {
       <!-- Page content -->
       <main class="flex-1 overflow-y-auto">
         <div class="p-4 lg:p-6">
-          <slot ></slot>
+          <slot></slot>
         </div>
       </main>
     </div>

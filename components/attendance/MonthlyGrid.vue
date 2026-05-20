@@ -5,13 +5,29 @@ const selectedYear = ref('2025')
 const selectedService = ref('Sunday Worship')
 
 const serviceOptions = [
-  'Sunday Worship', 'Sunday School', 'Bible Class', 'Prayer Meeting',
-  'Youth Class', "Leaders' Class", 'Evangelism', 'Singing Practice',
+  'Sunday Worship',
+  'Sunday School',
+  'Bible Class',
+  'Prayer Meeting',
+  'Youth Class',
+  "Leaders' Class",
+  'Evangelism',
+  'Singing Practice',
 ]
 
 const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ]
 
 const monthlyData = computed(() => {
@@ -56,7 +72,9 @@ const monthlyData = computed(() => {
       >
         <div class="flex items-center justify-between mb-3">
           <h4 class="text-sm font-semibold text-gray-800">{{ month.label }}</h4>
-          <button class="text-gray-400 hover:text-gray-600"><Icon icon="mdi:dots-vertical" /></button>
+          <button class="text-gray-400 hover:text-gray-600">
+            <Icon icon="mdi:dots-vertical" />
+          </button>
         </div>
 
         <div class="mb-3">
@@ -65,7 +83,7 @@ const monthlyData = computed(() => {
             <span class="font-medium">{{ month.attendancePercent }}%</span>
           </div>
           <div class="progress-bar">
-            <div class="progress-bar-fill" :style="{ width: `${month.attendancePercent}%` }" ></div>
+            <div class="progress-bar-fill" :style="{ width: `${month.attendancePercent}%` }"></div>
           </div>
         </div>
 

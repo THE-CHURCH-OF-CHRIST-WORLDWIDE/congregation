@@ -1,6 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
-useSeoMeta({ title: 'Upload Teaching', description: 'Add new Sunday School teachings and sermons to your library.' })
+useSeoMeta({
+  title: 'Upload Teaching',
+  description: 'Add new Sunday School teachings and sermons to your library.',
+})
 
 const { setHeader } = usePageHeader()
 const teachingsStore = useTeachingsStore()
@@ -20,7 +23,6 @@ const categoryColors: Record<string, string> = {
 function getCategoryColor(cat: string) {
   return categoryColors[cat] ?? 'bg-gray-100 text-gray-700'
 }
-
 </script>
 
 <template>
@@ -52,7 +54,9 @@ function getCategoryColor(cat: string) {
                 {{ cat }}
               </span>
             </div>
-            <p class="text-sm font-medium text-gray-800 leading-snug line-clamp-2">{{ sermon.topic }}</p>
+            <p class="text-sm font-medium text-gray-800 leading-snug line-clamp-2">
+              {{ sermon.topic }}
+            </p>
             <button class="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1">
               Read more <Icon icon="mdi:arrow-right" class="text-[10px]" />
             </button>
@@ -66,13 +70,16 @@ function getCategoryColor(cat: string) {
         <h3 class="text-sm font-semibold text-gray-900 mb-3">Upload Tips</h3>
         <ul class="space-y-2">
           <li
-v-for="tip in [
-            'Use clear descriptive titles',
-            'Add detailed descriptions',
-            'Select high quality thumbnails',
-            'Tag content appropriately',
-            'Include sermon references',
-          ]" :key="tip" class="flex items-start gap-2 text-xs text-gray-600">
+            v-for="tip in [
+              'Use clear descriptive titles',
+              'Add detailed descriptions',
+              'Select high quality thumbnails',
+              'Tag content appropriately',
+              'Include sermon references',
+            ]"
+            :key="tip"
+            class="flex items-start gap-2 text-xs text-gray-600"
+          >
             <Icon icon="mdi:circle-small" class="text-blue-500 flex-shrink-0 text-base mt-[-1px]" />
             {{ tip }}
           </li>

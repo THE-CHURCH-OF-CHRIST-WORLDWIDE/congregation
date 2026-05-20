@@ -16,15 +16,15 @@ onMounted(() => {
 
 const name = computed(() => props.churchName ?? settingsStore.settings.name)
 const addr = computed(() => props.address ?? settingsStore.settings.address)
-const image = computed(() =>
-  props.buildingImage ?? (settingsStore.settings.heroImageUrl || '/images/heroImg.png')
+const image = computed(
+  () => props.buildingImage ?? (settingsStore.settings.heroImageUrl || '/images/heroImg.png')
 )
 </script>
 
-
-
 <template>
-  <section class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1E3A5F]">
+  <section
+    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1E3A5F]"
+  >
     <!-- Background image -->
     <img
       :src="image"
@@ -33,7 +33,9 @@ const image = computed(() =>
       loading="eager"
     />
     <!-- Overlay gradient -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-[#1E3A5F]/50 to-[#1E3A5F]/90" ></div>
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-black/60 via-[#1E3A5F]/50 to-[#1E3A5F]/90"
+    ></div>
 
     <!-- Content -->
     <div class="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
@@ -49,10 +51,7 @@ const image = computed(() =>
       >
         {{ name }}
       </h1>
-      <p
-        class="hero-animate mt-4 text-lg text-white/80 md:text-xl"
-        style="animation-delay: 240ms"
-      >
+      <p class="hero-animate mt-4 text-lg text-white/80 md:text-xl" style="animation-delay: 240ms">
         {{ addr }}
       </p>
       <p
@@ -86,7 +85,9 @@ const image = computed(() =>
     </div>
 
     <!-- Scroll indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 animate-bounce">
+    <div
+      class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 animate-bounce"
+    >
       <Icon icon="heroicons:chevron-down" class="h-6 w-6" />
     </div>
   </section>

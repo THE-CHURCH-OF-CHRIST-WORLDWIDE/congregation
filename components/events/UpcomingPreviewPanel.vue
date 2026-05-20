@@ -2,8 +2,8 @@
 const eventsStore = useEventsStore()
 
 const selectedEvent = computed(() => eventsStore.selectedUpcomingEvent)
-const hasGallery = computed(() =>
-  !!selectedEvent.value && selectedEvent.value.galleryImages.length > 0
+const hasGallery = computed(
+  () => !!selectedEvent.value && selectedEvent.value.galleryImages.length > 0
 )
 
 function onExpand(index: number) {
@@ -43,18 +43,13 @@ function onExpand(index: number) {
 
       <div class="text-center">
         <p class="font-medium text-gray-500">No Event Selected</p>
-        <p class="mt-1 text-sm text-gray-400">
-          Select any of the events to preview gallery here
-        </p>
+        <p class="mt-1 text-sm text-gray-400">Select any of the events to preview gallery here</p>
       </div>
     </div>
 
     <!-- Sub-state B: selected event with gallery images -->
     <div v-else class="h-full overflow-hidden rounded-xl">
-      <ImageSlider
-        :images="selectedEvent!.galleryImages"
-        @expand="onExpand"
-      />
+      <ImageSlider :images="selectedEvent!.galleryImages" @expand="onExpand" />
     </div>
   </div>
 </template>

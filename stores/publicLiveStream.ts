@@ -24,16 +24,14 @@ export const usePublicLiveStreamStore = defineStore('publicLiveStream', {
     filteredRecorded(state): RecordedStream[] {
       let items = state.recordedStreams
       if (state.activityFilter !== 'All Church Activities') {
-        items = items.filter(s =>
-          s.serviceType.toLowerCase() === state.activityFilter.toLowerCase(),
+        items = items.filter(
+          (s) => s.serviceType.toLowerCase() === state.activityFilter.toLowerCase()
         )
       }
       if (state.searchQuery.trim()) {
         const q = state.searchQuery.toLowerCase()
         items = items.filter(
-          s =>
-            s.title.toLowerCase().includes(q) ||
-            s.preacher.toLowerCase().includes(q),
+          (s) => s.title.toLowerCase().includes(q) || s.preacher.toLowerCase().includes(q)
         )
       }
       return items
