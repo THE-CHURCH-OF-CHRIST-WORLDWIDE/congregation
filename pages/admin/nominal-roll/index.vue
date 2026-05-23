@@ -101,7 +101,7 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
   <div class="flex flex-col gap-5">
     <!-- Add New Member CTA lives in the admin topbar via teleport, alongside
          the page title rendered by the layout. -->
-    <Teleport to="#admin-header-actions" defer>
+    <Teleport to="#admin-header-actions">
       <Button @click="showAddModal = true">
         Add New Member
         <template #icon-right><Icon icon="mdi:plus" /></template>
