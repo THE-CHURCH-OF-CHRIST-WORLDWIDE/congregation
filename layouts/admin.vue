@@ -106,19 +106,24 @@ async function logout() {
     <div class="flex flex-col flex-1 min-w-0 lg:ml-60">
       <!-- Topbar -->
       <header
-        class="sticky top-0 z-10 h-14 bg-white border-b border-gray-200 flex items-center px-4 lg:px-6 gap-3"
+        class="sticky top-0 z-10 bg-white border-b border-gray-200 px-4 lg:px-6 py-4 flex items-start gap-3"
       >
         <button
-          class="lg:hidden p-1.5 rounded-md hover:bg-gray-100 text-gray-500"
+          class="lg:hidden mt-1 p-1.5 rounded-md hover:bg-gray-100 text-gray-500 shrink-0"
           aria-label="Toggle sidebar"
           @click="uiStore.toggleSidebar()"
         >
           <Icon icon="mdi:menu" class="text-xl" />
         </button>
-        <div class="min-w-0">
-          <h1 class="text-base font-semibold text-gray-900 truncate leading-tight">{{ title }}</h1>
-          <p v-if="subtitle" class="text-xs text-gray-500 truncate">{{ subtitle }}</p>
+        <div class="min-w-0 flex-1">
+          <h1 class="font-serif text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+            {{ title }}
+          </h1>
+          <p v-if="subtitle" class="text-sm text-gray-500 mt-1">{{ subtitle }}</p>
         </div>
+        <!-- Page-level action slot. Pages teleport their CTA(s) here so the
+             header stays a single source of truth for title + actions. -->
+        <div id="admin-header-actions" class="shrink-0 self-center"></div>
       </header>
 
       <!-- Page content -->

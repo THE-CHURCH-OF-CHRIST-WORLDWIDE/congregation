@@ -32,33 +32,57 @@ function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
   membersStore.addMember({ ...member, absenceCount: 0 })
 }
 
+// "Last year" baseline: count members who had joined on or before Dec 31 of the
+// previous year. This isn't a true historical snapshot of status (we don't keep
+// that), but it gives a useful trend signal off the dateJoined column.
+const lastYearCutoff = `${new Date().getFullYear() - 1}-12-31`
+const memberJoinedByLastYear = (m: { dateJoined?: string }) =>
+  !!m.dateJoined && m.dateJoined <= lastYearCutoff
+
+const lastYear = computed(() => {
+  const ms = membersStore.members.filter(memberJoinedByLastYear)
+  return {
+    active: ms.filter((m) => m.status === 'Active').length,
+    sisters: ms.filter((m) => m.gender === 'Female').length,
+    brothers: ms.filter((m) => m.gender === 'Male').length,
+    weak: ms.filter(
+      (m) => m.status === 'Weak' || m.status === 'Distant' || m.status === 'Withdrawal'
+    ).length,
+  }
+})
+
+function pctChange(current: number, prior: number): number {
+  if (!prior) return 0
+  return Math.round(((current - prior) / prior) * 100)
+}
+
 const statCards = computed(() => [
   {
     label: 'Active Members',
     value: membersStore.activeCount,
-    change: 10,
-    subtitle: `${membersStore.members.length - membersStore.activeCount} inactive`,
+    priorValue: lastYear.value.active,
+    change: pctChange(membersStore.activeCount, lastYear.value.active),
     tab: 'active' as const,
   },
   {
     label: 'Sisters',
     value: membersStore.sisterCount,
-    change: -10,
-    subtitle: `${membersStore.brotherCount} brothers`,
+    priorValue: lastYear.value.sisters,
+    change: pctChange(membersStore.sisterCount, lastYear.value.sisters),
     tab: 'sisters' as const,
   },
   {
     label: 'Brothers',
     value: membersStore.brotherCount,
-    change: 10,
-    subtitle: `${membersStore.sisterCount} sisters`,
+    priorValue: lastYear.value.brothers,
+    change: pctChange(membersStore.brotherCount, lastYear.value.brothers),
     tab: 'brothers' as const,
   },
   {
     label: 'Weak Brethren',
     value: membersStore.weakCount,
-    change: 10,
-    subtitle: `${membersStore.members.length - membersStore.weakCount} stable`,
+    priorValue: lastYear.value.weak,
+    change: pctChange(membersStore.weakCount, lastYear.value.weak),
     tab: 'inactive' as const,
   },
 ])
@@ -75,41 +99,59 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
 
 <template>
   <div class="flex flex-col gap-5">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div></div>
+    <!-- Add New Member CTA lives in the admin topbar via teleport, alongside
+         the page title rendered by the layout. -->
+    <Teleport to="#admin-header-actions" defer>
       <Button @click="showAddModal = true">
-        <template #icon-left><Icon icon="mdi:plus" /></template>
         Add New Member
+        <template #icon-right><Icon icon="mdi:plus" /></template>
       </Button>
-    </div>
+    </Teleport>
 
     <!-- Stats row + Donut chart -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <div class="xl:col-span-2 grid grid-cols-2 gap-4">
+      <div class="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card v-for="card in statCards" :key="card.label">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-xs text-gray-500 font-medium">{{ card.label }}</p>
-              <p class="text-3xl font-bold text-gray-900 mt-1">{{ card.value }}</p>
-              <p class="text-xs text-gray-400 mt-1">{{ card.subtitle }}</p>
-            </div>
-            <Badge :variant="card.change >= 0 ? 'success' : 'danger'" size="sm">
-              <template #icon>
+          <div class="flex flex-col gap-2">
+            <!-- Top: title + trend badge -->
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm text-gray-600">{{ card.label }}</p>
+              <span
+                :class="[
+                  'inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium',
+                  card.change > 0 && 'bg-green-50 text-green-600',
+                  card.change < 0 && 'bg-red-50 text-red-600',
+                  card.change === 0 && 'bg-gray-50 text-gray-500',
+                ]"
+              >
                 <Icon
-                  :icon="card.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'"
-                  class="text-[10px]"
+                  :icon="
+                    card.change > 0
+                      ? 'mdi:trending-up'
+                      : card.change < 0
+                        ? 'mdi:trending-down'
+                        : 'mdi:minus'
+                  "
+                  class="text-[12px]"
                 />
-              </template>
-              {{ Math.abs(card.change) }}%
-            </Badge>
+                {{ Math.abs(card.change) }}%
+              </span>
+            </div>
+
+            <!-- Big number -->
+            <p class="text-3xl font-bold text-gray-900">{{ card.value }}</p>
+
+            <!-- Footer: last year + view list -->
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-gray-400">{{ card.priorValue }} last year</span>
+              <button
+                class="font-medium text-gray-700 hover:text-blue-600 cursor-pointer"
+                @click="viewList(card.tab)"
+              >
+                View List
+              </button>
+            </div>
           </div>
-          <button
-            class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer"
-            @click="viewList(card.tab)"
-          >
-            View List
-          </button>
         </Card>
       </div>
       <RoleSummaryChart />

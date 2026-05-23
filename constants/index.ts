@@ -46,6 +46,36 @@ export const SERVICE_TYPES: ServiceType[] = [
   "Leaders' Class",
 ]
 
+/**
+ * Each service's metadata: URL slug and the day of the week it meets
+ * (0 = Sunday, 1 = Monday, ..., 6 = Saturday). The slug is the canonical
+ * identifier used in routes like /admin/attendance/[service].
+ */
+export interface ServiceConfig {
+  name: ServiceType
+  slug: string
+  dayOfWeek: number
+}
+
+export const SERVICE_CONFIGS: ServiceConfig[] = [
+  { name: 'Sunday Worship', slug: 'sunday-worship', dayOfWeek: 0 },
+  { name: 'Sunday School', slug: 'sunday-school', dayOfWeek: 0 },
+  { name: 'Bible Class', slug: 'bible-class', dayOfWeek: 3 }, // Wednesday
+  { name: 'Prayer Meeting', slug: 'prayer-meeting', dayOfWeek: 5 }, // Friday
+  { name: 'Youth Class', slug: 'youth-class', dayOfWeek: 6 }, // Saturday
+  { name: 'Singing Practice', slug: 'singing-practice', dayOfWeek: 6 },
+  { name: 'Evangelism', slug: 'evangelism', dayOfWeek: 5 },
+  { name: "Leaders' Class", slug: 'leaders-class', dayOfWeek: 1 }, // Monday
+]
+
+export function serviceBySlug(slug: string): ServiceConfig | undefined {
+  return SERVICE_CONFIGS.find((s) => s.slug === slug)
+}
+
+export function serviceByName(name: string): ServiceConfig | undefined {
+  return SERVICE_CONFIGS.find((s) => s.name === name)
+}
+
 // ─── Finance ──────────────────────────────────────────────────────────────────
 
 export const EXPENSE_CATEGORIES: ExpenseCategory[] = [

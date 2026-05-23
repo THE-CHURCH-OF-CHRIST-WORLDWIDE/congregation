@@ -167,9 +167,8 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
       <StatsCard v-for="card in statsCards" :key="card.title" v-bind="card" />
     </div>
 
-    <!-- Middle row: chart + recent uploads -->
+    <!-- Attendance chart + Recent video uploads, side-by-side -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <!-- Attendance trend chart -->
       <Card class="xl:col-span-2">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
           <div>
@@ -200,12 +199,15 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
           :height="240"
         />
       </Card>
-
-      <!-- Recent uploads -->
-      <RecentUploads />
+      <RecentVideoUploads />
     </div>
 
-    <!-- Backslider table -->
-    <BacksliderTable />
+    <!-- Backslider table + Recent sermon uploads, side-by-side -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <div class="xl:col-span-2">
+        <BacksliderTable />
+      </div>
+      <RecentUploads />
+    </div>
   </div>
 </template>

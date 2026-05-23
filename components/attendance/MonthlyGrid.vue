@@ -1,18 +1,11 @@
 <script setup lang="ts">
+import { SERVICE_CONFIGS, serviceByName } from '~/constants'
+
 const attendanceStore = useAttendanceStore()
 
-const serviceOptions = [
-  'Sunday Worship',
-  'Sunday School',
-  'Bible Class',
-  'Prayer Meeting',
-  'Youth Class',
-  "Leaders' Class",
-  'Evangelism',
-  'Singing Practice',
-]
+const serviceOptions = SERVICE_CONFIGS.map((s) => s.name)
 
-const selectedService = ref(serviceOptions[0]!)
+const selectedService = ref<string>(serviceOptions[0]!)
 const selectedYear = ref('2025')
 
 // Build year options dynamically from the records that actually exist, so the
@@ -48,7 +41,11 @@ const monthlyData = computed(() =>
   }))
 )
 
-const serviceSlug = computed(() => selectedService.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
+const serviceSlug = computed(
+  () =>
+    serviceByName(selectedService.value)?.slug ??
+    selectedService.value.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+)
 
 const headerText = computed(
   () => `Showing 12 months of ${selectedService.value} attendance for ${selectedYear.value}`
@@ -77,54 +74,66 @@ const headerText = computed(
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="month in monthlyData"
         :key="month.month"
-        class="border border-gray-100 rounded-xl p-4 hover:border-blue-200 transition-colors"
+        class="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 hover:border-blue-200 transition-colors"
       >
-        <div class="flex items-center justify-between mb-3">
-          <h4 class="text-sm font-semibold text-gray-800">{{ month.label }}</h4>
-          <button class="text-gray-400 hover:text-gray-600">
+        <!-- Header: Month Year + menu -->
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-sm font-semibold text-gray-900">{{ month.label }} {{ selectedYear }}</h4>
+          <button
+            class="text-gray-400 hover:text-gray-600 p-0.5"
+            :aria-label="`Options for ${month.label}`"
+          >
             <Icon icon="mdi:dots-vertical" />
           </button>
         </div>
 
-        <div class="mb-3">
-          <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
-            <span>{{ selectedService }}</span>
-            <span class="font-medium">{{ month.rate }}%</span>
+        <!-- Service + percentage + progress -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between text-sm mb-1.5">
+            <span class="text-gray-700">{{ selectedService }}</span>
+            <span class="font-semibold" style="color: #0ba5ec">{{ month.rate }}%</span>
           </div>
           <div class="progress-bar">
             <div class="progress-bar-fill" :style="{ width: `${month.rate}%` }"></div>
           </div>
         </div>
 
-        <div class="flex gap-4 text-xs text-gray-600">
-          <div>
-            <p class="text-gray-400">Sessions</p>
-            <p class="font-semibold text-gray-900 text-base">{{ month.sessions }}</p>
+        <!-- Stat boxes -->
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="rounded-xl bg-blue-50/60 p-3">
+            <p class="text-xs text-gray-500">Sessions</p>
+            <p class="mt-1 text-lg font-bold text-gray-900">{{ month.sessions }}</p>
           </div>
-          <div>
-            <p class="text-gray-400">Present</p>
-            <p class="font-semibold text-gray-900 text-base">{{ month.present }}</p>
-          </div>
-          <div>
-            <p class="text-gray-400">Total</p>
-            <p class="font-semibold text-gray-900 text-base">{{ month.total }}</p>
+          <div class="rounded-xl bg-blue-50/60 p-3">
+            <p class="text-xs text-gray-500">Present</p>
+            <p class="mt-1 text-lg font-bold text-gray-900">{{ month.present }}</p>
           </div>
         </div>
 
+        <!-- View Details CTA -->
         <NuxtLink
-          v-if="month.sessions > 0"
           :to="`/admin/attendance/${serviceSlug}?month=${month.month}`"
-          class="mt-3 text-xs text-blue-600 hover:underline flex items-center gap-1"
+          class="view-details-btn mt-auto inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors"
+          :aria-label="`View ${selectedService} attendance details for ${month.label} ${selectedYear}`"
         >
           View Details
-          <Icon icon="mdi:arrow-right" class="text-xs" />
+          <Icon icon="mdi:arrow-right" class="text-base" />
         </NuxtLink>
-        <p v-else class="mt-3 text-xs text-gray-400">No records yet</p>
       </div>
     </div>
   </Card>
 </template>
+
+<style scoped>
+.view-details-btn {
+  border-color: #0ba5ec;
+  color: #0ba5ec;
+}
+.view-details-btn:hover {
+  background-color: rgba(11, 165, 236, 0.08);
+}
+</style>

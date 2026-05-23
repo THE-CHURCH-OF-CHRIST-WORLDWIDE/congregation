@@ -43,10 +43,15 @@ function doExport() {
         </h3>
         <p class="text-xs text-gray-400 mt-0.5">Members absent 3 or more times</p>
       </div>
-      <Button variant="secondary" size="sm" @click="doExport">
-        <template #icon-left><Icon icon="mdi:upload-outline" class="text-base" /></template>
+      <button
+        class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors"
+        style="border-color: #0ba5ec; color: #0ba5ec"
+        :aria-label="`Export ${filtered.length} backsliders to CSV`"
+        @click="doExport"
+      >
+        <Icon icon="mdi:upload-outline" class="text-base" />
         Export CSV
-      </Button>
+      </button>
     </div>
 
     <div class="p-4 flex gap-2">
@@ -64,7 +69,7 @@ function doExport() {
         />
       </div>
       <Button variant="secondary" size="sm">
-        <template #icon-left><Icon icon="mdi:filter-outline" class="text-base" /></template>
+        <template #icon-left><Icon icon="mdi:filter-variant" class="text-base" /></template>
         Filter
       </Button>
     </div>
@@ -113,7 +118,8 @@ function doExport() {
             <td class="px-4 py-3">
               <a
                 :href="`tel:${member.phone}`"
-                class="text-blue-600 hover:underline text-sm font-medium"
+                class="hover:underline text-sm font-medium"
+                style="color: #0ba5ec"
                 :aria-label="`Contact ${member.name}`"
               >
                 Contact member

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ChartData, ChartOptions } from 'chart.js'
+import type { ChartData } from 'chart.js'
 
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Attendance', description: 'Church attendance tracker and analytics.' })
@@ -54,39 +54,7 @@ const lineChartData = computed<ChartData<'line'>>(() => {
   }
 })
 
-const performanceData = computed<ChartData<'bar'>>(() => ({
-  labels: [
-    'Sunday Worship',
-    'Bible Class',
-    'Youth Class',
-    'Singing Practice',
-    "Leaders' Class",
-    'Evangelism',
-  ],
-  datasets: [
-    {
-      label: 'Attendance %',
-      data: [90, 80, 35, 30, 20, 45],
-      backgroundColor: ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
-      borderRadius: 4,
-    },
-  ],
-}))
-
-const horizontalBarOptions: ChartOptions<'bar'> = {
-  indexAxis: 'y',
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { display: false }, tooltip: { mode: 'index' } },
-  scales: {
-    x: {
-      grid: { color: '#f3f4f6' },
-      ticks: { callback: (v) => `${v}%`, font: { size: 10 } },
-      max: 100,
-    },
-    y: { grid: { display: false }, ticks: { font: { size: 10 } } },
-  },
-}
+const currentYear = String(new Date().getFullYear())
 
 function doExport() {
   exportCSV(
@@ -133,12 +101,7 @@ function doImport() {
         <LineChart :data="lineChartData" :height="260" />
       </Card>
 
-      <Card>
-        <h3 class="text-sm font-semibold text-gray-900 mb-4">
-          Attendance Performance per Activity for 2025
-        </h3>
-        <BarChart :data="performanceData" :options="horizontalBarOptions" :height="260" />
-      </Card>
+      <AttendancePerformance :year="currentYear" />
     </div>
 
     <!-- Check-in buttons -->

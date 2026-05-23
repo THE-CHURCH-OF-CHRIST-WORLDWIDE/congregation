@@ -15,7 +15,7 @@ withDefaults(defineProps<Props>(), {
 })
 
 const variantClasses = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
+  primary: 'bg-[#0BA5EC] text-white hover:bg-[#0992D2] focus:ring-[#0BA5EC]',
   secondary: 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-gray-400',
   danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   ghost: 'text-gray-600 hover:bg-gray-100 focus:ring-gray-400',
