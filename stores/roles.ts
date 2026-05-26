@@ -158,14 +158,19 @@ export const useRolesStore = defineStore('roles', () => {
   // ── Role CRUD ───────────────────────────────────────────────────────────────
   function updateRolePermissions(roleId: string, permissions: RolePermissions) {
     const idx = roles.value.findIndex((r) => r.id === roleId)
-    if (idx !== -1) roles.value[idx] = { ...roles.value[idx]!, permissions }
+    if (idx === -1) return
+    roles.value[idx] = { ...roles.value[idx]!, permissions }
+    useToast().success(`${roles.value[idx]!.name} permissions updated`)
   }
 
   // ── Assignment CRUD ─────────────────────────────────────────────────────────
   function assignRole(memberId: string, roleId: string, customPermissions?: RolePermissions) {
     // Prevent duplicate assignment of same role to same member
     const exists = assignments.value.find((a) => a.memberId === memberId && a.roleId === roleId)
-    if (exists) return
+    if (exists) {
+      useToast().warning('Role already assigned to this member')
+      return
+    }
 
     assignments.value.push({
       id: String(Date.now()),
@@ -174,15 +179,21 @@ export const useRolesStore = defineStore('roles', () => {
       customPermissions,
       assignedAt: new Date().toISOString().slice(0, 10),
     })
+    const roleName = roles.value.find((r) => r.id === roleId)?.name ?? 'Role'
+    useToast().success(`${roleName} assigned`)
   }
 
   function revokeAssignment(assignmentId: string) {
+    const existed = assignments.value.some((a) => a.id === assignmentId)
     assignments.value = assignments.value.filter((a) => a.id !== assignmentId)
+    if (existed) useToast().success('Role revoked')
   }
 
   function updateCustomPermissions(assignmentId: string, customPermissions: RolePermissions) {
     const idx = assignments.value.findIndex((a) => a.id === assignmentId)
-    if (idx !== -1) assignments.value[idx] = { ...assignments.value[idx]!, customPermissions }
+    if (idx === -1) return
+    assignments.value[idx] = { ...assignments.value[idx]!, customPermissions }
+    useToast().success('Custom permissions updated')
   }
 
   return {

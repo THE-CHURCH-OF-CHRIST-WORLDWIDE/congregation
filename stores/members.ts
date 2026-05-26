@@ -87,15 +87,20 @@ export const useMembersStore = defineStore('members', () => {
   function addMember(member: Omit<Member, 'id'>) {
     const id = String(Date.now())
     members.value.push({ ...member, id })
+    useToast().success(`${member.name || 'Member'} added`)
   }
 
   function updateMember(id: string, updates: Partial<Member>) {
     const idx = members.value.findIndex((m) => m.id === id)
-    if (idx !== -1) members.value[idx] = { ...members.value[idx], ...updates } as Member
+    if (idx === -1) return
+    members.value[idx] = { ...members.value[idx], ...updates } as Member
+    useToast().success(`${members.value[idx]!.name} updated`)
   }
 
   function deleteMember(id: string) {
+    const name = members.value.find((m) => m.id === id)?.name
     members.value = members.value.filter((m) => m.id !== id)
+    if (name) useToast().success(`${name} deleted`)
   }
 
   function setFilter(partial: Partial<MemberFilters>) {

@@ -92,7 +92,7 @@ input[type='checkbox'].attendance-check {
 .progress-bar-fill {
   height: 100%;
   border-radius: 3px;
-  background: #2563eb;
+  background: #0ba5ec;
   transition: width 0.3s ease;
 }
 

@@ -2,10 +2,13 @@
 interface Props {
   serviceType?: string
   month?: string
+  /** Day of the week this service meets (0 = Sunday … 6 = Saturday). */
+  dayOfWeek?: number
 }
 const props = withDefaults(defineProps<Props>(), {
   serviceType: 'Sunday Worship',
   month: '2025-12',
+  dayOfWeek: 0,
 })
 
 const attendanceStore = useAttendanceStore()
@@ -15,17 +18,28 @@ const { exportCSV } = useExportCSV()
 const searchQuery = ref('')
 const hasChanged = ref(false)
 
-// Get all Sundays for this month
+// Get every meeting date for this service in this month. Combines:
+// 1. The service's scheduled day-of-week (e.g. Wednesdays for Bible Class).
+// 2. Any other dates that already have records for this month + service, so
+//    off-schedule meetings the user already recorded still get a column.
 const sundaysInMonth = computed(() => {
   const year = parseInt(props.month.substring(0, 4), 10)
   const mon = parseInt(props.month.substring(5, 7), 10)
-  const dates: string[] = []
+  const dates = new Set<string>()
   const d = new Date(year, mon - 1, 1)
   while (d.getMonth() === mon - 1) {
-    if (d.getDay() === 0) dates.push(d.toISOString().slice(0, 10))
+    // formatDate(_, 'iso') uses local-time components, avoiding the UTC offset
+    // bug that toISOString causes — critical so the date strings match the
+    // (locally-formatted) dates already in records.
+    if (d.getDay() === props.dayOfWeek) dates.add(formatDate(d, 'iso'))
     d.setDate(d.getDate() + 1)
   }
-  return dates
+  for (const r of attendanceStore.records) {
+    if (r.serviceType === props.serviceType && r.date.startsWith(props.month)) {
+      dates.add(r.date)
+    }
+  }
+  return [...dates].sort()
 })
 
 const filteredMembers = computed(() => {
@@ -35,26 +49,21 @@ const filteredMembers = computed(() => {
   )
 })
 
-function getRecord(memberId: string, date: string) {
-  return attendanceStore.records.find(
-    (r) => r.memberId === memberId && r.date === date && r.serviceType === props.serviceType
-  )
-}
-
 function isPresent(memberId: string, date: string) {
-  return getRecord(memberId, date)?.present ?? false
+  return attendanceStore.findRecord(memberId, date, props.serviceType)?.present ?? false
 }
 
 function toggle(memberId: string, date: string) {
-  const record = getRecord(memberId, date)
-  if (record) {
-    attendanceStore.toggleAttendance(record.id)
-    hasChanged.value = true
-  }
+  attendanceStore.toggleForMemberDate(memberId, date, props.serviceType)
+  hasChanged.value = true
 }
 
 function getMonthlySummary(memberId: string) {
-  return attendanceStore.memberMonthlySummary(memberId, props.month, props.serviceType)
+  const dates = sundaysInMonth.value
+  const sessionsTotal = dates.length
+  const sessionsPresent = dates.reduce((n, d) => (isPresent(memberId, d) ? n + 1 : n), 0)
+  const percentage = sessionsTotal ? Math.round((sessionsPresent / sessionsTotal) * 100) : 0
+  return { sessionsTotal, sessionsPresent, percentage }
 }
 
 function save() {

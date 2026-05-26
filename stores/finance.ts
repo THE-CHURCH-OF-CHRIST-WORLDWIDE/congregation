@@ -56,20 +56,26 @@ function seedCollections(): FinanceCollection[] {
 }
 
 const EXPENSE_CATEGORIES: ExpenseCategory[] = [
-  'Maintenance',
-  'Utilities',
+  'Building',
+  'Evangelism',
   'Welfare',
-  'Outreach',
-  'Stationery',
-  'Other',
+  'Technical',
+  'Youth',
+  'Preacher',
+  'Edification',
+  'Media',
+  'Others',
 ]
 const EXPENSE_DESCS: Record<ExpenseCategory, string[]> = {
-  Maintenance: ['Building repairs', 'Generator service', 'Painting', 'Plumbing'],
-  Utilities: ['Electricity bill', 'Water bill', 'Internet subscription'],
+  Building: ['Building repairs', 'Painting', 'Plumbing', 'Generator service'],
+  Evangelism: ['Evangelism materials', 'Transport for outreach', 'Tracts printing'],
   Welfare: ['Sick member assistance', 'Burial support', 'Food provisions'],
-  Outreach: ['Evangelism materials', 'Transport for outreach', 'Tracts printing'],
-  Stationery: ['Office supplies', 'Printing paper', 'Pens and notebooks'],
-  Other: ['Miscellaneous', 'Emergency fund', 'Donation'],
+  Technical: ['Sound system maintenance', 'Equipment repairs', 'Generator service'],
+  Youth: ['Youth retreat', 'Youth class materials', 'Camp logistics'],
+  Preacher: ['Preacher stipend', 'Travel allowance', 'Hospitality'],
+  Edification: ['Bible study materials', 'Training resources', 'Library books'],
+  Media: ['Streaming subscription', 'Camera repairs', 'Recording supplies'],
+  Others: ['Miscellaneous', 'Emergency fund', 'Donation'],
 }
 
 function seedExpenses(): FinanceExpense[] {
@@ -189,18 +195,24 @@ export const useFinanceStore = defineStore('finance', () => {
   // ── CRUD ───────────────────────────────────────────────────────────────────
   function addCollection(entry: Omit<FinanceCollection, 'id'>) {
     collections.value.push({ ...entry, id: String(Date.now()) })
+    useToast().success('Collection recorded')
   }
 
   function addExpense(entry: Omit<FinanceExpense, 'id'>) {
     expenses.value.push({ ...entry, id: String(Date.now()) })
+    useToast().success('Expense recorded')
   }
 
   function deleteCollection(id: string) {
+    const existed = collections.value.some((c) => c.id === id)
     collections.value = collections.value.filter((c) => c.id !== id)
+    if (existed) useToast().success('Collection deleted')
   }
 
   function deleteExpense(id: string) {
+    const existed = expenses.value.some((e) => e.id === id)
     expenses.value = expenses.value.filter((e) => e.id !== id)
+    if (existed) useToast().success('Expense deleted')
   }
 
   // ── Report rows (for export) ───────────────────────────────────────────────

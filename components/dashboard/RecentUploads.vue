@@ -6,35 +6,47 @@ const sermons = computed(() => teachingsStore.recentSermons)
 
 <template>
   <Card class="h-full">
-    <h3 class="text-sm font-semibold text-gray-900 mb-4">Recent Video Uploads</h3>
-    <div v-if="sermons.length" class="space-y-3">
-      <div v-for="sermon in sermons" :key="sermon.id" class="flex items-start gap-3">
-        <div
-          class="flex-shrink-0 bg-pink-500 text-white text-xs font-bold rounded-lg px-2 py-1.5 text-center min-w-[64px]"
+    <h3 class="text-base font-semibold text-gray-900 mb-4">Recent Sermon Uploads</h3>
+
+    <div v-if="sermons.length" class="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
+      <article
+        v-for="sermon in sermons"
+        :key="sermon.id"
+        class="rounded-xl border border-gray-100 bg-white p-4 hover:border-blue-100 transition-colors"
+      >
+        <!-- Category chips -->
+        <div v-if="sermon.categories.length" class="flex flex-wrap gap-1.5 mb-2">
+          <span
+            v-for="cat in sermon.categories.slice(0, 3)"
+            :key="cat"
+            class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium"
+            style="color: #0ba5ec"
+          >
+            {{ cat }}
+          </span>
+        </div>
+
+        <!-- Title -->
+        <p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">
+          {{ sermon.topic }}
+        </p>
+
+        <!-- Read more link -->
+        <NuxtLink
+          to="/admin/teachings"
+          class="mt-2 inline-flex items-center gap-1 text-sm font-medium"
+          style="color: #0ba5ec"
+          :aria-label="`Read ${sermon.topic}`"
         >
-          <p class="text-sm leading-tight">{{ sermon.videoAttendees ?? 0 }}</p>
-          <p class="text-[10px] font-medium">attendees</p>
-        </div>
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium text-gray-800 leading-tight line-clamp-1">
-            {{ sermon.topic }}
-          </p>
-          <div class="flex items-center gap-1 mt-1 text-gray-400">
-            <Icon icon="mdi:calendar-outline" class="text-xs flex-shrink-0" />
-            <span class="text-xs">{{ formatDate(sermon.date, 'numeric') }}</span>
-          </div>
-        </div>
-      </div>
+          Read more
+          <Icon icon="mdi:arrow-right" class="text-sm" />
+        </NuxtLink>
+      </article>
     </div>
-    <div v-else class="text-center py-6 text-gray-400">
+
+    <div v-else class="text-center py-8 text-gray-400">
       <Icon icon="mdi:video-outline" class="text-3xl mb-2" />
       <p class="text-sm">No uploads yet</p>
     </div>
-    <NuxtLink
-      to="/admin/teachings"
-      class="block text-center text-xs text-blue-600 hover:underline mt-4"
-    >
-      View all →
-    </NuxtLink>
   </Card>
 </template>

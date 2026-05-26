@@ -84,12 +84,15 @@ export type ServiceType =
   | "Leaders' Class"
 
 export type ExpenseCategory =
-  | 'Maintenance'
-  | 'Utilities'
+  | 'Building'
+  | 'Evangelism'
   | 'Welfare'
-  | 'Outreach'
-  | 'Stationery'
-  | 'Other'
+  | 'Technical'
+  | 'Youth'
+  | 'Preacher'
+  | 'Edification'
+  | 'Media'
+  | 'Others'
 
 export interface FinanceCollection {
   id: string

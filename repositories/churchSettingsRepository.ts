@@ -163,19 +163,62 @@ export interface ChurchSettings {
 
 const COLLECTION = 'settings'
 const DOCUMENT = 'church'
+const LOCAL_STORAGE_KEY = 'congregation:churchSettings'
+
+function isFirebaseConfigured(): boolean {
+  const cfg = useRuntimeConfig().public
+  const key = cfg.firebaseApiKey
+  const project = cfg.firebaseProjectId
+  if (!key || !project) return false
+  // Detect the placeholder values in .env.example so dev never tries to hit Firebase
+  if (typeof key === 'string' && key.startsWith('your_')) return false
+  if (typeof project === 'string' && project.startsWith('your_')) return false
+  return true
+}
+
+function readLocal(): Partial<ChurchSettings> | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as Partial<ChurchSettings>
+  } catch {
+    return null
+  }
+}
+
+function writeLocal(settings: ChurchSettings): void {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings))
+  } catch {
+    // Storage may be unavailable (private mode, quota); ignore — Firestore is the source of truth in prod.
+  }
+}
 
 export function useChurchSettingsRepository() {
-  const { $firestore } = useNuxtApp()
+  const nuxt = useNuxtApp()
+  const useFirebase = isFirebaseConfigured()
 
   async function fetchSettings(): Promise<Partial<ChurchSettings> | null> {
-    const ref = doc($firestore, COLLECTION, DOCUMENT)
-    const snap = await getDoc(ref)
-    if (!snap.exists()) return null
-    return snap.data() as Partial<ChurchSettings>
+    if (!useFirebase) return readLocal()
+
+    try {
+      const ref = doc(nuxt.$firestore, COLLECTION, DOCUMENT)
+      const snap = await getDoc(ref)
+      if (!snap.exists()) return readLocal()
+      return snap.data() as Partial<ChurchSettings>
+    } catch {
+      return readLocal()
+    }
   }
 
   async function saveSettings(settings: ChurchSettings): Promise<void> {
-    const ref = doc($firestore, COLLECTION, DOCUMENT)
+    // Always write locally so the UI persists even when Firestore is offline or misconfigured.
+    writeLocal(settings)
+    if (!useFirebase) return
+
+    const ref = doc(nuxt.$firestore, COLLECTION, DOCUMENT)
     await setDoc(ref, settings, { merge: true })
   }
 
