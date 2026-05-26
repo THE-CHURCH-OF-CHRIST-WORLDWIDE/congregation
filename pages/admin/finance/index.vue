@@ -7,7 +7,10 @@ useSeoMeta({ title: 'Finance', description: 'Church finance and accounting manag
 
 const { setHeader } = usePageHeader()
 const financeStore = useFinanceStore()
+const settingsStore = useChurchSettingsStore()
 const { exportCSV } = useExportCSV()
+const { download: downloadFinancePdf } = useFinancePdf()
+const toast = useToast()
 
 onMounted(() => setHeader('Finance & Accounting', 'Track income, expenses and financial reports'))
 
@@ -298,6 +301,45 @@ function doExport() {
   showExport.value = false
 }
 
+function doExportPdf() {
+  exportRangeErrors.from = exportRange.from ? '' : 'Start date is required'
+  exportRangeErrors.to = exportRange.to ? '' : 'End date is required'
+  if (exportRangeErrors.from || exportRangeErrors.to) return
+  if (exportRange.from > exportRange.to) {
+    exportRangeErrors.to = 'End date must be after start date'
+    return
+  }
+
+  const from = exportRange.from
+  const to = exportRange.to
+  const collectionsInRange = financeStore.collections.filter((c) => c.date >= from && c.date <= to)
+  const expensesInRange = financeStore.expenses.filter((e) => e.date >= from && e.date <= to)
+
+  // Carry-forward: net of all entries strictly before the start of the range.
+  const priorIncome = financeStore.collections
+    .filter((c) => c.date < from)
+    .reduce((s, c) => s + c.amount, 0)
+  const priorExpenses = financeStore.expenses
+    .filter((e) => e.date < from)
+    .reduce((s, e) => s + e.amount, 0)
+  const balanceBroughtForward = priorIncome - priorExpenses
+
+  downloadFinancePdf(
+    {
+      churchName: settingsStore.settings.name,
+      churchLocation: settingsStore.settings.address,
+      from,
+      to,
+      collections: collectionsInRange,
+      expenses: expensesInRange,
+      balanceBroughtForward,
+    },
+    `finance-report-${from}-to-${to}.pdf`
+  )
+  toast.success('Financial report exported')
+  showExport.value = false
+}
+
 // ─── Add Collection modal ─────────────────────────────────────────────────────
 const showAddCollection = ref(false)
 const newCollection = reactive<Omit<FinanceCollection, 'id'>>({
@@ -346,7 +388,7 @@ function saveExpense() {
   if (expenseErrors.date || expenseErrors.amount || expenseErrors.description) return
   financeStore.addExpense({ ...newExpense })
   showAddExpense.value = false
-  Object.assign(newExpense, { date: '', amount: 0, category: 'Other', description: '' })
+  Object.assign(newExpense, { date: '', amount: 0, category: 'Building', description: '' })
   Object.assign(expenseErrors, { date: '', amount: '', description: '' })
 }
 </script>
@@ -496,7 +538,7 @@ function saveExpense() {
         <h3 class="text-sm font-semibold text-gray-800 capitalize">{{ activePeriod }} Report</h3>
         <Button variant="secondary" size="sm" @click="showExport = true">
           <template #icon-left><Icon icon="mdi:upload-outline" /></template>
-          Export CSV
+          Export Report
         </Button>
       </div>
       <div class="overflow-x-auto">
@@ -727,7 +769,7 @@ function saveExpense() {
     </Modal>
 
     <!-- ── Export modal ─────────────────────────────────────────────────────── -->
-    <Modal v-model="showExport" title="Export Financial Report" size="md">
+    <Modal v-model="showExport" title="Export Financial Report" size="lg">
       <div class="flex flex-col gap-5">
         <!-- Date range -->
         <div>
@@ -807,6 +849,10 @@ function saveExpense() {
       <template #footer>
         <div class="flex gap-2 justify-end">
           <Button variant="secondary" @click="showExport = false">Cancel</Button>
+          <Button variant="secondary" :disabled="exportPreviewCount === 0" @click="doExportPdf">
+            <template #icon-left><Icon icon="mdi:file-pdf-box" /></template>
+            Export PDF
+          </Button>
           <Button :disabled="exportPreviewCount === 0" @click="doExport">
             <template #icon-left><Icon icon="mdi:download-outline" /></template>
             Download CSV ({{ exportPreviewCount }} rows)

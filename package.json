@@ -28,6 +28,8 @@
     "chart.js": "^4.5.1",
     "date-fns": "^4.2.1",
     "firebase": "^12.10.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "nuxt": "^4.1.3",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.2.0",
