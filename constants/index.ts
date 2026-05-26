@@ -79,12 +79,15 @@ export function serviceByName(name: string): ServiceConfig | undefined {
 // ─── Finance ──────────────────────────────────────────────────────────────────
 
 export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
-  'Maintenance',
-  'Utilities',
+  'Building',
+  'Evangelism',
   'Welfare',
-  'Outreach',
-  'Stationery',
-  'Other',
+  'Technical',
+  'Youth',
+  'Preacher',
+  'Edification',
+  'Media',
+  'Others',
 ]
 
 // ─── Roles & Permissions ──────────────────────────────────────────────────────

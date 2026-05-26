@@ -89,12 +89,15 @@ const chartData = computed<ChartData<'bar'>>(() => {
 
 // ─── Donut chart (expenses by category this month) ───────────────────────────
 const categoryColors: Record<ExpenseCategory, string> = {
-  Maintenance: '#3b82f6',
-  Utilities: '#f59e0b',
+  Building: '#3b82f6',
+  Evangelism: '#a855f7',
   Welfare: '#22c55e',
-  Outreach: '#a855f7',
-  Stationery: '#14b8a6',
-  Other: '#94a3b8',
+  Technical: '#0ba5ec',
+  Youth: '#ec4899',
+  Preacher: '#f59e0b',
+  Edification: '#8b5cf6',
+  Media: '#14b8a6',
+  Others: '#94a3b8',
 }
 
 const donutData = computed<ChartData<'doughnut'>>(() => {
@@ -319,18 +322,21 @@ const showAddExpense = ref(false)
 const newExpense = reactive<Omit<FinanceExpense, 'id'>>({
   date: '',
   amount: 0,
-  category: 'Other',
+  category: 'Building',
   description: '',
 })
 const expenseErrors = reactive({ date: '', amount: '', description: '' })
 
 const expenseCategoryOptions = [
-  { label: 'Maintenance', value: 'Maintenance' },
-  { label: 'Utilities', value: 'Utilities' },
+  { label: 'Building', value: 'Building' },
+  { label: 'Evangelism', value: 'Evangelism' },
   { label: 'Welfare', value: 'Welfare' },
-  { label: 'Outreach', value: 'Outreach' },
-  { label: 'Stationery', value: 'Stationery' },
-  { label: 'Other', value: 'Other' },
+  { label: 'Technical', value: 'Technical' },
+  { label: 'Youth', value: 'Youth' },
+  { label: 'Preacher', value: 'Preacher' },
+  { label: 'Edification', value: 'Edification' },
+  { label: 'Media', value: 'Media' },
+  { label: 'Others', value: 'Others' },
 ]
 
 function saveExpense() {
