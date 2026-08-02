@@ -247,6 +247,14 @@ onBeforeUnmount(() => {
             >Contact Us</a
           >
         </li>
+        <li>
+          <NuxtLink
+            to="/register"
+            class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            aria-label="Member Registration"
+            >Register</NuxtLink
+          >
+        </li>
       </ul>
 
       <!-- Mobile hamburger -->
@@ -362,6 +370,14 @@ onBeforeUnmount(() => {
               >
                 Contact Us
               </a>
+            </li>
+            <li class="mt-1">
+              <NuxtLink
+                to="/register"
+                class="block rounded-lg bg-accent px-3 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700"
+                @click="mobileOpen = false"
+                >Register</NuxtLink
+              >
             </li>
           </ul>
         </div>

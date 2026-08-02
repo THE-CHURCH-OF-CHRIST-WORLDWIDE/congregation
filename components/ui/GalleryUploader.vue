@@ -27,7 +27,7 @@ const emit = defineEmits<{
   error: [message: string]
 }>()
 
-const { upload, uploading, progress, error } = useCloudinaryUpload()
+const { upload, uploading, compressing, progress, error } = useCloudinaryUpload()
 const dragging = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 const queueLength = ref(0)
@@ -138,9 +138,9 @@ function removeAt(index: number) {
         <template v-if="uploading">
           <Icon icon="mdi:loading" class="animate-spin text-2xl text-blue-600" />
           <p class="mt-1 text-[11px] font-medium text-blue-600">
-            {{ progress }}%<span v-if="queueLength > 1">
-              · {{ queueDone }} / {{ queueLength }}</span
-            >
+            <template v-if="compressing">Compressing…</template>
+            <template v-else>{{ progress }}%</template>
+            <span v-if="queueLength > 1"> · {{ queueDone }} / {{ queueLength }}</span>
           </p>
         </template>
         <template v-else>

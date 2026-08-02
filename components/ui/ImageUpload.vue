@@ -29,7 +29,7 @@ const emit = defineEmits<{
   error: [message: string]
 }>()
 
-const { upload, uploading, progress, error } = useCloudinaryUpload()
+const { upload, uploading, compressing, progress, error } = useCloudinaryUpload()
 const dragging = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 
@@ -109,7 +109,9 @@ const containerHeight = computed(() => {
         class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/80 text-blue-600"
       >
         <Icon icon="mdi:loading" class="animate-spin text-2xl" />
-        <p class="text-xs font-medium">Uploading… {{ progress }}%</p>
+        <p class="text-xs font-medium">
+          {{ compressing ? 'Compressing…' : `Uploading… ${progress}%` }}
+        </p>
       </div>
 
       <!-- Empty state -->

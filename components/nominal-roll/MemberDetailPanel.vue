@@ -36,6 +36,8 @@ const ef = reactive<
   village: '',
   address: '',
   occupation: '',
+  previousCongregation: '',
+  previousMinisterPhone: '',
   ecName: '',
   ecRelationship: '',
   ecPhone: '',
@@ -61,6 +63,8 @@ function startEdit() {
     village: m.village ?? '',
     address: m.address ?? '',
     occupation: m.occupation ?? '',
+    previousCongregation: m.previousCongregation ?? '',
+    previousMinisterPhone: m.previousMinisterPhone ?? '',
     ecName: m.emergencyContact?.name ?? '',
     ecRelationship: m.emergencyContact?.relationship ?? '',
     ecPhone: m.emergencyContact?.phone ?? '',
@@ -87,6 +91,8 @@ function saveEdit() {
     village: ef.village,
     address: ef.address,
     occupation: ef.occupation,
+    previousCongregation: ef.previousCongregation,
+    previousMinisterPhone: ef.previousMinisterPhone,
     emergencyContact: {
       name: ef.ecName ?? '',
       relationship: ef.ecRelationship ?? '',
@@ -327,6 +333,26 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
               </div>
             </div>
 
+            <!-- Previous Congregation -->
+            <div
+              v-if="member.previousCongregation || member.previousMinisterPhone"
+              class="bg-white rounded-2xl p-4 border-[#7CD4FD] border"
+            >
+              <h3 class="text-xs font-bold text-gray-700 mb-3">Previous Congregation</h3>
+              <div class="grid grid-cols-2 gap-x-3 gap-y-3">
+                <InfoField
+                  icon="mdi:church"
+                  label="Congregation"
+                  :value="member.previousCongregation ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:phone-outline"
+                  label="Minister / Preacher"
+                  :value="member.previousMinisterPhone ?? '—'"
+                />
+              </div>
+            </div>
+
             <!-- Emergency Contact -->
             <div
               v-if="member.emergencyContact"
@@ -512,6 +538,27 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                     v-model="ef.address"
                     type="text"
                     placeholder="No. 8 Convent Road, Ikot Ekpene"
+                  />
+                </EditField>
+              </div>
+            </section>
+
+            <!-- ── Previous Congregation ───────────────────── -->
+            <section>
+              <h3 class="text-base font-bold text-gray-900 mb-4">Previous Congregation</h3>
+              <div class="grid grid-cols-2 gap-3">
+                <EditField label="Congregation">
+                  <input
+                    v-model="ef.previousCongregation"
+                    type="text"
+                    placeholder="e.g. Church of Christ, Uyo"
+                  />
+                </EditField>
+                <EditField label="Minister / Preacher's Phone">
+                  <input
+                    v-model="ef.previousMinisterPhone"
+                    type="tel"
+                    placeholder="+234 803 333 4444"
                   />
                 </EditField>
               </div>
