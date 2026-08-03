@@ -168,11 +168,11 @@ Congregation uses **one Firebase project per environment**. This is Google's rec
 approach, and the only one that isolates Auth users, Storage objects and quotas rather than
 just Firestore documents. Both projects run happily on the free Spark plan.
 
-| Environment | Firebase project       | Branch | `APP_ENV`     |
-| ----------- | ---------------------- | ------ | ------------- |
-| Local dev   | `congregation-staging` | any    | `development` |
-| Staging     | `congregation-staging` | `dev`  | `staging`     |
-| Production  | `congregation-prod`    | `main` | `production`  |
+| Environment | Firebase project       | Branch      | Netlify context  | `APP_ENV`     |
+| ----------- | ---------------------- | ----------- | ---------------- | ------------- |
+| Local dev   | `congregation-staging` | any         | —                | `development` |
+| Staging     | `congregation-staging` | `dev` + PRs | branch / preview | `staging`     |
+| Production  | `congregation-prod`    | `main`      | production       | `production`  |
 
 Nothing in the application code is environment-aware. [`plugins/firebase.client.ts`](../plugins/firebase.client.ts)
 builds its config from `runtimeConfig.public`, which is populated from environment variables in
@@ -212,14 +212,37 @@ npm run build:production # uses .env.production
 ```
 
 Keeping a `.env.production` locally is optional — and worth skipping unless you specifically
-need to reproduce a production build, since it puts live credentials on your laptop. CI is the
-safer place to build production.
+need to reproduce a production build, since it puts live credentials on your laptop. Netlify is
+the safer place to build production.
 
-### CI secrets
+### Netlify deploy contexts
 
-[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) resolves secrets through **GitHub
-Environments**. Create two environments in **Settings → Environments** named `staging` and
-`production`, and add the same secret names to each, pointing at the matching Firebase project:
+Both environments are served from **one Netlify site**, using deploy contexts:
+
+| Branch        | Context          | Firebase project       |
+| ------------- | ---------------- | ---------------------- |
+| `main`        | `production`     | `congregation-prod`    |
+| `dev`         | `branch-deploy`  | `congregation-staging` |
+| pull requests | `deploy-preview` | `congregation-staging` |
+
+[`netlify.toml`](../netlify.toml) commits the build command, the publish directory and the
+per-context `APP_ENV`. Because `ssr: false` produces a static SPA, the build is
+`npm run generate` publishing `dist` — note that the Netlify preset writes to `dist`, not
+`.output/public`.
+
+The SPA fallback lives in [`public/_redirects`](../public/_redirects) rather than in
+`netlify.toml`. Nitro's Netlify preset generates its own `_redirects` containing
+`/* /404.html 404`, and Netlify processes `_redirects` ahead of `netlify.toml`, so a rule
+declared in the TOML would be shadowed by that 404 and dynamic routes
+(`/gallery/:category`, `/teachings/sermons/:slug`) would break on direct load. Shipping the
+file in `public/` replaces the generated one. If you ever see deep links 404 in production,
+check that this file survived into `dist/_redirects`.
+
+The credentials themselves are **not** committed. Netlify never sees the local `.env` files —
+they are git-ignored, so nothing uploads them. Register the values instead in the Netlify UI,
+under **Site configuration → Environment variables**: add each variable, choose _Different
+value for each deploy context_, and give `Production` the `congregation-prod` values and both
+`Deploy Previews` and `Branch deploys` the `congregation-staging` values:
 
 ```
 VITE_FIREBASE_API_KEY
@@ -230,14 +253,51 @@ VITE_FIREBASE_MESSAGING_SENDER_ID
 VITE_FIREBASE_APP_ID
 VITE_CLOUDINARY_CLOUD_NAME
 VITE_CLOUDINARY_UPLOAD_PRESET
+VITE_CLOUDINARY_FOLDER
 ```
 
-`VITE_CLOUDINARY_FOLDER` is a non-secret environment **variable** rather than a secret — set it
-to something like `congregation-staging` and `congregation` respectively so test uploads never
-land in the production media folder.
+Point `VITE_CLOUDINARY_FOLDER` at a different folder per context (e.g. `congregation-staging`
+vs `congregation`) so test uploads never land in the production media folder.
 
-Builds on `main` select the `production` environment; every other branch and pull request gets
-`staging`.
+That is 18 fields to fill by hand, so [`scripts/netlify-env.mjs`](../scripts/netlify-env.mjs)
+will read the local env files and set them all through the Netlify CLI instead:
+
+```bash
+npx netlify-cli login && npx netlify-cli link   # once per machine
+
+npm run netlify:env              # dry run — prints the plan with values masked
+npm run netlify:env -- --apply   # write to the linked site
+```
+
+It refuses to run if either file is missing a value, or if the two files share a Firebase
+project ID or API key — that would silently point both contexts at the same project.
+
+Do **not** add `APP_ENV` in the UI — [`netlify.toml`](../netlify.toml) already sets it per
+context, and keeping each variable in exactly one place avoids any question of which source
+wins. Environment variable changes only take effect on the **next** build, so trigger a
+redeploy after editing them; existing deploys keep the values they were built with.
+
+These values all ship to the browser in the JS bundle, so they are not secrets in the usual
+sense. They are still kept out of the repository: this project is public, and a committed
+config would point every fork and clone at the live church's Firebase project and burn its
+quota.
+
+Because they are inlined into the bundle, Netlify's secrets scanning would otherwise fail the
+deploy on finding them in the build output. `SECRETS_SCAN_OMIT_KEYS` in
+[`netlify.toml`](../netlify.toml) exempts exactly these keys — extend that list if you add
+another `VITE_` variable, rather than switching the scan off entirely.
+
+Add the staging site's Netlify URL to **Authorized domains** in the staging Firebase project's
+Auth settings, and the production domain to the production project — sign-in fails otherwise.
+Note that branch-deploy URLs are publicly reachable; Firestore rules, not obscurity, are what
+keep staging data safe.
+
+### Continuous integration
+
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs typecheck, lint, format, tests
+and a build on `main` and `dev`. It needs **no Firebase secrets** — Netlify performs the real
+builds, and the CI build is a compile smoke test whose artifact is discarded, so it runs on
+placeholder config values.
 
 ### Telling the environments apart
 

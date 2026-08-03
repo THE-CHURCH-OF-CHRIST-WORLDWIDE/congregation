@@ -1,0 +1,39 @@
+# Netlify build configuration.
+#
+# Staging and production are separate Firebase projects served from this one site:
+#   main branch      → production context  → congregation-prod
+#   dev branch, PRs  → branch/preview      → congregation-staging
+#
+# Only APP_ENV lives here. The Firebase and Cloudinary values are set per deploy
+# context in the Netlify UI (Site configuration → Environment variables) — this is a
+# public repository, and committing the live project's config would point every fork
+# at the real church's Firebase project. See docs/firebase-setup.md § Environments.
+
+[build]
+  # `ssr: false`, so this is a static SPA build. The netlify-static preset writes to
+  # `dist` rather than `.output/public`.
+  command = "npm run generate"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+  # Netlify's secrets scanning fails a deploy when it finds the value of a UI-set
+  # environment variable in the build output. Every VITE_* value below is public by
+  # design — Vite inlines them into the client bundle, which is the entire point of the
+  # `VITE_` prefix — so exempt these specific keys rather than disabling the scan.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID,VITE_CLOUDINARY_CLOUD_NAME,VITE_CLOUDINARY_UPLOAD_PRESET,VITE_CLOUDINARY_FOLDER"
+
+[context.production.environment]
+  APP_ENV = "production"
+
+# The `dev` branch deploys here, as does any other non-production branch.
+[context.branch-deploy.environment]
+  APP_ENV = "staging"
+
+[context.deploy-preview.environment]
+  APP_ENV = "staging"
+
+# The SPA fallback deliberately lives in `public/_redirects`, not here — Netlify processes
+# `_redirects` ahead of netlify.toml, and Nitro's Netlify preset generates a catch-all 404
+# rule into that file. See the comments in public/_redirects.
