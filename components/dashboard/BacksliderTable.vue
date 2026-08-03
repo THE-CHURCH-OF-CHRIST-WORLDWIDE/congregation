@@ -3,8 +3,6 @@ const membersStore = useMembersStore()
 const { exportCSV } = useExportCSV()
 
 const search = ref('')
-const page = ref(1)
-const perPage = 5
 
 const filtered = computed(() => {
   const q = search.value.toLowerCase()
@@ -13,11 +11,7 @@ const filtered = computed(() => {
   )
 })
 
-const paginated = computed(() =>
-  filtered.value.slice((page.value - 1) * perPage, page.value * perPage)
-)
-
-const totalPages = computed(() => Math.ceil(filtered.value.length / perPage))
+const { page, total, totalPages, paginated, rangeStart, rangeEnd } = usePagination(filtered, 5)
 
 function doExport() {
   exportCSV(
@@ -101,10 +95,10 @@ function doExport() {
             :key="member.id"
             class="border-b border-gray-50 hover:bg-gray-50/50"
           >
-            <td class="px-4 py-3 text-gray-500">{{ (page - 1) * perPage + idx + 1 }}</td>
+            <td class="px-4 py-3 text-gray-500">{{ rangeStart + idx }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center gap-2.5">
-                <Avatar :name="member.name" size="sm" />
+                <Avatar :src="member.avatar" :name="member.name" size="sm" />
                 <span class="font-medium text-gray-900">{{ member.name }}</span>
               </div>
             </td>
@@ -126,40 +120,32 @@ function doExport() {
               </a>
             </td>
           </tr>
-          <tr v-if="!paginated.length">
-            <td colspan="5" class="px-4 py-8 text-center text-gray-400">
-              <Icon icon="mdi:account-check-outline" class="text-3xl mb-2 block mx-auto" />
-              <p>No members needing follow-up</p>
+          <tr v-if="membersStore.loading && !paginated.length">
+            <td colspan="5" class="px-4">
+              <LoadingState :rows="4" size="sm" title="Loading members…" />
+            </td>
+          </tr>
+          <tr v-else-if="!paginated.length">
+            <td colspan="5" class="px-4">
+              <EmptyState
+                icon="mdi:account-check-outline"
+                size="sm"
+                title="No members needing follow-up"
+                description="Members with three or more absences are listed here."
+              />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div
-      v-if="totalPages > 1"
-      class="flex items-center justify-between px-4 py-3 border-t border-gray-100"
-    >
-      <p class="text-xs text-gray-500">
-        Showing {{ (page - 1) * perPage + 1 }}–{{ Math.min(page * perPage, filtered.length) }} of
-        {{ filtered.length }}
-      </p>
-      <div class="flex gap-1">
-        <button
-          class="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
-          :disabled="page <= 1"
-          @click="page--"
-        >
-          <Icon icon="mdi:chevron-left" />
-        </button>
-        <button
-          class="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
-          :disabled="page >= totalPages"
-          @click="page++"
-        >
-          <Icon icon="mdi:chevron-right" />
-        </button>
-      </div>
-    </div>
+    <Pagination
+      v-model:page="page"
+      :total-pages="totalPages"
+      :total="total"
+      :range-start="rangeStart"
+      :range-end="rangeEnd"
+      label="members"
+    />
   </Card>
 </template>

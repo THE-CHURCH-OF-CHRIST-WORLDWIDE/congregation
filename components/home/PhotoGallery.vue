@@ -42,7 +42,15 @@ onMounted(() => {
         </NuxtLink>
       </div>
 
-      <div class="columns-1 gap-4 sm:columns-2 lg:columns-4">
+      <LoadingState v-if="s.loading" title="Loading photos…" />
+      <EmptyState
+        v-else-if="!photos.length"
+        icon="mdi:image-multiple-outline"
+        title="No photos yet"
+        description="Photographs added in Settings → Gallery will appear here."
+      />
+
+      <div v-else class="columns-1 gap-4 sm:columns-2 lg:columns-4">
         <div
           v-for="(photo, i) in photos"
           :key="photo.id"

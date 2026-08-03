@@ -9,22 +9,21 @@ const props = defineProps<Props>()
 const membersStore = useMembersStore()
 const emit = defineEmits<{ add: []; select: [member: Member]; edit: [member: Member] }>()
 
-const page = ref(1)
-const perPage = 10
 const openMenuId = ref<string | null>(null)
 
 // Use injected items if provided, otherwise fall back to store's filtered list
 const sourceMembers = computed(() => props.items ?? membersStore.filteredMembers)
 
-const paginated = computed(() =>
-  sourceMembers.value.slice((page.value - 1) * perPage, page.value * perPage)
+const { page, total, totalPages, paginated, rangeStart, rangeEnd } = usePagination(
+  sourceMembers,
+  10
 )
-const totalPages = computed(() => Math.ceil(sourceMembers.value.length / perPage))
 
-// Reset to page 1 whenever the source list changes
-watch(sourceMembers, () => {
-  page.value = 1
-})
+// Distinguishes "the roll is empty" from "filters excluded everything", so the
+// empty state can say something useful instead of a bare "no members found".
+const hasAnyMembers = computed(() =>
+  props.items ? props.items.length > 0 : membersStore.members.length > 0
+)
 
 const statusBadge = {
   Active: 'success',
@@ -37,9 +36,9 @@ const statusBadge = {
   Late: 'warning',
 } as const
 
-function deleteMember(id: string) {
-  membersStore.deleteMember(id)
+async function deleteMember(id: string) {
   openMenuId.value = null
+  await membersStore.deleteMember(id).catch(() => {})
 }
 
 function startEdit(member: Member) {
@@ -92,10 +91,10 @@ onMounted(() => {
             class="border-b border-gray-50 hover:bg-blue-50/30 cursor-pointer transition-colors"
             @click="emit('select', member)"
           >
-            <td class="px-4 py-3 text-gray-500">{{ (page - 1) * perPage + idx + 1 }}</td>
+            <td class="px-4 py-3 text-gray-500">{{ rangeStart + idx }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center gap-2.5">
-                <Avatar :name="member.name" size="sm" />
+                <Avatar :src="member.avatar" :name="member.name" size="sm" />
                 <span class="font-medium text-gray-900">{{ member.name }}</span>
               </div>
             </td>
@@ -136,55 +135,35 @@ onMounted(() => {
             </td>
           </tr>
 
-          <tr v-if="!paginated.length">
-            <td colspan="7" class="px-4 py-10 text-center text-gray-400">
-              <Icon icon="mdi:account-group-outline" class="text-4xl mb-2 block mx-auto" />
-              <p>No members found</p>
+          <tr v-if="membersStore.loading && !paginated.length">
+            <td colspan="7" class="px-4">
+              <LoadingState :rows="6" title="Loading members…" />
+            </td>
+          </tr>
+          <tr v-else-if="!paginated.length">
+            <td colspan="7" class="px-4">
+              <EmptyState
+                icon="mdi:account-group-outline"
+                :title="hasAnyMembers ? 'No members match these filters' : 'No members yet'"
+                :description="
+                  hasAnyMembers
+                    ? 'Try clearing the search or switching tabs.'
+                    : 'Members appear here once they register or are added to the roll.'
+                "
+              />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div
-      v-if="totalPages > 1"
-      class="flex items-center justify-between px-4 py-3 border-t border-gray-100"
-    >
-      <p class="text-xs text-gray-500">
-        Showing {{ (page - 1) * perPage + 1 }}–{{
-          Math.min(page * perPage, sourceMembers.length)
-        }}
-        of {{ sourceMembers.length }}
-      </p>
-      <div class="flex gap-1">
-        <button
-          class="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
-          :disabled="page <= 1"
-          @click="page--"
-        >
-          Prev
-        </button>
-        <button
-          v-for="p in totalPages"
-          :key="p"
-          :class="[
-            'px-2 py-1 text-xs rounded border',
-            p === page
-              ? 'bg-blue-600 text-white border-blue-600'
-              : 'border-gray-200 hover:bg-gray-50',
-          ]"
-          @click="page = p"
-        >
-          {{ p }}
-        </button>
-        <button
-          class="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
-          :disabled="page >= totalPages"
-          @click="page++"
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    <Pagination
+      v-model:page="page"
+      :total-pages="totalPages"
+      :total="total"
+      :range-start="rangeStart"
+      :range-end="rangeEnd"
+      label="members"
+    />
   </Card>
 </template>

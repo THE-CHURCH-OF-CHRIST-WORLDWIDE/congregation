@@ -58,6 +58,36 @@ function toggle(memberId: string, date: string) {
   hasChanged.value = true
 }
 
+// Registers can run to hundreds of names; page them so the sheet stays usable.
+const {
+  page: attPage,
+  total: attTotal,
+  totalPages: attTotalPages,
+  paginated: pagedMembers,
+  rangeStart: attFrom,
+  rangeEnd: attTo,
+} = usePagination(filteredMembers, 25)
+
+// ─── Per-member row menu ─────────────────────────────────────────────────────
+const openRowMenu = ref<string | null>(null)
+
+/** Marks every Sunday in the displayed month for one member in a single go. */
+function markMonth(memberId: string, present: boolean) {
+  for (const date of sundaysInMonth.value) {
+    attendanceStore.setAttendance(memberId, date, props.serviceType, present)
+  }
+  hasChanged.value = true
+  openRowMenu.value = null
+}
+
+onMounted(() => {
+  const dismiss = () => {
+    openRowMenu.value = null
+  }
+  document.addEventListener('click', dismiss)
+  onUnmounted(() => document.removeEventListener('click', dismiss))
+})
+
 function getMonthlySummary(memberId: string) {
   const dates = sundaysInMonth.value
   const sessionsTotal = dates.length
@@ -159,14 +189,14 @@ function doExport() {
           </thead>
           <tbody>
             <tr
-              v-for="(member, idx) in filteredMembers"
+              v-for="(member, idx) in pagedMembers"
               :key="member.id"
               :class="['border-b border-gray-50', idx % 2 === 0 ? '' : 'bg-gray-50/30']"
             >
-              <td class="px-3 py-2.5 text-gray-500">{{ idx + 1 }}</td>
+              <td class="px-3 py-2.5 text-gray-500">{{ attFrom + idx }}</td>
               <td class="px-3 py-2.5">
                 <div class="flex items-center gap-2">
-                  <Avatar :name="member.name" size="sm" />
+                  <Avatar :src="member.avatar" :name="member.name" size="sm" />
                   <span class="font-medium text-gray-900 text-xs">{{ member.name }}</span>
                 </div>
               </td>
@@ -199,23 +229,62 @@ function doExport() {
                   @change="toggle(member.id, date)"
                 />
               </td>
-              <td class="px-2 py-2.5">
+              <td class="px-2 py-2.5 relative">
                 <button
                   class="text-gray-400 hover:text-gray-600 p-0.5"
                   :aria-label="`More actions for ${member.name}`"
+                  :aria-expanded="openRowMenu === member.id"
+                  @click.stop="openRowMenu = openRowMenu === member.id ? null : member.id"
                 >
                   <Icon icon="mdi:dots-vertical" />
                 </button>
+                <div
+                  v-if="openRowMenu === member.id"
+                  class="absolute right-2 top-8 z-10 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                  @click.stop
+                >
+                  <button
+                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+                    @click="markMonth(member.id, true)"
+                  >
+                    <Icon icon="mdi:check-all" class="text-green-600" />
+                    Mark all present
+                  </button>
+                  <button
+                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+                    @click="markMonth(member.id, false)"
+                  >
+                    <Icon icon="mdi:close-box-multiple-outline" class="text-red-500" />
+                    Mark all absent
+                  </button>
+                </div>
               </td>
             </tr>
-            <tr v-if="!filteredMembers.length">
-              <td :colspan="4 + sundaysInMonth.length" class="px-4 py-10 text-center text-gray-400">
-                No members found
+            <tr v-if="membersStore.loading && !pagedMembers.length">
+              <td :colspan="4 + sundaysInMonth.length" class="px-4">
+                <LoadingState :rows="6" title="Loading register…" />
+              </td>
+            </tr>
+            <tr v-else-if="!pagedMembers.length">
+              <td :colspan="4 + sundaysInMonth.length" class="px-4">
+                <EmptyState
+                  icon="mdi:calendar-check-outline"
+                  title="No members to mark"
+                  description="Attendance can be recorded once members are on the nominal roll."
+                />
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <Pagination
+        v-model:page="attPage"
+        :total-pages="attTotalPages"
+        :total="attTotal"
+        :range-start="attFrom"
+        :range-end="attTo"
+        label="members"
+      />
     </Card>
 
     <!-- Sticky footer -->

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { RecordedStream } from '~/types/public'
+
 definePageMeta({ layout: 'default' })
 
 const store = usePublicLiveStreamStore()
@@ -23,6 +25,28 @@ function onWatchRecorded() {
   nextTick(() => {
     document.getElementById('streams-grid')?.scrollIntoView({ behavior: 'smooth' })
   })
+}
+
+// ─── Replay player ───────────────────────────────────────────────────────────
+const playing = ref<RecordedStream | null>(null)
+const playerOpen = computed({
+  get: () => playing.value !== null,
+  set: (open: boolean) => {
+    if (!open) playing.value = null
+  },
+})
+
+const {
+  page: streamPage,
+  total: streamTotal,
+  totalPages: streamTotalPages,
+  paginated: pagedStreams,
+  rangeStart: streamFrom,
+  rangeEnd: streamTo,
+} = usePagination(filteredRecorded, 9)
+
+function watchReplay(stream: RecordedStream) {
+  playing.value = stream
 }
 
 const howToSteps = [
@@ -192,14 +216,50 @@ useSeoMeta({
 
       <!-- Recorded tab -->
       <div v-if="activeTab === 'recorded'" id="streams-grid">
-        <div v-if="filteredRecorded.length" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <StreamCard v-for="stream in filteredRecorded" :key="stream.id" :stream="stream" />
+        <div v-if="pagedStreams.length" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <StreamCard
+            v-for="stream in pagedStreams"
+            :key="stream.id"
+            :stream="stream"
+            @watch="watchReplay"
+          />
         </div>
-        <div v-else class="py-16 text-center text-gray-400">
-          <Icon icon="heroicons:video-camera-slash" class="h-12 w-12 mx-auto mb-3 text-gray-300" />
-          <p>No streams found for your search.</p>
-        </div>
+        <Pagination
+          v-if="pagedStreams.length"
+          v-model:page="streamPage"
+          :total-pages="streamTotalPages"
+          :total="streamTotal"
+          :range-start="streamFrom"
+          :range-end="streamTo"
+          label="streams"
+        />
+
+        <EmptyState
+          v-else-if="store.recordedStreams.length"
+          icon="heroicons:video-camera-slash"
+          title="No streams match your search"
+          description="Try a different search term or activity filter."
+        />
+        <EmptyState
+          v-else
+          icon="heroicons:video-camera-slash"
+          title="No recorded streams yet"
+          description="Past services will be available to watch here once they are published."
+        />
       </div>
     </div>
+
+    <!-- Replay player -->
+    <Modal v-model="playerOpen" :title="playing?.title" size="xl">
+      <VideoPlayer
+        v-if="playing?.videoSrc"
+        :src="playing.videoSrc"
+        :thumbnail="playing.thumbnailSrc"
+        :title="playing.title"
+      />
+      <p class="mt-3 text-xs text-gray-500">
+        {{ playing?.serviceType }} · {{ playing?.preacher }} · {{ playing?.duration }}
+      </p>
+    </Modal>
   </div>
 </template>

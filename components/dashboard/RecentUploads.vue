@@ -44,9 +44,12 @@ const sermons = computed(() => teachingsStore.recentSermons)
       </article>
     </div>
 
-    <div v-else class="text-center py-8 text-gray-400">
-      <Icon icon="mdi:video-outline" class="text-3xl mb-2" />
-      <p class="text-sm">No uploads yet</p>
-    </div>
+    <EmptyState
+      v-else
+      icon="mdi:book-open-page-variant-outline"
+      size="sm"
+      title="No uploads yet"
+      description="Sermons and lessons you upload will be listed here."
+    />
   </Card>
 </template>

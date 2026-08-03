@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, dev]
   pull_request:
-    branches: [main]
+    branches: [main, dev]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -15,6 +15,12 @@ jobs:
     name: Typecheck, Lint, Test & Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    # Staging and production are separate Firebase projects. Each GitHub
+    # Environment holds its own copy of the secrets below under the same names,
+    # so `main` builds against congregation-prod and everything else against
+    # congregation-staging without duplicating the env block.
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 
     steps:
       - name: Checkout repository
@@ -44,12 +50,19 @@ jobs:
       - name: Test
         run: npm run test
 
+      # Values come from the runner environment, not a .env file, so this stays
+      # plain `npm run build` — the build:staging / build:production scripts are
+      # for local use where the .env.* files exist.
       - name: Build
         run: npm run build
         env:
+          APP_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
+          VITE_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.VITE_CLOUDINARY_UPLOAD_PRESET }}
+          VITE_CLOUDINARY_FOLDER: ${{ vars.VITE_CLOUDINARY_FOLDER }}

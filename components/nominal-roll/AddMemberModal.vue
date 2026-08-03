@@ -45,6 +45,9 @@ const form = reactive<
   village: '',
   // Residential
   address: '',
+  // Previous congregation
+  previousCongregation: '',
+  previousMinisterPhone: '',
   // Emergency contact (flat)
   ecName: '',
   ecRelationship: '',
@@ -111,6 +114,8 @@ function save() {
     localGovernment: form.localGovernment,
     village: form.village,
     address: form.address,
+    previousCongregation: form.previousCongregation,
+    previousMinisterPhone: form.previousMinisterPhone,
     emergencyContact,
   })
   close()
@@ -139,6 +144,8 @@ function reset() {
     localGovernment: '',
     village: '',
     address: '',
+    previousCongregation: '',
+    previousMinisterPhone: '',
     ecName: '',
     ecRelationship: '',
     ecPhone: '',
@@ -283,6 +290,31 @@ watch(
               v-model="form.address"
               type="text"
               placeholder="No. 8 Convent Road, Ikot Ekpene"
+            />
+          </EditField>
+        </div>
+      </section>
+
+      <hr class="border-gray-100" />
+
+      <!-- ── Previous Congregation ─────────────────────────────────────────── -->
+      <section>
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">
+          Previous Congregation <span class="text-gray-400 font-normal text-xs">(optional)</span>
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <EditField label="Congregation">
+            <input
+              v-model="form.previousCongregation"
+              type="text"
+              placeholder="e.g. Church of Christ, Uyo"
+            />
+          </EditField>
+          <EditField label="Minister / Preacher's Phone">
+            <input
+              v-model="form.previousMinisterPhone"
+              type="tel"
+              placeholder="+234 803 333 4444"
             />
           </EditField>
         </div>

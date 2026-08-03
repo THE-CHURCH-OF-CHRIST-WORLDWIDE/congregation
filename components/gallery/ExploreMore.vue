@@ -1,13 +1,21 @@
 <script setup lang="ts">
-const categories = [
-  {
-    label: 'Gospel Meeting',
-    slug: 'gospel-meeting',
-    src: 'https://picsum.photos/seed/gm1/600/300',
-  },
-  { label: 'Bible Class', slug: 'bible-class', src: 'https://picsum.photos/seed/bc1/600/300' },
-  { label: 'Evangelism', slug: 'evangelism', src: 'https://picsum.photos/seed/ev1/600/300' },
-]
+const route = useRoute()
+const { galleries } = useGalleryData('')
+
+/**
+ * Every category except the one being viewed. The tile art is the category's
+ * first photo, so tiles show a real image or a neutral placeholder block —
+ * never a stock image standing in for church content.
+ */
+const categories = computed(() =>
+  Object.entries(galleries)
+    .filter(([slug]) => slug !== route.params.category)
+    .map(([slug, gallery]) => ({
+      slug,
+      label: gallery.title,
+      src: gallery.images[0]?.src ?? '',
+    }))
+)
 </script>
 
 <template>
@@ -23,11 +31,13 @@ const categories = [
         :aria-label="`${cat.label} gallery`"
       >
         <img
+          v-if="cat.src"
           :src="cat.src"
           :alt="cat.label"
           class="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
         />
+        <div v-else class="absolute inset-0 bg-gray-200"></div>
         <div class="explore-overlay group-hover:bg-black/60"></div>
         <span class="explore-label">{{ cat.label }}</span>
       </NuxtLink>

@@ -1,26 +1,34 @@
 <script setup lang="ts">
-import type { Congregation } from '~/types/public'
+const settingsStore = useChurchSettingsStore()
+onMounted(() => settingsStore.load())
 
-const { CONGREGATIONS } = usePublicMockData()
+const congregations = computed(() => settingsStore.settings.congregations)
 
 const query = ref('')
-const results = ref<Congregation[]>(CONGREGATIONS)
 
-function search() {
+const results = computed(() => {
   const q = query.value.toLowerCase().trim()
-  if (!q) {
-    results.value = CONGREGATIONS
-    return
-  }
-  results.value = CONGREGATIONS.filter(
+  if (!q) return congregations.value
+  return congregations.value.filter(
     (c) =>
       c.name.toLowerCase().includes(q) ||
       c.city.toLowerCase().includes(q) ||
       c.address.toLowerCase().includes(q)
   )
+})
+
+/** Opens the congregation's address in the visitor's map app of choice. */
+function directionsUrl(cg: { name: string; address: string; city: string }) {
+  const query = [cg.name, cg.address, cg.city].filter(Boolean).join(', ')
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
 }
 
-watch(query, search)
+// Results filter as you type, so the button's job is to bring them into view —
+// on a phone the list sits below the fold.
+const resultsRef = ref<HTMLElement | null>(null)
+function showResults() {
+  resultsRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 
 const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
@@ -55,15 +63,15 @@ const { el: sectionRef, isVisible } = useScrollReveal()
         />
         <button
           class="rounded-lg bg-[#2563EB] px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
-          aria-label="Search"
-          @click="search"
+          aria-label="Show matching congregations"
+          @click="showResults"
         >
           Search
         </button>
       </div>
 
       <!-- Results grid -->
-      <div v-if="results.length" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div v-if="results.length" ref="resultsRef" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <div
           v-for="(cg, i) in results"
           :key="cg.id"
@@ -82,19 +90,32 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               <Icon icon="heroicons:clock" class="h-3.5 w-3.5" />
               {{ cg.serviceTime }}
             </div>
-            <button
-              class="mt-auto w-full rounded-lg bg-[#1E3A5F] py-2 text-xs font-semibold text-white hover:bg-[#2563EB] transition-colors"
-              aria-label="Visit congregation"
+            <a
+              :href="directionsUrl(cg)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-auto w-full rounded-lg bg-[#1E3A5F] py-2 text-center text-xs font-semibold text-white hover:bg-[#2563EB] transition-colors"
+              :aria-label="`Get directions to ${cg.name}`"
             >
-              Visit
-            </button>
+              Get Directions
+            </a>
           </div>
         </div>
       </div>
 
-      <p v-else class="text-center text-gray-400 text-sm py-8">
-        No congregations found for "{{ query }}". Try a different search.
-      </p>
+      <LoadingState v-else-if="settingsStore.loading" title="Loading congregations…" />
+      <EmptyState
+        v-else-if="query"
+        icon="heroicons:building-library"
+        title="No congregations found"
+        :description="`Nothing matched &quot;${query}&quot;. Try a different city or name.`"
+      />
+      <EmptyState
+        v-else
+        icon="heroicons:building-library"
+        title="No congregations listed yet"
+        description="Sister congregations are added from Settings → Congregations."
+      />
     </div>
   </section>
 </template>

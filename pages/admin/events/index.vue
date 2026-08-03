@@ -43,6 +43,25 @@ const filteredPast = computed(() => {
   )
 })
 
+// Separate pagers so switching tabs doesn't reset the other list.
+const {
+  page: upcomingPage,
+  total: upcomingTotal,
+  totalPages: upcomingTotalPages,
+  paginated: pagedUpcoming,
+  rangeStart: upcomingFrom,
+  rangeEnd: upcomingTo,
+} = usePagination(filteredUpcoming, 10)
+
+const {
+  page: pastPage,
+  total: pastTotal,
+  totalPages: pastTotalPages,
+  paginated: pagedPast,
+  rangeStart: pastFrom,
+  rangeEnd: pastTo,
+} = usePagination(filteredPast, 10)
+
 const formOpen = ref(false)
 const editTarget = ref<UpcomingEvent | PastEvent | null>(null)
 
@@ -121,7 +140,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
           </thead>
           <tbody>
             <tr
-              v-for="event in filteredUpcoming"
+              v-for="event in pagedUpcoming"
               :key="event.id"
               class="border-b border-gray-50 hover:bg-gray-50/50"
             >
@@ -156,15 +175,26 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
                 </div>
               </td>
             </tr>
-            <tr v-if="!filteredUpcoming.length">
-              <td colspan="6" class="px-4 py-10 text-center text-gray-400">
-                <Icon icon="mdi:calendar-blank-outline" class="text-3xl mb-2 block mx-auto" />
-                <p>No upcoming events</p>
+            <tr v-if="!pagedUpcoming.length">
+              <td colspan="6" class="px-4">
+                <EmptyState
+                  icon="mdi:calendar-blank-outline"
+                  title="No upcoming events"
+                  description="Events you schedule will be listed here until their date passes."
+                />
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <Pagination
+        v-model:page="upcomingPage"
+        :total-pages="upcomingTotalPages"
+        :total="upcomingTotal"
+        :range-start="upcomingFrom"
+        :range-end="upcomingTo"
+        label="events"
+      />
     </Card>
 
     <Card v-else padding="none">
@@ -185,7 +215,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
           </thead>
           <tbody>
             <tr
-              v-for="event in filteredPast"
+              v-for="event in pagedPast"
               :key="event.id"
               class="border-b border-gray-50 hover:bg-gray-50/50"
             >
@@ -228,15 +258,26 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
                 </div>
               </td>
             </tr>
-            <tr v-if="!filteredPast.length">
-              <td colspan="7" class="px-4 py-10 text-center text-gray-400">
-                <Icon icon="mdi:calendar-blank-outline" class="text-3xl mb-2 block mx-auto" />
-                <p>No past events</p>
+            <tr v-if="!pagedPast.length">
+              <td colspan="7" class="px-4">
+                <EmptyState
+                  icon="mdi:calendar-blank-outline"
+                  title="No past events"
+                  description="Events move here automatically once their date has passed."
+                />
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <Pagination
+        v-model:page="pastPage"
+        :total-pages="pastTotalPages"
+        :total="pastTotal"
+        :range-start="pastFrom"
+        :range-end="pastTo"
+        label="events"
+      />
     </Card>
 
     <EventFormModal v-model="formOpen" :event="editTarget" :default-kind="activeTab" />

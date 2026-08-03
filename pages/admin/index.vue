@@ -193,10 +193,17 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
           </select>
         </div>
         <BarChart
+          v-if="attendanceStore.records.length"
           :key="`${chartMode}-${chartService}`"
           :data="barChartData"
           :options="barOptions"
           :height="240"
+        />
+        <EmptyState
+          v-else
+          icon="mdi:chart-bar"
+          title="No attendance recorded yet"
+          description="This chart fills in as registers are marked each week."
         />
       </Card>
       <RecentVideoUploads />

@@ -343,9 +343,27 @@ VITE_FIREBASE_APP_ID=
 VITE_CLOUDINARY_CLOUD_NAME=
 VITE_CLOUDINARY_UPLOAD_PRESET=
 VITE_CLOUDINARY_FOLDER=congregation
+
+# One of: development | staging | production
+APP_ENV=development
 ```
 
-All variables are prefixed with `VITE_` so they are exposed to the browser (SPA mode). Never commit real credentials — `.env` is git-ignored.
+All `VITE_`-prefixed variables are exposed to the browser (SPA mode). Never commit real credentials — `.env` is git-ignored.
+
+### Environments
+
+Staging and production are **separate Firebase projects**, each with its own env file:
+
+```bash
+npm run dev              # uses .env
+npm run dev:staging      # uses .env.staging
+npm run build:staging    # uses .env.staging
+npm run build:production # uses .env.production
+```
+
+Any `APP_ENV` other than `production` shows a banner in the admin header naming the connected Firebase project, so a staging session never looks like the live site. Firebase CLI targets are aliased in `.firebaserc` (`firebase use staging` / `firebase use production`).
+
+See [docs/firebase-setup.md](docs/firebase-setup.md#environments) for the full setup, including CI secrets.
 
 ### Image uploads (Cloudinary)
 

@@ -139,9 +139,24 @@ function toggleCustomPerm(page: AppPage, action: AppAction) {
   }
 }
 
+// ─── Assignments pagination ───────────────────────────────────────────────────
+const assignments = computed(() => rolesStore.assignmentsWithRole())
+const {
+  page: assignPage,
+  total: assignTotal,
+  totalPages: assignTotalPages,
+  paginated: pagedAssignments,
+  rangeStart: assignFrom,
+  rangeEnd: assignTo,
+} = usePagination(assignments, 10)
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function memberName(id: string) {
   return membersStore.members.find((m) => m.id === id)?.name ?? '—'
+}
+
+function memberAvatar(id: string) {
+  return membersStore.members.find((m) => m.id === id)?.avatar
 }
 
 function permCount(perms: RolePermissions) {
@@ -224,13 +239,17 @@ function permCount(perms: RolePermissions) {
             </thead>
             <tbody>
               <tr
-                v-for="a in rolesStore.assignmentsWithRole()"
+                v-for="a in pagedAssignments"
                 :key="a.id"
                 class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
               >
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-2.5">
-                    <Avatar :name="memberName(a.memberId)" size="sm" />
+                    <Avatar
+                      :src="memberAvatar(a.memberId)"
+                      :name="memberName(a.memberId)"
+                      size="sm"
+                    />
                     <span class="font-medium text-gray-900">{{ memberName(a.memberId) }}</span>
                   </div>
                 </td>
@@ -277,15 +296,31 @@ function permCount(perms: RolePermissions) {
                   </div>
                 </td>
               </tr>
-              <tr v-if="!rolesStore.assignments.length">
-                <td colspan="5" class="px-4 py-10 text-center text-gray-400">
-                  <Icon icon="mdi:shield-account-outline" class="text-4xl mb-2 block mx-auto" />
-                  <p>No roles assigned yet. Click "Assign Role" to get started.</p>
+              <tr v-if="membersStore.loading && !pagedAssignments.length">
+                <td colspan="5" class="px-4">
+                  <LoadingState :rows="4" size="sm" title="Loading assignments…" />
+                </td>
+              </tr>
+              <tr v-else-if="!pagedAssignments.length">
+                <td colspan="5" class="px-4">
+                  <EmptyState
+                    icon="mdi:shield-account-outline"
+                    title="No roles assigned yet"
+                    description="Use the Assign Role button to give a member access to the dashboard."
+                  />
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <Pagination
+          v-model:page="assignPage"
+          :total-pages="assignTotalPages"
+          :total="assignTotal"
+          :range-start="assignFrom"
+          :range-end="assignTo"
+          label="assignments"
+        />
       </Card>
     </div>
   </div>
@@ -409,7 +444,7 @@ function permCount(perms: RolePermissions) {
             ]"
             @click="selectMember(m)"
           >
-            <Avatar :name="m.name" size="sm" class="flex-shrink-0" />
+            <Avatar :src="m.avatar" :name="m.name" size="sm" class="flex-shrink-0" />
             <div>
               <p class="font-medium">{{ m.name }}</p>
               <p class="text-xs text-gray-400">{{ m.phone }}</p>

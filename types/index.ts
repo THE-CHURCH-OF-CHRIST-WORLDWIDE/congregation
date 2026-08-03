@@ -36,6 +36,9 @@ export interface Member {
   // Place of residence
   address?: string
   occupation?: string
+  // Previous congregation (transfers / newcomers)
+  previousCongregation?: string
+  previousMinisterPhone?: string
   // Emergency contact
   emergencyContact?: EmergencyContact
 }

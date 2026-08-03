@@ -18,6 +18,8 @@ export interface RecordedStream {
   views: number
   thumbnailSrc: string
   slug: string
+  /** Playable recording. Absent until the service video has been published. */
+  videoSrc?: string
 }
 
 export interface PublicSermon {
@@ -33,6 +35,8 @@ export interface PublicSermon {
   lessonPoints: string[]
   soulWinnerPoints: string[]
   relatedIds: string[]
+  /** Optional lesson handout (PDF or doc) offered for download. */
+  documentUrl?: string
 }
 
 export interface Lesson {

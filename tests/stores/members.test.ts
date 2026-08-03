@@ -1,7 +1,21 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useMembersStore } from '~/stores/members'
 import type { Member } from '~/types'
+
+// The store now persists through Firestore; stub the repository so these tests
+// cover store behaviour rather than the network.
+const repo = {
+  fetchMembers: vi.fn(async (): Promise<Member[]> => []),
+  createMember: vi.fn(
+    async (m: Omit<Member, 'id'>): Promise<Member> => ({ ...m, id: 'generated' })
+  ),
+  updateMember: vi.fn(async () => {}),
+  deleteMember: vi.fn(async () => {}),
+}
+vi.mock('~/repositories/membersRepository', () => ({
+  useMembersRepository: () => repo,
+}))
 
 function makeMember(overrides: Partial<Member> = {}): Member {
   return {
@@ -20,6 +34,7 @@ function makeMember(overrides: Partial<Member> = {}): Member {
 describe('useMembersStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    vi.clearAllMocks()
   })
 
   it('starts with an empty member list and default filters', () => {
@@ -95,9 +110,9 @@ describe('useMembersStore', () => {
     expect(store.youthMembers.map((m) => m.id).sort()).toEqual(['adult', 'teen'])
   })
 
-  it('addMember, updateMember, and deleteMember mutate state as expected', () => {
+  it('addMember, updateMember, and deleteMember mutate state as expected', async () => {
     const store = useMembersStore()
-    store.addMember({
+    await store.addMember({
       name: 'New Person',
       email: 'new@x.com',
       phone: '+1',
@@ -108,11 +123,34 @@ describe('useMembersStore', () => {
     } as Omit<Member, 'id'>)
     expect(store.members).toHaveLength(1)
     const id = store.members[0]!.id
+    expect(repo.createMember).toHaveBeenCalledOnce()
 
-    store.updateMember(id, { name: 'Renamed' })
+    await store.updateMember(id, { name: 'Renamed' })
     expect(store.members[0]!.name).toBe('Renamed')
+    expect(repo.updateMember).toHaveBeenCalledWith(id, { name: 'Renamed' })
 
-    store.deleteMember(id)
+    await store.deleteMember(id)
     expect(store.members).toEqual([])
+    expect(repo.deleteMember).toHaveBeenCalledWith(id)
+  })
+
+  it('load() pulls the roll from the repository and only fetches once', async () => {
+    repo.fetchMembers.mockResolvedValueOnce([makeMember({ id: 'remote', name: 'From Firestore' })])
+    const store = useMembersStore()
+
+    await store.load()
+    expect(store.members.map((m) => m.id)).toEqual(['remote'])
+
+    await store.load()
+    expect(repo.fetchMembers).toHaveBeenCalledOnce()
+  })
+
+  it('leaves local state untouched when a write fails', async () => {
+    repo.createMember.mockRejectedValueOnce(new Error('offline'))
+    const store = useMembersStore()
+
+    await expect(store.addMember(makeMember())).rejects.toThrow('offline')
+    expect(store.members).toEqual([])
+    expect(store.error).toBe('offline')
   })
 })

@@ -163,12 +163,14 @@ onBeforeUnmount(() => {
           </NuxtLink>
         </li>
 
-        <!-- Teachings dropdown (hover) -->
+        <!-- Teachings dropdown — opens on hover for pointers, and on click for
+             touch and keyboard users, who have no hover to give. -->
         <li class="relative" @mouseenter="openTeachings" @mouseleave="closeTeachings">
           <button
             class="flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             :aria-expanded="teachingsOpen"
             aria-haspopup="true"
+            @click="teachingsOpen ? (teachingsOpen = false) : openTeachings()"
           >
             Teachings
             <Icon
@@ -192,11 +194,14 @@ onBeforeUnmount(() => {
               @mouseenter="openTeachings"
               @mouseleave="closeTeachings"
             >
-              <a
+              <!-- NuxtLink, not <a href>: a raw href forces a full page reload
+                   and throws away the SPA's loaded state. -->
+              <NuxtLink
                 v-for="link in teachingLinks"
                 :key="link.label"
-                :href="link.to"
+                :to="link.to"
                 class="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50"
+                @click="teachingsOpen = false"
               >
                 <div
                   class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50"
@@ -207,7 +212,7 @@ onBeforeUnmount(() => {
                   <p class="text-sm font-semibold text-gray-900">{{ link.label }}</p>
                   <p class="text-xs text-gray-500">{{ link.desc }}</p>
                 </div>
-              </a>
+              </NuxtLink>
             </div>
           </Transition>
         </li>
@@ -245,6 +250,14 @@ onBeforeUnmount(() => {
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             aria-label="Contact Us"
             >Contact Us</a
+          >
+        </li>
+        <li>
+          <NuxtLink
+            to="/register"
+            class="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            aria-label="Member Registration"
+            >Register</NuxtLink
           >
         </li>
       </ul>
@@ -362,6 +375,14 @@ onBeforeUnmount(() => {
               >
                 Contact Us
               </a>
+            </li>
+            <li class="mt-1">
+              <NuxtLink
+                to="/register"
+                class="block rounded-lg bg-accent px-3 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700"
+                @click="mobileOpen = false"
+                >Register</NuxtLink
+              >
             </li>
           </ul>
         </div>

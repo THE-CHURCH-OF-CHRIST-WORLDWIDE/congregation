@@ -23,6 +23,8 @@ type Tab =
   | 'sunday'
   | 'leaders'
   | 'gallery'
+  | 'congregations'
+  | 'events'
   | 'roles'
 const activeTab = ref<Tab>('general')
 const tabs = [
@@ -37,6 +39,8 @@ const tabs = [
   { label: 'Worship This Sunday', value: 'sunday' },
   { label: 'Leaders', value: 'leaders' },
   { label: 'Gallery', value: 'gallery' },
+  { label: 'Congregations', value: 'congregations' },
+  { label: 'Upcoming Events', value: 'events' },
   { label: 'Roles & Permissions', value: 'roles' },
 ]
 
@@ -83,6 +87,43 @@ function addPhoto() {
 }
 function removePhoto(i: number) {
   draft.value.galleryPhotos.splice(i, 1)
+}
+
+// ── Congregations helpers (landing page "Find a Congregation") ────────────
+function addCongregation() {
+  draft.value.congregations.push({
+    id: `cg${Date.now()}`,
+    name: '',
+    address: '',
+    serviceTime: '',
+    city: '',
+  })
+}
+function removeCongregation(i: number) {
+  draft.value.congregations.splice(i, 1)
+}
+
+// ── Homepage events helpers ───────────────────────────────────────────────
+const EVENT_COLORS = [
+  { label: 'Blue', value: 'bg-blue-500' },
+  { label: 'Green', value: 'bg-green-500' },
+  { label: 'Purple', value: 'bg-purple-500' },
+  { label: 'Amber', value: 'bg-amber-500' },
+  { label: 'Red', value: 'bg-red-500' },
+]
+function addHomepageEvent() {
+  draft.value.homepageEvents.push({
+    id: `ev${Date.now()}`,
+    title: '',
+    day: '',
+    month: '',
+    location: '',
+    time: '',
+    colorClass: 'bg-blue-500',
+  })
+}
+function removeHomepageEvent(i: number) {
+  draft.value.homepageEvents.splice(i, 1)
 }
 
 // ── History helpers ───────────────────────────────────────────────────────
@@ -1019,6 +1060,118 @@ function removeSundayDetail(i: number) {
           </div>
           <p v-if="!draft.galleryPhotos.length" class="py-4 text-center text-sm text-gray-400">
             No photos added yet.
+          </p>
+        </Card>
+
+        <div class="flex justify-end">
+          <Button :loading="store.saving" @click="save">
+            <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
+            Save Settings
+          </Button>
+        </div>
+      </div>
+
+      <!-- ── Congregations ────────────────────────────────────────────── -->
+      <div
+        v-else-if="activeTab === 'congregations'"
+        key="congregations"
+        class="flex max-w-3xl flex-col gap-5"
+      >
+        <Card>
+          <div class="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900">Sister Congregations</h3>
+              <p class="text-xs text-gray-500">
+                Listed by the "Find a Congregation Near You" search on the landing page.
+              </p>
+            </div>
+            <Button variant="secondary" size="sm" @click="addCongregation">
+              <template #icon-left><Icon icon="mdi:plus" /></template>
+              Add Congregation
+            </Button>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div
+              v-for="(cg, i) in draft.congregations"
+              :key="cg.id"
+              class="relative grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 sm:grid-cols-2"
+            >
+              <Input v-model="cg.name" label="Name" placeholder="Church of Christ, Uyo Central" />
+              <Input v-model="cg.city" label="City" placeholder="Uyo" />
+              <Input v-model="cg.address" label="Address" placeholder="14 Oron Road, Uyo" />
+              <Input v-model="cg.serviceTime" label="Service Time" placeholder="Sun 8:30 AM" />
+              <button
+                class="absolute right-2 top-2 rounded bg-white/80 p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                :aria-label="`Remove congregation ${i + 1}`"
+                @click="removeCongregation(i)"
+              >
+                <Icon icon="mdi:close" class="text-sm" />
+              </button>
+            </div>
+          </div>
+          <p v-if="!draft.congregations.length" class="py-4 text-center text-sm text-gray-400">
+            No congregations added yet.
+          </p>
+        </Card>
+
+        <div class="flex justify-end">
+          <Button :loading="store.saving" @click="save">
+            <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
+            Save Settings
+          </Button>
+        </div>
+      </div>
+
+      <!-- ── Upcoming Events (landing page) ───────────────────────────── -->
+      <div v-else-if="activeTab === 'events'" key="events" class="flex max-w-3xl flex-col gap-5">
+        <Card>
+          <div class="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-900">Upcoming Events</h3>
+              <p class="text-xs text-gray-500">
+                The event strip on the landing page. Separate from the full Events page.
+              </p>
+            </div>
+            <Button variant="secondary" size="sm" @click="addHomepageEvent">
+              <template #icon-left><Icon icon="mdi:plus" /></template>
+              Add Event
+            </Button>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div
+              v-for="(ev, i) in draft.homepageEvents"
+              :key="ev.id"
+              class="relative rounded-lg border border-gray-200 p-3"
+            >
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Input v-model="ev.title" label="Title" placeholder="Annual Youth Convention" />
+                <Input v-model="ev.location" label="Location" placeholder="Church Auditorium" />
+              </div>
+              <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <Input v-model="ev.day" label="Day" placeholder="18" />
+                <Input v-model="ev.month" label="Month" placeholder="APR" />
+                <Input v-model="ev.time" label="Time" placeholder="9:00 AM – 5:00 PM" />
+                <EditField label="Accent Colour">
+                  <select v-model="ev.colorClass">
+                    <option v-for="c in EVENT_COLORS" :key="c.value" :value="c.value">
+                      {{ c.label }}
+                    </option>
+                  </select>
+                </EditField>
+              </div>
+              <button
+                class="absolute right-2 top-2 rounded bg-white/80 p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                :aria-label="`Remove event ${i + 1}`"
+                @click="removeHomepageEvent(i)"
+              >
+                <Icon icon="mdi:close" class="text-sm" />
+              </button>
+            </div>
+          </div>
+          <p v-if="!draft.homepageEvents.length" class="py-4 text-center text-sm text-gray-400">
+            No events added yet.
           </p>
         </Card>
 

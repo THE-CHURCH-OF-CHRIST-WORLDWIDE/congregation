@@ -30,7 +30,15 @@ const rows = computed(() => {
       Attendance Performance per Activity for {{ year }}
     </h3>
 
-    <div class="flex flex-col gap-4">
+    <EmptyState
+      v-if="!attendanceStore.records.length"
+      icon="mdi:chart-timeline-variant"
+      size="sm"
+      title="No attendance recorded yet"
+      description="Per-activity rates appear once registers have been marked."
+    />
+
+    <div v-else class="flex flex-col gap-4">
       <div v-for="row in rows" :key="row.name">
         <div class="flex items-center justify-between text-sm mb-1.5">
           <span class="text-gray-700">{{ row.name }}</span>

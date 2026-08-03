@@ -9,9 +9,9 @@ const slug = computed(() => route.params.category as string)
 
 const { gallery } = useGalleryData(slug.value)
 
-if (!gallery) {
-  await navigateTo('/404')
-}
+// An unknown slug used to redirect to /404, but no such route (or error.vue)
+// exists, so the page hung on a navigation that never resolved. Render the
+// not-found state below instead — same outcome for the reader, no dead end.
 
 useSeoMeta({
   title: `${gallery?.title ?? 'Gallery'} — Church of Christ`,
@@ -40,7 +40,13 @@ function openLightbox(index: number) {
     <!-- 2. Masonry gallery -->
     <section class="px-8 py-10">
       <h2 class="mb-5 text-[20px] font-bold text-gray-900">{{ gallery.title }}</h2>
-      <MasonryGrid :images="gallery.images" @image-click="openLightbox" />
+      <EmptyState
+        v-if="!gallery.images.length"
+        icon="mdi:image-multiple-outline"
+        title="No photos in this gallery yet"
+        description="Photographs from this category will appear here once they are uploaded."
+      />
+      <MasonryGrid v-else :images="gallery.images" @image-click="openLightbox" />
     </section>
 
     <!-- 3. "The End" divider -->
@@ -60,6 +66,22 @@ function openLightbox(index: number) {
       :start-index="lightboxIndex"
       @close="lightboxOpen = false"
     />
+  </div>
+
+  <!-- Unknown category: navigateTo('/404') is async, so render a placeholder
+       rather than a blank document while the redirect resolves. -->
+  <div v-else class="mx-auto max-w-3xl px-4 py-24">
+    <EmptyState
+      icon="mdi:image-off-outline"
+      title="Gallery not found"
+      description="That gallery category does not exist."
+    >
+      <template #action>
+        <NuxtLink to="/">
+          <Button variant="secondary" size="sm">Back to Home</Button>
+        </NuxtLink>
+      </template>
+    </EmptyState>
   </div>
 </template>
 

@@ -135,8 +135,8 @@ function openPanelEdit(member: Member) {
 // ─── Add modal ───────────────────────────────────────────────────────────────
 const showAddModal = ref(false)
 
-function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
-  membersStore.addMember({ ...member, absenceCount: 0 })
+async function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
+  await membersStore.addMember({ ...member, absenceCount: 0 }).catch(() => {})
 }
 
 // ─── Export ──────────────────────────────────────────────────────────────────
@@ -156,9 +156,11 @@ function doExport() {
 
 const showImport = ref(false)
 
-function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
+async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
+  // Sequential so a mid-import failure stops rather than firing off dozens of
+  // half-finished writes.
   for (const m of members) {
-    membersStore.addMember({ ...m, absenceCount: 0 })
+    await membersStore.addMember({ ...m, absenceCount: 0 }).catch(() => {})
   }
 }
 </script>
@@ -247,24 +249,25 @@ function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
       </Button>
     </div>
 
-    <!-- Table — passes filtered youth as items prop -->
-    <MemberTable :items="filteredYouth" @select="openPanel" @edit="openPanelEdit" />
+    <!-- With no youth at all, show only the page-level empty state — the table
+         renders its own "no members found" row and the two would stack. -->
+    <Card v-if="!membersStore.youthMembers.length">
+      <EmptyState
+        icon="mdi:account-star-outline"
+        title="No youth members yet"
+        description="Members aged 13–35 appear here automatically once their date of birth is recorded."
+      >
+        <template #action>
+          <Button @click="showAddModal = true">
+            <template #icon-left><Icon icon="mdi:plus" /></template>
+            Add Youth Member
+          </Button>
+        </template>
+      </EmptyState>
+    </Card>
 
-    <!-- Empty state when no youth at all -->
-    <div
-      v-if="!membersStore.youthMembers.length"
-      class="flex flex-col items-center justify-center py-20 text-gray-400"
-    >
-      <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-4">
-        <Icon icon="mdi:account-star-outline" class="text-3xl text-blue-400" />
-      </div>
-      <p class="text-base font-medium text-gray-500">No youth members yet</p>
-      <p class="text-sm mt-1">Add youth members aged 13–35 to get started.</p>
-      <Button class="mt-4" @click="showAddModal = true">
-        <template #icon-left><Icon icon="mdi:plus" /></template>
-        Add Youth Member
-      </Button>
-    </div>
+    <!-- Table — passes filtered youth as items prop -->
+    <MemberTable v-else :items="filteredYouth" @select="openPanel" @edit="openPanelEdit" />
 
     <!-- Detail panel -->
     <MemberDetailPanel v-model="panelOpen" :member="selectedMember" :auto-edit="panelAutoEdit" />

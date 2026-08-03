@@ -119,7 +119,13 @@ const donutData = computed<ChartData<'doughnut'>>(() => {
 })
 
 // ─── Summary table rows ───────────────────────────────────────────────────────
+// `reportRows` emits one row per period in the range whether or not anything was
+// recorded, so its length says nothing about whether there is data. Ask the
+// underlying records instead — otherwise the report shows a wall of zeroes.
 const summaryRows = computed(() => financeStore.reportRows(activePeriod.value))
+const hasFinanceData = computed(
+  () => financeStore.collections.length > 0 || financeStore.expenses.length > 0
+)
 
 // ─── Recent transactions (combined, sorted desc) ──────────────────────────────
 const recentActivity = computed(() => {
@@ -137,8 +143,18 @@ const recentActivity = computed(() => {
     description: `${e.category} – ${e.description}`,
     amount: e.amount,
   }))
-  return [...cols, ...exps].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 15)
+  // No slice: the table pages instead, so older entries stay reachable.
+  return [...cols, ...exps].sort((a, b) => b.date.localeCompare(a.date))
 })
+
+const {
+  page: txPage,
+  total: txTotal,
+  totalPages: txTotalPages,
+  paginated: pagedActivity,
+  rangeStart: txFrom,
+  rangeEnd: txTo,
+} = usePagination(recentActivity, 10)
 
 // ─── Format helpers ───────────────────────────────────────────────────────────
 function fmt(n: number) {
@@ -505,7 +521,13 @@ function saveExpense() {
             <Tabs v-model="activePeriod" :tabs="periodTabs" />
           </div>
         </div>
-        <BarChart :data="chartData" :height="240" />
+        <BarChart v-if="hasFinanceData" :data="chartData" :height="240" />
+        <EmptyState
+          v-else
+          icon="mdi:chart-bar"
+          title="Nothing to chart yet"
+          description="Income and expenses will be compared here once transactions are recorded."
+        />
       </Card>
 
       <!-- Expense category donut -->
@@ -528,6 +550,12 @@ function saveExpense() {
             </div>
             <span class="text-xs text-white font-medium">{{ fmt(amount as number) }}</span>
           </div>
+          <p
+            v-if="!Object.keys(financeStore.expenseByCategory).length"
+            class="py-3 text-center text-xs text-slate-400"
+          >
+            No expenses recorded this month.
+          </p>
         </div>
       </div>
     </div>
@@ -536,12 +564,26 @@ function saveExpense() {
     <Card padding="none">
       <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
         <h3 class="text-sm font-semibold text-gray-800 capitalize">{{ activePeriod }} Report</h3>
-        <Button variant="secondary" size="sm" @click="showExport = true">
+        <!-- Nothing to export while the ledger is empty. -->
+        <Button
+          variant="secondary"
+          size="sm"
+          :disabled="!hasFinanceData"
+          @click="showExport = true"
+        >
           <template #icon-left><Icon icon="mdi:upload-outline" /></template>
           Export Report
         </Button>
       </div>
-      <div class="overflow-x-auto">
+
+      <EmptyState
+        v-if="!hasFinanceData"
+        icon="mdi:chart-box-outline"
+        title="No financial records yet"
+        description="Record a collection or an expense and the period report will build itself from there."
+      />
+
+      <div v-else class="overflow-x-auto">
         <table class="w-full text-sm" role="table">
           <thead>
             <tr class="bg-gray-50 border-b border-gray-100">
@@ -580,11 +622,6 @@ function saveExpense() {
                 </Badge>
               </td>
             </tr>
-            <tr v-if="!summaryRows.length">
-              <td colspan="5" class="px-4 py-10 text-center text-gray-400">
-                No data for this period
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
@@ -608,7 +645,7 @@ function saveExpense() {
           </thead>
           <tbody>
             <tr
-              v-for="tx in recentActivity"
+              v-for="tx in pagedActivity"
               :key="tx.id"
               class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
             >
@@ -645,9 +682,26 @@ function saveExpense() {
                 </button>
               </td>
             </tr>
+            <tr v-if="!pagedActivity.length">
+              <td colspan="5" class="px-4">
+                <EmptyState
+                  icon="mdi:cash-multiple"
+                  title="No transactions recorded yet"
+                  description="Collections and expenses you record will appear here."
+                />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
+      <Pagination
+        v-model:page="txPage"
+        :total-pages="txTotalPages"
+        :total="txTotal"
+        :range-start="txFrom"
+        :range-end="txTo"
+        label="transactions"
+      />
     </Card>
 
     <!-- ── Add Collection modal ─────────────────────────────────────────────── -->

@@ -1,0 +1,75 @@
+rules_version = '2';
+
+// Security rules for the Congregation CMS.
+//
+// Two collections, with deliberately different exposure:
+//
+//   settings/church — public site content (church name, service times, leaders,
+//                     gallery, congregations, homepage events). The landing and
+//                     about pages read this while signed out, so it is world
+//                     readable. Only signed-in staff may write.
+//
+//   members         — the nominal roll. Contains names, phone numbers, home
+//                     addresses and dates of birth, so it is NEVER publicly
+//                     readable. The public registration form may CREATE a
+//                     record (that is the whole point of /register), but only
+//                     signed-in staff can read, edit, or delete one.
+//
+// Deploy with:  firebase deploy --only firestore:rules
+// or paste into Firebase console → Firestore Database → Rules → Publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // ── Church settings ────────────────────────────────────────────────────
+    match /settings/{document} {
+      allow read: if true;
+      allow write: if signedIn();
+    }
+
+    // ── Members ────────────────────────────────────────────────────────────
+    match /members/{memberId} {
+
+      // Fields the app writes. Anything else is rejected, so the open create
+      // endpoint can't be used to store arbitrary data.
+      function allowedFields() {
+        return [
+          'name', 'gender', 'phone', 'email', 'dob', 'status', 'absenceCount',
+          'avatar', 'churchNumber', 'maritalStatus', 'dateOfBaptism',
+          'dateJoined', 'country', 'state', 'localGovernment', 'village',
+          'address', 'occupation', 'previousCongregation',
+          'previousMinisterPhone', 'emergencyContact', 'createdAt', 'updatedAt'
+        ];
+      }
+
+      function shapeIsValid(data) {
+        return data.keys().hasOnly(allowedFields())
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+          && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 40
+          && data.gender in ['Male', 'Female']
+          && (!('email' in data) || (data.email is string && data.email.size() <= 200))
+          && (!('address' in data) || (data.address is string && data.address.size() <= 300));
+      }
+
+      // A self-registration may not hand itself a privileged status or a
+      // pre-cooked absence count — the secretary sets those later.
+      function selfRegistrationIsSane(data) {
+        return data.status == 'Active' && data.absenceCount == 0;
+      }
+
+      allow read: if signedIn();
+      allow create: if shapeIsValid(request.resource.data)
+                    && (signedIn() || selfRegistrationIsSane(request.resource.data));
+      allow update, delete: if signedIn();
+    }
+
+    // Anything not matched above stays closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

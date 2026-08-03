@@ -50,15 +50,12 @@ function categoryClass(cat: string): string {
     <!-- Event list -->
     <div class="flex flex-col gap-3 overflow-y-auto pr-1">
       <!-- Empty state -->
-      <div
+      <EmptyState
         v-if="displayedEvents.length === 0"
-        class="flex flex-col items-center justify-center py-16 text-gray-400"
-      >
-        <Icon icon="mdi:calendar-remove-outline" class="mb-3 h-12 w-12 text-gray-300" />
-        <p class="text-sm font-medium text-gray-400">
-          {{ subTab === 'year' ? 'No events this year' : 'No events this month' }}
-        </p>
-      </div>
+        icon="mdi:calendar-remove-outline"
+        :title="subTab === 'year' ? 'No events this year' : 'No events this month'"
+        description="Past gatherings appear here once their date has passed."
+      />
 
       <!-- Event rows -->
       <div

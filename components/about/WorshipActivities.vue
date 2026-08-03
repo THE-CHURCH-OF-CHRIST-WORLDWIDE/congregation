@@ -21,8 +21,15 @@ const cfg = computed(() => s.settings.worshipActivities)
         </p>
       </div>
 
+      <EmptyState
+        v-if="!cfg.items.length"
+        icon="mdi:hands-pray"
+        title="No worship activities listed"
+        description="Add them in Settings → Worship Activities."
+      />
+
       <!-- Cards row -->
-      <div class="flex flex-wrap justify-center gap-4">
+      <div v-else class="flex flex-wrap justify-center gap-4">
         <div
           v-for="activity in cfg.items"
           :key="activity.id"

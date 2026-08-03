@@ -60,10 +60,10 @@ export const usePublicTeachingsStore = defineStore('publicTeachings', {
 
   actions: {
     fetchSermons() {
-      // Seeded via usePublicMockData
+      // TODO: read from Firestore once the repository lands.
     },
     fetchLessons() {
-      // Seeded via usePublicMockData
+      // TODO: read from Firestore once the repository lands.
     },
     setFilter(filter: string) {
       this.activeFilter = filter

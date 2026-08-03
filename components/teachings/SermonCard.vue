@@ -7,6 +7,7 @@ interface Props {
 defineProps<Props>()
 const teachingsStore = useTeachingsStore()
 const showMenu = ref(false)
+const expanded = ref(false)
 
 const categoryColors: Record<string, string> = {
   Church: 'bg-blue-100 text-blue-700',
@@ -64,12 +65,40 @@ function deleteSermon(id: string) {
       <p class="text-xs text-gray-500 mt-1">
         {{ sermon.preacher }} · {{ formatDate(sermon.date) }}
       </p>
+
+      <div v-if="expanded" class="mt-3 space-y-2 border-t border-gray-100 pt-3">
+        <p v-if="sermon.scripture" class="text-xs font-medium text-gray-700">
+          <Icon icon="mdi:book-open-variant" class="mr-1 inline-block align-text-bottom" />
+          {{ sermon.scripture }}
+        </p>
+        <p class="text-xs leading-relaxed text-gray-600">
+          {{ sermon.description || 'No description was provided for this teaching.' }}
+        </p>
+        <a
+          v-if="sermon.documentFile"
+          :href="sermon.documentFile"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+        >
+          <Icon icon="mdi:file-document-outline" />
+          Open attached document
+        </a>
+      </div>
     </div>
 
     <div class="flex items-center justify-between">
-      <button class="text-xs text-blue-600 hover:underline flex items-center gap-1">
-        Read more
-        <Icon icon="mdi:arrow-right" class="text-[10px]" />
+      <button
+        class="text-xs text-blue-600 hover:underline flex items-center gap-1"
+        :aria-expanded="expanded"
+        @click="expanded = !expanded"
+      >
+        {{ expanded ? 'Show less' : 'Read more' }}
+        <Icon
+          icon="mdi:chevron-down"
+          class="text-[12px] transition-transform"
+          :class="expanded && 'rotate-180'"
+        />
       </button>
       <div class="relative">
         <button
@@ -84,11 +113,6 @@ function deleteSermon(id: string) {
           class="absolute right-0 bottom-8 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-28"
           @click.stop
         >
-          <button
-            class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-          >
-            <Icon icon="mdi:pencil-outline" />Edit
-          </button>
           <button
             class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
             @click="deleteSermon(sermon.id)"

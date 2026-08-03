@@ -95,10 +95,18 @@ useSeoMeta({
           type="sunday-school"
         />
       </div>
-      <div v-else class="py-16 text-center text-gray-400">
-        <Icon icon="heroicons:academic-cap" class="h-12 w-12 mx-auto mb-3 text-gray-300" />
-        <p>No lessons found. Try a different filter or search term.</p>
-      </div>
+      <EmptyState
+        v-else-if="store.sundaySchool.length"
+        icon="heroicons:academic-cap"
+        title="No lessons match your search"
+        description="Try a different filter or search term."
+      />
+      <EmptyState
+        v-else
+        icon="heroicons:academic-cap"
+        title="No lessons published yet"
+        description="Sunday School lessons appear here once they are uploaded from the admin dashboard."
+      />
 
       <!-- Load more -->
       <div v-if="hasMore" class="mt-10 text-center">

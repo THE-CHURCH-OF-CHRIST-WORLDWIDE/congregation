@@ -13,9 +13,49 @@ const emit = defineEmits<{
 }>()
 
 const membersStore = useMembersStore()
+const toast = useToast()
 
 // ─── mode ────────────────────────────────────────────────────────────────────
 const mode = ref<'view' | 'edit'>('view')
+
+// ─── Header options menu ─────────────────────────────────────────────────────
+const optionsOpen = ref(false)
+
+function editFromMenu() {
+  optionsOpen.value = false
+  startEdit()
+}
+
+function deleteFromMenu() {
+  optionsOpen.value = false
+  onDelete()
+}
+
+// ─── Avatar replacement ──────────────────────────────────────────────────────
+const avatarInput = ref<HTMLInputElement | null>(null)
+const { upload, uploading: avatarUploading } = useCloudinaryUpload()
+
+function pickAvatar() {
+  avatarInput.value?.click()
+}
+
+/**
+ * Uploads the chosen photo (compressed on the way out by `useCloudinaryUpload`)
+ * and persists the resulting URL against the member.
+ */
+async function onAvatarPicked(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = '' // allow re-picking the same file after a failure
+  if (!file || !props.member) return
+
+  try {
+    const result = await upload(file, { folder: 'members', maxBytes: 2 * 1024 * 1024 })
+    await membersStore.updateMember(props.member.id, { avatar: result.url })
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : 'Could not update the photograph')
+  }
+}
 
 // ─── Edit form state ─────────────────────────────────────────────────────────
 const ef = reactive<
@@ -36,6 +76,8 @@ const ef = reactive<
   village: '',
   address: '',
   occupation: '',
+  previousCongregation: '',
+  previousMinisterPhone: '',
   ecName: '',
   ecRelationship: '',
   ecPhone: '',
@@ -61,6 +103,8 @@ function startEdit() {
     village: m.village ?? '',
     address: m.address ?? '',
     occupation: m.occupation ?? '',
+    previousCongregation: m.previousCongregation ?? '',
+    previousMinisterPhone: m.previousMinisterPhone ?? '',
     ecName: m.emergencyContact?.name ?? '',
     ecRelationship: m.emergencyContact?.relationship ?? '',
     ecPhone: m.emergencyContact?.phone ?? '',
@@ -69,31 +113,35 @@ function startEdit() {
   mode.value = 'edit'
 }
 
-function saveEdit() {
+async function saveEdit() {
   if (!props.member) return
-  membersStore.updateMember(props.member.id, {
-    name: ef.name,
-    gender: ef.gender,
-    phone: ef.phone,
-    email: ef.email,
-    dob: ef.dob,
-    status: ef.status,
-    maritalStatus: ef.maritalStatus,
-    dateOfBaptism: ef.dateOfBaptism,
-    dateJoined: ef.dateJoined,
-    country: ef.country,
-    state: ef.state,
-    localGovernment: ef.localGovernment,
-    village: ef.village,
-    address: ef.address,
-    occupation: ef.occupation,
-    emergencyContact: {
-      name: ef.ecName ?? '',
-      relationship: ef.ecRelationship ?? '',
-      phone: ef.ecPhone ?? '',
-      address: ef.ecAddress ?? '',
-    },
-  })
+  await membersStore
+    .updateMember(props.member.id, {
+      name: ef.name,
+      gender: ef.gender,
+      phone: ef.phone,
+      email: ef.email,
+      dob: ef.dob,
+      status: ef.status,
+      maritalStatus: ef.maritalStatus,
+      dateOfBaptism: ef.dateOfBaptism,
+      dateJoined: ef.dateJoined,
+      country: ef.country,
+      state: ef.state,
+      localGovernment: ef.localGovernment,
+      village: ef.village,
+      address: ef.address,
+      occupation: ef.occupation,
+      previousCongregation: ef.previousCongregation,
+      previousMinisterPhone: ef.previousMinisterPhone,
+      emergencyContact: {
+        name: ef.ecName ?? '',
+        relationship: ef.ecRelationship ?? '',
+        phone: ef.ecPhone ?? '',
+        address: ef.ecAddress ?? '',
+      },
+    })
+    .catch(() => {})
   mode.value = 'view'
 }
 
@@ -118,10 +166,11 @@ function close() {
   emit('update:modelValue', false)
 }
 
-function onDelete() {
+async function onDelete() {
   if (!props.member) return
-  membersStore.deleteMember(props.member.id)
-  emit('delete', props.member)
+  const member = props.member
+  await membersStore.deleteMember(member.id).catch(() => {})
+  emit('delete', member)
   close()
 }
 
@@ -146,10 +195,25 @@ const memberStatus = computed(
 
 onMounted(() => {
   const handler = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') close()
+    if (e.key === 'Escape') {
+      if (optionsOpen.value) optionsOpen.value = false
+      else close()
+    }
+  }
+  const dismissMenu = () => {
+    optionsOpen.value = false
   }
   document.addEventListener('keydown', handler)
-  onUnmounted(() => document.removeEventListener('keydown', handler))
+  document.addEventListener('click', dismissMenu)
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handler)
+    document.removeEventListener('click', dismissMenu)
+  })
+})
+
+// Closing or switching member should never leave a stale menu open.
+watch([() => props.modelValue, () => props.member], () => {
+  optionsOpen.value = false
 })
 
 // Gender options for edit form select
@@ -167,7 +231,15 @@ const statusOptions = [
   { label: 'Transfer', value: 'Transfer' },
   { label: 'Late', value: 'Late' },
 ]
-const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
+/** Fallback for members who registered without a passport photograph. */
+const initials = computed(() =>
+  (props.member?.name ?? '')
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+)
 </script>
 
 <template>
@@ -212,12 +284,36 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
             >
               <Icon icon="mdi:close" class="text-lg" />
             </button>
-            <button
-              class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition-colors"
-              aria-label="More options"
-            >
-              <Icon icon="mdi:dots-vertical" class="text-lg" />
-            </button>
+            <div class="relative">
+              <button
+                class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition-colors"
+                aria-label="More options"
+                :aria-expanded="optionsOpen"
+                @click.stop="optionsOpen = !optionsOpen"
+              >
+                <Icon icon="mdi:dots-vertical" class="text-lg" />
+              </button>
+              <div
+                v-if="optionsOpen"
+                class="absolute right-0 top-10 z-10 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                @click.stop
+              >
+                <button
+                  class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                  @click="editFromMenu"
+                >
+                  <Icon icon="mdi:pencil-outline" />
+                  Edit details
+                </button>
+                <button
+                  class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                  @click="deleteFromMenu"
+                >
+                  <Icon icon="mdi:trash-can-outline" />
+                  Delete member
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Scrollable content -->
@@ -225,19 +321,40 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
             <!-- Hero card -->
             <div class="bg-[#F0F9FF] rounded-2xl px-4 py-2 flex items-center gap-4">
               <img
-                :src="img"
-                alt="profile-img"
+                v-if="member.avatar"
+                :src="member.avatar"
+                :alt="member.name"
                 class="w-30 h-30 mb-3 shadow-2xl rounded-2xl object-cover object-center"
               />
+              <div
+                v-else
+                class="w-30 h-30 mb-3 flex shrink-0 items-center justify-center rounded-2xl bg-[#0BA5EC]/10 text-3xl font-bold text-[#0BA5EC] shadow-2xl"
+                :aria-label="`${member.name} has no photograph`"
+              >
+                {{ initials }}
+              </div>
               <div class="space-y-1">
                 <div class="flex gap-4 items-center">
                   <h2 class="font-montserrat text-base font-bold leading-6">{{ member.name }}</h2>
                   <button
-                    class="flex items-center justify-center hover:bg-gray-50"
-                    aria-label="Edit avatar"
+                    class="flex items-center justify-center hover:bg-gray-50 disabled:opacity-40"
+                    :aria-label="`Change photograph for ${member.name}`"
+                    :disabled="avatarUploading"
+                    @click="pickAvatar"
                   >
-                    <Icon icon="mdi:square-edit-outline" class="text-[20px] text-black" />
+                    <Icon
+                      :icon="avatarUploading ? 'mdi:loading' : 'mdi:square-edit-outline'"
+                      class="text-[20px] text-black"
+                      :class="avatarUploading && 'animate-spin'"
+                    />
                   </button>
+                  <input
+                    ref="avatarInput"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    @change="onAvatarPicked"
+                  />
                 </div>
                 <p class="text-[#717680] text-base font-normal leading-6">
                   Church Number:
@@ -327,6 +444,26 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
               </div>
             </div>
 
+            <!-- Previous Congregation -->
+            <div
+              v-if="member.previousCongregation || member.previousMinisterPhone"
+              class="bg-white rounded-2xl p-4 border-[#7CD4FD] border"
+            >
+              <h3 class="text-xs font-bold text-gray-700 mb-3">Previous Congregation</h3>
+              <div class="grid grid-cols-2 gap-x-3 gap-y-3">
+                <InfoField
+                  icon="mdi:church"
+                  label="Congregation"
+                  :value="member.previousCongregation ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:phone-outline"
+                  label="Minister / Preacher"
+                  :value="member.previousMinisterPhone ?? '—'"
+                />
+              </div>
+            </div>
+
             <!-- Emergency Contact -->
             <div
               v-if="member.emergencyContact"
@@ -407,9 +544,10 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
             </div>
             <button
               class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors"
-              aria-label="Next section"
+              aria-label="Close editor"
+              @click="cancelEdit"
             >
-              <Icon icon="mdi:chevron-right" class="text-xl" />
+              <Icon icon="mdi:close" class="text-xl" />
             </button>
           </div>
 
@@ -512,6 +650,27 @@ const img = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
                     v-model="ef.address"
                     type="text"
                     placeholder="No. 8 Convent Road, Ikot Ekpene"
+                  />
+                </EditField>
+              </div>
+            </section>
+
+            <!-- ── Previous Congregation ───────────────────── -->
+            <section>
+              <h3 class="text-base font-bold text-gray-900 mb-4">Previous Congregation</h3>
+              <div class="grid grid-cols-2 gap-3">
+                <EditField label="Congregation">
+                  <input
+                    v-model="ef.previousCongregation"
+                    type="text"
+                    placeholder="e.g. Church of Christ, Uyo"
+                  />
+                </EditField>
+                <EditField label="Minister / Preacher's Phone">
+                  <input
+                    v-model="ef.previousMinisterPhone"
+                    type="tel"
+                    placeholder="+234 803 333 4444"
                   />
                 </EditField>
               </div>

@@ -40,10 +40,10 @@ export const usePublicLiveStreamStore = defineStore('publicLiveStream', {
 
   actions: {
     fetchLiveStatus() {
-      // Seeded via usePublicMockData
+      // TODO: read from Firestore once the repository lands.
     },
     fetchRecordedStreams() {
-      // Seeded via usePublicMockData
+      // TODO: read from Firestore once the repository lands.
     },
     setTab(tab: 'live' | 'recorded') {
       this.activeTab = tab

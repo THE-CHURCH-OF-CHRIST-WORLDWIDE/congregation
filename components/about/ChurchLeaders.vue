@@ -28,7 +28,15 @@ function onImgError(e: Event) {
         <h2 class="mt-2 font-serif text-3xl font-bold text-gray-900">Our Church Leaders</h2>
       </div>
 
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <LoadingState v-if="s.loading" title="Loading leaders…" />
+      <EmptyState
+        v-else-if="!leaders.length"
+        icon="mdi:account-tie-outline"
+        title="No leaders listed yet"
+        description="Elders, deacons and ministers appear here once they are added in Settings → Leaders."
+      />
+
+      <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         <div
           v-for="leader in leaders"
           :key="leader.id"
