@@ -71,12 +71,11 @@ function isSelected(event: UpcomingEvent) {
       </div>
     </div>
 
-    <div
+    <EmptyState
       v-if="events.length === 0"
-      class="flex flex-col items-center justify-center py-16 text-gray-400"
-    >
-      <Icon icon="mdi:calendar-blank-outline" class="mb-2 h-10 w-10" />
-      <p class="text-sm">No upcoming events</p>
-    </div>
+      icon="mdi:calendar-blank-outline"
+      title="No upcoming events"
+      description="Check back soon — new gatherings are announced here."
+    />
   </div>
 </template>

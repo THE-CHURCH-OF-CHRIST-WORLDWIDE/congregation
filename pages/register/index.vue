@@ -92,14 +92,15 @@ function validate(): boolean {
 
   if (!form.name.trim()) next.name = 'Your full name is required'
 
-  // Email is optional — many members register with a phone number only. It is
-  // still validated for shape and uniqueness when one is supplied.
+  // Email is optional — many members register with a phone number only.
+  //
+  // Uniqueness is deliberately NOT checked here. This is an unauthenticated
+  // page, and comparing against the roll would mean granting anonymous read
+  // access to every member's record. Duplicates are cheap for the secretary to
+  // spot on the nominal roll; leaked member data is not. Enforce it in
+  // Firestore rules or a Cloud Function if it needs to be automatic.
   const email = form.email.trim().toLowerCase()
-  if (email) {
-    if (!EMAIL_RE.test(email)) next.email = 'Enter a valid email address'
-    else if (membersStore.members.some((m) => m.email.toLowerCase() === email))
-      next.email = 'A member is already registered with this email'
-  }
+  if (email && !EMAIL_RE.test(email)) next.email = 'Enter a valid email address'
 
   if (!form.phone.trim()) next.phone = 'Phone number is required'
   else if (!PHONE_RE.test(form.phone.trim())) next.phone = 'Enter a valid phone number'
@@ -139,32 +140,37 @@ async function submit() {
         }
       : undefined
 
-  membersStore.addMember({
-    name: form.name.trim(),
-    gender: form.gender,
-    phone: form.phone.trim(),
-    email: form.email.trim(),
-    dob: form.dob,
-    status: 'Active',
-    absenceCount: 0,
-    avatar: form.avatar,
-    maritalStatus: form.maritalStatus,
-    dateOfBaptism: form.dateOfBaptism,
-    dateJoined: form.dateJoined || today,
-    occupation: form.occupation,
-    country: form.country,
-    state: form.state,
-    localGovernment: form.localGovernment,
-    village: form.village,
-    address: form.address,
-    previousCongregation: form.previousCongregation?.trim(),
-    previousMinisterPhone: form.previousMinisterPhone?.trim(),
-    emergencyContact,
-  })
-
-  submitting.value = false
-  submitted.value = true
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  try {
+    await membersStore.addMember({
+      name: form.name.trim(),
+      gender: form.gender,
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      dob: form.dob,
+      status: 'Active',
+      absenceCount: 0,
+      avatar: form.avatar,
+      maritalStatus: form.maritalStatus,
+      dateOfBaptism: form.dateOfBaptism,
+      dateJoined: form.dateJoined || today,
+      occupation: form.occupation,
+      country: form.country,
+      state: form.state,
+      localGovernment: form.localGovernment,
+      village: form.village,
+      address: form.address,
+      previousCongregation: form.previousCongregation?.trim(),
+      previousMinisterPhone: form.previousMinisterPhone?.trim(),
+      emergencyContact,
+    })
+    submitted.value = true
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  } catch {
+    // The store already surfaced the reason via toast. Keep the form filled in
+    // so nothing the member typed is lost to a failed write.
+  } finally {
+    submitting.value = false
+  }
 }
 
 function registerAnother() {

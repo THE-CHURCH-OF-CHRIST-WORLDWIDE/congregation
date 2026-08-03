@@ -2,6 +2,7 @@
 import type { RecordedStream } from '~/types/public'
 
 defineProps<{ stream: RecordedStream }>()
+const emit = defineEmits<{ watch: [stream: RecordedStream] }>()
 
 function formatViews(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
@@ -70,12 +71,21 @@ function formatViews(n: number): string {
         </div>
       </div>
 
+      <!-- Only offer playback once a recording has actually been attached. -->
       <button
+        v-if="stream.videoSrc"
         class="mt-auto w-full rounded-lg bg-[#2563EB] py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
-        aria-label="Watch replay"
+        :aria-label="`Watch the replay of ${stream.title}`"
+        @click="emit('watch', stream)"
       >
         Watch Replay
       </button>
+      <p
+        v-else
+        class="mt-auto rounded-lg bg-gray-50 py-2.5 text-center text-xs font-medium text-gray-400"
+      >
+        Recording not published yet
+      </p>
     </div>
   </article>
 </template>

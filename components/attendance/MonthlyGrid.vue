@@ -74,21 +74,24 @@ const headerText = computed(
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <EmptyState
+      v-if="!attendanceStore.records.length"
+      icon="mdi:calendar-blank-outline"
+      title="No attendance recorded yet"
+      description="Monthly summaries build up as registers are marked for this service."
+    />
+
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="month in monthlyData"
         :key="month.month"
         class="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 hover:border-blue-200 transition-colors"
       >
         <!-- Header: Month Year + menu -->
-        <div class="flex items-center justify-between mb-4">
+        <!-- The card's only action is "View Details" at the foot of it, so no
+             overflow menu here — an empty one is worse than none. -->
+        <div class="mb-4">
           <h4 class="text-sm font-semibold text-gray-900">{{ month.label }} {{ selectedYear }}</h4>
-          <button
-            class="text-gray-400 hover:text-gray-600 p-0.5"
-            :aria-label="`Options for ${month.label}`"
-          >
-            <Icon icon="mdi:dots-vertical" />
-          </button>
         </div>
 
         <!-- Service + percentage + progress -->

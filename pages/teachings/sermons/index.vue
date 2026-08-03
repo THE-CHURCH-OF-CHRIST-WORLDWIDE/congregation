@@ -97,10 +97,18 @@ useSeoMeta({
           type="sermon"
         />
       </div>
-      <div v-else class="py-16 text-center text-gray-400">
-        <Icon icon="heroicons:microphone-slash" class="h-12 w-12 mx-auto mb-3 text-gray-300" />
-        <p>No sermons found. Try a different filter or search term.</p>
-      </div>
+      <EmptyState
+        v-else-if="store.sermons.length"
+        icon="heroicons:microphone-slash"
+        title="No sermons match your search"
+        description="Try a different filter or search term."
+      />
+      <EmptyState
+        v-else
+        icon="heroicons:microphone-slash"
+        title="No sermons published yet"
+        description="Sermons appear here once they are uploaded from the admin dashboard."
+      />
 
       <!-- Load more -->
       <div v-if="hasMore" class="mt-10 text-center">

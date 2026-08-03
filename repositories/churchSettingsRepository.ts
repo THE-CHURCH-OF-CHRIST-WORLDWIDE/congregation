@@ -107,6 +107,26 @@ export interface WorshipThisSundaySettings {
   mapAddress: string
 }
 
+/** A sister congregation listed by the "Find a Congregation" search. */
+export interface CongregationEntry {
+  id: string
+  name: string
+  address: string
+  serviceTime: string
+  city: string
+}
+
+/** An event card on the landing page's "Upcoming Events" strip. */
+export interface HomepageEvent {
+  id: string
+  title: string
+  day: string
+  month: string
+  location: string
+  time: string
+  colorClass: string
+}
+
 export interface ChurchSettings {
   // ── General ──────────────────────────────────────────────────────────────
   name: string
@@ -159,6 +179,12 @@ export interface ChurchSettings {
 
   // ── Gallery ───────────────────────────────────────────────────────────────
   galleryPhotos: GalleryPhoto[]
+
+  // ── Landing Page: Find a Congregation ─────────────────────────────────────
+  congregations: CongregationEntry[]
+
+  // ── Landing Page: Upcoming Events ─────────────────────────────────────────
+  homepageEvents: HomepageEvent[]
 }
 
 const COLLECTION = 'settings'

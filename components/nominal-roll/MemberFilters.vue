@@ -23,9 +23,11 @@ const activeTab = computed({
 
 const showImport = ref(false)
 
-function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
+async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
+  // Sequential so a mid-import failure stops rather than firing off dozens of
+  // half-finished writes.
   for (const m of members) {
-    membersStore.addMember({ ...m, absenceCount: 0 })
+    await membersStore.addMember({ ...m, absenceCount: 0 }).catch(() => {})
   }
 }
 

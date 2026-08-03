@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "congregation-staging",
+    "staging": "congregation-staging",
+    "production": "congregation-prod"
+  }
+}

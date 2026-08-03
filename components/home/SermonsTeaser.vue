@@ -24,8 +24,15 @@ const { el: sectionRef, isVisible } = useScrollReveal()
         </NuxtLink>
       </div>
 
+      <EmptyState
+        v-if="!featured.length"
+        icon="mdi:microphone-outline"
+        title="No sermons published yet"
+        description="Recent sermons will be featured here once they are uploaded."
+      />
+
       <!-- 3-column grid -->
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="(sermon, i) in featured"
           :key="sermon.id"

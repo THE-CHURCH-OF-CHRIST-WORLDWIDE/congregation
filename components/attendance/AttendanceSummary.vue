@@ -78,7 +78,14 @@ function fmt(n: number) {
       </select>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <EmptyState
+      v-if="!attendanceStore.records.length"
+      icon="mdi:calendar-check-outline"
+      title="No attendance recorded yet"
+      description="Averages per service appear here once registers have been marked."
+    />
+
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       <div
         v-for="svc in stats"
         :key="svc.serviceType"

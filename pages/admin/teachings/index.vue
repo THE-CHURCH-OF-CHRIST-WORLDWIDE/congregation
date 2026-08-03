@@ -16,6 +16,18 @@ const filterOptions = [
   { label: 'Bible Class', value: 'Bible Class' },
   { label: 'Youth Class', value: 'Youth Class' },
 ]
+
+const {
+  page: teachPage,
+  total: teachTotal,
+  totalPages: teachTotalPages,
+  paginated: pagedSermons,
+  rangeStart: teachFrom,
+  rangeEnd: teachTo,
+} = usePagination(
+  computed(() => teachingsStore.filteredSermons),
+  12
+)
 </script>
 
 <template>
@@ -60,26 +72,38 @@ const filterOptions = [
       </div>
     </div>
 
-    <!-- Grid -->
+    <!-- Grid. Teachings are held in memory with no fetch step, so there is no
+         loading state to show here — only empty or populated. -->
     <div
-      v-if="teachingsStore.filteredSermons.length"
+      v-if="pagedSermons.length"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
     >
-      <SermonCard
-        v-for="sermon in teachingsStore.filteredSermons"
-        :key="sermon.id"
-        :sermon="sermon"
-      />
+      <SermonCard v-for="sermon in pagedSermons" :key="sermon.id" :sermon="sermon" />
     </div>
 
     <!-- Empty state -->
-    <div v-else class="flex flex-col items-center justify-center py-20 text-gray-400">
-      <Icon icon="mdi:book-open-page-variant-outline" class="text-6xl mb-3" />
-      <p class="text-lg font-medium text-gray-500">No teachings found</p>
-      <p class="text-sm mt-1">Try adjusting your filters or upload a new teaching.</p>
-      <NuxtLink to="/admin/teachings/upload" class="mt-4">
-        <Button>Upload Teaching</Button>
-      </NuxtLink>
-    </div>
+    <EmptyState
+      v-else
+      icon="mdi:book-open-page-variant-outline"
+      title="No teachings found"
+      description="Try adjusting your filters, or upload a new sermon or lesson."
+    >
+      <template #action>
+        <NuxtLink to="/admin/teachings/upload">
+          <Button>Upload Teaching</Button>
+        </NuxtLink>
+      </template>
+    </EmptyState>
+
+    <Card v-if="teachTotalPages > 1" padding="none">
+      <Pagination
+        v-model:page="teachPage"
+        :total-pages="teachTotalPages"
+        :total="teachTotal"
+        :range-start="teachFrom"
+        :range-end="teachTo"
+        label="teachings"
+      />
+    </Card>
   </div>
 </template>

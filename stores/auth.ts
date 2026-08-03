@@ -10,11 +10,29 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!user.value)
 
+  /**
+   * Resolves the first time Firebase reports an auth state. Firebase restores a
+   * persisted session asynchronously, so anything that branches on
+   * `isAuthenticated` — the route guard above all — must wait for this or it
+   * will read `false` for a user who is in fact signed in.
+   */
+  let ready: Promise<void> | null = null
+
   function init() {
-    onAuthStateChanged($auth, (firebaseUser) => {
-      user.value = firebaseUser
-      loading.value = false
+    if (ready) return ready
+    ready = new Promise<void>((resolve) => {
+      onAuthStateChanged($auth, (firebaseUser) => {
+        user.value = firebaseUser
+        loading.value = false
+        resolve()
+      })
     })
+    return ready
+  }
+
+  /** Await the initial auth check, starting it if it hasn't begun. */
+  function whenReady() {
+    return init()
   }
 
   async function login(email: string, password: string) {
@@ -39,6 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isAuthenticated,
     init,
+    whenReady,
     login,
     logout,
   }

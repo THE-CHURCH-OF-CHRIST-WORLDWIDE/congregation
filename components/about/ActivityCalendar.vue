@@ -45,6 +45,17 @@ const cfg = computed(() => s.settings.activityCalendar)
               <td class="py-3 px-6 text-gray-600">{{ row.time }}</td>
             </tr>
 
+            <tr v-if="!cfg.rows.length">
+              <td colspan="3" class="px-6">
+                <EmptyState
+                  icon="mdi:calendar-blank-outline"
+                  size="sm"
+                  title="No activities scheduled"
+                  description="The weekly calendar is set up in Settings → Activity Calendar."
+                />
+              </td>
+            </tr>
+
             <!-- Footer row -->
             <tr class="border-t border-gray-100 bg-white">
               <td colspan="3" class="py-3.5 px-6 text-center">

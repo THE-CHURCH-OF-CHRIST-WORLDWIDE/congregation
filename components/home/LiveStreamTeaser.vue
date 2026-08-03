@@ -193,6 +193,10 @@ const { el: sectionRef, isVisible } = useScrollReveal()
             </p>
             <p class="recent-title">{{ rs.title }}</p>
           </NuxtLink>
+
+          <p v-if="!recentStreams.length" class="recent-empty">
+            No past streams have been published yet.
+          </p>
         </div>
       </div>
     </div>
@@ -400,6 +404,16 @@ const { el: sectionRef, isVisible } = useScrollReveal()
   font-weight: 700;
   color: #111827;
   margin-bottom: 16px;
+}
+
+.recent-empty {
+  background: white;
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #9ca3af;
 }
 
 .recent-row {

@@ -28,8 +28,8 @@ function openPanelEdit(member: Member) {
   panelOpen.value = true
 }
 
-function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
-  membersStore.addMember({ ...member, absenceCount: 0 })
+async function onMemberSaved(member: Omit<Member, 'id' | 'absenceCount'>) {
+  await membersStore.addMember({ ...member, absenceCount: 0 }).catch(() => {})
 }
 
 // "Last year" baseline: count members who had joined on or before Dec 31 of the

@@ -129,13 +129,19 @@ function share() {
             <div class="mt-10 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
               <div class="flex items-center justify-between mb-6">
                 <h2 class="font-serif text-xl font-bold text-[#1E3A5F]">Lesson Content</h2>
-                <button
+                <!-- Only offered when a handout has actually been attached. -->
+                <a
+                  v-if="sermon.documentUrl"
+                  :href="sermon.documentUrl"
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                  aria-label="Download PDF"
+                  :aria-label="`Download the handout for ${sermon.title}`"
                 >
                   <Icon icon="heroicons:arrow-down-tray" class="h-4 w-4" />
-                  Download PDF
-                </button>
+                  Download handout
+                </a>
               </div>
 
               <p class="text-sm text-gray-600 leading-relaxed mb-6">{{ sermon.description }}</p>

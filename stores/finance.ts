@@ -22,86 +22,10 @@ function yearKey(date: Date): string {
   return String(date.getFullYear())
 }
 
-// ─── Seed data ────────────────────────────────────────────────────────────────
-function seedCollections(): FinanceCollection[] {
-  const entries: FinanceCollection[] = []
-  let id = 1
-  // Generate ~52 Sundays going back 1 year
-  const now = new Date()
-  for (let w = 51; w >= 0; w--) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - w * 7)
-    // Find the nearest Sunday
-    d.setDate(d.getDate() - d.getDay())
-    const base = 80000 + Math.round((Math.random() - 0.5) * 30000)
-    entries.push({
-      id: String(id++),
-      date: d.toISOString().slice(0, 10),
-      amount: base,
-      description: 'Sunday Collection',
-    })
-    // Midweek offering some weeks
-    if (Math.random() > 0.4) {
-      const mid = new Date(d)
-      mid.setDate(mid.getDate() + 3)
-      entries.push({
-        id: String(id++),
-        date: mid.toISOString().slice(0, 10),
-        amount: Math.round(20000 + Math.random() * 15000),
-        description: 'Midweek Offering',
-      })
-    }
-  }
-  return entries
-}
-
-const EXPENSE_CATEGORIES: ExpenseCategory[] = [
-  'Building',
-  'Evangelism',
-  'Welfare',
-  'Technical',
-  'Youth',
-  'Preacher',
-  'Edification',
-  'Media',
-  'Others',
-]
-const EXPENSE_DESCS: Record<ExpenseCategory, string[]> = {
-  Building: ['Building repairs', 'Painting', 'Plumbing', 'Generator service'],
-  Evangelism: ['Evangelism materials', 'Transport for outreach', 'Tracts printing'],
-  Welfare: ['Sick member assistance', 'Burial support', 'Food provisions'],
-  Technical: ['Sound system maintenance', 'Equipment repairs', 'Generator service'],
-  Youth: ['Youth retreat', 'Youth class materials', 'Camp logistics'],
-  Preacher: ['Preacher stipend', 'Travel allowance', 'Hospitality'],
-  Edification: ['Bible study materials', 'Training resources', 'Library books'],
-  Media: ['Streaming subscription', 'Camera repairs', 'Recording supplies'],
-  Others: ['Miscellaneous', 'Emergency fund', 'Donation'],
-}
-
-function seedExpenses(): FinanceExpense[] {
-  const entries: FinanceExpense[] = []
-  let id = 1
-  const now = new Date()
-  for (let d = 365; d >= 0; d -= Math.ceil(Math.random() * 5)) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - d)
-    const cat = EXPENSE_CATEGORIES[Math.floor(Math.random() * EXPENSE_CATEGORIES.length)]!
-    const descs = EXPENSE_DESCS[cat]
-    entries.push({
-      id: String(id++),
-      date: date.toISOString().slice(0, 10),
-      amount: Math.round(5000 + Math.random() * 45000),
-      category: cat,
-      description: descs[Math.floor(Math.random() * descs.length)]!,
-    })
-  }
-  return entries
-}
-
 // ─── Store ────────────────────────────────────────────────────────────────────
 export const useFinanceStore = defineStore('finance', () => {
-  const collections = ref<FinanceCollection[]>(seedCollections())
-  const expenses = ref<FinanceExpense[]>(seedExpenses())
+  const collections = ref<FinanceCollection[]>([])
+  const expenses = ref<FinanceExpense[]>([])
 
   // ── Totals ──────────────────────────────────────────────────────────────────
   const totalIncome = computed(() => collections.value.reduce((s, c) => s + c.amount, 0))

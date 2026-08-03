@@ -4,17 +4,38 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const router = useRouter()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
 const submitting = ref(false)
 
+/**
+ * Where to land after signing in. Only same-site paths are accepted — taking
+ * `?redirect=` at face value would turn this form into an open redirect that
+ * could bounce users to an attacker's page after a real login.
+ */
+const destination = computed(() => {
+  const target = route.query.redirect
+  if (typeof target !== 'string') return '/admin'
+  // Must be a root-relative path, and not protocol-relative ("//evil.com").
+  if (!target.startsWith('/') || target.startsWith('//')) return '/admin'
+  return target
+})
+
+// Already signed in? Nothing to do here.
+onMounted(async () => {
+  await authStore.whenReady()
+  if (authStore.isAuthenticated) await navigateTo(destination.value, { replace: true })
+})
+
 async function handleLogin() {
   submitting.value = true
   try {
     await authStore.login(email.value, password.value)
-    await router.push('/admin')
+    await navigateTo(destination.value, { replace: true })
+  } catch {
+    // The store surfaces the reason via `authStore.error`, rendered below.
   } finally {
     submitting.value = false
   }

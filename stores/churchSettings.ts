@@ -31,11 +31,8 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
   // Minister Welcome
   ministerName: 'Min. Friday Asuquo',
   ministerTitle: 'Resident Minister',
-  ministerPhoto: 'https://picsum.photos/seed/minister-portrait/400/520',
-  congregationPhotos: [
-    'https://picsum.photos/seed/congregation1/400/520',
-    'https://picsum.photos/seed/congregation2/400/520',
-  ],
+  ministerPhoto: '',
+  congregationPhotos: [],
   ministerLetterHeading: 'A Welcome Letter From Our Minister',
   ministerLetterGreeting: 'Dear Friend,',
   ministerLetterP1:
@@ -65,7 +62,7 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
     scriptureRef: 'Romans 16:16',
     title: 'About Us',
     subtitle: 'Church Of Christ, 7b Esa Atan Extension',
-    backgroundImage: 'https://picsum.photos/seed/church-building/1600/700',
+    backgroundImage: '',
   },
 
   // About: Church History
@@ -98,12 +95,7 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
       'We extend a warm and open invitation to all who seek to worship God in spirit and in truth. Whether you are a member of the Churches of Christ, a visitor to Ikot Ekpene, or someone searching for a congregation rooted in the New Testament pattern, you are most welcome to worship with us. Come, let us reason together from the Scriptures.',
     signatureName: 'Bro. Basiri Goody',
     signatureRole: 'Minister — Church of Christ, 7b Esa Atan Extension',
-    cornerImages: [
-      'https://picsum.photos/seed/history-tl/200/200',
-      'https://picsum.photos/seed/history-tr/200/200',
-      'https://picsum.photos/seed/history-bl/200/200',
-      'https://picsum.photos/seed/history-br/200/200',
-    ],
+    cornerImages: [],
   },
 
   // About: Worship Activities
@@ -173,93 +165,17 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
     mapAddress: '7b Esa Atan, Ikot Ekpene, Akwa Ibom State, Nigeria',
   },
 
-  // Leaders
-  leaders: [
-    {
-      id: 'l1',
-      name: 'Akpan Lincoln',
-      role: 'Elder',
-      avatar: 'https://picsum.photos/seed/ldr-al1/300/300',
-    },
-    {
-      id: 'l2',
-      name: 'Chidi Okafor',
-      role: 'Elder',
-      avatar: 'https://picsum.photos/seed/ldr-co/300/300',
-    },
-    {
-      id: 'l3',
-      name: 'Obinna Nwosu',
-      role: 'Elder',
-      avatar: 'https://picsum.photos/seed/ldr-on/300/300',
-    },
-    {
-      id: 'l4',
-      name: 'Tunde Adebayo',
-      role: 'Elder',
-      avatar: 'https://picsum.photos/seed/ldr-ta/300/300',
-    },
-    {
-      id: 'l5',
-      name: 'Bola Mikhail',
-      role: 'Deacon',
-      avatar: 'https://picsum.photos/seed/ldr-bm/300/300',
-    },
-    {
-      id: 'l6',
-      name: 'Chijioke Emmanuel',
-      role: 'Deacon',
-      avatar: 'https://picsum.photos/seed/ldr-ce/300/300',
-    },
-    {
-      id: 'l7',
-      name: 'Peter Eze',
-      role: 'Deacon',
-      avatar: 'https://picsum.photos/seed/ldr-pe/300/300',
-    },
-    {
-      id: 'l8',
-      name: 'Friday Asuquo',
-      role: 'Minister',
-      avatar: 'https://picsum.photos/seed/ldr-al3/300/300',
-    },
-  ],
+  // Leaders — added from the admin Settings page
+  leaders: [],
 
-  // Gallery
-  galleryPhotos: [
-    {
-      id: 'g1',
-      src: 'https://picsum.photos/seed/gallery1/600/800',
-      alt: 'Church congregation gathered for worship',
-    },
-    {
-      id: 'g2',
-      src: 'https://picsum.photos/seed/gallery2/800/500',
-      alt: 'Sunday morning worship service',
-    },
-    { id: 'g3', src: 'https://picsum.photos/seed/gallery3/600/600', alt: 'Bible study session' },
-    {
-      id: 'g4',
-      src: 'https://picsum.photos/seed/gallery4/800/600',
-      alt: 'Youth convention gathering',
-    },
-    { id: 'g5', src: 'https://picsum.photos/seed/gallery5/600/700', alt: 'Baptism ceremony' },
-    {
-      id: 'g6',
-      src: 'https://picsum.photos/seed/gallery6/800/450',
-      alt: 'Church choir performance',
-    },
-    {
-      id: 'g7',
-      src: 'https://picsum.photos/seed/gallery7/600/600',
-      alt: 'Community outreach event',
-    },
-    {
-      id: 'g8',
-      src: 'https://picsum.photos/seed/gallery8/800/500',
-      alt: 'Congregation fellowship',
-    },
-  ],
+  // Gallery — added from the admin Settings page
+  galleryPhotos: [],
+
+  // Landing page: sister congregations, managed from the admin Settings page
+  congregations: [],
+
+  // Landing page: upcoming events, managed from the admin Settings page
+  homepageEvents: [],
 }
 
 export const useChurchSettingsStore = defineStore('churchSettings', () => {

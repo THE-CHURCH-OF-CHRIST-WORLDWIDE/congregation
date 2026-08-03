@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const { EVENTS } = usePublicMockData()
+const settingsStore = useChurchSettingsStore()
+onMounted(() => settingsStore.load())
+
+const events = computed(() => settingsStore.settings.homepageEvents)
 
 const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
@@ -22,9 +25,17 @@ const { el: sectionRef, isVisible } = useScrollReveal()
         </NuxtLink>
       </div>
 
-      <div class="flex flex-col gap-4">
+      <LoadingState v-if="settingsStore.loading" title="Loading events…" />
+      <EmptyState
+        v-else-if="!events.length"
+        icon="mdi:calendar-blank-outline"
+        title="No upcoming events"
+        description="Events are published from Settings → Upcoming Events."
+      />
+
+      <div v-else class="flex flex-col gap-4">
         <div
-          v-for="(event, i) in EVENTS"
+          v-for="(event, i) in events"
           :key="event.id"
           :class="['reveal', isVisible && 'is-visible']"
           :style="{ transitionDelay: `${100 + i * 90}ms` }"
@@ -58,13 +69,15 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               </div>
             </div>
 
-            <!-- CTA -->
-            <button
+            <!-- CTA — homepage events have no detail page of their own, so this
+                 goes to the full events listing. -->
+            <NuxtLink
+              to="/events"
               class="shrink-0 rounded-full border border-[#2563EB] px-4 py-1.5 text-xs font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors"
-              aria-label="View event details"
+              :aria-label="`View details for ${event.title}`"
             >
               Details
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>

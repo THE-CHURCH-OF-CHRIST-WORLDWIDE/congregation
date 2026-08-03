@@ -21,18 +21,6 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
 authStore.init()
-
-if (import.meta.dev) {
-  // Seed synchronously during setup so the first page mount already sees the
-  // data. Running this inside onMounted made pages render with empty stores
-  // until the second navigation, since child pages mount before app.vue.
-  const { seed } = useMockData()
-  const { seedPublic } = usePublicMockData()
-  const { seedEvents } = useEventsMockData()
-  seed()
-  seedPublic()
-  seedEvents()
-}
 </script>
 
 <template>

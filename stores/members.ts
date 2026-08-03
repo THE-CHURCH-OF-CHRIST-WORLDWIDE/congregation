@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia'
+import { useMembersRepository } from '~/repositories/membersRepository'
 import type { Member, MemberFilters } from '~/types'
 
 export const useMembersStore = defineStore('members', () => {
   const members = ref<Member[]>([])
   const loading = ref(false)
+  const saving = ref(false)
+  const error = ref<string | null>(null)
+  const loaded = ref(false)
   const filters = ref<MemberFilters>({
     search: '',
     gender: '',
@@ -84,23 +88,76 @@ export const useMembersStore = defineStore('members', () => {
     () => youthMembers.value.filter((m) => m.gender === 'Male').length
   )
 
-  function addMember(member: Omit<Member, 'id'>) {
-    const id = String(Date.now())
-    members.value.push({ ...member, id })
-    useToast().success(`${member.name || 'Member'} added`)
+  function fail(e: unknown, fallback: string): never {
+    error.value = e instanceof Error ? e.message : fallback
+    useToast().error(error.value)
+    throw e
   }
 
-  function updateMember(id: string, updates: Partial<Member>) {
+  /** Fetch the roll once per session. Pass `force` after an external change. */
+  async function load(force = false) {
+    if (loaded.value && !force) return
+    const repo = useMembersRepository()
+    loading.value = true
+    error.value = null
+    try {
+      members.value = await repo.fetchMembers()
+      loaded.value = true
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to load members'
+      useToast().error(error.value)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function addMember(member: Omit<Member, 'id'>): Promise<Member> {
+    const repo = useMembersRepository()
+    saving.value = true
+    error.value = null
+    try {
+      const created = await repo.createMember(member)
+      members.value.push(created)
+      useToast().success(`${created.name || 'Member'} added`)
+      return created
+    } catch (e: unknown) {
+      fail(e, 'Failed to add member')
+    } finally {
+      saving.value = false
+    }
+  }
+
+  async function updateMember(id: string, updates: Partial<Member>) {
     const idx = members.value.findIndex((m) => m.id === id)
     if (idx === -1) return
-    members.value[idx] = { ...members.value[idx], ...updates } as Member
-    useToast().success(`${members.value[idx]!.name} updated`)
+    const repo = useMembersRepository()
+    saving.value = true
+    error.value = null
+    try {
+      await repo.updateMember(id, updates)
+      members.value[idx] = { ...members.value[idx], ...updates } as Member
+      useToast().success(`${members.value[idx]!.name} updated`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to update member')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function deleteMember(id: string) {
+  async function deleteMember(id: string) {
     const name = members.value.find((m) => m.id === id)?.name
-    members.value = members.value.filter((m) => m.id !== id)
-    if (name) useToast().success(`${name} deleted`)
+    const repo = useMembersRepository()
+    saving.value = true
+    error.value = null
+    try {
+      await repo.deleteMember(id)
+      members.value = members.value.filter((m) => m.id !== id)
+      if (name) useToast().success(`${name} deleted`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to delete member')
+    } finally {
+      saving.value = false
+    }
   }
 
   function setFilter(partial: Partial<MemberFilters>) {
@@ -110,6 +167,9 @@ export const useMembersStore = defineStore('members', () => {
   return {
     members,
     loading,
+    saving,
+    error,
+    loaded,
     filters,
     filteredMembers,
     backsliders,
@@ -121,6 +181,7 @@ export const useMembersStore = defineStore('members', () => {
     youthActiveCount,
     youthGirlsCount,
     youthBoysCount,
+    load,
     addMember,
     updateMember,
     deleteMember,

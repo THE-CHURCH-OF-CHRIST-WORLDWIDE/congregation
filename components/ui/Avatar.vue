@@ -6,6 +6,17 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), { size: 'md' })
 
+// A stored URL can rot — the Cloudinary asset is deleted, the host is blocked,
+// the network drops. Falling back to initials beats a broken-image icon.
+const failed = ref(false)
+watch(
+  () => props.src,
+  () => {
+    failed.value = false
+  }
+)
+const showImage = computed(() => !!props.src && !failed.value)
+
 const initials = computed(() => {
   if (!props.name) return '?'
   return props.name
@@ -46,7 +57,13 @@ const colorClass = computed(() => {
     ]"
     :aria-label="name"
   >
-    <img v-if="src" :src="src" :alt="name" class="w-full h-full object-cover" />
+    <img
+      v-if="showImage"
+      :src="src"
+      :alt="name"
+      class="w-full h-full object-cover"
+      @error="failed = true"
+    />
     <span
       v-else
       :class="['text-white font-semibold', colorClass]"
