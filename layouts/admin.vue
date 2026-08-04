@@ -3,11 +3,16 @@ const route = useRoute()
 const uiStore = useUiStore()
 const authStore = useAuthStore()
 const membersStore = useMembersStore()
+const settingsStore = useChurchSettingsStore()
 const { title, subtitle } = usePageHeader()
 
-// The nominal roll backs the dashboard, youth, attendance and roles screens, so
-// load it once here rather than in each page. `load()` is a no-op if already done.
-onMounted(() => membersStore.load())
+// The nominal roll backs the dashboard, youth, attendance and roles screens, and the
+// church settings name the congregation in the sidebar, so load both once here rather
+// than in each page. `load()` is a no-op if already done.
+onMounted(() => {
+  membersStore.load()
+  settingsStore.load()
+})
 
 const navItems = [
   { label: 'Dashboard', to: '/admin', icon: 'mdi:view-dashboard-outline', exact: true },
@@ -55,14 +60,16 @@ async function logout() {
           >
             <Icon icon="mdi:church" class="text-white text-lg" />
           </div>
-          <div>
-            <p class="font-bold text-gray-900 text-sm leading-tight">Church of Christ</p>
+          <div class="min-w-0">
+            <p class="font-bold text-gray-900 text-sm leading-tight">
+              {{ settingsStore.settings.name }}
+            </p>
             <p class="text-xs text-blue-600">Admin Dashboard</p>
           </div>
         </div>
         <div class="mt-3">
           <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Congregation</p>
-          <p class="text-xs text-gray-600 mt-0.5">7b Esa Atan, Ext. Ikot Ekpene</p>
+          <p class="text-xs text-gray-600 mt-0.5">{{ settingsStore.settings.address }}</p>
         </div>
       </div>
 

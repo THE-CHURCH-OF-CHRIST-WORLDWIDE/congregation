@@ -1,6 +1,13 @@
 <script setup lang="ts">
 const { el: footerRef, isVisible } = useScrollReveal({ threshold: 0.05 })
 
+// The congregation's own name and address come from Settings → General. The
+// "Church of Christ, Worldwide" credit in the bottom bar is deliberately not
+// settings-driven: it names the wider fellowship, not this congregation.
+const settingsStore = useChurchSettingsStore()
+
+onMounted(() => settingsStore.load())
+
 interface FooterLink {
   label: string
   href: string
@@ -55,11 +62,13 @@ const resourceLinks: FooterLink[] = [
             >
               CoC
             </div>
-            <p class="text-[18px] font-bold leading-tight text-white">Church of Christ</p>
+            <p class="text-[18px] font-bold leading-tight text-white">
+              {{ settingsStore.settings.name }}
+            </p>
           </div>
 
           <!-- Address -->
-          <p class="mb-5 text-[13px] text-slate-400">7B Esa Atan Extension</p>
+          <p class="mb-5 text-[13px] text-slate-400">{{ settingsStore.settings.address }}</p>
 
           <!-- Scripture -->
           <p class="mb-6 max-w-[280px] text-[13px] leading-[1.6] text-slate-400">
