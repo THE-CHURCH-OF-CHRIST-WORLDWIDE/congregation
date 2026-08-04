@@ -344,7 +344,12 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
         <div v-else></div>
         <div class="flex gap-2">
           <Button variant="secondary" @click="close">Cancel</Button>
-          <Button v-if="step === 'preview'" :disabled="rowsToImport.length === 0" @click="doImport">
+          <Button
+            v-if="step === 'preview'"
+            :disabled="rowsToImport.length === 0"
+            :loading="membersStore.saving"
+            @click="doImport"
+          >
             <template #icon-left><Icon icon="mdi:account-multiple-plus-outline" /></template>
             Import {{ rowsToImport.length }} Member{{ rowsToImport.length !== 1 ? 's' : '' }}
           </Button>

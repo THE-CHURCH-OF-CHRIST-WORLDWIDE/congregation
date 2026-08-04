@@ -46,7 +46,10 @@ async function accept() {
   }
 }
 
+const leaving = ref(false)
+
 async function goToDashboard() {
+  leaving.value = true
   // The role was just written; refresh it so the dashboard does not show the no-role banner.
   await authStore.whenReady()
   await navigateTo('/admin')
@@ -102,7 +105,9 @@ async function goToDashboard() {
             <span class="font-medium text-gray-900">{{ grantedRole }}</span> role </template
           >.
         </p>
-        <Button class="w-full" @click="goToDashboard">Go to the dashboard</Button>
+        <Button class="w-full" :loading="leaving" @click="goToDashboard">
+          Go to the dashboard
+        </Button>
       </div>
 
       <!-- Error -->

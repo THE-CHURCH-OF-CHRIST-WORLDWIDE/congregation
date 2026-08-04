@@ -123,8 +123,12 @@ async function doAssign() {
   }
 }
 
+// Row-level revokes are keyed so only the clicked row spins, not every row bound to a
+// shared store flag.
+const { isPending, run } = usePendingAction()
+
 async function revoke(assignmentId: string) {
-  await rolesStore.revokeAssignment(assignmentId).catch(() => {})
+  await run(assignmentId, () => rolesStore.revokeAssignment(assignmentId).catch(() => {}))
 }
 
 // ─── Account access (users/{uid}) ──────────────────────────────────────────────
@@ -151,7 +155,7 @@ async function changeAccountRole(uid: string, roleId: string, email?: string) {
 }
 
 async function doRevokeAccess(uid: string) {
-  await accountsStore.revokeAccess(uid).catch(() => {})
+  await run(uid, () => accountsStore.revokeAccess(uid).catch(() => {}))
 }
 
 // ─── Invitations ───────────────────────────────────────────────────────────────
@@ -184,7 +188,7 @@ async function doInvite() {
 }
 
 async function doRevokeInvite(email: string) {
-  await invitationsStore.revoke(email).catch(() => {})
+  await run(email, () => invitationsStore.revoke(email).catch(() => {}))
 }
 
 function inviteRoleName(roleId: string) {
@@ -380,9 +384,13 @@ function permCount(perms: RolePermissions) {
                       class="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
                       aria-label="Revoke role"
                       title="Revoke role"
+                      :disabled="isPending(a.id)"
                       @click="revoke(a.id)"
                     >
-                      <Icon icon="mdi:account-remove-outline" class="text-base" />
+                      <Icon
+                        :icon="isPending(a.id) ? 'mdi:loading' : 'mdi:account-remove-outline'"
+                        :class="['text-base', isPending(a.id) && 'animate-spin']"
+                      />
                     </button>
                   </div>
                 </td>
@@ -481,9 +489,13 @@ function permCount(perms: RolePermissions) {
                   v-if="authStore.isSuperAdmin"
                   class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
                   :aria-label="`Revoke invitation for ${invite.email}`"
+                  :disabled="isPending(invite.email)"
                   @click="doRevokeInvite(invite.email)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon
+                    :icon="isPending(invite.email) ? 'mdi:loading' : 'mdi:close'"
+                    :class="['text-sm', isPending(invite.email) && 'animate-spin']"
+                  />
                 </button>
               </span>
             </li>
@@ -586,9 +598,13 @@ function permCount(perms: RolePermissions) {
                     v-if="authStore.isSuperAdmin && account.uid !== authStore.user?.uid"
                     class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
                     :aria-label="`Revoke access for ${account.email ?? account.uid}`"
+                    :disabled="isPending(account.uid)"
                     @click="doRevokeAccess(account.uid)"
                   >
-                    <Icon icon="mdi:close" class="text-sm" />
+                    <Icon
+                      :icon="isPending(account.uid) ? 'mdi:loading' : 'mdi:close'"
+                      :class="['text-sm', isPending(account.uid) && 'animate-spin']"
+                    />
                   </button>
                 </td>
               </tr>
@@ -683,7 +699,7 @@ function permCount(perms: RolePermissions) {
     <template #footer>
       <div class="flex gap-2 justify-end">
         <Button variant="secondary" @click="closeRole">Cancel</Button>
-        <Button @click="saveRolePerms">
+        <Button :loading="rolesStore.saving" @click="saveRolePerms">
           <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
           Save Permissions
         </Button>
@@ -808,7 +824,7 @@ function permCount(perms: RolePermissions) {
     <template #footer>
       <div class="flex gap-2 justify-end">
         <Button variant="secondary" @click="showAssign = false">Cancel</Button>
-        <Button @click="doAssign">
+        <Button :loading="rolesStore.saving" @click="doAssign">
           <template #icon-left><Icon icon="mdi:shield-check-outline" /></template>
           Assign Role
         </Button>
@@ -871,7 +887,7 @@ function permCount(perms: RolePermissions) {
     <template #footer>
       <div class="flex gap-2 justify-end">
         <Button variant="secondary" @click="showCustom = false">Cancel</Button>
-        <Button @click="saveCustomPerms">
+        <Button :loading="rolesStore.saving" @click="saveCustomPerms">
           <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
           Save Custom Permissions
         </Button>

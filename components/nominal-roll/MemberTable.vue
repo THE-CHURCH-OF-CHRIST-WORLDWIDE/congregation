@@ -36,9 +36,13 @@ const statusBadge = {
   Late: 'warning',
 } as const
 
+// Keyed by member id so only the row being deleted shows a spinner, rather than every row
+// reacting to the store's shared `saving` flag.
+const { isPending, run } = usePendingAction()
+
 async function deleteMember(id: string) {
   openMenuId.value = null
-  await membersStore.deleteMember(id).catch(() => {})
+  await run(id, () => membersStore.deleteMember(id).catch(() => {}))
 }
 
 function startEdit(member: Member) {
@@ -130,11 +134,15 @@ onUnmounted(() => document.removeEventListener('click', closeRowMenu))
                   Edit
                 </button>
                 <button
-                  class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
+                  :disabled="isPending(member.id)"
                   @click="deleteMember(member.id)"
                 >
-                  <Icon icon="mdi:trash-can-outline" />
-                  Delete
+                  <Icon
+                    :icon="isPending(member.id) ? 'mdi:loading' : 'mdi:trash-can-outline'"
+                    :class="isPending(member.id) && 'animate-spin'"
+                  />
+                  {{ isPending(member.id) ? 'Deleting…' : 'Delete' }}
                 </button>
               </div>
             </td>

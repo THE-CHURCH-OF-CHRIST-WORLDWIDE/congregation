@@ -509,7 +509,8 @@ const initials = computed(() =>
                 Edit Details
               </button>
               <button
-                class="flex items-center justify-center gap-1.5 border border-red-500 text-red-500 hover:bg-red-50 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
+                class="flex items-center justify-center gap-1.5 border border-red-500 text-red-500 hover:bg-red-50 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors disabled:opacity-60"
+                :disabled="membersStore.saving"
                 @click="onDelete"
               >
                 <Icon icon="mdi:trash-can-outline" class="text-base" />
@@ -679,10 +680,12 @@ const initials = computed(() =>
             <!-- ── Save / Cancel ───────────────────────────── -->
             <div class="flex gap-3">
               <button
-                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                :disabled="membersStore.saving"
                 @click="saveEdit"
               >
-                Save Changes
+                <Icon v-if="membersStore.saving" icon="mdi:loading" class="animate-spin" />
+                {{ membersStore.saving ? 'Saving…' : 'Save Changes' }}
               </button>
               <button
                 class="px-5 border border-gray-300 text-gray-700 text-sm font-semibold py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
