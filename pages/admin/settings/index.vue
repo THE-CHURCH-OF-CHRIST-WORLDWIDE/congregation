@@ -4,7 +4,19 @@ useSeoMeta({ title: 'Settings', description: 'Church admin settings.' })
 
 const { setHeader } = usePageHeader()
 const authStore = useAuthStore()
+const rolesStore = useRolesStore()
 const store = useChurchSettingsStore()
+
+/**
+ * The account card used to print a hardcoded "Church Administrator" for everyone. Show the role
+ * the account actually carries — it is what Firestore rules enforce, so it is the honest answer
+ * to "what can I do here?".
+ */
+const accountRole = computed(() => {
+  if (!authStore.roleLoaded) return 'Checking role…'
+  if (!authStore.roleId) return 'No role assigned'
+  return rolesStore.roleById(authStore.roleId)?.name ?? authStore.roleId
+})
 
 onMounted(async () => {
   setHeader('Settings', 'Manage church configuration and preferences')
@@ -78,13 +90,75 @@ watch(
   { deep: true }
 )
 
+/**
+ * The draft is shared by every panel, so "is anything unsaved?" is a page-level question.
+ * Comparing serialised copies is cheap next to a Firestore write and avoids hand-maintaining a
+ * dirty flag across fourteen panels' worth of fields.
+ */
+const isDirty = computed(() => JSON.stringify(draft.value) !== JSON.stringify(store.settings))
+
+const errors = ref<{ name?: string; email?: string }>({})
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/** Only fields with a real constraint. Everything else is free text by design. */
+function validate(): boolean {
+  const next: typeof errors.value = {}
+  if (!draft.value.name?.trim()) next.name = 'The church name appears across the public site'
+  const email = draft.value.email?.trim()
+  if (email && !EMAIL_RE.test(email)) next.email = 'Enter a valid email address'
+  errors.value = next
+  if (Object.keys(next).length) {
+    useToast().error('Check the highlighted fields')
+    activeTab.value = 'general'
+    return false
+  }
+  return true
+}
+
 async function save() {
+  if (!validate()) return
   try {
     await store.save({ ...draft.value })
   } catch {
     // Store already surfaces an error toast.
   }
 }
+
+function discardChanges() {
+  draft.value = cloneSettings(store.settings)
+  errors.value = {}
+}
+
+// ⌘S / Ctrl+S is what people reach for in a form this long.
+function onSaveShortcut(event: KeyboardEvent) {
+  if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 's') return
+  event.preventDefault()
+  if (isDirty.value && !store.saving) void save()
+}
+
+/** Closing the tab mid-edit should cost a browser prompt, not the work. */
+function onBeforeUnload(event: BeforeUnloadEvent) {
+  if (!isDirty.value) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onSaveShortcut)
+  window.addEventListener('beforeunload', onBeforeUnload)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onSaveShortcut)
+  window.removeEventListener('beforeunload', onBeforeUnload)
+})
+
+// Navigating away inside the SPA does not trigger beforeunload, so guard that too.
+onBeforeRouteLeave(() => {
+  if (!isDirty.value) return true
+  return window.confirm('You have unsaved settings. Leave without saving?')
+})
 
 // ── Activities helpers ────────────────────────────────────────────────────
 function addActivity() {
@@ -208,44 +282,66 @@ function removeSundayDetail(i: number) {
     <div class="min-w-0 flex-1">
       <Transition name="fade" mode="out-in">
         <!-- ── General ──────────────────────────────────────────────────── -->
-        <div v-if="activeTab === 'general'" key="general" class="flex max-w-2xl flex-col gap-5">
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Church Information</h3>
-            <div class="flex flex-col gap-4">
-              <Input v-model="draft.name" label="Church Name" placeholder="The Church of Christ" />
+        <div v-if="activeTab === 'general'" key="general" class="flex max-w-3xl flex-col gap-5">
+          <SettingsSection
+            title="Church information"
+            description="Used across the public site — the footer, the contact section, the embedded map, and the admin sidebar."
+          >
+            <!-- Short fields pair up; long ones span, so no input is wider than its content needs. -->
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2">
+                <Input
+                  v-model="draft.name"
+                  label="Church name"
+                  required
+                  :error="errors.name"
+                  placeholder="The Church of Christ"
+                />
+              </div>
+              <div class="sm:col-span-2">
+                <Input
+                  v-model="draft.address"
+                  label="Address"
+                  placeholder="7B Esa Atan Ext. Ikot Ekpene"
+                  helper="Also drives the map on the About page and the contact section."
+                />
+              </div>
               <Input
-                v-model="draft.address"
-                label="Address"
-                placeholder="7B Esa Atan Ext. Ikot Ekpene"
+                v-model="draft.phone"
+                label="Phone number"
+                type="tel"
+                placeholder="(+234) 900 000 0000"
               />
-              <Input v-model="draft.phone" label="Phone Number" placeholder="(+234) 900 000 0000" />
               <Input
                 v-model="draft.email"
-                label="Email Address"
+                label="Email address"
+                type="email"
+                :error="errors.email"
                 placeholder="info@churchofchrist.org"
               />
             </div>
-          </Card>
+          </SettingsSection>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Account</h3>
-            <div class="flex items-center gap-3 rounded-xl bg-gray-50 p-3">
+          <SettingsSection
+            title="Your account"
+            description="The signed-in account and the role it carries. Roles are managed under Access."
+          >
+            <div class="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
               <Avatar :name="authStore.user?.email ?? 'Admin'" size="lg" />
-              <div>
-                <p class="text-sm font-medium text-gray-900">
-                  {{ authStore.user?.email ?? 'admin@church.org' }}
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">
+                  {{ authStore.user?.email ?? '—' }}
                 </p>
-                <p class="text-xs text-gray-500">Church Administrator</p>
+                <p class="text-xs text-gray-500">{{ accountRole }}</p>
               </div>
+              <span
+                v-if="authStore.roleLoaded && !authStore.isStaff"
+                class="ml-auto shrink-0 rounded bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700"
+              >
+                Cannot save changes
+              </span>
             </div>
-          </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
+          </SettingsSection>
         </div>
 
         <!-- ── Homepage (Hero + Activities) ────────────────────────────── -->
@@ -254,8 +350,7 @@ function removeSundayDetail(i: number) {
           key="homepage"
           class="flex max-w-2xl flex-col gap-5"
         >
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Hero Section</h3>
+          <SettingsSection title="Hero Section">
             <div class="flex flex-col gap-4">
               <ImageUpload
                 v-model="draft.heroImageUrl"
@@ -298,7 +393,7 @@ function removeSundayDetail(i: number) {
                 />
               </div>
             </div>
-          </Card>
+          </SettingsSection>
 
           <Card>
             <div class="mb-4 flex items-center justify-between">
@@ -338,13 +433,6 @@ function removeSundayDetail(i: number) {
               </p>
             </div>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Minister Welcome ─────────────────────────────────────────── -->
@@ -353,8 +441,7 @@ function removeSundayDetail(i: number) {
           key="minister"
           class="flex max-w-2xl flex-col gap-5"
         >
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Minister Details</h3>
+          <SettingsSection title="Minister Details">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.ministerName"
@@ -373,10 +460,9 @@ function removeSundayDetail(i: number) {
                 shape="circle"
               />
             </div>
-          </Card>
+          </SettingsSection>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Congregation Background Photos</h3>
+          <SettingsSection title="Congregation Background Photos">
             <p class="mb-3 text-xs text-gray-400">
               These appear as the stacked "fan" cards behind the minister portrait.
             </p>
@@ -394,10 +480,9 @@ function removeSundayDetail(i: number) {
                 compact
               />
             </div>
-          </Card>
+          </SettingsSection>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Welcome Letter</h3>
+          <SettingsSection title="Welcome Letter">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.ministerLetterHeading"
@@ -454,20 +539,12 @@ function removeSundayDetail(i: number) {
                 ></textarea>
               </div>
             </div>
-          </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
+          </SettingsSection>
         </div>
 
         <!-- ── Live Worship ─────────────────────────────────────────────── -->
         <div v-else-if="activeTab === 'live'" key="live" class="flex max-w-2xl flex-col gap-5">
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Live Worship Section</h3>
+          <SettingsSection title="Live Worship Section">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.liveWorship.heading"
@@ -518,20 +595,12 @@ function removeSundayDetail(i: number) {
                 />
               </div>
             </div>
-          </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
+          </SettingsSection>
         </div>
 
         <!-- ── About Hero ───────────────────────────────────────────────── -->
         <div v-else-if="activeTab === 'about'" key="about" class="flex max-w-2xl flex-col gap-5">
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">About Page Hero</h3>
+          <SettingsSection title="About Page Hero">
             <div class="flex flex-col gap-4">
               <ImageUpload
                 v-model="draft.aboutHero.backgroundImage"
@@ -551,14 +620,7 @@ function removeSundayDetail(i: number) {
                 placeholder="Church Of Christ, 7b Esa Atan Extension"
               />
             </div>
-          </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
+          </SettingsSection>
         </div>
 
         <!-- ── History ──────────────────────────────────────────────────── -->
@@ -567,8 +629,7 @@ function removeSundayDetail(i: number) {
           key="history"
           class="flex max-w-3xl flex-col gap-5"
         >
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Headings</h3>
+          <SettingsSection title="Headings">
             <div class="flex flex-col gap-4">
               <Input v-model="draft.aboutHistory.eyebrow" label="Eyebrow" placeholder="History" />
               <div>
@@ -583,10 +644,9 @@ function removeSundayDetail(i: number) {
                 ></textarea>
               </div>
             </div>
-          </Card>
+          </SettingsSection>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Narrative</h3>
+          <SettingsSection title="Narrative">
             <div class="flex flex-col gap-4">
               <div>
                 <label for="hist-p1" class="mb-1.5 block text-sm font-medium text-gray-700"
@@ -622,7 +682,7 @@ function removeSundayDetail(i: number) {
                 ></textarea>
               </div>
             </div>
-          </Card>
+          </SettingsSection>
 
           <Card>
             <div class="mb-4 flex items-center justify-between">
@@ -697,8 +757,7 @@ function removeSundayDetail(i: number) {
             </div>
           </Card>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Signature</h3>
+          <SettingsSection title="Signature">
             <div class="grid grid-cols-2 gap-3">
               <Input
                 v-model="draft.aboutHistory.signatureName"
@@ -711,10 +770,9 @@ function removeSundayDetail(i: number) {
                 placeholder="Minister — Church of Christ"
               />
             </div>
-          </Card>
+          </SettingsSection>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Corner Decorative Images</h3>
+          <SettingsSection title="Corner Decorative Images">
             <div class="grid grid-cols-2 gap-3">
               <ImageUpload
                 v-model="draft.aboutHistory.cornerImages[0]"
@@ -745,14 +803,7 @@ function removeSundayDetail(i: number) {
                 compact
               />
             </div>
-          </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
+          </SettingsSection>
         </div>
 
         <!-- ── Worship Activities ───────────────────────────────────────── -->
@@ -761,8 +812,7 @@ function removeSundayDetail(i: number) {
           key="worship"
           class="flex max-w-3xl flex-col gap-5"
         >
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Section Header</h3>
+          <SettingsSection title="Section Header">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.worshipActivities.eyebrow"
@@ -786,7 +836,7 @@ function removeSundayDetail(i: number) {
                 ></textarea>
               </div>
             </div>
-          </Card>
+          </SettingsSection>
 
           <Card>
             <div class="mb-4 flex items-center justify-between">
@@ -829,13 +879,6 @@ function removeSundayDetail(i: number) {
               </p>
             </div>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Activity Calendar ────────────────────────────────────────── -->
@@ -844,8 +887,7 @@ function removeSundayDetail(i: number) {
           key="calendar"
           class="flex max-w-3xl flex-col gap-5"
         >
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Section Header</h3>
+          <SettingsSection title="Section Header">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.activityCalendar.eyebrow"
@@ -869,7 +911,7 @@ function removeSundayDetail(i: number) {
                 ></textarea>
               </div>
             </div>
-          </Card>
+          </SettingsSection>
 
           <Card>
             <div class="mb-4 flex items-center justify-between">
@@ -904,19 +946,11 @@ function removeSundayDetail(i: number) {
               </p>
             </div>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Worship This Sunday ──────────────────────────────────────── -->
         <div v-else-if="activeTab === 'sunday'" key="sunday" class="flex max-w-3xl flex-col gap-5">
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Section Header</h3>
+          <SettingsSection title="Section Header">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.worshipThisSunday.eyebrow"
@@ -929,10 +963,9 @@ function removeSundayDetail(i: number) {
                 placeholder="Worship With Us This Sunday"
               />
             </div>
-          </Card>
+          </SettingsSection>
 
-          <Card>
-            <h3 class="mb-4 text-sm font-semibold text-gray-900">Service Card</h3>
+          <SettingsSection title="Service Card">
             <div class="flex flex-col gap-4">
               <Input
                 v-model="draft.worshipThisSunday.cardChurchName"
@@ -955,7 +988,7 @@ function removeSundayDetail(i: number) {
                 placeholder="https://maps.google.com/maps?q=..."
               />
             </div>
-          </Card>
+          </SettingsSection>
 
           <Card>
             <div class="mb-4 flex items-center justify-between">
@@ -1002,13 +1035,6 @@ function removeSundayDetail(i: number) {
               </p>
             </div>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Leaders ──────────────────────────────────────────────────── -->
@@ -1065,13 +1091,6 @@ function removeSundayDetail(i: number) {
               </p>
             </div>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Gallery ──────────────────────────────────────────────────── -->
@@ -1114,13 +1133,6 @@ function removeSundayDetail(i: number) {
               No photos added yet.
             </p>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Congregations ────────────────────────────────────────────── -->
@@ -1166,13 +1178,6 @@ function removeSundayDetail(i: number) {
               No congregations added yet.
             </p>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Upcoming Events (landing page) ───────────────────────────── -->
@@ -1226,13 +1231,6 @@ function removeSundayDetail(i: number) {
               No events added yet.
             </p>
           </Card>
-
-          <div class="flex justify-end">
-            <Button :loading="store.saving" @click="save">
-              <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
-              Save Settings
-            </Button>
-          </div>
         </div>
 
         <!-- ── Roles ────────────────────────────────────────────────────── -->
@@ -1240,6 +1238,16 @@ function removeSundayDetail(i: number) {
           <RolesPanel />
         </div>
       </Transition>
+
+      <!-- One save affordance for every panel, shown only while there is something to save.
+           Roles & Permissions writes directly and has its own controls, so it opts out. -->
+      <SettingsSaveBar
+        v-if="activeTab !== 'roles'"
+        :dirty="isDirty"
+        :saving="store.saving"
+        @save="save"
+        @discard="discardChanges"
+      />
     </div>
   </div>
 </template>
