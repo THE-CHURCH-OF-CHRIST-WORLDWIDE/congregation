@@ -3,11 +3,16 @@ const route = useRoute()
 const uiStore = useUiStore()
 const authStore = useAuthStore()
 const membersStore = useMembersStore()
+const settingsStore = useChurchSettingsStore()
 const { title, subtitle } = usePageHeader()
 
-// The nominal roll backs the dashboard, youth, attendance and roles screens, so
-// load it once here rather than in each page. `load()` is a no-op if already done.
-onMounted(() => membersStore.load())
+// The nominal roll backs the dashboard, youth, attendance and roles screens, and the
+// church settings name the congregation in the sidebar, so load both once here rather
+// than in each page. `load()` is a no-op if already done.
+onMounted(() => {
+  membersStore.load()
+  settingsStore.load()
+})
 
 const navItems = [
   { label: 'Dashboard', to: '/admin', icon: 'mdi:view-dashboard-outline', exact: true },
@@ -55,14 +60,16 @@ async function logout() {
           >
             <Icon icon="mdi:church" class="text-white text-lg" />
           </div>
-          <div>
-            <p class="font-bold text-gray-900 text-sm leading-tight">Church of Christ</p>
+          <div class="min-w-0">
+            <p class="font-bold text-gray-900 text-sm leading-tight">
+              {{ settingsStore.settings.name }}
+            </p>
             <p class="text-xs text-blue-600">Admin Dashboard</p>
           </div>
         </div>
         <div class="mt-3">
           <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Congregation</p>
-          <p class="text-xs text-gray-600 mt-0.5">7b Esa Atan, Ext. Ikot Ekpene</p>
+          <p class="text-xs text-gray-600 mt-0.5">{{ settingsStore.settings.address }}</p>
         </div>
       </div>
 
@@ -114,6 +121,21 @@ async function logout() {
         <!-- Renders only outside production, so nobody edits the live congregation
              thinking they are in staging. -->
         <EnvironmentBanner />
+
+        <!-- Firestore rules authorise writes from the account's `users/{uid}` role. Without
+             one, every save is refused by the backend — say so plainly rather than letting
+             each action fail on its own. -->
+        <div
+          v-if="authStore.roleLoaded && authStore.isAuthenticated && !authStore.isStaff"
+          class="flex items-start gap-2 bg-red-50 px-4 py-2 text-xs text-red-800"
+          role="alert"
+        >
+          <Icon icon="mdi:shield-alert-outline" class="mt-0.5 shrink-0 text-sm" />
+          <p>
+            This account has no role assigned, so saving anything will be refused. Ask a Super Admin
+            to grant it a role.
+          </p>
+        </div>
         <div class="px-4 lg:px-6 py-4 flex items-start gap-3">
           <button
             class="lg:hidden mt-1 p-1.5 rounded-md hover:bg-gray-100 text-gray-500 shrink-0"

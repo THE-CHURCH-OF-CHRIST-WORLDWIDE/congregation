@@ -50,11 +50,16 @@ function toggleMenu(id: string) {
   openMenuId.value = openMenuId.value === id ? null : id
 }
 
-onMounted(() => {
-  document.addEventListener('click', () => {
-    openMenuId.value = null
-  })
-})
+// A click anywhere dismisses an open row menu. The handler has to be a named
+// reference so it can actually be removed: an inline arrow function leaked one
+// permanent document listener — and a retained component instance with it — on
+// every mount, and this table renders on both the nominal roll and youth pages.
+function closeRowMenu() {
+  openMenuId.value = null
+}
+
+onMounted(() => document.addEventListener('click', closeRowMenu))
+onUnmounted(() => document.removeEventListener('click', closeRowMenu))
 </script>
 
 <template>

@@ -11,6 +11,11 @@ async function handleSubmit() {
 }
 
 const { el: sectionRef, isVisible } = useScrollReveal()
+
+// Name, address, phone and email all come from Settings → General.
+const settingsStore = useChurchSettingsStore()
+
+onMounted(() => settingsStore.load())
 </script>
 
 <template>
@@ -32,25 +37,14 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           :class="['flex flex-col gap-5 p-7', 'reveal-left', isVisible && 'is-visible']"
           style="background-color: #026aa2"
         >
-          <!-- Map -->
-          <div class="overflow-hidden rounded-xl" style="height: 160px">
-            <iframe
-              src="https://maps.google.com/maps?q=7b+Esa+Atan+Extension,+Ikot+Ekpene,+Akwa+Ibom,+Nigeria&output=embed"
-              width="100%"
-              height="100%"
-              style="border: 0"
-              allowfullscreen
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              title="Church location map"
-            ></iframe>
-          </div>
+          <!-- Map — MapEmbed defaults to the address held in Settings -->
+          <MapEmbed height="160px" />
 
           <!-- Worship with us label -->
           <div>
             <p class="text-[13px] text-blue-200">Worship with us at</p>
             <p class="mt-1 text-[18px] font-bold leading-snug text-white">
-              Church Of Christ, Esa Atan Congregation
+              {{ settingsStore.settings.name }}
             </p>
           </div>
 
@@ -82,7 +76,7 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               <div>
                 <p class="text-[12px] font-semibold text-white">Address</p>
                 <p class="text-[12px] leading-snug text-blue-200">
-                  7B Esa Atan Extension, Uruk Uso, Ikot Ekpene.
+                  {{ settingsStore.settings.address }}
                 </p>
               </div>
             </div>
@@ -107,7 +101,7 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               </div>
               <div>
                 <p class="text-[12px] font-semibold text-white">Phone Number</p>
-                <p class="text-[12px] text-blue-200">(+234) 900 197 0700</p>
+                <p class="text-[12px] text-blue-200">{{ settingsStore.settings.phone }}</p>
               </div>
             </div>
 
@@ -131,7 +125,9 @@ const { el: sectionRef, isVisible } = useScrollReveal()
               </div>
               <div>
                 <p class="text-[12px] font-semibold text-white">Email</p>
-                <p class="text-[12px] text-blue-200">churchofchristesa_atan@gmail.com</p>
+                <p class="text-[12px] break-all text-blue-200">
+                  {{ settingsStore.settings.email }}
+                </p>
               </div>
             </div>
           </div>

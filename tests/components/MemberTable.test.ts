@@ -98,3 +98,28 @@ describe('MemberTable pagination', () => {
     expect(wrapper.find('.empty').text()).toBe('No members yet')
   })
 })
+
+describe('MemberTable document listener', () => {
+  beforeEach(() => setActivePinia(createPinia()))
+
+  // This table mounts on both the nominal roll and youth pages, so a listener left
+  // behind on unmount accumulates on every visit and retains the whole component
+  // with it. Assert the exact reference is handed back to removeEventListener.
+  it('removes its dismiss listener on unmount', () => {
+    const add = vi.spyOn(document, 'addEventListener')
+    const remove = vi.spyOn(document, 'removeEventListener')
+
+    const wrapper = mount(MemberTable, { props: { items: members(3) }, global: { stubs } })
+    const registered = add.mock.calls.filter(([type]) => type === 'click')
+    expect(registered).toHaveLength(1)
+
+    wrapper.unmount()
+
+    const released = remove.mock.calls.filter(([type]) => type === 'click')
+    expect(released).toHaveLength(1)
+    expect(released[0]![1]).toBe(registered[0]![1])
+
+    add.mockRestore()
+    remove.mockRestore()
+  })
+})

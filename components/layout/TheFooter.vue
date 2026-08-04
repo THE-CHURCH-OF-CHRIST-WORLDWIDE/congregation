@@ -1,6 +1,13 @@
 <script setup lang="ts">
 const { el: footerRef, isVisible } = useScrollReveal({ threshold: 0.05 })
 
+// The congregation's own name and address come from Settings → General. The
+// "Church of Christ, Worldwide" credit in the bottom bar is deliberately not
+// settings-driven: it names the wider fellowship, not this congregation.
+const settingsStore = useChurchSettingsStore()
+
+onMounted(() => settingsStore.load())
+
 interface FooterLink {
   label: string
   href: string
@@ -9,7 +16,8 @@ interface FooterLink {
 }
 
 const quickLinks: FooterLink[] = [
-  { label: 'Find a Congregation', href: '/find-congregation' },
+  // The congregation finder is a section of the landing page, not a route of its own.
+  { label: 'Find a Congregation', href: '/#congregations' },
   { label: 'Watch Live Streams', href: '/live-streams' },
   { label: 'Read Sermons', href: '/teachings/sermons' },
   { label: 'Sunday School Lessons', href: '/teachings/sunday-school' },
@@ -26,8 +34,8 @@ const salvationLinks: FooterLink[] = [
 
 const resourceLinks: FooterLink[] = [
   { label: 'Biblical Teachings', href: '/teachings/sermons' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Contact Us', href: '/contact' },
+  // The contact form is a section of the landing page, not a route of its own.
+  { label: 'Contact Us', href: '/#contact' },
   {
     label: 'Open Source Template',
     href: 'https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation',
@@ -55,11 +63,13 @@ const resourceLinks: FooterLink[] = [
             >
               CoC
             </div>
-            <p class="text-[18px] font-bold leading-tight text-white">Church of Christ</p>
+            <p class="text-[18px] font-bold leading-tight text-white">
+              {{ settingsStore.settings.name }}
+            </p>
           </div>
 
           <!-- Address -->
-          <p class="mb-5 text-[13px] text-slate-400">7B Esa Atan Extension</p>
+          <p class="mb-5 text-[13px] text-slate-400">{{ settingsStore.settings.address }}</p>
 
           <!-- Scripture -->
           <p class="mb-6 max-w-[280px] text-[13px] leading-[1.6] text-slate-400">

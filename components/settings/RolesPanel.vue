@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import type { ChurchRole, RolePermissions, AppPage, AppAction } from '~/types'
+import type { ChurchRole, ChurchRoleId, RolePermissions, AppPage, AppAction } from '~/types'
 import { ALL_PAGES, ALL_ACTIONS } from '~/stores/roles'
 
 const rolesStore = useRolesStore()
 const membersStore = useMembersStore()
+const accountsStore = useAccountsStore()
+const invitationsStore = useInvitationsStore()
+const authStore = useAuthStore()
+
+onMounted(() => {
+  rolesStore.load()
+  accountsStore.load()
+  invitationsStore.load()
+})
 
 // ─── Action labels ─────────────────────────────────────────────────────────────
 const actionLabels: Record<AppAction, string> = {
@@ -64,9 +73,13 @@ function toggleAllForAction(action: AppAction) {
   }
 }
 
-function saveRolePerms() {
+async function saveRolePerms() {
   if (!selectedRoleId.value) return
-  rolesStore.updateRolePermissions(selectedRoleId.value, { ...editPerms.value })
+  try {
+    await rolesStore.updateRolePermissions(selectedRoleId.value, { ...editPerms.value })
+  } catch {
+    return // Toast already shown; keep the matrix open so the edit is not lost.
+  }
   closeRole()
 }
 
@@ -96,12 +109,86 @@ function selectMember(m: { id: string; name: string }) {
   memberSearch.value = m.name
 }
 
-function doAssign() {
+// The store surfaces the reason via toast on failure. Keep the modal open in that case so
+// nothing the user selected is lost — a rejected write is usually a missing role, not a typo.
+async function doAssign() {
   assignErrors.memberId = assignForm.memberId ? '' : 'Select a member'
   assignErrors.roleId = assignForm.roleId ? '' : 'Select a role'
   if (assignErrors.memberId || assignErrors.roleId) return
-  rolesStore.assignRole(assignForm.memberId, assignForm.roleId)
-  showAssign.value = false
+  try {
+    await rolesStore.assignRole(assignForm.memberId, assignForm.roleId)
+    showAssign.value = false
+  } catch {
+    // Toast already shown.
+  }
+}
+
+async function revoke(assignmentId: string) {
+  await rolesStore.revokeAssignment(assignmentId).catch(() => {})
+}
+
+// ─── Account access (users/{uid}) ──────────────────────────────────────────────
+// Separate from member assignments above: this is what Firestore rules read to authorise
+// writes. Only a Super Admin may change it, and the Firebase client SDK cannot list Auth
+// accounts — so a brand-new account is added by pasting its UID from the console.
+const grantForm = reactive({ uid: '', email: '', roleId: '' as ChurchRoleId | '' })
+const grantErrors = reactive({ uid: '', roleId: '' })
+
+async function doGrant() {
+  grantErrors.uid = grantForm.uid.trim() ? '' : 'Paste the account UID'
+  grantErrors.roleId = grantForm.roleId ? '' : 'Choose a role'
+  if (grantErrors.uid || grantErrors.roleId) return
+  try {
+    await accountsStore.grantRole(grantForm.uid, grantForm.roleId as ChurchRoleId, grantForm.email)
+    Object.assign(grantForm, { uid: '', email: '', roleId: '' })
+  } catch {
+    // Toast already shown.
+  }
+}
+
+async function changeAccountRole(uid: string, roleId: string, email?: string) {
+  await accountsStore.grantRole(uid, roleId as ChurchRoleId, email).catch(() => {})
+}
+
+async function doRevokeAccess(uid: string) {
+  await accountsStore.revokeAccess(uid).catch(() => {})
+}
+
+// ─── Invitations ───────────────────────────────────────────────────────────────
+// Preferred over pasting a UID: the invitee gets an emailed link, and claiming it creates
+// both their Auth account and their users/{uid} record. No UID hunting in the console.
+const inviteForm = reactive({ email: '', roleId: '' as ChurchRoleId | '' })
+const inviteErrors = reactive({ email: '', roleId: '' })
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+async function doInvite() {
+  const email = inviteForm.email.trim()
+  inviteErrors.email = !email
+    ? 'Enter an email address'
+    : EMAIL_RE.test(email)
+      ? ''
+      : 'Enter a valid email address'
+  inviteErrors.roleId = inviteForm.roleId ? '' : 'Choose a role'
+  if (inviteErrors.email || inviteErrors.roleId) return
+  try {
+    await invitationsStore.invite(
+      email,
+      inviteForm.roleId as ChurchRoleId,
+      authStore.user?.email ?? undefined
+    )
+    Object.assign(inviteForm, { email: '', roleId: '' })
+  } catch {
+    // Toast already shown.
+  }
+}
+
+async function doRevokeInvite(email: string) {
+  await invitationsStore.revoke(email).catch(() => {})
+}
+
+function inviteRoleName(roleId: string) {
+  return rolesStore.roleById(roleId)?.name ?? roleId
 }
 
 // ─── Custom permissions modal ─────────────────────────────────────────────────
@@ -123,8 +210,12 @@ function openCustom(assignmentId: string) {
   showCustom.value = true
 }
 
-function saveCustomPerms() {
-  rolesStore.updateCustomPermissions(customAssignmentId.value, { ...customPerms.value })
+async function saveCustomPerms() {
+  try {
+    await rolesStore.updateCustomPermissions(customAssignmentId.value, { ...customPerms.value })
+  } catch {
+    return // Toast already shown; leave the modal open.
+  }
   showCustom.value = false
 }
 
@@ -289,7 +380,7 @@ function permCount(perms: RolePermissions) {
                       class="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
                       aria-label="Revoke role"
                       title="Revoke role"
-                      @click="rolesStore.revokeAssignment(a.id)"
+                      @click="revoke(a.id)"
                     >
                       <Icon icon="mdi:account-remove-outline" class="text-base" />
                     </button>
@@ -321,6 +412,197 @@ function permCount(perms: RolePermissions) {
           :range-end="assignTo"
           label="assignments"
         />
+      </Card>
+    </div>
+
+    <!-- ── Account access ────────────────────────────────────────────────────── -->
+    <div>
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        Dashboard Access
+      </p>
+
+      <Card>
+        <div class="flex items-start gap-2.5 rounded-lg bg-blue-50 p-3 text-xs text-blue-900">
+          <Icon icon="mdi:information-outline" class="mt-0.5 shrink-0 text-sm" />
+          <p>
+            This is what actually grants access: an account can only read or change church data once
+            it appears here. It is separate from the member assignments above — most people on the
+            nominal roll have no login at all. Accounts are created in the Firebase console
+            (Authentication → Users); copy the UID from there to grant access.
+          </p>
+        </div>
+
+        <!-- Invite by email — the normal way to add someone -->
+        <div v-if="authStore.isSuperAdmin" class="mt-4">
+          <p class="mb-2 text-xs font-semibold text-gray-500">Invite by email</p>
+          <div class="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+            <Input
+              v-model="inviteForm.email"
+              label="Email address"
+              type="email"
+              placeholder="person@example.com"
+              :error="inviteErrors.email"
+            />
+            <Select
+              v-model="inviteForm.roleId"
+              label="Role"
+              placeholder="Choose a role"
+              :options="rolesStore.roles.map((r) => ({ label: r.name, value: r.id }))"
+              :error="inviteErrors.roleId"
+            />
+            <div class="flex items-end">
+              <Button :loading="invitationsStore.saving" @click="doInvite">
+                <template #icon-left><Icon icon="mdi:email-fast-outline" /></template>
+                Send Invitation
+              </Button>
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-gray-500">
+            They receive a sign-in link by email. Opening it creates their account and applies this
+            role — no password to share, and nothing to do in the Firebase console.
+          </p>
+        </div>
+
+        <!-- Pending invitations -->
+        <div v-if="invitationsStore.invitations.length" class="mt-4">
+          <p class="mb-2 text-xs font-semibold text-gray-500">Pending invitations</p>
+          <ul class="divide-y divide-gray-100 rounded-lg border border-gray-200">
+            <li
+              v-for="invite in invitationsStore.invitations"
+              :key="invite.email"
+              class="flex items-center justify-between gap-3 px-3 py-2 text-sm"
+            >
+              <span class="min-w-0 truncate text-gray-700">{{ invite.email }}</span>
+              <span class="flex shrink-0 items-center gap-2">
+                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                  {{ inviteRoleName(invite.roleId) }}
+                </span>
+                <button
+                  v-if="authStore.isSuperAdmin"
+                  class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  :aria-label="`Revoke invitation for ${invite.email}`"
+                  @click="doRevokeInvite(invite.email)"
+                >
+                  <Icon icon="mdi:close" class="text-sm" />
+                </button>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Grant by UID — fallback for an account that already exists -->
+        <details v-if="authStore.isSuperAdmin" class="mt-4">
+          <summary class="cursor-pointer text-xs font-semibold text-gray-500">
+            Or grant an existing account by UID
+          </summary>
+          <div class="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+            <Input
+              v-model="grantForm.uid"
+              label="Account UID"
+              placeholder="from Authentication → Users"
+              :error="grantErrors.uid"
+            />
+            <Input
+              v-model="grantForm.email"
+              label="Email (optional)"
+              placeholder="for legibility"
+            />
+            <div class="flex flex-col gap-1">
+              <Select
+                v-model="grantForm.roleId"
+                label="Role"
+                placeholder="Choose a role"
+                :options="rolesStore.roles.map((r) => ({ label: r.name, value: r.id }))"
+                :error="grantErrors.roleId"
+              />
+            </div>
+            <div class="sm:col-span-3 flex justify-end">
+              <Button :loading="accountsStore.saving" @click="doGrant">
+                <template #icon-left><Icon icon="mdi:shield-key-outline" /></template>
+                Grant Access
+              </Button>
+            </div>
+          </div>
+        </details>
+
+        <p v-if="!authStore.isSuperAdmin" class="mt-4 text-xs text-gray-500">
+          Only a Super Admin can invite people or change who has access.
+        </p>
+      </Card>
+
+      <Card padding="none" class="mt-3">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm" role="table">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-100">
+                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Account</th>
+                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">UID</th>
+                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Role</th>
+                <th class="w-20 px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="account in accountsStore.records"
+                :key="account.uid"
+                class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+              >
+                <td class="px-4 py-3">
+                  <span class="text-gray-900">{{ account.email ?? '—' }}</span>
+                  <span
+                    v-if="account.uid === authStore.user?.uid"
+                    class="ml-2 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500"
+                  >
+                    you
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <code class="text-xs text-gray-500">{{ account.uid }}</code>
+                </td>
+                <td class="px-4 py-3">
+                  <select
+                    v-if="authStore.isSuperAdmin"
+                    :value="account.roleId"
+                    :aria-label="`Role for ${account.email ?? account.uid}`"
+                    class="rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs"
+                    @change="
+                      changeAccountRole(
+                        account.uid,
+                        ($event.target as HTMLSelectElement).value,
+                        account.email
+                      )
+                    "
+                  >
+                    <option v-for="role in rolesStore.roles" :key="role.id" :value="role.id">
+                      {{ role.name }}
+                    </option>
+                  </select>
+                  <span v-else class="text-xs text-gray-600">
+                    {{ rolesStore.roleById(account.roleId)?.name ?? account.roleId }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <button
+                    v-if="authStore.isSuperAdmin && account.uid !== authStore.user?.uid"
+                    class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                    :aria-label="`Revoke access for ${account.email ?? account.uid}`"
+                    @click="doRevokeAccess(account.uid)"
+                  >
+                    <Icon icon="mdi:close" class="text-sm" />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <LoadingState v-if="accountsStore.loading" />
+          <p
+            v-else-if="!accountsStore.records.length"
+            class="px-4 py-6 text-center text-sm text-gray-400"
+          >
+            No accounts have been granted access yet.
+          </p>
+        </div>
       </Card>
     </div>
   </div>
