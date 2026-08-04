@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { useRoleAssignmentsRepository } from '~/repositories/roleAssignmentsRepository'
+import { useRolesRepository } from '~/repositories/rolesRepository'
 import type { ChurchRole, RoleAssignment, RolePermissions, AppPage, AppAction } from '~/types'
 
 // ─── All pages and actions ─────────────────────────────────────────────────────
@@ -108,10 +110,57 @@ const DEFAULT_ROLES: ChurchRole[] = [
   },
 ]
 
+/**
+ * A fresh copy of the built-in roles. `ref(DEFAULT_ROLES)` would hand out the module-level
+ * array itself, so editing a permission mutated the constant for the rest of the session —
+ * and, in tests, leaked across cases with a fresh Pinia.
+ */
+function cloneDefaultRoles(): ChurchRole[] {
+  return DEFAULT_ROLES.map((role) => ({ ...role, permissions: structuredClone(role.permissions) }))
+}
+
 // ─── Store ────────────────────────────────────────────────────────────────────
 export const useRolesStore = defineStore('roles', () => {
-  const roles = ref<ChurchRole[]>(DEFAULT_ROLES)
+  const roles = ref<ChurchRole[]>(cloneDefaultRoles())
   const assignments = ref<RoleAssignment[]>([])
+  const loading = ref(false)
+  const saving = ref(false)
+  const error = ref<string | null>(null)
+  const loaded = ref(false)
+
+  function fail(e: unknown, fallback: string): never {
+    error.value = e instanceof Error ? e.message : fallback
+    useToast().error(error.value)
+    throw e
+  }
+
+  /**
+   * Assignments and permission overrides both come from Firestore. Roles are rebuilt from the
+   * code defaults each time so a stored override for a role that no longer exists is ignored,
+   * and a role added to the code later still shows up.
+   */
+  async function load(force = false) {
+    if (loaded.value && !force) return
+    loading.value = true
+    error.value = null
+    try {
+      const [fetchedAssignments, overrides] = await Promise.all([
+        useRoleAssignmentsRepository().fetchAssignments(),
+        useRolesRepository().fetchRoleOverrides(),
+      ])
+      assignments.value = fetchedAssignments
+      roles.value = cloneDefaultRoles().map((role) => {
+        const override = overrides.find((o) => o.id === role.id)
+        return override ? { ...role, permissions: override.permissions } : role
+      })
+      loaded.value = true
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to load roles'
+      useToast().error(error.value)
+    } finally {
+      loading.value = false
+    }
+  }
 
   // ── Lookups ─────────────────────────────────────────────────────────────────
   function roleById(id: string) {
@@ -156,15 +205,24 @@ export const useRolesStore = defineStore('roles', () => {
   }
 
   // ── Role CRUD ───────────────────────────────────────────────────────────────
-  function updateRolePermissions(roleId: string, permissions: RolePermissions) {
+  async function updateRolePermissions(roleId: string, permissions: RolePermissions) {
     const idx = roles.value.findIndex((r) => r.id === roleId)
     if (idx === -1) return
-    roles.value[idx] = { ...roles.value[idx]!, permissions }
-    useToast().success(`${roles.value[idx]!.name} permissions updated`)
+    saving.value = true
+    error.value = null
+    try {
+      await useRolesRepository().saveRolePermissions(roleId, permissions)
+      roles.value[idx] = { ...roles.value[idx]!, permissions }
+      useToast().success(`${roles.value[idx]!.name} permissions updated`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to update permissions')
+    } finally {
+      saving.value = false
+    }
   }
 
   // ── Assignment CRUD ─────────────────────────────────────────────────────────
-  function assignRole(memberId: string, roleId: string, customPermissions?: RolePermissions) {
+  async function assignRole(memberId: string, roleId: string, customPermissions?: RolePermissions) {
     // Prevent duplicate assignment of same role to same member
     const exists = assignments.value.find((a) => a.memberId === memberId && a.roleId === roleId)
     if (exists) {
@@ -172,33 +230,64 @@ export const useRolesStore = defineStore('roles', () => {
       return
     }
 
-    assignments.value.push({
-      id: String(Date.now()),
-      memberId,
-      roleId,
-      customPermissions,
-      assignedAt: new Date().toISOString().slice(0, 10),
-    })
-    const roleName = roles.value.find((r) => r.id === roleId)?.name ?? 'Role'
-    useToast().success(`${roleName} assigned`)
+    saving.value = true
+    error.value = null
+    try {
+      const created = await useRoleAssignmentsRepository().createAssignment({
+        memberId,
+        roleId,
+        customPermissions,
+        assignedAt: new Date().toISOString().slice(0, 10),
+      })
+      assignments.value.push(created)
+      const roleName = roles.value.find((r) => r.id === roleId)?.name ?? 'Role'
+      useToast().success(`${roleName} assigned`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to assign role')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function revokeAssignment(assignmentId: string) {
-    const existed = assignments.value.some((a) => a.id === assignmentId)
-    assignments.value = assignments.value.filter((a) => a.id !== assignmentId)
-    if (existed) useToast().success('Role revoked')
+  async function revokeAssignment(assignmentId: string) {
+    if (!assignments.value.some((a) => a.id === assignmentId)) return
+    saving.value = true
+    error.value = null
+    try {
+      await useRoleAssignmentsRepository().deleteAssignment(assignmentId)
+      assignments.value = assignments.value.filter((a) => a.id !== assignmentId)
+      useToast().success('Role revoked')
+    } catch (e: unknown) {
+      fail(e, 'Failed to revoke role')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function updateCustomPermissions(assignmentId: string, customPermissions: RolePermissions) {
+  async function updateCustomPermissions(assignmentId: string, customPermissions: RolePermissions) {
     const idx = assignments.value.findIndex((a) => a.id === assignmentId)
     if (idx === -1) return
-    assignments.value[idx] = { ...assignments.value[idx]!, customPermissions }
-    useToast().success('Custom permissions updated')
+    saving.value = true
+    error.value = null
+    try {
+      await useRoleAssignmentsRepository().updateCustomPermissions(assignmentId, customPermissions)
+      assignments.value[idx] = { ...assignments.value[idx]!, customPermissions }
+      useToast().success('Custom permissions updated')
+    } catch (e: unknown) {
+      fail(e, 'Failed to update custom permissions')
+    } finally {
+      saving.value = false
+    }
   }
 
   return {
     roles,
     assignments,
+    loading,
+    saving,
+    error,
+    loaded,
+    load,
     roleById,
     assignmentsByMember,
     assignmentsWithRole,

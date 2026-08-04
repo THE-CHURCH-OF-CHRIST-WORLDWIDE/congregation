@@ -18,6 +18,7 @@ An open-source **Church Management System (CMS)** built with Nuxt 4, Vue 3, Type
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
+- [Deployment & Access Control](#deployment--access-control)
 - [Date Formatting](#date-formatting)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -177,16 +178,16 @@ congregation/
 │       └── VideoPlayer.vue
 │
 ├── composables/
-│   ├── useEventsMockData.ts          # Seeds events store with mock data
-│   ├── usePublicMockData.ts          # Seeds public stores (sermons, streams, etc.)
-│   ├── useMockData.ts                # Seeds admin stores
-│   ├── useTeachings.ts
-│   ├── useLiveStreams.ts
-│   ├── useFilteredContent.ts
-│   ├── usePageHeader.ts
-│   ├── useScroll.ts
-│   ├── useExportCSV.ts
-│   └── useImportCsv.ts
+│   ├── useCloudinaryUpload.ts        # Unsigned Cloudinary upload with progress
+│   ├── useExportCSV.ts               # Member CSV export
+│   ├── useFinancePdf.ts              # Finance report PDF export
+│   ├── useGalleryData.ts             # Gallery category lookups
+│   ├── useImportCsv.ts               # Member CSV import
+│   ├── useLiveStreams.ts             # Public live stream helpers
+│   ├── usePageHeader.ts              # Admin header title/subtitle
+│   ├── usePagination.ts              # Reusable table pagination
+│   ├── useScrollReveal.ts            # Scroll-into-view animations
+│   └── useToast.ts                   # Toast notifications
 │
 ├── docs/
 │   ├── getting-started.md
@@ -206,6 +207,14 @@ congregation/
 │   ├── login.vue                     # Login (/login)
 │   ├── about-us/
 │   │   └── index.vue                 # About Us (/about-us)
+│   ├── invite/
+│   │   └── index.vue                 # Accept an emailed invitation (/invite)
+│   ├── register/
+│   │   └── index.vue                 # Public member registration (/register)
+│   ├── salvation/
+│   │   └── index.vue                 # God's Plan for Salvation (/salvation)
+│   ├── gallery/
+│   │   └── [category].vue            # Gallery by category (/gallery/:category)
 │   ├── events/
 │   │   └── index.vue                 # Events (/events?tab=upcoming|past)
 │   ├── live-streams/
@@ -246,20 +255,28 @@ congregation/
 │   └── images/
 │       └── heroImg.png
 │
-├── repositories/
-│   └── churchSettingsRepository.ts   # Firestore data access layer
+├── repositories/                     # Firestore data access layer
+│   ├── churchSettingsRepository.ts   # settings/church document
+│   ├── invitationsRepository.ts      # invitations/{email} — pending invites
+│   ├── membersRepository.ts          # members collection (nominal roll)
+│   ├── roleAssignmentsRepository.ts  # roleAssignments — member ↔ role
+│   ├── rolesRepository.ts            # roles/{roleId} — permission overrides
+│   └── usersRepository.ts            # users/{uid} — account roles (grants access)
 │
 ├── stores/
-│   ├── useAuthStore.ts               # Firebase Auth state
-│   ├── useChurchSettingsStore.ts     # Church configuration
+│   ├── accounts.ts                   # users/{uid} records — who may write
+│   ├── attendance.ts                 # Attendance records (admin)
+│   ├── auth.ts                       # Firebase Auth state + the account's role
+│   ├── churchSettings.ts             # Church configuration
 │   ├── events.ts                     # Public events state
+│   ├── finance.ts                    # Finance records (admin)
+│   ├── invitations.ts                # Invite by email, and claiming an invite
+│   ├── members.ts                    # Member records (admin)
 │   ├── publicLiveStream.ts           # Public live stream state
 │   ├── publicTeachings.ts            # Public sermons/lessons state
-│   ├── members.ts                    # Member records (admin)
-│   ├── attendance.ts                 # Attendance records (admin)
-│   ├── finance.ts                    # Finance records (admin)
+│   ├── roles.ts                      # Role definitions and member assignments
 │   ├── teachings.ts                  # Teachings management (admin)
-│   ├── roles.ts                      # RBAC roles and permissions
+│   ├── toast.ts                      # Toast queue
 │   └── ui.ts                         # Global UI state (modals, sidebar)
 │
 ├── types/
@@ -442,6 +459,175 @@ npm run dev
 
 - [`composables/useCloudinaryUpload.ts`](composables/useCloudinaryUpload.ts) — handles the upload, exposes `uploading` / `progress` / `error` reactive state, and returns the `secure_url`.
 - [`components/ui/ImageUpload.vue`](components/ui/ImageUpload.vue) — drag-and-drop image picker with live progress, replace/remove overlay, and `shape="circle"` / `compact` variants. Drop it anywhere with `v-model` bound to a URL string.
+
+---
+
+## Deployment & Access Control
+
+Everything needed to stand a congregation up on its own Firebase projects and Netlify sites, and to decide who may change what. [docs/firebase-setup.md](docs/firebase-setup.md) carries the same material in more depth; this section is the operational checklist.
+
+### Security model
+
+Signing in and being allowed to write are separate things. Privilege comes from exactly one place: a `users/{uid}` document in Firestore, which [`firestore.rules`](firestore.rules) reads on every write. An account with no such document can sign in and see the dashboard shell but cannot change anything — the admin header shows a red banner saying so, rather than letting each save fail on its own.
+
+Six collections, with deliberately different exposure:
+
+| Collection        | Holds                                           | Notes                                                      |
+| ----------------- | ----------------------------------------------- | ---------------------------------------------------------- |
+| `users/{uid}`     | The role a Firebase Auth account carries        | **Grants privilege.** Every write rule is gated on it      |
+| `invitations`     | Pending invitations, keyed by lower-cased email | Claimed on first sign-in; the only self-service role grant |
+| `roles/{roleId}`  | Permission-matrix overrides only                | Names, ids and colours stay in code                        |
+| `roleAssignments` | Which nominal-roll member holds which role      | Presentational — records standing, not access              |
+| `settings/church` | Public site content                             | World-readable; the landing page reads it signed out       |
+| `members`         | The nominal roll                                | Never publicly readable; `/register` may create only       |
+
+Who may do what:
+
+|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   |
+| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- |
+| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      |
+| Other staff        | read       | read+write                   | read                | read    | read              | read            |
+| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only |
+| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               |
+
+Staff roles are `super-admin`, `elder`, `deacon`, `preacher`, `secretary`, `youth-leader`, `financial-secretary`. That list appears in three places which must stay in step: `isStaff()` in [`firestore.rules`](firestore.rules), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `ChurchRoleId` in [`types/index.ts`](types/index.ts).
+
+Rules are the coarse floor; the per-page matrix in Settings → Roles & Permissions is finer-grained on top of it.
+
+### Roles & permissions
+
+Three things carry the word "role" and are deliberately separate. Confusing them is the most common source of "why can't this person do X":
+
+| Concept             | Lives in                           | Answers                              | Enforced by                   |
+| ------------------- | ---------------------------------- | ------------------------------------ | ----------------------------- |
+| **Role definition** | `DEFAULT_ROLES` + `roles/{roleId}` | "What may an Elder do?"              | The app's UI matrix           |
+| **Role assignment** | `roleAssignments`                  | "Who are our elders?"                | Nothing — it records standing |
+| **Account access**  | `users/{uid}`                      | "May this login change church data?" | **Firestore rules**           |
+
+A member on the nominal roll can be an elder with no login at all, and a login can exist with no member record. Only `users/{uid}` gates anything.
+
+#### Default permission matrix
+
+Eight pages × five actions — **V**iew, **A**dd, **E**dit, **D**elete, e**X**port. Generated from [`stores/roles.ts`](stores/roles.ts):
+
+| Role                | Dash  | Roll  | Youth | Att   | Teach | Events | Fin   | Set   |
+| ------------------- | ----- | ----- | ----- | ----- | ----- | ------ | ----- | ----- |
+| Super Admin         | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VAEDX | VAEDX |
+| Elder               | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VX    | V     |
+| Deacon              | VAE   | VAE   | VAE   | VAE   | V     | V      | V     | —     |
+| Preacher            | VAEDX | V     | V     | V     | VAEDX | VAEDX  | —     | —     |
+| Secretary           | VAEX  | VAEX  | VAEX  | VAEX  | VAEX  | VAEX   | VX    | V     |
+| Youth Leader        | VAEX  | V     | VAEX  | VAEX  | V     | V      | —     | —     |
+| Financial Secretary | VAEDX | V     | —     | —     | —     | —      | VAEDX | —     |
+
+Only **Super Admin** may write `settings`, `users`, `roles`, `roleAssignments` and `invitations` — the `V` that Elder and Secretary hold on Settings is view-only, and the rules enforce that independently of the matrix.
+
+#### Managing them
+
+All three live under **Settings → Roles & Permissions**:
+
+- **Role Definitions** — click a role to open its matrix. Toggling any action auto-enables `view`; clearing `view` clears the row. Saving writes a `roles/{roleId}` document holding **only** the permissions, so ids, names and colours stay code-defined — an override cannot rename or invent a role. On load the app rebuilds from the code defaults and layers stored overrides on top, so a role added in code later still appears and an override for a deleted role is ignored.
+- **Member Assignments** — assign a role to a nominal-roll member, optionally with **custom permissions** that override that role's defaults for that person only. Where someone holds several roles, `effectivePermissions()` merges them: any role granting an action grants it, and a custom override wins over the role default either way.
+- **Dashboard Access** — invitations and `users/{uid}` records. See [Inviting people](#inviting-people).
+
+Everything on this screen persists to Firestore. Writing any of it requires Super Admin, so a `deacon` opening the page can read the matrix but not change it — the controls render as plain text rather than inputs.
+
+#### Adding a role
+
+Roles are code-defined, so a new one is a code change: add it to `DEFAULT_ROLES` in [`stores/roles.ts`](stores/roles.ts), and if it should be able to write church data, add its id to `ChurchRoleId` in [`types/index.ts`](types/index.ts), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `isStaff()` in [`firestore.rules`](firestore.rules) — then redeploy the rules. Missing the rules step gives a role that looks correct in the UI and is refused by the backend.
+
+### First-time setup, per Firebase project
+
+Do all of this on **staging first**, then repeat on production. Order matters — step 4 refuses every write from an account without a role, and no rule lets an account grant itself one, so seeding comes first.
+
+1. **Create the project** and register a web app (Project Settings → Your apps → SDK setup). Copy the config into the matching env file.
+2. **Enable Authentication** → Sign-in method:
+   - **Email/Password**
+   - **Email link (passwordless sign-in)** — required for invitations to send
+   - Under **Settings → Authorized domains**, add the site's Netlify domain and `localhost`. Sign-in fails silently without this.
+3. **Seed the first Super Admin.** There is no way to bootstrap this from the app:
+   - **Authentication → Users** → copy the UID.
+   - **Firestore → Data** → create `users/<that-uid>` with `roleId: "super-admin"` (and `email` for legibility).
+   - Confirm the document id is the **UID, not the email** — this is the most common way to get locked out.
+4. **Deploy the rules** (see below) and verify: a setting saves, and the red no-role banner does not appear.
+5. **Create the Firestore database** and enable **Storage** if not already done.
+
+Locked out anyway? Rules never restrict the Firebase console — fix or create the `users/{uid}` document under Firestore → Data. Console access is governed by Google Cloud IAM.
+
+### Inviting people
+
+Once a Super Admin exists, everyone else is invited from the app — no console, no shared passwords: **Settings → Roles & Permissions → Dashboard Access → Invite by email**.
+
+The invitee receives a sign-in link; opening it creates their account and applies the role. Pending invitations are listed on the same card and can be revoked until claimed. Where an account already exists and only needs a role, use the collapsed **"Or grant an existing account by UID"** fallback.
+
+This works without Cloud Functions or the Blaze plan by having the invitee claim their own role, with the rules policing the claim: `users/{uid}` may be **created** (never updated) only for the caller's own uid, only with a **verified** email, and only with the exact `roleId` the invitation names. Knowing an invited address is not enough — you must be able to read that mailbox. The invitation is deleted on claim so it cannot be reused.
+
+### Environment variables on Netlify
+
+Two Netlify sites, each with its own copy of ten variables. [`netlify.toml`](netlify.toml) is committed and shared by both, so **no environment values belong in it** — each site is the `production` context for its own branch, and a committed `APP_ENV` would label staging as production.
+
+```bash
+npx netlify-cli login                       # once per machine
+
+npm run netlify:env -- staging              # dry run: shows old → new, values masked
+npm run netlify:env -- staging --apply
+
+npm run netlify:env -- production           # dry run
+npm run netlify:env -- production --apply
+```
+
+Each environment names its own site and passes it with `--site`, so the locally linked project is irrelevant and no re-linking is needed. The script refuses to run if either env file is missing a value or if the two share a Firebase project ID or API key, and after writing it reads the values back — it will not report success the site has not confirmed.
+
+Environment variable changes only take effect on the **next** build. Trigger a redeploy afterwards.
+
+When inspecting variables by hand, always pass a context — `netlify env:list` defaults to `dev`, which is not what a deploy builds with and will report variables as unset:
+
+```bash
+npx netlify-cli env:list --site coc-abadina-prod --context production
+```
+
+### Deploying security rules
+
+[`firestore.rules`](firestore.rules) is the single source of truth for both projects. Never edit rules in the console — the next deploy silently reverts them.
+
+```bash
+firebase deploy --only firestore:rules -P staging
+# verify on staging, then:
+firebase deploy --only firestore:rules -P production
+```
+
+Rules are not covered by the test suite. Before a production deploy, exercise these in **Firestore → Rules → Playground** — they are the cases the rules are written against:
+
+| Attempt                                                          | Expected |
+| ---------------------------------------------------------------- | -------- |
+| `get` on `members/x` as an unauthenticated visitor               | deny     |
+| `get` on `members/x` as signed-in with no role                   | deny     |
+| `create` on `users/<own-uid>` with a role the invitation ≠ names | deny     |
+| `create` on `users/<someone-else-uid>` as an invited user        | deny     |
+| `create` on `invitations/x@y.com` as a `deacon`                  | deny     |
+| `write` on `settings/church` as your seeded Super Admin          | allow    |
+
+### Going live: ordered checklist
+
+1. Apply the Netlify variables for both sites and redeploy both.
+2. Complete the per-project Firebase setup above, staging first.
+3. Deploy rules to staging; confirm saves work and invitations send and can be claimed.
+4. Deploy rules to production.
+5. Merge `dev` → `main`. Production is a separate site building `main`, so until then it has neither `netlify.toml` nor `public/_redirects` — wrong publish directory and 404s on deep links.
+6. Replace the placeholder copy in [`pages/salvation/index.vue`](pages/salvation/index.vue) before pointing anyone at it; it is linked from the footer on every public page.
+
+### Troubleshooting
+
+| Symptom                                                | Cause                                                                 | Fix                                                                      |
+| ------------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `Firebase config is missing VITE_…` on a deployed site | The build had no environment variables                                | Apply them for that site, then **redeploy** — env changes need a build   |
+| `auth/invalid-api-key` locally                         | The `--dotenv` file was missing, so the build shipped an empty config | The `*:staging` / `*:production` scripts now fail fast; create the file  |
+| Red "no role assigned" banner                          | The account has no `users/{uid}` document                             | A Super Admin grants a role, or seed it in the console                   |
+| Staging shows production data                          | Both sites hold the same variables                                    | `npm run netlify:env -- staging --apply`, then redeploy                  |
+| Deploy fails: "secrets detected in build output"       | Vite inlines `VITE_*` into the bundle by design                       | `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml` — extend it for new variables |
+| Deep links 404 in production (`/gallery/photos`)       | The SPA fallback is missing                                           | Confirm `public/_redirects` survived into `dist/_redirects`              |
+| Invitation email never arrives                         | Email link sign-in disabled, or the domain is not authorized          | Enable both under Authentication (step 2 above)                          |
+| Login works, then nothing loads                        | Rules deployed before a Super Admin was seeded                        | Create `users/<uid>` in the console                                      |
 
 ---
 

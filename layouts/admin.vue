@@ -121,6 +121,21 @@ async function logout() {
         <!-- Renders only outside production, so nobody edits the live congregation
              thinking they are in staging. -->
         <EnvironmentBanner />
+
+        <!-- Firestore rules authorise writes from the account's `users/{uid}` role. Without
+             one, every save is refused by the backend — say so plainly rather than letting
+             each action fail on its own. -->
+        <div
+          v-if="authStore.roleLoaded && authStore.isAuthenticated && !authStore.isStaff"
+          class="flex items-start gap-2 bg-red-50 px-4 py-2 text-xs text-red-800"
+          role="alert"
+        >
+          <Icon icon="mdi:shield-alert-outline" class="mt-0.5 shrink-0 text-sm" />
+          <p>
+            This account has no role assigned, so saving anything will be refused. Ask a Super Admin
+            to grant it a role.
+          </p>
+        </div>
         <div class="px-4 lg:px-6 py-4 flex items-start gap-3">
           <button
             class="lg:hidden mt-1 p-1.5 rounded-md hover:bg-gray-100 text-gray-500 shrink-0"

@@ -16,7 +16,8 @@ interface FooterLink {
 }
 
 const quickLinks: FooterLink[] = [
-  { label: 'Find a Congregation', href: '/find-congregation' },
+  // The congregation finder is a section of the landing page, not a route of its own.
+  { label: 'Find a Congregation', href: '/#congregations' },
   { label: 'Watch Live Streams', href: '/live-streams' },
   { label: 'Read Sermons', href: '/teachings/sermons' },
   { label: 'Sunday School Lessons', href: '/teachings/sunday-school' },
@@ -33,8 +34,8 @@ const salvationLinks: FooterLink[] = [
 
 const resourceLinks: FooterLink[] = [
   { label: 'Biblical Teachings', href: '/teachings/sermons' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Contact Us', href: '/contact' },
+  // The contact form is a section of the landing page, not a route of its own.
+  { label: 'Contact Us', href: '/#contact' },
   {
     label: 'Open Source Template',
     href: 'https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation',

@@ -138,12 +138,53 @@ export type RoleName =
   | 'Youth Leader'
   | 'Financial Secretary'
 
+/** Ids of the built-in roles in `stores/roles.ts`. Firestore rules match on these strings. */
+export type ChurchRoleId =
+  | 'super-admin'
+  | 'elder'
+  | 'deacon'
+  | 'preacher'
+  | 'secretary'
+  | 'youth-leader'
+  | 'financial-secretary'
+
 export interface ChurchRole {
-  id: string
+  id: ChurchRoleId
   name: RoleName
   color: string
   description: string
   permissions: RolePermissions
+}
+
+/**
+ * A pending invitation, stored at `invitations/{email}` with the email lower-cased as the
+ * document id so rules can match it against the caller's token.
+ *
+ * The invitee claims it on first sign-in: the app creates their `users/{uid}` record with the
+ * role named here, then deletes the invitation. Rules allow that self-claim only for a
+ * verified email that matches an existing invitation, so an invitation is the only way an
+ * account can acquire a role without a Super Admin writing it directly.
+ */
+export interface Invitation {
+  email: string
+  roleId: ChurchRoleId
+  invitedBy?: string
+  invitedAt: string
+}
+
+/**
+ * A Firebase Auth account and the role it carries, stored at `users/{uid}`.
+ *
+ * This is the only thing that grants privilege: Firestore rules read this document to
+ * decide whether a request may write. `RoleAssignment` is a separate, presentational
+ * concept — it attaches roles to nominal-roll members, who may have no login at all.
+ */
+export interface AppUserRecord {
+  uid: string
+  email?: string
+  roleId: ChurchRoleId
+  /** Optional link to this person's nominal-roll record. */
+  memberId?: string
 }
 
 export interface RoleAssignment {

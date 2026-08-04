@@ -65,36 +65,13 @@ VITE_FIREBASE_APP_ID=appId
 3. Select a region close to your users
 4. After creation, go to the **Rules** tab and configure security rules
 
-A minimal starting rules configuration:
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // Public read for landing page content
-    match /public/{document=**} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    // Admin-only access for church data
-    match /members/{document=**} {
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
-    }
-
-    match /giving/{document=**} {
-      allow read, write: if request.auth != null && request.auth.token.admin == true;
-    }
-
-    match /attendance/{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
-> Adjust these rules to match your application's role structure before going to production.
+Do not hand-write rules in the console. This repository's [`firestore.rules`](../firestore.rules)
+is the real configuration — it covers the six collections the app actually uses (`users`,
+`invitations`, `roles`, `roleAssignments`, `settings`, `members`), validates the shape of
+self-registrations, and gates every write on the account's role. Deploy it as described in
+[Deploy Firebase Security Rules](#7-deploy-firebase-security-rules) below, and read
+[Account roles](#account-roles) first: the rules require a `users/{uid}` document to exist
+before anyone can write.
 
 ---
 
@@ -159,6 +136,131 @@ firebase deploy --only firestore:rules -P production
 [`firestore.rules`](../firestore.rules) is the single source of truth for both projects. Edit
 it once, deploy to staging, verify, then deploy to production — never edit rules in the console,
 or the next deploy silently reverts them.
+
+> **Read the next section before deploying these rules to a project that already has data.**
+> Writes are gated on a `users/{uid}` role document, and no rule lets an account create its
+> own. Deploy without seeding one first and every write — including the one that would grant
+> you a role — is refused.
+
+---
+
+## Account roles
+
+Signing in is not the same as being allowed to write. Two separate things are involved:
+
+| Concept                | Lives in               | What it does                                            |
+| ---------------------- | ---------------------- | ------------------------------------------------------- |
+| `users/{uid}` document | Firestore              | **Grants privilege.** Firestore rules read it on writes |
+| `RoleAssignment`       | `stores/roles.ts` (UI) | Attaches roles to nominal-roll members, for display     |
+
+They are deliberately distinct: most people on the nominal roll have no login at all, and a
+login is not a member record. Only the `users/{uid}` document is enforced.
+
+The document shape (see `AppUserRecord` in [`types/index.ts`](../types/index.ts)):
+
+```json
+{
+  "email": "secretary@example.com",
+  "roleId": "super-admin",
+  "memberId": "optional-nominal-roll-id"
+}
+```
+
+`roleId` must be one of `super-admin`, `elder`, `deacon`, `preacher`, `secretary`,
+`youth-leader`, `financial-secretary`. Anything else — or a missing document — means the
+account can sign in and see the dashboard shell but cannot write. The admin header shows a
+red banner in that state so the cause is visible rather than appearing as random save
+failures.
+
+Once a Super Admin exists, everyone else is invited from the app: **Settings → Roles &
+Permissions → Dashboard Access → Invite by email**. See [Invitations](#invitations) below.
+
+What each tier may do, per [`firestore.rules`](../firestore.rules):
+
+|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   |
+| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- |
+| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      |
+| Other staff        | read       | read+write                   | read                | read    | read              | read            |
+| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only |
+| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               |
+
+Rules are the coarse security floor; the per-page permission matrix in Settings → Roles &
+Permissions stays finer-grained on top of it. Keep the staff list in `isStaff()` in step with
+`STAFF_ROLES` in [`stores/auth.ts`](../stores/auth.ts).
+
+`roles/{roleId}` holds **permission overrides only** — the seven roles, their ids, names and
+colours live in `DEFAULT_ROLES` in [`stores/roles.ts`](../stores/roles.ts) and are not editable.
+On load the app rebuilds the list from those defaults and applies any stored `permissions` on
+top, so a role added to the code later still appears and a stored override for a role that no
+longer exists is ignored.
+
+### Bootstrapping the first Super Admin
+
+Do this **before** deploying the rules, once per Firebase project:
+
+1. **Authentication → Users** — copy the UID of the account that should be Super Admin
+   (create the account first if it does not exist).
+2. **Firestore Database → Start collection** — collection id `users`, document id **exactly
+   that UID**, with a `roleId` field of `super-admin` (and `email` for legibility).
+3. Confirm the document path reads `users/<uid>` and that the id is the UID, not the email —
+   this is the single most common way to get locked out.
+4. Deploy the rules to **staging** first, sign in there, and check that saving a setting
+   works and that the red no-role banner does not appear.
+5. Only then deploy to production.
+
+Every later account is granted a role by an existing Super Admin writing its `users/{uid}`
+document. There is no UI for this yet — do it in the console, or ask for the Roles screen to
+be wired to Firestore.
+
+## Invitations
+
+A Super Admin invites people from **Settings → Roles & Permissions → Dashboard Access**: enter an
+email, pick a role, send. The invitee gets a sign-in link; opening it creates their account and
+applies the role. Nobody has to touch the Firebase console, and no password is ever shared.
+
+**One-time setup per project**, or invitations will fail to send:
+
+1. **Authentication → Sign-in method** → enable **Email link (passwordless sign-in)**.
+2. **Authentication → Settings → Authorized domains** → include the site's domain
+   (`coc-abadina-prod.netlify.app`, `coc-abadina-staging.netlify.app`, `localhost`).
+
+Email/password sign-in stays enabled alongside it — existing accounts keep signing in as before.
+
+### How it works, and why it is safe without a backend
+
+Creating a Firebase Auth account normally needs the Admin SDK, which needs Cloud Functions and
+the **Blaze** plan. This flow avoids both by having the invitee claim their own role, with rules
+policing the claim:
+
+1. A Super Admin writes `invitations/{email}` (id lower-cased) holding the role. Rules allow
+   `create` here only for a Super Admin.
+2. Firebase emails a sign-in link pointing at `/invite`.
+3. The invitee confirms their address, `signInWithEmailLink` creates the account — with the email
+   already **verified**, because they demonstrably received the mail.
+4. The app writes `users/{uid}` with the invited role. This is the one place rules let an account
+   grant itself anything, and it is narrow: **create only** (an account that already has a record
+   cannot re-run it to change its role), **own uid only**, **verified email only**, and the
+   `roleId` must equal the one the invitation names. Knowing an invited address is not enough —
+   you must be able to read that mailbox.
+5. The invitation is deleted, so it cannot be reused.
+
+Two deliberate consequences:
+
+- **Invitations grant roles; they do not restrict who may hold an account.** Anyone can still sign
+  up for an account with no role, which grants nothing.
+- **The link is single-use and expires** (Firebase's default), so a forwarded email cannot be
+  replayed later.
+
+A pending invitation can be revoked from the same screen at any point before it is claimed.
+
+Where an account already exists and just needs a role, the same card has an **"Or grant an
+existing account by UID"** fallback — paste the UID from Authentication → Users.
+
+### If you lock yourself out
+
+Rules cannot lock out the Firebase console: open **Firestore Database → Data** and create or
+fix the `users/{uid}` document there. Console access is governed by Google Cloud IAM, not by
+these rules.
 
 ---
 

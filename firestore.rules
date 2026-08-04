@@ -2,21 +2,37 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Two collections, with deliberately different exposure:
+// Six collections, with deliberately different exposure:
+//
+//   invitations     — pending invitations, keyed by lower-cased email. A Super Admin creates
+//                     one; the invitee claims it on first sign-in, which is the only way an
+//                     account can gain a role without a Super Admin writing it directly.
+//
+//   users/{uid}     — the role granted to a Firebase Auth account. This collection is
+//                     the ONLY thing that grants privilege: every write rule below is
+//                     gated on it. An account with no document here can sign in and
+//                     reach the dashboard shell, but cannot write anything.
+//
+//   roleAssignments — which nominal-roll member holds which role in the congregation.
+//                     Records standing, not access; most of these people have no login.
 //
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
 //                     about pages read this while signed out, so it is world
-//                     readable. Only signed-in staff may write.
+//                     readable. Only a Super Admin may write.
 //
 //   members         — the nominal roll. Contains names, phone numbers, home
 //                     addresses and dates of birth, so it is NEVER publicly
 //                     readable. The public registration form may CREATE a
 //                     record (that is the whole point of /register), but only
-//                     signed-in staff can read, edit, or delete one.
+//                     staff can read, edit, or delete one.
 //
-// Deploy with:  firebase deploy --only firestore:rules
-// or paste into Firebase console → Firestore Database → Rules → Publish.
+// BEFORE DEPLOYING: create the first users/{uid} document by hand, or you will lock
+// yourself out — no rule here lets an account grant itself a role. Full procedure in
+// docs/firebase-setup.md § Account roles.
+//
+// Deploy with:  firebase deploy --only firestore:rules -P staging
+// then, once verified:  firebase deploy --only firestore:rules -P production
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -25,10 +41,98 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // ── Roles ──────────────────────────────────────────────────────────────
+    // Kept safe for anonymous callers: `roleId()` short-circuits on signedIn() before
+    // touching request.auth.uid, so the public registration path below never errors.
+    function hasRoleDoc() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function roleId() {
+      return hasRoleDoc()
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.roleId
+        : '';
+    }
+
+    function isSuperAdmin() {
+      return roleId() == 'super-admin';
+    }
+
+    // Mirrors STAFF_ROLES in stores/auth.ts — keep the two lists in step.
+    function isStaff() {
+      return roleId() in [
+        'super-admin', 'elder', 'deacon', 'preacher',
+        'secretary', 'youth-leader', 'financial-secretary'
+      ];
+    }
+
+    function invitationFor(email) {
+      return get(/databases/$(database)/documents/invitations/$(email)).data;
+    }
+
+    function hasInvitation(email) {
+      return exists(/databases/$(database)/documents/invitations/$(email));
+    }
+
+    match /users/{uid} {
+      // An account reads its own record so the app can tell which role it holds.
+      allow read: if signedIn() && request.auth.uid == uid;
+      // Staff may read the roster to see who holds what.
+      allow read: if isStaff();
+      // Granting or changing a role is Super Admin only. Deliberately no general self-write:
+      // otherwise any account could promote itself.
+      allow write: if isSuperAdmin();
+
+      // Claiming an invitation. Narrow on purpose:
+      //   * create only — an account that already has a record cannot re-run this to change
+      //     its own role, because the document already exists;
+      //   * only its OWN uid;
+      //   * only a verified email, so knowing an invited address is not enough;
+      //   * only the exact role the invitation names, so the payload cannot ask for more.
+      allow create: if signedIn()
+                    && request.auth.uid == uid
+                    && request.auth.token.email_verified == true
+                    && hasInvitation(request.auth.token.email)
+                    && request.resource.data.roleId == invitationFor(request.auth.token.email).roleId;
+    }
+
+    // ── Invitations ────────────────────────────────────────────────────────
+    // Keyed by lower-cased email so the id can be matched against the caller's token.
+    match /invitations/{email} {
+      // The invitee reads the invitation addressed to them in order to claim it.
+      allow read: if signedIn() && request.auth.token.email == email;
+      allow read: if isStaff();
+      // Only a Super Admin may invite, or change what role an invitation carries.
+      allow create, update: if isSuperAdmin();
+      // Cleared by the Super Admin who sent it, or by the invitee once claimed.
+      allow delete: if isSuperAdmin()
+                    || (signedIn() && request.auth.token.email == email);
+    }
+
+    // ── Role definitions ───────────────────────────────────────────────────
+    // Permission-matrix overrides only, keyed by role id. Names, colours and ids stay in
+    // code, so there is nothing here that can invent a role or rename an existing one.
+    match /roles/{roleId} {
+      allow read: if isStaff();
+      allow write: if isSuperAdmin();
+    }
+
+    // ── Role assignments ───────────────────────────────────────────────────
+    // Who holds which role in the congregation. Presentational: this grants no access,
+    // it records that a member is an elder or a deacon. Writing it is still privileged,
+    // since it drives what the dashboard shows about people.
+    match /roleAssignments/{assignmentId} {
+      allow read: if isStaff();
+      allow write: if isSuperAdmin();
+    }
+
     // ── Church settings ────────────────────────────────────────────────────
     match /settings/{document} {
       allow read: if true;
-      allow write: if signedIn();
+      // Settings is Super Admin only in the app's permission matrix; elders and
+      // secretaries have view access there, so they get no write here.
+      allow write: if isSuperAdmin();
     }
 
     // ── Members ────────────────────────────────────────────────────────────
@@ -61,10 +165,12 @@ service cloud.firestore {
         return data.status == 'Active' && data.absenceCount == 0;
       }
 
-      allow read: if signedIn();
+      allow read: if isStaff();
+      // Staff may create any valid record; the public form may create only a plain,
+      // unprivileged one. isStaff() is false (not an error) for anonymous callers.
       allow create: if shapeIsValid(request.resource.data)
-                    && (signedIn() || selfRegistrationIsSane(request.resource.data));
-      allow update, delete: if signedIn();
+                    && (isStaff() || selfRegistrationIsSane(request.resource.data));
+      allow update, delete: if isStaff();
     }
 
     // Anything not matched above stays closed.
