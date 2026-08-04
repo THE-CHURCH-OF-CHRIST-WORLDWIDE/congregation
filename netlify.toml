@@ -1,13 +1,16 @@
-# Netlify build configuration.
+# Netlify build configuration, shared by BOTH sites:
 #
-# Staging and production are separate Firebase projects served from this one site:
-#   main branch      → production context  → congregation-prod
-#   dev branch, PRs  → branch/preview      → congregation-staging
+#   coc-abadina-prod     ← main branch  → coc-abadina          (production)
+#   coc-abadina-staging  ← dev branch   → coc-abadina-staging  (staging)
 #
-# Only APP_ENV lives here. The Firebase and Cloudinary values are set per deploy
-# context in the Netlify UI (Site configuration → Environment variables) — this is a
-# public repository, and committing the live project's config would point every fork
-# at the real church's Firebase project. See docs/firebase-setup.md § Environments.
+# This file is committed, so every setting in it applies to both sites. That is why no
+# environment values live here — including APP_ENV. Each Netlify site is the production
+# context for its own branch, so a `[context.production]` block here would stamp
+# APP_ENV=production onto the staging site as well.
+#
+# APP_ENV and the VITE_* values are therefore set per site, in that site's own
+# environment variables. `npm run netlify:env` does it for you.
+# See docs/firebase-setup.md § Environments.
 
 [build]
   # `ssr: false`, so this is a static SPA build. The netlify-static preset writes to
@@ -23,16 +26,6 @@
   # design — Vite inlines them into the client bundle, which is the entire point of the
   # `VITE_` prefix — so exempt these specific keys rather than disabling the scan.
   SECRETS_SCAN_OMIT_KEYS = "VITE_FIREBASE_API_KEY,VITE_FIREBASE_AUTH_DOMAIN,VITE_FIREBASE_PROJECT_ID,VITE_FIREBASE_STORAGE_BUCKET,VITE_FIREBASE_MESSAGING_SENDER_ID,VITE_FIREBASE_APP_ID,VITE_CLOUDINARY_CLOUD_NAME,VITE_CLOUDINARY_UPLOAD_PRESET,VITE_CLOUDINARY_FOLDER"
-
-[context.production.environment]
-  APP_ENV = "production"
-
-# The `dev` branch deploys here, as does any other non-production branch.
-[context.branch-deploy.environment]
-  APP_ENV = "staging"
-
-[context.deploy-preview.environment]
-  APP_ENV = "staging"
 
 # The SPA fallback deliberately lives in `public/_redirects`, not here — Netlify processes
 # `_redirects` ahead of netlify.toml, and Nitro's Netlify preset generates a catch-all 404

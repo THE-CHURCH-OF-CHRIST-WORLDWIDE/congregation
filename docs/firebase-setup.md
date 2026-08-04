@@ -8,7 +8,7 @@ This guide covers creating a Firebase project and configuring it for use with Co
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/)
 2. Click **Add project**
-3. Enter a project name (e.g., `congregation-prod`)
+3. Enter a project name (e.g., `coc-abadina` for production, `coc-abadina-staging` for staging)
 4. Optionally enable Google Analytics
 5. Click **Create project**
 
@@ -168,11 +168,11 @@ Congregation uses **one Firebase project per environment**. This is Google's rec
 approach, and the only one that isolates Auth users, Storage objects and quotas rather than
 just Firestore documents. Both projects run happily on the free Spark plan.
 
-| Environment | Firebase project       | Branch      | Netlify context  | `APP_ENV`     |
-| ----------- | ---------------------- | ----------- | ---------------- | ------------- |
-| Local dev   | `congregation-staging` | any         | —                | `development` |
-| Staging     | `congregation-staging` | `dev` + PRs | branch / preview | `staging`     |
-| Production  | `congregation-prod`    | `main`      | production       | `production`  |
+| Environment | Firebase project       | Branch | Netlify site          | `APP_ENV`     |
+| ----------- | ---------------------- | ------ | --------------------- | ------------- |
+| Local dev   | whichever `.env` holds | any    | —                     | `development` |
+| Staging     | `coc-abadina-staging`  | `dev`  | `coc-abadina-staging` | `staging`     |
+| Production  | `coc-abadina`          | `main` | `coc-abadina-prod`    | `production`  |
 
 Nothing in the application code is environment-aware. [`plugins/firebase.client.ts`](../plugins/firebase.client.ts)
 builds its config from `runtimeConfig.public`, which is populated from environment variables in
@@ -193,42 +193,51 @@ Update the project IDs in that file if you named your Firebase projects differen
 
 ### Local env files
 
-Each environment gets its own git-ignored env file, created from
-[`.env.example`](../.env.example):
+Three git-ignored env files, all created from [`.env.example`](../.env.example):
 
-```bash
-cp .env.example .env.staging      # fill in congregation-staging config, APP_ENV=staging
-cp .env.example .env.production   # fill in congregation-prod config, APP_ENV=production
-```
+| File              | Firebase project      | Used by                                             |
+| ----------------- | --------------------- | --------------------------------------------------- |
+| `.env`            | your choice           | `npm run dev` — the local default                   |
+| `.env.staging`    | `coc-abadina-staging` | `*:staging` scripts, `netlify:env -- staging`       |
+| `.env.production` | `coc-abadina`         | `*:production` scripts, `netlify:env -- production` |
 
 Nuxt only reads `.env` by default, so the per-environment scripts point it elsewhere with
 `--dotenv`:
 
 ```bash
-npm run dev              # uses .env
-npm run dev:staging      # uses .env.staging
-npm run build:staging    # uses .env.staging
-npm run build:production # uses .env.production
+npm run dev                  # uses .env
+npm run dev:staging          # uses .env.staging
+npm run build:staging        # uses .env.staging
+npm run generate:staging     # uses .env.staging
+npm run build:production     # uses .env.production
+npm run generate:production  # uses .env.production
 ```
 
-Keeping a `.env.production` locally is optional — and worth skipping unless you specifically
-need to reproduce a production build, since it puts live credentials on your laptop. Netlify is
-the safer place to build production.
+Each of these fails immediately if its env file is missing, rather than building an empty
+config — see [`scripts/require-dotenv.mjs`](../scripts/require-dotenv.mjs).
 
-### Netlify deploy contexts
+Whichever project `.env` points at is what a plain `npm run dev` reads and writes. If it holds
+production values, everyday local work is touching real member records; pointing it at staging
+instead makes the safe path the default.
 
-Both environments are served from **one Netlify site**, using deploy contexts:
+### Netlify sites
 
-| Branch        | Context          | Firebase project       |
-| ------------- | ---------------- | ---------------------- |
-| `main`        | `production`     | `congregation-prod`    |
-| `dev`         | `branch-deploy`  | `congregation-staging` |
-| pull requests | `deploy-preview` | `congregation-staging` |
+Each environment is its **own Netlify site**, deploying from its own branch:
 
-[`netlify.toml`](../netlify.toml) commits the build command, the publish directory and the
-per-context `APP_ENV`. Because `ssr: false` produces a static SPA, the build is
-`npm run generate` publishing `dist` — note that the Netlify preset writes to `dist`, not
-`.output/public`.
+| Netlify site          | Branch | URL                                     | Firebase project      |
+| --------------------- | ------ | --------------------------------------- | --------------------- |
+| `coc-abadina-prod`    | `main` | https://coc-abadina-prod.netlify.app    | `coc-abadina`         |
+| `coc-abadina-staging` | `dev`  | https://coc-abadina-staging.netlify.app | `coc-abadina-staging` |
+
+[`netlify.toml`](../netlify.toml) commits the build command and publish directory. Because
+`ssr: false` produces a static SPA, the build is `npm run generate` publishing `dist` — note
+that the Netlify preset writes to `dist`, not `.output/public`.
+
+**No environment values belong in `netlify.toml`, including `APP_ENV`.** That file is committed
+and therefore shared by both sites, and each site is the `production` context for its own
+branch — so a `[context.production]` block sets `APP_ENV=production` on the staging site too,
+hiding the environment banner on staging. Set `APP_ENV` per site instead, alongside that site's
+credentials.
 
 The SPA fallback lives in [`public/_redirects`](../public/_redirects) rather than in
 `netlify.toml`. Nitro's Netlify preset generates its own `_redirects` containing
@@ -238,13 +247,12 @@ declared in the TOML would be shadowed by that 404 and dynamic routes
 file in `public/` replaces the generated one. If you ever see deep links 404 in production,
 check that this file survived into `dist/_redirects`.
 
-The credentials themselves are **not** committed. Netlify never sees the local `.env` files —
-they are git-ignored, so nothing uploads them. Register the values instead in the Netlify UI,
-under **Site configuration → Environment variables**: add each variable, choose _Different
-value for each deploy context_, and give `Production` the `congregation-prod` values and both
-`Deploy Previews` and `Branch deploys` the `congregation-staging` values:
+The credentials are **not** committed. Netlify never sees the local `.env` files either — they
+are git-ignored, so nothing uploads them. Each site needs its own copy of these ten variables,
+set under **Site configuration → Environment variables**:
 
 ```
+APP_ENV                             ← production | staging
 VITE_FIREBASE_API_KEY
 VITE_FIREBASE_AUTH_DOMAIN
 VITE_FIREBASE_PROJECT_ID
@@ -256,26 +264,32 @@ VITE_CLOUDINARY_UPLOAD_PRESET
 VITE_CLOUDINARY_FOLDER
 ```
 
-Point `VITE_CLOUDINARY_FOLDER` at a different folder per context (e.g. `congregation-staging`
-vs `congregation`) so test uploads never land in the production media folder.
+Point `VITE_CLOUDINARY_FOLDER` at a different folder per site (e.g. `congregation-staging` vs
+`congregation`) so test uploads never land in the production media folder.
 
-That is 18 fields to fill by hand, so [`scripts/netlify-env.mjs`](../scripts/netlify-env.mjs)
-will read the local env files and set them all through the Netlify CLI instead:
+Rather than filling twenty fields by hand,
+[`scripts/netlify-env.mjs`](../scripts/netlify-env.mjs) reads the local env files and sets them
+through the Netlify CLI — one site per run:
 
 ```bash
-npx netlify-cli login && npx netlify-cli link   # once per machine
+npx netlify-cli login                      # once per machine
 
-npm run netlify:env              # dry run — prints the plan with values masked
-npm run netlify:env -- --apply   # write to the linked site
+npx netlify-cli link                       # link the STAGING site
+npm run netlify:env -- staging             # dry run — prints the plan, values masked
+npm run netlify:env -- staging --apply
+
+npx netlify-cli link                       # re-link to the PRODUCTION site
+npm run netlify:env -- production --apply
 ```
 
-It refuses to run if either file is missing a value, or if the two files share a Firebase
-project ID or API key — that would silently point both contexts at the same project.
+`staging` reads `.env.staging`, `production` reads `.env.production`, and each run also sets
+`APP_ENV`. Local `.env` is never uploaded. The script refuses to continue if either file is
+missing a value, if the two share a Firebase project ID or API key, or if the linked site's name
+does not match the environment you asked for — that last check is what stops staging from being
+handed production credentials.
 
-Do **not** add `APP_ENV` in the UI — [`netlify.toml`](../netlify.toml) already sets it per
-context, and keeping each variable in exactly one place avoids any question of which source
-wins. Environment variable changes only take effect on the **next** build, so trigger a
-redeploy after editing them; existing deploys keep the values they were built with.
+Environment variable changes only take effect on the **next** build, so trigger a redeploy
+afterwards; existing deploys keep the values they were built with.
 
 These values all ship to the browser in the JS bundle, so they are not secrets in the usual
 sense. They are still kept out of the repository: this project is public, and a committed
@@ -287,10 +301,13 @@ deploy on finding them in the build output. `SECRETS_SCAN_OMIT_KEYS` in
 [`netlify.toml`](../netlify.toml) exempts exactly these keys — extend that list if you add
 another `VITE_` variable, rather than switching the scan off entirely.
 
-Add the staging site's Netlify URL to **Authorized domains** in the staging Firebase project's
-Auth settings, and the production domain to the production project — sign-in fails otherwise.
-Note that branch-deploy URLs are publicly reachable; Firestore rules, not obscurity, are what
-keep staging data safe.
+Add each site's URL to **Authorized domains** in the matching Firebase project's Auth settings —
+`coc-abadina-staging.netlify.app` in the staging project, `coc-abadina-prod.netlify.app` plus
+any custom domain in the production project. Sign-in fails otherwise.
+
+The staging site is publicly reachable, admin UI included. Firestore rules, not obscurity, are
+what keep staging data safe — which is another reason never to seed staging with real member
+records.
 
 ### Continuous integration
 

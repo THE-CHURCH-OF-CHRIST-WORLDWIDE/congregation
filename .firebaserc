@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "congregation-staging",
-    "staging": "congregation-staging",
-    "production": "congregation-prod"
+    "default": "coc-abadina-staging",
+    "staging": "coc-abadina-staging",
+    "production": "coc-abadina"
   }
 }

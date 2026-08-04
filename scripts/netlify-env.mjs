@@ -1,18 +1,22 @@
 #!/usr/bin/env node
 /**
- * Copies the local env files into Netlify's per-context environment variables.
+ * Copies one local env file into the environment variables of the linked Netlify site.
  *
- *   .env          → production context      (congregation-prod)
- *   .env.staging  → branch-deploy + deploy-preview contexts (congregation-staging)
+ *   production  ← .env.production  → coc-abadina-prod     (main branch, project coc-abadina)
+ *   staging     ← .env.staging     → coc-abadina-staging  (dev branch, project coc-abadina-staging)
  *
- * Netlify never reads these files itself — they are git-ignored and never uploaded — so this
- * script is just a typo-proof way of doing the 18 UI fields in one pass.
+ * `.env` is not used here at all — it is only the default for local `npm run dev`.
  *
- *   node scripts/netlify-env.mjs            # dry run: show what would be set
- *   node scripts/netlify-env.mjs --apply    # actually write to the linked Netlify site
+ * Staging and production are two separate Netlify sites, so each one carries its own copy of
+ * the variables — including APP_ENV. It cannot live in netlify.toml: that file is committed and
+ * shared, and each site is the production context for its own branch, so a
+ * `[context.production]` block would label the staging site as production too.
  *
- * Requires `netlify login` and `netlify link` first. APP_ENV is deliberately not handled here:
- * netlify.toml owns it per context.
+ *   npm run netlify:env -- staging              # dry run: show what would be set
+ *   npm run netlify:env -- staging --apply      # write to the linked site
+ *
+ * Run `netlify link` first, and re-link when switching sites — the script refuses to write
+ * staging values to a site whose name looks like production, and vice versa.
  */
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -30,18 +34,27 @@ const KEYS = [
   'VITE_CLOUDINARY_FOLDER',
 ]
 
-const SOURCES = [
-  { file: '.env', label: 'production', contexts: ['production'] },
-  { file: '.env.staging', label: 'staging', contexts: ['branch-deploy', 'deploy-preview'] },
-]
+const ENVIRONMENTS = {
+  production: { file: '.env.production', appEnv: 'production', siteMatches: /prod/i },
+  staging: { file: '.env.staging', appEnv: 'staging', siteMatches: /staging|stage/i },
+}
 
 const args = process.argv.slice(2)
+const target = args.find((arg) => !arg.startsWith('--'))
 const apply = args.includes('--apply')
+const force = args.includes('--force')
 const allowIdentical = args.includes('--allow-identical')
 
 function die(message) {
   console.error(`\n✗ ${message}\n`)
   process.exit(1)
+}
+
+if (!target || !(target in ENVIRONMENTS)) {
+  die(
+    `Specify which environment to write: ${Object.keys(ENVIRONMENTS).join(' | ')}\n` +
+      `  e.g.  npm run netlify:env -- staging`
+  )
 }
 
 /** Minimal dotenv reader — enough for KEY=value files, quoted or not. */
@@ -82,50 +95,99 @@ function resolveCli() {
   }
 }
 
-// ── Read and validate ────────────────────────────────────────────────────────────────────────
+/** The linked site, from the local link state written by `netlify link`. */
+function linkedSiteId() {
+  const statePath = '.netlify/state.json'
+  if (!existsSync(statePath)) {
+    die(`This folder is not linked to a Netlify site.\n  Run:  npx netlify-cli link`)
+  }
+  const { siteId } = JSON.parse(readFileSync(statePath, 'utf8'))
+  if (!siteId) die(`${statePath} has no siteId. Re-run:  npx netlify-cli link`)
+  return siteId
+}
 
-const parsed = SOURCES.map((source) => ({ ...source, values: parseEnvFile(source.file) }))
+function siteNameFor(cli, siteId) {
+  try {
+    const raw = execFileSync(
+      cli.bin,
+      [...cli.lead, 'api', 'getSite', '--data', JSON.stringify({ site_id: siteId })],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }
+    )
+    return JSON.parse(raw).name ?? null
+  } catch {
+    return null
+  }
+}
+
+// ── Read and validate both files ─────────────────────────────────────────────────────────────
+
+const chosen = ENVIRONMENTS[target]
+const files = Object.fromEntries(
+  Object.entries(ENVIRONMENTS).map(([name, env]) => [name, parseEnvFile(env.file)])
+)
 
 const problems = []
-for (const { file, values } of parsed) {
+for (const [name, values] of Object.entries(files)) {
   for (const key of KEYS) {
-    if (!values[key]) problems.push(`${file} is missing a value for ${key}`)
+    if (!values[key]) problems.push(`${ENVIRONMENTS[name].file} is missing a value for ${key}`)
   }
 }
 if (problems.length) {
   die(`Cannot continue:\n  - ${problems.join('\n  - ')}`)
 }
 
-const [prod, staging] = parsed
-
-// Identical project IDs mean both contexts would hit the same Firebase project, which defeats
-// the entire point of the split — treat it as a mistake unless explicitly overridden.
+// Identical project IDs mean both sites would hit the same Firebase project, which defeats the
+// entire point of the split — treat it as a mistake unless explicitly overridden.
 const collisions = ['VITE_FIREBASE_PROJECT_ID', 'VITE_FIREBASE_API_KEY'].filter(
-  (key) => prod.values[key] === staging.values[key]
+  (key) => files.production[key] === files.staging[key]
 )
 if (collisions.length && !allowIdentical) {
   die(
-    `${prod.file} and ${staging.file} share the same ${collisions.join(' and ')}.\n` +
-      `  Both contexts would point at the same Firebase project.\n` +
+    `${ENVIRONMENTS.production.file} and ${ENVIRONMENTS.staging.file} share the same ` +
+      `${collisions.join(' and ')}.\n` +
+      `  Both sites would point at the same Firebase project.\n` +
       `  Fix the env files, or pass --allow-identical if this is genuinely intended.`
   )
 }
-if (prod.values.VITE_CLOUDINARY_FOLDER === staging.values.VITE_CLOUDINARY_FOLDER) {
+if (files.production.VITE_CLOUDINARY_FOLDER === files.staging.VITE_CLOUDINARY_FOLDER) {
   console.warn(
-    `⚠ Both files use VITE_CLOUDINARY_FOLDER=${prod.values.VITE_CLOUDINARY_FOLDER} — ` +
+    `⚠ Both files use VITE_CLOUDINARY_FOLDER=${files.production.VITE_CLOUDINARY_FOLDER} — ` +
       `staging uploads will land in the production media folder.`
+  )
+}
+
+// ── Confirm we are pointed at the right site ─────────────────────────────────────────────────
+
+const cli = resolveCli()
+const siteId = linkedSiteId()
+const siteName = siteNameFor(cli, siteId)
+
+if (siteName === null) {
+  console.warn(
+    `⚠ Could not read the linked site's name (not logged in?). Site id: ${siteId}\n` +
+      `  The name check below is skipped — make sure this is the ${target} site.`
+  )
+} else if (!chosen.siteMatches.test(siteName) && !force) {
+  die(
+    `Refusing to write ${target} values to Netlify site "${siteName}".\n` +
+      `  Its name does not look like a ${target} site, which is exactly how staging ends up\n` +
+      `  serving production data. Re-link with \`npx netlify-cli link\`, or pass --force.`
   )
 }
 
 // ── Plan ─────────────────────────────────────────────────────────────────────────────────────
 
-const plan = parsed.flatMap(({ file, values, contexts }) =>
-  contexts.flatMap((context) => KEYS.map((key) => ({ file, key, value: values[key], context })))
-)
+const plan = [
+  { key: 'APP_ENV', value: chosen.appEnv },
+  ...KEYS.map((key) => ({ key, value: files[target][key] })),
+]
 
-console.log(`\n${apply ? 'Setting' : 'Would set'} ${plan.length} Netlify variables:\n`)
-for (const { key, value, context, file } of plan) {
-  console.log(`  ${context.padEnd(15)} ${key.padEnd(34)} ${mask(value)}   (from ${file})`)
+console.log(
+  `\n${apply ? 'Setting' : 'Would set'} ${plan.length} variables on ` +
+    `${siteName ? `"${siteName}"` : `site ${siteId}`} from ${chosen.file}:\n`
+)
+for (const { key, value } of plan) {
+  console.log(`  ${key.padEnd(34)} ${key === 'APP_ENV' ? value : mask(value)}`)
 }
 
 if (!apply) {
@@ -135,33 +197,23 @@ if (!apply) {
 
 // ── Apply ────────────────────────────────────────────────────────────────────────────────────
 
-const cli = resolveCli()
-
-try {
-  execFileSync(cli.bin, [...cli.lead, 'status'], { stdio: 'ignore' })
-} catch {
-  die(
-    `This folder is not linked to a Netlify site.\n` +
-      `  Run:  npx netlify-cli login  &&  npx netlify-cli link`
-  )
-}
-
 let failed = 0
-for (const { key, value, context } of plan) {
-  const cliArgs = [...cli.lead, 'env:set', key, value, '--context', context]
+for (const { key, value } of plan) {
   try {
-    execFileSync(cli.bin, cliArgs, { stdio: ['ignore', 'ignore', 'pipe'] })
-    console.log(`  ✓ ${context.padEnd(15)} ${key}`)
+    execFileSync(cli.bin, [...cli.lead, 'env:set', key, value], {
+      stdio: ['ignore', 'ignore', 'pipe'],
+    })
+    console.log(`  ✓ ${key}`)
   } catch (error) {
     failed++
-    console.error(`  ✗ ${context.padEnd(15)} ${key} — ${String(error.stderr ?? error).trim()}`)
+    console.error(`  ✗ ${key} — ${String(error.stderr ?? error).trim()}`)
   }
 }
 
 console.log(
   failed
     ? `\n${plan.length - failed} set, ${failed} failed.\n`
-    : `\nAll ${plan.length} variables set. Trigger a redeploy for them to take effect —\n` +
+    : `\nAll ${plan.length} variables set on ${siteName ?? siteId}. Trigger a redeploy —\n` +
         `existing deploys keep the values they were built with.\n`
 )
 process.exit(failed ? 1 : 0)
