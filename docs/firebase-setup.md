@@ -272,24 +272,32 @@ Rather than filling twenty fields by hand,
 through the Netlify CLI — one site per run:
 
 ```bash
-npx netlify-cli login                      # once per machine
+npx netlify-cli login                       # once per machine
 
-npx netlify-cli link                       # link the STAGING site
-npm run netlify:env -- staging             # dry run — prints the plan, values masked
+npm run netlify:env -- staging              # dry run — shows old → new, values masked
 npm run netlify:env -- staging --apply
 
-npx netlify-cli link                       # re-link to the PRODUCTION site
+npm run netlify:env -- production           # dry run
 npm run netlify:env -- production --apply
 ```
 
-`staging` reads `.env.staging`, `production` reads `.env.production`, and each run also sets
-`APP_ENV`. Local `.env` is never uploaded. The script refuses to continue if either file is
-missing a value, if the two share a Firebase project ID or API key, or if the linked site's name
-does not match the environment you asked for — that last check is what stops staging from being
-handed production credentials.
+Each environment names its own Netlify site and passes it with `--site`, so which project happens
+to be linked locally does not matter and there is no re-linking between runs. `staging` reads
+`.env.staging`, `production` reads `.env.production`, and each run also sets `APP_ENV`; local
+`.env` is never uploaded.
+
+The script refuses to continue if either file is missing a value, or if the two share a Firebase
+project ID or API key. Before writing it prints the current value of every variable beside the new
+one, so a site holding the wrong environment's credentials is visible before anything changes; and
+after writing it reads the values back, exiting non-zero unless the site confirms all ten.
 
 Environment variable changes only take effect on the **next** build, so trigger a redeploy
 afterwards; existing deploys keep the values they were built with.
+
+> When inspecting variables by hand, always pass a context: `netlify env:list` defaults to the
+> `dev` context and will report variables as unset when they are only set for the contexts a
+> deploy actually builds in. Use
+> `npx netlify-cli env:list --site coc-abadina-prod --context production`.
 
 These values all ship to the browser in the JS bundle, so they are not secrets in the usual
 sense. They are still kept out of the repository: this project is public, and a committed
