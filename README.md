@@ -352,18 +352,22 @@ All `VITE_`-prefixed variables are exposed to the browser (SPA mode). Never comm
 
 ### Environments
 
-Staging and production are **separate Firebase projects**, each with its own env file:
+Staging and production are **separate Firebase projects**, each with its own git-ignored env file — `.env.staging` and `.env.production`, plus `.env` as the local development default:
 
 ```bash
-npm run dev              # uses .env
-npm run dev:staging      # uses .env.staging
-npm run build:staging    # uses .env.staging
-npm run build:production # uses .env.production
+npm run dev                 # uses .env
+npm run dev:staging         # uses .env.staging
+npm run build:staging       # uses .env.staging
+npm run build:production    # uses .env.production
+npm run generate:staging    # uses .env.staging
+npm run generate:production # uses .env.production
 ```
+
+Each script fails immediately if its env file is missing, rather than silently building an empty Firebase config.
 
 Any `APP_ENV` other than `production` shows a banner in the admin header naming the connected Firebase project, so a staging session never looks like the live site. Firebase CLI targets are aliased in `.firebaserc` (`firebase use staging` / `firebase use production`).
 
-Deploys are hosted on **Netlify** as a single site using deploy contexts — `main` builds against the production Firebase project, while the `dev` branch and pull-request previews build against staging. Build settings and per-context `APP_ENV` live in [netlify.toml](netlify.toml); the credentials are set per deploy context in the Netlify UI rather than committed.
+Deploys are hosted on **Netlify** as two separate sites — `coc-abadina-prod` builds `main` against the production Firebase project, `coc-abadina-staging` builds `dev` against staging. [netlify.toml](netlify.toml) holds the shared build settings only; `APP_ENV` and the credentials are set per site (`npm run netlify:env -- staging|production`) rather than committed, because a committed value would apply to both sites.
 
 See [docs/firebase-setup.md](docs/firebase-setup.md#environments) for the full setup.
 

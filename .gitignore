@@ -21,8 +21,9 @@ logs
 .idea
 
 # Local env files
-
-.env.production
+# `.env` needs its own line — `.env.*` does not match it, which is how a real
+# production .env once got committed.
+.env
 .env.*
 !.env.example
 !.env.test

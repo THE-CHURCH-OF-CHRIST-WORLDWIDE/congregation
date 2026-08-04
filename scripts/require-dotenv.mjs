@@ -3,7 +3,7 @@
  * Preflight for the `--dotenv` build scripts.
  *
  * Nuxt silently ignores a `--dotenv` path that does not exist, so a typo or a missing
- * `.env.production` yields a build whose runtimeConfig is empty. That failure only surfaces
+ * `.env.staging` yields a build whose runtimeConfig is empty. That failure only surfaces
  * later in the browser as Firebase's `auth/invalid-api-key`, far from its cause — fail here
  * instead.
  */
