@@ -8,13 +8,13 @@
   },
   "scripts": {
     "build": "nuxt build",
-    "build:staging": "nuxt build --dotenv .env.staging",
-    "build:production": "nuxt build --dotenv .env.production",
+    "build:staging": "node scripts/require-dotenv.mjs .env.staging && nuxt build --dotenv .env.staging",
+    "build:production": "node scripts/require-dotenv.mjs .env.production && nuxt build --dotenv .env.production",
     "dev": "nuxt dev",
-    "dev:staging": "nuxt dev --dotenv .env.staging",
+    "dev:staging": "node scripts/require-dotenv.mjs .env.staging && nuxt dev --dotenv .env.staging",
     "generate": "nuxt generate",
-    "generate:staging": "nuxt generate --dotenv .env.staging",
-    "generate:production": "nuxt generate --dotenv .env.production",
+    "generate:staging": "node scripts/require-dotenv.mjs .env.staging && nuxt generate --dotenv .env.staging",
+    "generate:production": "node scripts/require-dotenv.mjs .env.production && nuxt generate --dotenv .env.production",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prepare": "husky || true",
@@ -24,7 +24,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "netlify:env": "node scripts/netlify-env.mjs"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",

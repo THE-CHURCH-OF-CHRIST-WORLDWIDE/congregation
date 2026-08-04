@@ -21,7 +21,11 @@ logs
 .idea
 
 # Local env files
-.env
+
+.env.production
 .env.*
 !.env.example
 !.env.test
+
+# Local Netlify folder
+.netlify

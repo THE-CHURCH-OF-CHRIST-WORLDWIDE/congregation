@@ -1,0 +1,12 @@
+# SPA fallback for Netlify.
+#
+# `ssr: false`, so prerendering emits an index.html for each static route but nothing for
+# dynamic ones (/gallery/:category, /teachings/sermons/:slug). Without this rule those URLs
+# 404 on a direct load or refresh instead of reaching the client-side router.
+#
+# This file must live here rather than in netlify.toml. Nitro's Netlify preset generates its
+# own `_redirects` containing `/* /404.html 404`, and Netlify processes `_redirects` ahead of
+# netlify.toml — so a rule in netlify.toml would be shadowed by that 404. Providing this file
+# replaces the generated one instead. Existing files still win over the rewrite, so real assets
+# and prerendered pages are served normally, and unknown routes reach the app's own 404 page.
+/*  /index.html  200

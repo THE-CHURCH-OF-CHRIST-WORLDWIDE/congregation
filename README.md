@@ -363,7 +363,9 @@ npm run build:production # uses .env.production
 
 Any `APP_ENV` other than `production` shows a banner in the admin header naming the connected Firebase project, so a staging session never looks like the live site. Firebase CLI targets are aliased in `.firebaserc` (`firebase use staging` / `firebase use production`).
 
-See [docs/firebase-setup.md](docs/firebase-setup.md#environments) for the full setup, including CI secrets.
+Deploys are hosted on **Netlify** as a single site using deploy contexts — `main` builds against the production Firebase project, while the `dev` branch and pull-request previews build against staging. Build settings and per-context `APP_ENV` live in [netlify.toml](netlify.toml); the credentials are set per deploy context in the Netlify UI rather than committed.
+
+See [docs/firebase-setup.md](docs/firebase-setup.md#environments) for the full setup.
 
 ### Image uploads (Cloudinary)
 
