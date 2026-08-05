@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FieldSize } from '~/composables/useFieldDensity'
+
 interface Option {
   label: string
   value: string
@@ -10,9 +12,23 @@ interface Props {
   placeholder?: string
   error?: string
   required?: boolean
+  /** Omit to inherit the density of the surrounding container. */
+  size?: FieldSize
+  /**
+   * Extra classes for the label. Lets a repeating row keep the label for screen readers and
+   * stacked mobile layouts while hiding it at widths where a column heading is shown.
+   */
+  labelClass?: string
 }
 const props = withDefaults(defineProps<Props>(), { placeholder: 'Select...' })
 const emit = defineEmits<{ 'update:modelValue': [val: string] }>()
+
+const size = useFieldSize(() => props.size)
+
+const sizeClasses: Record<FieldSize, string> = {
+  sm: 'px-2.5 py-1.5 pr-8 text-[13px]',
+  md: 'px-3 py-2 pr-8 text-sm',
+}
 
 // See Input.vue — the label sits beside the control, so the association has to be explicit.
 const selectId = useId()
@@ -21,7 +37,7 @@ const messageId = computed(() => (props.error ? `${selectId}-message` : undefine
 
 <template>
   <div class="flex flex-col gap-1">
-    <label v-if="label" :for="selectId" class="text-sm font-medium text-gray-700">
+    <label v-if="label" :for="selectId" :class="['text-sm font-medium text-gray-700', labelClass]">
       {{ label }}<span v-if="required" class="text-red-500 ml-0.5">*</span>
     </label>
     <div class="relative">
@@ -32,7 +48,8 @@ const messageId = computed(() => (props.error ? `${selectId}-message` : undefine
         :aria-invalid="error ? 'true' : undefined"
         :aria-describedby="messageId"
         :class="[
-          'w-full appearance-none rounded-lg border text-sm px-3 py-2 pr-8 outline-none transition-all bg-white',
+          'w-full appearance-none rounded-lg border outline-none transition-all bg-white',
+          sizeClasses[size],
           'focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500',
           error ? 'border-red-400' : 'border-gray-300',
           !modelValue ? 'text-gray-400' : 'text-gray-900',

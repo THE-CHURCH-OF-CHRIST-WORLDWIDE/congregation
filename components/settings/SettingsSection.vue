@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FieldSize } from '~/composables/useFieldDensity'
+
 /**
  * A titled block of settings.
  *
@@ -7,11 +9,18 @@
  * actually affect. Here the title, an optional description and an optional action share a
  * header, so every section reads the same way.
  */
-defineProps<{
+const props = defineProps<{
   title: string
   /** One line on what these fields change, and where it shows up. */
   description?: string
+  /**
+   * Density of every field inside. Repeating row editors set `sm` once here rather than
+   * passing `size` to each of their fields; an individual field can still override it.
+   */
+  density?: FieldSize
 }>()
+
+if (props.density) provideFieldDensity(props.density)
 </script>
 
 <template>
