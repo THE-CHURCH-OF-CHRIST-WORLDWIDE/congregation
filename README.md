@@ -19,6 +19,7 @@ An open-source **Church Management System (CMS)** built with Nuxt 4, Vue 3, Type
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Deployment & Access Control](#deployment--access-control)
+- [UI Conventions](#ui-conventions)
 - [Date Formatting](#date-formatting)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -57,7 +58,7 @@ Congregation is a single-page application (SPA) with two distinct areas:
 - **Finance** — Income/expense tracking and reporting
 - **Events** — Internal event management
 - **Teachings** — Sermon and Sunday School upload/management
-- **Settings** — Church settings, role and permissions management
+- **Settings** — Church and public-site content across 14 panels, roles and permissions, dashboard access and email invitations, plus a Super-Admin-only audit log
 - **Youth** — Youth ministry section
 
 ### Platform
@@ -69,6 +70,9 @@ Congregation is a single-page application (SPA) with two distinct areas:
 - CSV import/export for member data
 - Chart.js visualisations via `vue-chartjs`
 - Iconify icons registered globally — use any icon set anywhere
+- **Append-only audit log** — every change made through the dashboard is recorded with its actor and a server timestamp; readable by Super Admins only
+- **Accessible form primitives** — `Input` and `Select` associate their label via `for`/`id` and wire `aria-invalid` / `aria-describedby` to their error text
+- **Loading states on every async action**, including per-row spinners for row-level work (`usePendingAction`)
 
 ---
 
@@ -171,26 +175,35 @@ congregation/
 │       ├── CategoryBadge.vue
 │       ├── ContentCard.vue
 │       ├── EditField.vue
+│       ├── EmptyState.vue
+│       ├── EnvironmentBanner.vue      # Names the environment outside production
+│       ├── GalleryUploader.vue
 │       ├── HowToSteps.vue
+│       ├── ImageUpload.vue
 │       ├── InfoField.vue
 │       ├── Input.vue
+│       ├── LoadingState.vue
 │       ├── MapEmbed.vue
 │       ├── Modal.vue
+│       ├── Pagination.vue
 │       ├── SectionHeader.vue
 │       ├── Select.vue
 │       ├── Tabs.vue
+│       ├── ToastContainer.vue
 │       ├── TagFilterBar.vue
 │       └── VideoPlayer.vue
 │
 ├── composables/
 │   ├── useCloudinaryUpload.ts        # Unsigned Cloudinary upload with progress
 │   ├── useExportCSV.ts               # Member CSV export
+│   ├── useFieldDensity.ts            # Lets a container set the size of the fields inside it
 │   ├── useFinancePdf.ts              # Finance report PDF export
 │   ├── useGalleryData.ts             # Gallery category lookups
 │   ├── useImportCsv.ts               # Member CSV import
 │   ├── useLiveStreams.ts             # Public live stream helpers
 │   ├── usePageHeader.ts              # Admin header title/subtitle
 │   ├── usePagination.ts              # Reusable table pagination
+│   ├── usePendingAction.ts           # Per-row pending state for async row actions
 │   ├── useScrollReveal.ts            # Scroll-into-view animations
 │   └── useToast.ts                   # Toast notifications
 │
@@ -261,6 +274,7 @@ congregation/
 │       └── heroImg.png
 │
 ├── repositories/                     # Firestore data access layer
+│   ├── auditRepository.ts            # auditLog — append-only activity record
 │   ├── churchSettingsRepository.ts   # settings/church document
 │   ├── invitationsRepository.ts      # invitations/{email} — pending invites
 │   ├── membersRepository.ts          # members collection (nominal roll)
@@ -271,6 +285,7 @@ congregation/
 ├── stores/
 │   ├── accounts.ts                   # users/{uid} records — who may write
 │   ├── attendance.ts                 # Attendance records (admin)
+│   ├── audit.ts                      # Activity log; `record()` is fire-and-forget
 │   ├── auth.ts                       # Firebase Auth state + the account's role
 │   ├── churchSettings.ts             # Church configuration
 │   ├── events.ts                     # Public events state
@@ -644,6 +659,69 @@ Rules are not covered by the test suite. Before a production deploy, exercise th
 | Deep links 404 in production (`/gallery/photos`)       | The SPA fallback is missing                                           | Confirm `public/_redirects` survived into `dist/_redirects`              |
 | Invitation email never arrives                         | Email link sign-in disabled, or the domain is not authorized          | Enable both under Authentication (step 2 above)                          |
 | Login works, then nothing loads                        | Rules deployed before a Super Admin was seeded                        | Create `users/<uid>` in the console                                      |
+
+---
+
+## UI Conventions
+
+Patterns worth following rather than reinventing. All of these are enforced by tests.
+
+### Loading states
+
+Every button that waits on something shows it. Single actions bind to the store's pending flag:
+
+```vue
+<Button :loading="membersStore.saving" @click="save">Save</Button>
+```
+
+Row-level actions must **not** use that flag — binding every row to one shared boolean makes them
+all spin when you click one. Use [`usePendingAction`](composables/usePendingAction.ts), which
+tracks pending work by key and ignores a repeat click while one is in flight:
+
+```ts
+const { isPending, run } = usePendingAction()
+await run(member.id, () => membersStore.deleteMember(member.id))
+```
+
+```vue
+<button :disabled="isPending(member.id)">
+  <Icon :icon="isPending(member.id) ? 'mdi:loading' : 'mdi:trash-can-outline'" />
+</button>
+```
+
+A spinner is only worth adding where something is actually awaited. The attendance, events,
+finance and teachings stores are still synchronous (localStorage, pending their repository
+migration), so a spinner there would never paint a frame — those buttons get one for free once
+those stores move behind repositories.
+
+### Form fields
+
+Use `Input` / `Select` rather than a bare `<input>`: they generate an id, point their label at it
+with `for`, and set `aria-invalid` plus `aria-describedby` on the error text. Pass `:error` to show
+a message — never render one beside the field yourself, or screen readers will not connect them.
+
+Density is inheritable. A container declares it once instead of every field repeating a `size`:
+
+```vue
+<SettingsSection title="Calendar Rows" density="sm">
+```
+
+An explicit `size` on a field still wins, so a single field can opt out.
+
+### Settings panels
+
+Three primitives, in [`components/settings/`](components/settings/):
+
+| Component          | Use for                                                                       |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `SettingsSection`  | A titled block. Always pass `description` — say where the fields surface      |
+| `SettingsRepeater` | A list of editable rows: column headings once, remove control in its own cell |
+| `SettingsSaveBar`  | The page-level save affordance; sticky, appears only while the draft is dirty |
+
+Panels do **not** carry their own save button. The page holds one draft shared by every panel, so
+"is anything unsaved?" is a page-level question — thirteen separate buttons made it possible to
+edit one panel, switch to another, and lose track. The page also guards against losing work:
+`beforeunload` for tab close, `onBeforeRouteLeave` for in-app navigation, and ⌘S / Ctrl+S to save.
 
 ---
 
