@@ -7,7 +7,8 @@ const { setHeader } = usePageHeader()
 const route = useRoute()
 
 const slug = computed(() => String(route.params.service))
-const month = computed(() => String(route.query.month ?? '2025-12'))
+// Falls back to the current month; a hardcoded one shows an empty register in any other month.
+const month = computed(() => String(route.query.month ?? new Date().toISOString().slice(0, 7)))
 
 // Resolve the slug to a canonical service. Falls back to a title-cased version
 // of the slug if it's unknown so the page still renders something coherent.

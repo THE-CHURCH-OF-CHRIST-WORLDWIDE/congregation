@@ -39,50 +39,54 @@ const greeting = computed(() => {
   return 'Good evening'
 })
 
+const SUMMARY_SERVICE = 'Sunday Worship'
+
+/**
+ * Figures come from recorded attendance; see `useAttendanceSummary`. Anything with no records
+ * renders as "—" rather than a made-up number — these cards used to show hardcoded percentages.
+ */
+const summary = useAttendanceSummary(SUMMARY_SERVICE)
+const noAttendanceYet = computed(() => !summary.hasData.value)
+
 onMounted(() => {
   setHeader(
     `Welcome - ${greeting.value}`,
-    'Showing summary and daily attendance for all Sundays in December 2025'
+    `Membership and ${SUMMARY_SERVICE} attendance at a glance`
   )
 })
 
-const sparkBase = [40, 55, 45, 70, 60, 80, 75, 90, 85, 95, 88, 100]
-
 const statsCards = computed(() => [
   {
-    title: 'Total Members',
+    title: 'Total members',
     value: membersStore.members.length,
+    // No badge: nothing records how the roll changed month to month yet.
     subtitle: `${membersStore.activeCount} active`,
-    change: 10,
-    changeLabel: 'Compared to last month',
-    sparkValues: sparkBase,
     sparkColor: '#93c5fd',
   },
   {
-    title: 'This month attendance rate',
-    value: '75%',
-    subtitle: 'Compared to last month',
-    change: 10,
+    title: 'Attendance this month',
+    value: summary.thisMonthRate.value === null ? '—' : `${summary.thisMonthRate.value}%`,
+    subtitle:
+      summary.thisMonthRate.value === null
+        ? `No ${summary.monthLabel} records`
+        : summary.monthLabel,
+    change: summary.monthOnMonthChange.value,
     changeLabel: 'Compared to last month',
-    sparkValues: [50, 60, 55, 70, 65, 75, 72, 80],
+    sparkValues: summary.rateTrend.value,
     sparkColor: '#6ee7b7',
   },
   {
     title: 'Average weekly attendance',
-    value: '65%',
-    subtitle: '',
-    change: 10,
-    changeLabel: '',
-    sparkValues: [40, 50, 45, 60, 55, 65, 62, 70],
+    value: summary.averageWeekly.value === null ? '—' : summary.averageWeekly.value,
+    subtitle: summary.averageWeekly.value === null ? 'No sessions recorded' : 'People per session',
     sparkColor: '#a5b4fc',
   },
   {
-    title: 'Annual attendance rate',
-    value: '85%',
-    subtitle: 'Compared to last year',
-    change: 10,
-    changeLabel: 'Compared to last year',
-    sparkValues: [60, 70, 65, 75, 72, 80, 78, 85],
+    title: 'Attendance rate this year',
+    value: summary.annualRate.value === null ? '—' : `${summary.annualRate.value}%`,
+    subtitle:
+      summary.annualRate.value === null ? `No ${summary.year} records` : `Across ${summary.year}`,
+    sparkValues: summary.rateTrend.value,
     sparkColor: '#fca5a5',
   },
 ])
@@ -166,6 +170,19 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       <StatsCard v-for="card in statsCards" :key="card.title" v-bind="card" />
     </div>
+
+    <!-- Say why three of the four cards are blank, and where to fix it. -->
+    <NuxtLink
+      v-if="noAttendanceYet"
+      to="/admin/attendance"
+      class="flex items-start gap-2.5 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600 transition-colors hover:border-blue-400 hover:text-blue-700"
+    >
+      <Icon icon="mdi:calendar-plus-outline" class="mt-0.5 shrink-0 text-gray-400" />
+      <span>
+        No {{ SUMMARY_SERVICE }} attendance has been recorded yet, so the attendance figures are
+        empty. <span class="font-medium">Record a service</span> and they will fill in.
+      </span>
+    </NuxtLink>
 
     <!-- Attendance chart + Recent video uploads, side-by-side -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">

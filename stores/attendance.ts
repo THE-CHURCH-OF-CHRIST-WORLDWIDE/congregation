@@ -37,7 +37,8 @@ export const useAttendanceStore = defineStore('attendance', () => {
   const persisted = readPersisted()
   const records = ref<AttendanceRecord[]>(persisted ?? [])
   const currentService = ref('Sunday Worship')
-  const currentMonth = ref('2025-12')
+  // Default to the month the user is actually in, not a fixed one.
+  const currentMonth = ref(new Date().toISOString().slice(0, 7))
   // pendingChanges maps recordId → the value at the moment editing began,
   // so cancelChanges can revert and saveChanges can persist the new state.
   const pendingChanges = ref<Record<string, boolean>>({})
@@ -83,20 +84,9 @@ export const useAttendanceStore = defineStore('attendance', () => {
 
   // ── Monthly presence counts by service type ────────────────────────────────
   const monthlyPresenceCounts = computed(() => {
-    const months = [
-      '2025-01',
-      '2025-02',
-      '2025-03',
-      '2025-04',
-      '2025-05',
-      '2025-06',
-      '2025-07',
-      '2025-08',
-      '2025-09',
-      '2025-10',
-      '2025-11',
-      '2025-12',
-    ]
+    // The current year, not a fixed one — a hardcoded 2025 silently emptied this chart in 2026.
+    const year = new Date().getFullYear()
+    const months = Array.from({ length: 12 }, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`)
     return months.map((m) => {
       const monthRecs = records.value.filter(
         (r) => r.date.startsWith(m) && r.serviceType === 'Sunday Worship'
@@ -110,7 +100,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
   })
 
   // ── Reactive monthly data for a given service + year ─────────────────────
-  function monthlyByService(serviceType: string, year: string | number = 2025) {
+  function monthlyByService(serviceType: string, year: string | number = new Date().getFullYear()) {
     const yr = String(year)
     return Array.from({ length: 12 }, (_, i) => {
       const m = `${yr}-${String(i + 1).padStart(2, '0')}`
