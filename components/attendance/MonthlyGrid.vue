@@ -6,7 +6,7 @@ const attendanceStore = useAttendanceStore()
 const serviceOptions = SERVICE_CONFIGS.map((s) => s.name)
 
 const selectedService = ref<string>(serviceOptions[0]!)
-const selectedYear = ref('2025')
+const selectedYear = ref(String(new Date().getFullYear()))
 
 // Build year options dynamically from the records that actually exist, so the
 // dropdown surfaces years the user has data for (plus the current year).
@@ -18,6 +18,16 @@ const yearOptions = computed(() => {
   years.add(String(new Date().getFullYear()))
   return [...years].sort((a, b) => Number(b) - Number(a))
 })
+
+// A selected year that is not among the options renders as a blank select — which is what a
+// hardcoded '2025' did once the 2025 records went away.
+watch(
+  yearOptions,
+  (options) => {
+    if (!options.includes(selectedYear.value)) selectedYear.value = options[0]!
+  },
+  { immediate: true }
+)
 
 const months = [
   'January',
@@ -47,6 +57,8 @@ const serviceSlug = computed(
     selectedService.value.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 )
 
+const hasRecordsForSelection = computed(() => monthlyData.value.some((m) => m.total > 0))
+
 const headerText = computed(
   () => `Showing 12 months of ${selectedService.value} attendance for ${selectedYear.value}`
 )
@@ -74,14 +86,18 @@ const headerText = computed(
       </div>
     </div>
 
-    <EmptyState
-      v-if="!attendanceStore.records.length"
-      icon="mdi:calendar-blank-outline"
-      title="No attendance recorded yet"
-      description="Monthly summaries build up as registers are marked for this service."
-    />
+    <p
+      v-if="!hasRecordsForSelection"
+      class="mb-4 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2.5 text-sm text-blue-900"
+    >
+      <Icon icon="mdi:information-outline" class="mt-0.5 shrink-0" />
+      <span>
+        Nothing recorded for {{ selectedService }} in {{ selectedYear }} yet. Open any month below
+        to mark its register — the summaries here fill in as you do.
+      </span>
+    </p>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="month in monthlyData"
         :key="month.month"
@@ -121,9 +137,9 @@ const headerText = computed(
         <NuxtLink
           :to="`/admin/attendance/${serviceSlug}?month=${month.month}`"
           class="view-details-btn mt-auto inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors"
-          :aria-label="`View ${selectedService} attendance details for ${month.label} ${selectedYear}`"
+          :aria-label="`${month.sessions ? 'View' : 'Mark'} ${selectedService} attendance for ${month.label} ${selectedYear}`"
         >
-          View Details
+          {{ month.sessions ? 'View details' : 'Mark register' }}
           <Icon icon="mdi:arrow-right" class="text-base" />
         </NuxtLink>
       </div>

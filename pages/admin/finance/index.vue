@@ -534,7 +534,14 @@ function saveExpense() {
       <div class="bg-slate-800 rounded-xl p-4 flex flex-col">
         <h3 class="text-sm font-semibold text-white mb-1">Expenses This Month</h3>
         <p class="text-xs text-slate-400 mb-3">By category</p>
-        <DonutChart :data="donutData" :height="180" />
+        <DonutChart
+          v-if="Object.keys(financeStore.expenseByCategory).length"
+          :data="donutData"
+          :height="180"
+        />
+        <p v-else class="py-10 text-center text-xs text-slate-400">
+          No expenses recorded this month.
+        </p>
         <div class="mt-3 space-y-1.5">
           <div
             v-for="[cat, amount] in Object.entries(financeStore.expenseByCategory)"

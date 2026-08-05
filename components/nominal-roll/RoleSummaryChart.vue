@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MEMBER_STATUSES } from '~/constants'
 interface Slice {
   label: string
   value: number
@@ -8,42 +9,29 @@ interface Slice {
 const membersStore = useMembersStore()
 const currentYear = new Date().getFullYear()
 
-const slices = computed<Slice[]>(() => {
-  const m = membersStore.members
-  const buckets: Slice[] = [
-    {
-      label: 'Active',
-      value: m.filter((x) => x.status === 'Active').length,
-      color: '#e5e7eb',
-    },
-    {
-      label: 'Backsliders',
-      value: m.filter((x) => x.status === 'Backslider').length,
-      color: '#7dd3fc',
-    },
-    {
-      label: 'Distant',
-      value: m.filter((x) => x.status === 'Distant').length,
-      color: '#38bdf8',
-    },
-    {
-      label: 'Withdrawal/Transfer',
-      value: m.filter((x) => x.status === 'Withdrawal' || x.status === 'Transfer').length,
-      color: '#0ea5e9',
-    },
-    {
-      label: 'Weak',
-      value: m.filter((x) => x.status === 'Weak').length,
-      color: '#0284c7',
-    },
-    {
-      label: 'Late',
-      value: m.filter((x) => x.status === 'Late').length,
-      color: '#0369a1',
-    },
-  ]
-  return buckets
-})
+/**
+ * Built from `MEMBER_STATUSES` so a status can never be silently missing — the hand-written
+ * bucket list this replaces omitted Disfellowshipped, which meant those members were absent
+ * from the chart *and* from the total beneath it.
+ */
+const STATUS_COLORS: Record<string, string> = {
+  Active: '#e5e7eb',
+  Backslider: '#7dd3fc',
+  Weak: '#0284c7',
+  Distant: '#38bdf8',
+  Withdrawal: '#0ea5e9',
+  Disfellowshipped: '#075985',
+  Transfer: '#0369a1',
+  Late: '#38bdf8',
+}
+
+const slices = computed<Slice[]>(() =>
+  MEMBER_STATUSES.map((status) => ({
+    label: status,
+    value: membersStore.members.filter((m) => m.status === status).length,
+    color: STATUS_COLORS[status] ?? '#94a3b8',
+  }))
+)
 
 const totalCount = computed(() => slices.value.reduce((a, b) => a + b.value, 0))
 
