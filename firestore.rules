@@ -2,7 +2,11 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Six collections, with deliberately different exposure:
+// Seven collections, with deliberately different exposure:
+//
+//   auditLog        — append-only record of who changed what. Any staff account may add an
+//                     entry as itself; only a Super Admin may read it; nobody may edit or
+//                     delete one.
 //
 //   invitations     — pending invitations, keyed by lower-cased email. A Super Admin creates
 //                     one; the invitee claims it on first sign-in, which is the only way an
@@ -108,6 +112,24 @@ service cloud.firestore {
       // Cleared by the Super Admin who sent it, or by the invitee once claimed.
       allow delete: if isSuperAdmin()
                     || (signedIn() && request.auth.token.email == email);
+    }
+
+    // ── Audit log ──────────────────────────────────────────────────────────
+    // Append-only by design: no rule grants update or delete, so an entry cannot be edited
+    // or quietly removed — not even by a Super Admin. Any staff account may add an entry,
+    // because every staff action needs to record itself, but only as itself: `actorUid` must
+    // be the caller. Reading the log is Super Admin only.
+    //
+    // This is written by the client, so it evidences what the app did, not everything that
+    // happened: nothing can force a client to write an entry. A trail that cannot be bypassed
+    // needs a Firestore trigger in Cloud Functions.
+    match /auditLog/{entryId} {
+      allow read: if isSuperAdmin();
+      allow create: if isStaff()
+                    && request.resource.data.actorUid == request.auth.uid
+                    && request.resource.data.action is string
+                    && request.resource.data.at == request.time;
+      allow update, delete: if false;
     }
 
     // ── Role definitions ───────────────────────────────────────────────────

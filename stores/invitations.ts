@@ -66,6 +66,11 @@ export const useInvitationsStore = defineStore('invitations', () => {
         url: `${window.location.origin}/invite?email=${encodeURIComponent(created.email)}`,
         handleCodeInApp: true,
       })
+      useAuditStore().record({
+        action: 'invitation.send',
+        targetId: created.email,
+        targetLabel: created.email,
+      })
       useToast().success(`Invitation sent to ${created.email}`)
     } catch (e: unknown) {
       fail(e, 'Failed to send invitation')
@@ -80,6 +85,7 @@ export const useInvitationsStore = defineStore('invitations', () => {
     try {
       await useInvitationsRepository().deleteInvitation(email)
       invitations.value = invitations.value.filter((i) => i.email !== email)
+      useAuditStore().record({ action: 'invitation.revoke', targetId: email, targetLabel: email })
       useToast().success('Invitation revoked')
     } catch (e: unknown) {
       fail(e, 'Failed to revoke invitation')
@@ -122,6 +128,11 @@ export const useInvitationsStore = defineStore('invitations', () => {
       // Best-effort: the role is granted either way, and a leftover invitation is harmless
       // because `users/{uid}` already exists so it can no longer be claimed.
       await repo.deleteInvitation(invitation.email).catch(() => {})
+      useAuditStore().record({
+        action: 'invitation.claim',
+        targetId: credential.user.uid,
+        targetLabel: invitation.email,
+      })
       return invitation.roleId
     } catch (e: unknown) {
       fail(e, 'Could not complete the invitation')

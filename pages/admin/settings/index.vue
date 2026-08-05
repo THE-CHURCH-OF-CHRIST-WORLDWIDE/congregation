@@ -38,11 +38,18 @@ type Tab =
   | 'congregations'
   | 'events'
   | 'roles'
+  | 'audit'
 const activeTab = ref<Tab>('general')
+
+interface NavItem {
+  label: string
+  value: Tab
+  icon: string
+}
 
 // Grouped by what each section actually configures — the congregation itself, then the
 // two public pages that have editable content, then access control.
-const navGroups: { label: string; items: { label: string; value: Tab; icon: string }[] }[] = [
+const baseNavGroups: { label: string; items: NavItem[] }[] = [
   {
     label: 'Organisation',
     items: [
@@ -76,6 +83,32 @@ const navGroups: { label: string; items: { label: string; value: Tab; icon: stri
     items: [{ label: 'Roles & Permissions', value: 'roles', icon: 'mdi:shield-account-outline' }],
   },
 ]
+
+/**
+ * The audit log is Super-Admin-only, enforced by Firestore rules. Hiding the nav item keeps the
+ * UI honest about that instead of offering a panel that would fail to load.
+ */
+const navGroups = computed(() =>
+  baseNavGroups.map((group) =>
+    group.label === 'Access' && authStore.isSuperAdmin
+      ? {
+          ...group,
+          items: [
+            ...group.items,
+            { label: 'Audit Log', value: 'audit' as Tab, icon: 'mdi:history' },
+          ],
+        }
+      : group
+  )
+)
+
+// If a Super Admin loses that role while sitting on the panel, don't leave them on a dead tab.
+watch(
+  () => authStore.isSuperAdmin,
+  (allowed) => {
+    if (!allowed && activeTab.value === 'audit') activeTab.value = 'general'
+  }
+)
 
 // ── Local draft (deep-cloned from store so edits don't live-update public pages until saved) ──
 function cloneSettings<T>(s: T): T {
@@ -1291,15 +1324,20 @@ function removeSundayDetail(i: number) {
         </div>
 
         <!-- ── Roles ────────────────────────────────────────────────────── -->
-        <div v-else key="roles">
+        <div v-else-if="activeTab === 'roles'" key="roles">
           <RolesPanel />
+        </div>
+
+        <!-- ── Audit log (Super Admin only) ─────────────────────────────── -->
+        <div v-else key="audit">
+          <AuditLogPanel />
         </div>
       </Transition>
 
       <!-- One save affordance for every panel, shown only while there is something to save.
            Roles & Permissions writes directly and has its own controls, so it opts out. -->
       <SettingsSaveBar
-        v-if="activeTab !== 'roles'"
+        v-if="activeTab !== 'roles' && activeTab !== 'audit'"
         :dirty="isDirty"
         :saving="store.saving"
         @save="save"

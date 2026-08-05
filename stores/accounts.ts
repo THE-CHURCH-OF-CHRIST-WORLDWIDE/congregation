@@ -55,6 +55,11 @@ export const useAccountsStore = defineStore('accounts', () => {
       }
       if (existing === -1) records.value.push(next)
       else records.value[existing] = { ...records.value[existing], ...next }
+      useAuditStore().record({
+        action: 'access.grant',
+        targetId: trimmed,
+        targetLabel: email?.trim() || roleId,
+      })
       useToast().success('Access updated')
     } catch (e: unknown) {
       fail(e, 'Failed to update access')
@@ -67,8 +72,14 @@ export const useAccountsStore = defineStore('accounts', () => {
     saving.value = true
     error.value = null
     try {
+      const revoked = records.value.find((r) => r.uid === uid)
       await useUsersRepository().removeUserRecord(uid)
       records.value = records.value.filter((r) => r.uid !== uid)
+      useAuditStore().record({
+        action: 'access.revoke',
+        targetId: uid,
+        targetLabel: revoked?.email,
+      })
       useToast().success('Access revoked')
     } catch (e: unknown) {
       fail(e, 'Failed to revoke access')

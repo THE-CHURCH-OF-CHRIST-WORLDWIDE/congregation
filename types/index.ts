@@ -157,6 +157,47 @@ export interface ChurchRole {
 }
 
 /**
+ * What kind of change an audit entry records. Namespaced `subject.verb` so the log can be
+ * grouped and filtered without parsing prose.
+ */
+export type AuditAction =
+  | 'member.create'
+  | 'member.update'
+  | 'member.delete'
+  | 'settings.update'
+  | 'role.permissions'
+  | 'roleAssignment.create'
+  | 'roleAssignment.update'
+  | 'roleAssignment.delete'
+  | 'access.grant'
+  | 'access.revoke'
+  | 'invitation.send'
+  | 'invitation.revoke'
+  | 'invitation.claim'
+
+/**
+ * One recorded change, stored append-only at `auditLog/{id}`.
+ *
+ * Written by the client, so treat it as an accountability record among trusted staff rather
+ * than a tamper-proof trail: rules make it append-only and force `actorUid` to match the
+ * caller, but nothing can compel a client to write an entry at all. See
+ * docs/firebase-setup.md § Audit log.
+ */
+export interface AuditEntry {
+  id: string
+  action: AuditAction
+  /** Firebase Auth uid of whoever made the change. Rules require this to be the caller. */
+  actorUid: string
+  actorEmail?: string
+  /** Id of the affected document, where there is one. */
+  targetId?: string
+  /** Human-readable name of what changed, e.g. a member's name. */
+  targetLabel?: string
+  /** ISO string once read back; `serverTimestamp()` on write. */
+  at?: string
+}
+
+/**
  * A pending invitation, stored at `invitations/{email}` with the email lower-cased as the
  * document id so rules can match it against the caller's token.
  *

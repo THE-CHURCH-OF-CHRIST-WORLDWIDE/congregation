@@ -118,6 +118,11 @@ export const useMembersStore = defineStore('members', () => {
     try {
       const created = await repo.createMember(member)
       members.value.push(created)
+      useAuditStore().record({
+        action: 'member.create',
+        targetId: created.id,
+        targetLabel: created.name,
+      })
       useToast().success(`${created.name || 'Member'} added`)
       return created
     } catch (e: unknown) {
@@ -136,6 +141,11 @@ export const useMembersStore = defineStore('members', () => {
     try {
       await repo.updateMember(id, updates)
       members.value[idx] = { ...members.value[idx], ...updates } as Member
+      useAuditStore().record({
+        action: 'member.update',
+        targetId: id,
+        targetLabel: members.value[idx]!.name,
+      })
       useToast().success(`${members.value[idx]!.name} updated`)
     } catch (e: unknown) {
       fail(e, 'Failed to update member')
@@ -152,6 +162,7 @@ export const useMembersStore = defineStore('members', () => {
     try {
       await repo.deleteMember(id)
       members.value = members.value.filter((m) => m.id !== id)
+      useAuditStore().record({ action: 'member.delete', targetId: id, targetLabel: name })
       if (name) useToast().success(`${name} deleted`)
     } catch (e: unknown) {
       fail(e, 'Failed to delete member')

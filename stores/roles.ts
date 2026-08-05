@@ -213,6 +213,11 @@ export const useRolesStore = defineStore('roles', () => {
     try {
       await useRolesRepository().saveRolePermissions(roleId, permissions)
       roles.value[idx] = { ...roles.value[idx]!, permissions }
+      useAuditStore().record({
+        action: 'role.permissions',
+        targetId: roleId,
+        targetLabel: roles.value[idx]!.name,
+      })
       useToast().success(`${roles.value[idx]!.name} permissions updated`)
     } catch (e: unknown) {
       fail(e, 'Failed to update permissions')
@@ -241,6 +246,11 @@ export const useRolesStore = defineStore('roles', () => {
       })
       assignments.value.push(created)
       const roleName = roles.value.find((r) => r.id === roleId)?.name ?? 'Role'
+      useAuditStore().record({
+        action: 'roleAssignment.create',
+        targetId: created.id,
+        targetLabel: roleName,
+      })
       useToast().success(`${roleName} assigned`)
     } catch (e: unknown) {
       fail(e, 'Failed to assign role')
@@ -256,6 +266,7 @@ export const useRolesStore = defineStore('roles', () => {
     try {
       await useRoleAssignmentsRepository().deleteAssignment(assignmentId)
       assignments.value = assignments.value.filter((a) => a.id !== assignmentId)
+      useAuditStore().record({ action: 'roleAssignment.delete', targetId: assignmentId })
       useToast().success('Role revoked')
     } catch (e: unknown) {
       fail(e, 'Failed to revoke role')
@@ -272,6 +283,7 @@ export const useRolesStore = defineStore('roles', () => {
     try {
       await useRoleAssignmentsRepository().updateCustomPermissions(assignmentId, customPermissions)
       assignments.value[idx] = { ...assignments.value[idx]!, customPermissions }
+      useAuditStore().record({ action: 'roleAssignment.update', targetId: assignmentId })
       useToast().success('Custom permissions updated')
     } catch (e: unknown) {
       fail(e, 'Failed to update custom permissions')

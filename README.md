@@ -153,8 +153,13 @@ congregation/
 │   │   ├── AddMemberModal.vue
 │   │   ├── ImportCsvModal.vue
 │   │   └── RoleSummaryChart.vue
-│   ├── settings/
-│   │   └── RolesPanel.vue
+│   ├── settings/                     # Settings panels and primitives
+│   │   ├── AuditLogPanel.vue         # Who changed what (Super Admin only)
+│   │   ├── RolesPanel.vue
+│   │   ├── SettingsNav.vue
+│   │   ├── SettingsRepeater.vue
+│   │   ├── SettingsSaveBar.vue
+│   │   └── SettingsSection.vue
 │   ├── teachings/                    # Teachings admin components
 │   │   ├── SermonCard.vue
 │   │   └── UploadForm.vue
@@ -478,17 +483,18 @@ Six collections, with deliberately different exposure:
 | `invitations`     | Pending invitations, keyed by lower-cased email | Claimed on first sign-in; the only self-service role grant |
 | `roles/{roleId}`  | Permission-matrix overrides only                | Names, ids and colours stay in code                        |
 | `roleAssignments` | Which nominal-roll member holds which role      | Presentational — records standing, not access              |
+| `auditLog`        | Append-only record of who changed what          | Super Admin reads; staff append; nobody edits or deletes   |
 | `settings/church` | Public site content                             | World-readable; the landing page reads it signed out       |
 | `members`         | The nominal roll                                | Never publicly readable; `/register` may create only       |
 
 Who may do what:
 
-|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   |
-| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- |
-| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      |
-| Other staff        | read       | read+write                   | read                | read    | read              | read            |
-| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only |
-| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               |
+|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   | `auditLog`   |
+| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- | ------------ |
+| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      | read, append |
+| Other staff        | read       | read+write                   | read                | read    | read              | read            | append only  |
+| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only | —            |
+| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               | —            |
 
 Staff roles are `super-admin`, `elder`, `deacon`, `preacher`, `secretary`, `youth-leader`, `financial-secretary`. That list appears in three places which must stay in step: `isStaff()` in [`firestore.rules`](firestore.rules), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `ChurchRoleId` in [`types/index.ts`](types/index.ts).
 
@@ -553,6 +559,16 @@ Do all of this on **staging first**, then repeat on production. Order matters �
 5. **Create the Firestore database** and enable **Storage** if not already done.
 
 Locked out anyway? Rules never restrict the Firebase console — fix or create the `users/{uid}` document under Firestore → Data. Console access is governed by Google Cloud IAM.
+
+### Audit log
+
+**Settings → Access → Audit Log**, visible to Super Admins only. Every change the dashboard makes is recorded: a member added, updated or deleted; settings saved; role permissions changed; roles assigned or revoked; dashboard access granted or revoked; invitations sent, revoked or claimed. Each entry carries who did it, what changed, and a server-side timestamp.
+
+The rules make the collection **append-only** — `allow update, delete: if false` — so an entry cannot be edited or quietly removed by anyone, Super Admin included. Appending requires a staff role and `actorUid` must equal the caller, so nobody can write an entry attributed to someone else. Reading requires Super Admin.
+
+**What this is not.** Entries are written by the client as each change succeeds. That evidences what the app did, but nothing can compel a client to write one — somebody using the Firebase SDK directly with valid credentials could change `members` and skip the log. Treat it as accountability among trusted staff, not a tamper-proof trail. A trail that cannot be bypassed needs a Firestore trigger in Cloud Functions, which requires the Blaze plan.
+
+Logging never interferes with the work it describes: `record()` is fire-and-forget and swallows its own failures, so a refused log entry cannot turn a successful save into a visible error.
 
 ### Inviting people
 
