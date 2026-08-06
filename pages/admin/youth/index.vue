@@ -106,6 +106,18 @@ const STATUS_COLORS: Record<string, string> = {
   Late: '#a855f7',
 }
 
+/**
+ * Youth membership is derived from date of birth, so a roll with no birthdays recorded looks
+ * identical to one with no youth. Say which it is — "no youth members" sends someone hunting for
+ * a bug when the answer is a missing field.
+ */
+const emptyYouthReason = computed(() => {
+  const withDob = membersStore.members.filter((m) => m.dob).length
+  if (!membersStore.members.length) return 'No members on the roll yet.'
+  if (!withDob) return 'No dates of birth recorded, so nobody can be identified as youth (13–35).'
+  return 'No members aged 13–35 on the roll.'
+})
+
 const youthByStatus = computed(() =>
   MEMBER_STATUSES.map((status) => ({
     status,
@@ -222,7 +234,9 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
       <div class="bg-slate-800 rounded-xl p-4 flex flex-col">
         <h3 class="text-sm font-semibold text-white mb-3">Youth Summary</h3>
         <DonutChart v-if="youthByStatus.length" :data="donutData" :height="180" />
-        <p v-else class="py-10 text-center text-xs text-slate-400">No youth members yet.</p>
+        <p v-else class="py-10 text-center text-xs leading-relaxed text-slate-400">
+          {{ emptyYouthReason }}
+        </p>
       </div>
     </div>
 

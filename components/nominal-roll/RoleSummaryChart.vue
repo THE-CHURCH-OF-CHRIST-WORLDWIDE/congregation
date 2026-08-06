@@ -33,6 +33,9 @@ const slices = computed<Slice[]>(() =>
   }))
 )
 
+/** Statuses that at least one member holds. */
+const presentSlices = computed(() => slices.value.filter((s) => s.value > 0))
+
 const totalCount = computed(() => slices.value.reduce((a, b) => a + b.value, 0))
 
 // Build the SVG path arcs for the pie. We rely on cumulative angles so each
@@ -53,6 +56,10 @@ const arcs = computed(() => {
       const endAngle = angle + sweep
       const endX = cx + r * Math.cos(endAngle)
       const endY = cy + r * Math.sin(endAngle)
+      // A slice covering the whole circle starts and ends at the same point, and an SVG arc
+      // between two identical points draws nothing — which is why a single-status roll rendered
+      // a legend, a percentage, and no pie. Full circles are drawn as a <circle> instead.
+      const full = portion >= 1
       const largeArc = sweep > Math.PI ? 1 : 0
       const path = `M ${cx} ${cy} L ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${endX} ${endY} Z`
       // Label position: 65% out from center along the slice's midpoint angle
@@ -62,7 +69,7 @@ const arcs = computed(() => {
       const labelY = cy + labelR * Math.sin(midAngle)
       const pct = Math.round(portion * 100)
       angle = endAngle
-      return { ...s, path, labelX, labelY, pct }
+      return { ...s, path, labelX, labelY, pct, full }
     })
 })
 </script>
@@ -77,14 +84,18 @@ const arcs = computed(() => {
     <div class="flex items-center gap-6">
       <!-- Legend -->
       <ul class="flex flex-col gap-2 text-sm">
-        <li v-for="s in slices" :key="s.label" class="flex items-center gap-2">
+        <!-- Only statuses anyone actually holds, with the count. Listing all eight against a
+             single member was eight lines of noise that said nothing. -->
+        <li v-for="s in presentSlices" :key="s.label" class="flex items-center gap-2">
           <span
             class="inline-block h-2.5 w-2.5 rounded-full shrink-0"
             :style="{ backgroundColor: s.color }"
             aria-hidden="true"
           ></span>
           <span class="text-white/90">{{ s.label }}</span>
+          <span class="ml-auto pl-3 font-medium text-white/60">{{ s.value }}</span>
         </li>
+        <li v-if="!presentSlices.length" class="text-white/60">No members yet</li>
       </ul>
 
       <!-- Pie -->
@@ -96,7 +107,10 @@ const arcs = computed(() => {
           :aria-label="`Member status distribution for ${currentYear}`"
         >
           <g v-if="totalCount > 0">
-            <path v-for="(a, i) in arcs" :key="i" :d="a.path" :fill="a.color" />
+            <template v-for="(a, i) in arcs" :key="i">
+              <circle v-if="a.full" cx="100" cy="100" r="90" :fill="a.color" />
+              <path v-else :d="a.path" :fill="a.color" />
+            </template>
             <text
               v-for="(a, i) in arcs"
               :key="`label-${i}`"
