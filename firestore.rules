@@ -23,7 +23,7 @@ rules_version = '2';
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
 //                     about pages read this while signed out, so it is world
-//                     readable. Only a Super Admin may write.
+//                     readable. Super Admin and Admin may write.
 //
 //   members         — the nominal roll. Contains names, phone numbers, home
 //                     addresses and dates of birth, so it is NEVER publicly
@@ -66,9 +66,15 @@ service cloud.firestore {
     // Mirrors STAFF_ROLES in stores/auth.ts — keep the two lists in step.
     function isStaff() {
       return roleId() in [
-        'super-admin', 'elder', 'deacon', 'preacher',
+        'super-admin', 'admin', 'elder', 'deacon', 'preacher',
         'secretary', 'youth-leader', 'financial-secretary'
       ];
+    }
+
+    // Church settings sit a tier below access control: Admin may edit the site's content,
+    // but managing accounts, roles and invitations stays Super Admin only.
+    function canEditSettings() {
+      return roleId() in ['super-admin', 'admin'];
     }
 
     function invitationFor(email) {
@@ -152,9 +158,9 @@ service cloud.firestore {
     // ── Church settings ────────────────────────────────────────────────────
     match /settings/{document} {
       allow read: if true;
-      // Settings is Super Admin only in the app's permission matrix; elders and
-      // secretaries have view access there, so they get no write here.
-      allow write: if isSuperAdmin();
+      // Super Admin and Admin. Elders and secretaries hold view-only Settings in the app's
+      // matrix, so they get no write here.
+      allow write: if canEditSettings();
     }
 
     // ── Members ────────────────────────────────────────────────────────────

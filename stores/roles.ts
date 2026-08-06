@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { recordAudit } from '~/utils/audit'
 import { useRoleAssignmentsRepository } from '~/repositories/roleAssignmentsRepository'
 import { useRolesRepository } from '~/repositories/rolesRepository'
 import type { ChurchRole, RoleAssignment, RolePermissions, AppPage, AppAction } from '~/types'
@@ -37,6 +38,14 @@ const DEFAULT_ROLES: ChurchRole[] = [
     name: 'Super Admin',
     color: '#6366f1',
     description: 'Full access to all pages and actions across the system.',
+    permissions: allPerms(),
+  },
+  {
+    id: 'admin',
+    name: 'Admin',
+    color: '#ec4899',
+    description:
+      'Full access to church records and site content. Cannot manage accounts or roles, or view the audit log.',
     permissions: allPerms(),
   },
   {
@@ -213,7 +222,7 @@ export const useRolesStore = defineStore('roles', () => {
     try {
       await useRolesRepository().saveRolePermissions(roleId, permissions)
       roles.value[idx] = { ...roles.value[idx]!, permissions }
-      useAuditStore().record({
+      recordAudit({
         action: 'role.permissions',
         targetId: roleId,
         targetLabel: roles.value[idx]!.name,
@@ -246,7 +255,7 @@ export const useRolesStore = defineStore('roles', () => {
       })
       assignments.value.push(created)
       const roleName = roles.value.find((r) => r.id === roleId)?.name ?? 'Role'
-      useAuditStore().record({
+      recordAudit({
         action: 'roleAssignment.create',
         targetId: created.id,
         targetLabel: roleName,
@@ -266,7 +275,7 @@ export const useRolesStore = defineStore('roles', () => {
     try {
       await useRoleAssignmentsRepository().deleteAssignment(assignmentId)
       assignments.value = assignments.value.filter((a) => a.id !== assignmentId)
-      useAuditStore().record({ action: 'roleAssignment.delete', targetId: assignmentId })
+      recordAudit({ action: 'roleAssignment.delete', targetId: assignmentId })
       useToast().success('Role revoked')
     } catch (e: unknown) {
       fail(e, 'Failed to revoke role')
@@ -283,7 +292,7 @@ export const useRolesStore = defineStore('roles', () => {
     try {
       await useRoleAssignmentsRepository().updateCustomPermissions(assignmentId, customPermissions)
       assignments.value[idx] = { ...assignments.value[idx]!, customPermissions }
-      useAuditStore().record({ action: 'roleAssignment.update', targetId: assignmentId })
+      recordAudit({ action: 'roleAssignment.update', targetId: assignmentId })
       useToast().success('Custom permissions updated')
     } catch (e: unknown) {
       fail(e, 'Failed to update custom permissions')

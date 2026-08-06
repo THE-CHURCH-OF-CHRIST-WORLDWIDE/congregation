@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { recordAudit } from '~/utils/audit'
 import { isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailLink } from 'firebase/auth'
 import { useInvitationsRepository } from '~/repositories/invitationsRepository'
 import { useUsersRepository } from '~/repositories/usersRepository'
@@ -15,6 +16,25 @@ import type { ChurchRoleId, Invitation } from '~/types'
  * Requires **Email link (passwordless sign-in)** to be enabled under Authentication → Sign-in
  * method, and the site's domain listed under Authorized domains.
  */
+/**
+ * Sending an invitation fails for configuration reasons far more often than user ones, and
+ * Firebase reports those as bare codes. Name the setting that needs changing instead.
+ */
+function inviteErrorMessage(e: unknown): string {
+  const code = (e as { code?: string })?.code ?? ''
+  switch (code) {
+    case 'auth/operation-not-allowed':
+      return 'Email link sign-in is not enabled for this Firebase project. Enable Authentication → Sign-in method → Email/Password → Email link (passwordless sign-in), then send the invitation again.'
+    case 'auth/unauthorized-continue-uri':
+    case 'auth/invalid-continue-uri':
+      return `Add ${typeof window === 'undefined' ? 'this site' : window.location.hostname} to Firebase → Authentication → Settings → Authorized domains, then send the invitation again.`
+    case 'auth/invalid-email':
+      return 'That email address is not valid.'
+    default:
+      return e instanceof Error ? e.message : 'Failed to send invitation'
+  }
+}
+
 export const useInvitationsStore = defineStore('invitations', () => {
   const invitations = ref<Invitation[]>([])
   const loading = ref(false)
@@ -66,14 +86,18 @@ export const useInvitationsStore = defineStore('invitations', () => {
         url: `${window.location.origin}/invite?email=${encodeURIComponent(created.email)}`,
         handleCodeInApp: true,
       })
-      useAuditStore().record({
+      recordAudit({
         action: 'invitation.send',
         targetId: created.email,
         targetLabel: created.email,
       })
       useToast().success(`Invitation sent to ${created.email}`)
     } catch (e: unknown) {
-      fail(e, 'Failed to send invitation')
+      // Not `fail()`: it prefers the raw Error message, which here is just the Firebase code.
+      // The invitation row survives, so the invite can be re-sent once the setting is fixed.
+      error.value = inviteErrorMessage(e)
+      useToast().error(error.value)
+      throw e
     } finally {
       saving.value = false
     }
@@ -85,7 +109,7 @@ export const useInvitationsStore = defineStore('invitations', () => {
     try {
       await useInvitationsRepository().deleteInvitation(email)
       invitations.value = invitations.value.filter((i) => i.email !== email)
-      useAuditStore().record({ action: 'invitation.revoke', targetId: email, targetLabel: email })
+      recordAudit({ action: 'invitation.revoke', targetId: email, targetLabel: email })
       useToast().success('Invitation revoked')
     } catch (e: unknown) {
       fail(e, 'Failed to revoke invitation')
@@ -128,7 +152,7 @@ export const useInvitationsStore = defineStore('invitations', () => {
       // Best-effort: the role is granted either way, and a leftover invitation is harmless
       // because `users/{uid}` already exists so it can no longer be claimed.
       await repo.deleteInvitation(invitation.email).catch(() => {})
-      useAuditStore().record({
+      recordAudit({
         action: 'invitation.claim',
         targetId: credential.user.uid,
         targetLabel: invitation.email,

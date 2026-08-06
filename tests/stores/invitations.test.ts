@@ -50,7 +50,13 @@ vi.mock('~/repositories/usersRepository', () => ({
   useUsersRepository: () => ({ setUserRole, fetchUserRecord: vi.fn() }),
 }))
 
+let sendErrorCode: string | null = null
 const sendSignInLinkToEmail = vi.fn(async () => {
+  if (sendErrorCode) {
+    const err = new Error(`Firebase: Error (${sendErrorCode}).`) as Error & { code: string }
+    err.code = sendErrorCode
+    throw err
+  }
   if (failSend) throw new Error('auth/invalid-continue-uri')
 })
 const signInWithEmailLink = vi.fn(async (_auth: unknown, email: string) => ({
@@ -71,6 +77,7 @@ describe('useInvitationsStore', () => {
     stored = []
     failNextWrite = false
     failSend = false
+    sendErrorCode = null
     createInvitation.mockClear()
     deleteInvitation.mockClear()
     fetchInvitation.mockClear()
@@ -130,6 +137,28 @@ describe('useInvitationsStore', () => {
 
     expect(store.isInviteLink('https://site/invite?apiKey=abc&oobCode=xyz')).toBe(true)
     expect(store.isInviteLink('https://site/invite')).toBe(false)
+  })
+
+  it('names the setting to change when email link sign-in is disabled', async () => {
+    const store = useInvitationsStore()
+    sendErrorCode = 'auth/operation-not-allowed'
+
+    await expect(store.invite('deacon@example.com', 'deacon')).rejects.toThrow()
+
+    // The raw code tells the admin nothing; the message must point at the console setting.
+    expect(store.error).toMatch(/Email link sign-in is not enabled/i)
+    expect(store.error).toMatch(/Sign-in method/i)
+    // The invitation still exists, so it can simply be re-sent once the setting is on.
+    expect(stored).toHaveLength(1)
+  })
+
+  it('names the authorized-domains setting when the continue URL is rejected', async () => {
+    const store = useInvitationsStore()
+    sendErrorCode = 'auth/unauthorized-continue-uri'
+
+    await expect(store.invite('deacon@example.com', 'deacon')).rejects.toThrow()
+
+    expect(store.error).toMatch(/Authorized domains/i)
   })
 
   it('claims the invitation, granting exactly the invited role', async () => {

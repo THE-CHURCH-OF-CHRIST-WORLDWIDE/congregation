@@ -6,6 +6,7 @@ import type { ChurchRoleId } from '~/types'
 /** Roles that may write church data. Mirrors `isStaff()` in firestore.rules. */
 const STAFF_ROLES: ChurchRoleId[] = [
   'super-admin',
+  'admin',
   'elder',
   'deacon',
   'preacher',

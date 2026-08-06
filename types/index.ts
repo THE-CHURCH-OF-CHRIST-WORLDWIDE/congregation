@@ -131,6 +131,7 @@ export type RolePermissions = Partial<Record<AppPage, PagePermissions>>
 
 export type RoleName =
   | 'Super Admin'
+  | 'Admin'
   | 'Elder'
   | 'Deacon'
   | 'Preacher'
@@ -141,6 +142,7 @@ export type RoleName =
 /** Ids of the built-in roles in `stores/roles.ts`. Firestore rules match on these strings. */
 export type ChurchRoleId =
   | 'super-admin'
+  | 'admin'
   | 'elder'
   | 'deacon'
   | 'preacher'

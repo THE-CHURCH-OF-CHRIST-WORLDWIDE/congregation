@@ -507,11 +507,12 @@ Who may do what:
 |                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   | `auditLog`   |
 | ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- | ------------ |
 | Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      | read, append |
+| Admin              | read+write | read+write                   | read                | read    | read              | read            | append only  |
 | Other staff        | read       | read+write                   | read                | read    | read              | read            | append only  |
 | Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only | —            |
 | Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               | —            |
 
-Staff roles are `super-admin`, `elder`, `deacon`, `preacher`, `secretary`, `youth-leader`, `financial-secretary`. That list appears in three places which must stay in step: `isStaff()` in [`firestore.rules`](firestore.rules), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `ChurchRoleId` in [`types/index.ts`](types/index.ts).
+Staff roles are `super-admin`, `admin`, `elder`, `deacon`, `preacher`, `secretary`, `youth-leader`, `financial-secretary`. That list appears in three places which must stay in step: `isStaff()` in [`firestore.rules`](firestore.rules), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `ChurchRoleId` in [`types/index.ts`](types/index.ts).
 
 Rules are the coarse floor; the per-page matrix in Settings → Roles & Permissions is finer-grained on top of it.
 
@@ -534,6 +535,7 @@ Eight pages × five actions — **V**iew, **A**dd, **E**dit, **D**elete, e**X**p
 | Role                | Dash  | Roll  | Youth | Att   | Teach | Events | Fin   | Set   |
 | ------------------- | ----- | ----- | ----- | ----- | ----- | ------ | ----- | ----- |
 | Super Admin         | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VAEDX | VAEDX |
+| Admin               | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VAEDX | VAEDX |
 | Elder               | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VX    | V     |
 | Deacon              | VAE   | VAE   | VAE   | VAE   | V     | V      | V     | —     |
 | Preacher            | VAEDX | V     | V     | V     | VAEDX | VAEDX  | —     | —     |
@@ -541,7 +543,7 @@ Eight pages × five actions — **V**iew, **A**dd, **E**dit, **D**elete, e**X**p
 | Youth Leader        | VAEX  | V     | VAEX  | VAEX  | V     | V      | —     | —     |
 | Financial Secretary | VAEDX | V     | —     | —     | —     | —      | VAEDX | —     |
 
-Only **Super Admin** may write `settings`, `users`, `roles`, `roleAssignments` and `invitations` — the `V` that Elder and Secretary hold on Settings is view-only, and the rules enforce that independently of the matrix.
+**Admin** matches Super Admin in the matrix above but not in the rules: it may save church settings, and manage members, attendance, finance, teachings and events — but not `users`, `roles`, `roleAssignments` or `invitations`, and it cannot read the audit log. Only **Super Admin** manages who has access. The `V` that Elder and Secretary hold on Settings is view-only, and the rules enforce that independently of the matrix.
 
 #### Managing them
 

@@ -82,22 +82,39 @@ export const useAttendanceStore = defineStore('attendance', () => {
     }
   })
 
-  // ── Monthly presence counts by service type ────────────────────────────────
-  const monthlyPresenceCounts = computed(() => {
-    // The current year, not a fixed one — a hardcoded 2025 silently emptied this chart in 2026.
-    const year = new Date().getFullYear()
-    const months = Array.from({ length: 12 }, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`)
-    return months.map((m) => {
-      const monthRecs = records.value.filter(
-        (r) => r.date.startsWith(m) && r.serviceType === 'Sunday Worship'
+  /**
+   * The last `count` months ending with the current one.
+   *
+   * Trend charts used a calendar year, so on 1 January they emptied and a year of history became
+   * unreachable. A rolling window has no such cliff — it always shows recent direction, which is
+   * what a trend is for. Browsing a specific year is the monthly grid's job; it has a year
+   * selector.
+   */
+  function rollingMonthsByService(serviceType: string, count = 12) {
+    const now = new Date()
+    return Array.from({ length: count }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (count - 1 - i), 1)
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      const recs = records.value.filter(
+        (r) => r.date.startsWith(key) && r.serviceType === serviceType
       )
-      const uniqueDates = [...new Set(monthRecs.map((r) => r.date))]
-      const totalSessions = uniqueDates.length
-      const presentCount = monthRecs.filter((r) => r.present).length
-      const listedCount = monthRecs.length
-      return { month: m, totalSessions, presentCount, listedCount }
+      const sessions = [...new Set(recs.map((r) => r.date))].length
+      const present = recs.filter((r) => r.present).length
+      const total = recs.length
+      // A window can span two years, so January carries its year to mark the wrap.
+      const month = d.toLocaleString(undefined, { month: 'short' })
+      const label =
+        d.getMonth() === 0 || i === 0 ? `${month} ${String(d.getFullYear()).slice(2)}` : month
+      return {
+        month: key,
+        label,
+        sessions,
+        present,
+        total,
+        rate: total ? Math.round((present / total) * 100) : 0,
+      }
     })
-  })
+  }
 
   // ── Reactive monthly data for a given service + year ─────────────────────
   function monthlyByService(serviceType: string, year: string | number = new Date().getFullYear()) {
@@ -255,8 +272,8 @@ export const useAttendanceStore = defineStore('attendance', () => {
     absentCount,
     attendanceRate,
     memberMonthlySummary,
-    monthlyPresenceCounts,
     monthlyByService,
+    rollingMonthsByService,
     weeklyByService,
     findRecord,
     setAttendance,

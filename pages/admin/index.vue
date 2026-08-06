@@ -12,20 +12,6 @@ const chartMode = ref<'weekly' | 'monthly'>('monthly')
 const chartService = ref('Sunday Worship')
 
 const serviceOptions = ['Sunday Worship', 'Sunday School', 'Bible Class', 'Prayer Meeting']
-const MONTH_LABELS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
 
 // ─── Live chart data reacts to both chartMode and chartService ─────────────
 const chartTitle = computed(() =>
@@ -92,23 +78,22 @@ const statsCards = computed(() => [
 ])
 
 const barChartData = computed<ChartData<'bar'>>(() => {
-  const currentMonthIdx = new Date().getMonth()
-
   if (chartMode.value === 'monthly') {
-    const data = attendanceStore.monthlyByService(chartService.value)
+    // Rolling 12 months rather than Jan–Dec: a calendar year empties the chart every 1 January.
+    const data = attendanceStore.rollingMonthsByService(chartService.value)
     return {
-      labels: MONTH_LABELS,
+      labels: data.map((d) => d.label),
       datasets: [
         {
           label: 'Present',
           data: data.map((d) => d.present),
-          backgroundColor: data.map((_, i) => (i === currentMonthIdx ? '#2563eb' : '#bfdbfe')),
+          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#2563eb' : '#bfdbfe')),
           borderRadius: 4,
         },
         {
           label: 'Absent',
           data: data.map((d) => d.total - d.present),
-          backgroundColor: data.map((_, i) => (i === currentMonthIdx ? '#f87171' : '#fecaca')),
+          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#f87171' : '#fecaca')),
           borderRadius: 4,
         },
       ],

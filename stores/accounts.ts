@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { recordAudit } from '~/utils/audit'
 import { useUsersRepository } from '~/repositories/usersRepository'
 import type { AppUserRecord, ChurchRoleId } from '~/types'
 
@@ -55,7 +56,7 @@ export const useAccountsStore = defineStore('accounts', () => {
       }
       if (existing === -1) records.value.push(next)
       else records.value[existing] = { ...records.value[existing], ...next }
-      useAuditStore().record({
+      recordAudit({
         action: 'access.grant',
         targetId: trimmed,
         targetLabel: email?.trim() || roleId,
@@ -75,7 +76,7 @@ export const useAccountsStore = defineStore('accounts', () => {
       const revoked = records.value.find((r) => r.uid === uid)
       await useUsersRepository().removeUserRecord(uid)
       records.value = records.value.filter((r) => r.uid !== uid)
-      useAuditStore().record({
+      recordAudit({
         action: 'access.revoke',
         targetId: uid,
         targetLabel: revoked?.email,
