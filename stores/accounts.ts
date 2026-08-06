@@ -41,18 +41,19 @@ export const useAccountsStore = defineStore('accounts', () => {
   }
 
   /** Grant or change a role. Rules refuse this unless the caller is a Super Admin. */
-  async function grantRole(uid: string, roleId: ChurchRoleId, email?: string) {
+  async function grantRole(uid: string, roleId: ChurchRoleId, email?: string, memberId?: string) {
     const trimmed = uid.trim()
     if (!trimmed) return
     saving.value = true
     error.value = null
     try {
-      await useUsersRepository().setUserRole(trimmed, roleId, email?.trim() || undefined)
+      await useUsersRepository().setUserRole(trimmed, roleId, email?.trim() || undefined, memberId)
       const existing = records.value.findIndex((r) => r.uid === trimmed)
       const next: AppUserRecord = {
         uid: trimmed,
         roleId,
         ...(email?.trim() ? { email: email.trim() } : {}),
+        ...(memberId ? { memberId } : {}),
       }
       if (existing === -1) records.value.push(next)
       else records.value[existing] = { ...records.value[existing], ...next }

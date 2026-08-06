@@ -161,8 +161,16 @@ async function doRevokeAccess(uid: string) {
 // ─── Invitations ───────────────────────────────────────────────────────────────
 // Preferred over pasting a UID: the invitee gets an emailed link, and claiming it creates
 // both their Auth account and their users/{uid} record. No UID hunting in the console.
-const inviteForm = reactive({ email: '', roleId: '' as ChurchRoleId | '' })
+const inviteForm = reactive({ email: '', roleId: '' as ChurchRoleId | '', memberId: '' })
 const inviteErrors = reactive({ email: '', roleId: '' })
+
+/** Optional: ties the login to a nominal-roll record, so the two systems describe one person. */
+const memberOptions = computed(() =>
+  membersStore.members
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((m) => ({ label: m.name, value: m.id }))
+)
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -179,9 +187,10 @@ async function doInvite() {
     await invitationsStore.invite(
       email,
       inviteForm.roleId as ChurchRoleId,
-      authStore.user?.email ?? undefined
+      authStore.user?.email ?? undefined,
+      inviteForm.memberId || undefined
     )
-    Object.assign(inviteForm, { email: '', roleId: '' })
+    Object.assign(inviteForm, { email: '', roleId: '', memberId: '' })
   } catch {
     // Toast already shown.
   }
@@ -464,6 +473,14 @@ function permCount(perms: RolePermissions) {
                 Send Invitation
               </Button>
             </div>
+            <div class="sm:col-span-2">
+              <Select
+                v-model="inviteForm.memberId"
+                label="Link to a member (optional)"
+                placeholder="Not linked"
+                :options="memberOptions"
+              />
+            </div>
           </div>
           <p class="mt-2 text-xs text-gray-500">
             They receive a sign-in link by email. Opening it creates their account and applies this
@@ -549,6 +566,7 @@ function permCount(perms: RolePermissions) {
               <tr class="bg-gray-50 border-b border-gray-100">
                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Account</th>
                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">UID</th>
+                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Member</th>
                 <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Role</th>
                 <th class="w-20 px-4 py-3"></th>
               </tr>
@@ -570,6 +588,9 @@ function permCount(perms: RolePermissions) {
                 </td>
                 <td class="px-4 py-3">
                   <code class="text-xs text-gray-500">{{ account.uid }}</code>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-600">
+                  {{ account.memberId ? memberName(account.memberId) : '—' }}
                 </td>
                 <td class="px-4 py-3">
                   <select

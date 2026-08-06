@@ -14,17 +14,20 @@ let stored: Invitation[] = []
 let failNextWrite = false
 let failSend = false
 
-const createInvitation = vi.fn(async (email: string, roleId: string, invitedBy?: string) => {
-  if (failNextWrite) throw new Error('Missing or insufficient permissions.')
-  const invitation = {
-    email: email.trim().toLowerCase(),
-    roleId,
-    invitedAt: '2026-08-04T00:00:00.000Z',
-    ...(invitedBy ? { invitedBy } : {}),
-  } as Invitation
-  stored.push(invitation)
-  return invitation
-})
+const createInvitation = vi.fn(
+  async (email: string, roleId: string, invitedBy?: string, memberId?: string) => {
+    if (failNextWrite) throw new Error('Missing or insufficient permissions.')
+    const invitation = {
+      email: email.trim().toLowerCase(),
+      roleId,
+      invitedAt: '2026-08-04T00:00:00.000Z',
+      ...(invitedBy ? { invitedBy } : {}),
+      ...(memberId ? { memberId } : {}),
+    } as Invitation
+    stored.push(invitation)
+    return invitation
+  }
+)
 
 const deleteInvitation = vi.fn(async (email: string) => {
   stored = stored.filter((i) => i.email !== email.trim().toLowerCase())
@@ -161,6 +164,32 @@ describe('useInvitationsStore', () => {
     expect(store.error).toMatch(/Authorized domains/i)
   })
 
+  it('carries the linked member through to the account record', async () => {
+    const store = useInvitationsStore()
+    stored = [
+      {
+        email: 'deacon@example.com',
+        roleId: 'deacon',
+        memberId: 'm-42',
+        invitedAt: '2026-08-04',
+      },
+    ]
+
+    await store.claim('deacon@example.com', 'https://site/invite?apiKey=abc')
+
+    // This is what ties a login to its nominal-roll record.
+    expect(setUserRole).toHaveBeenCalledWith('new-uid', 'deacon', 'deacon@example.com', 'm-42')
+  })
+
+  it('leaves the account unlinked when the invitation names no member', async () => {
+    const store = useInvitationsStore()
+    stored = [{ email: 'deacon@example.com', roleId: 'deacon', invitedAt: '2026-08-04' }]
+
+    await store.claim('deacon@example.com', 'https://site/invite?apiKey=abc')
+
+    expect(setUserRole).toHaveBeenCalledWith('new-uid', 'deacon', 'deacon@example.com', undefined)
+  })
+
   it('claims the invitation, granting exactly the invited role', async () => {
     const store = useInvitationsStore()
     stored = [{ email: 'deacon@example.com', roleId: 'deacon', invitedAt: '2026-08-04' }]
@@ -168,7 +197,7 @@ describe('useInvitationsStore', () => {
     const role = await store.claim('Deacon@Example.com', 'https://site/invite?apiKey=abc')
 
     expect(role).toBe('deacon')
-    expect(setUserRole).toHaveBeenCalledWith('new-uid', 'deacon', 'deacon@example.com')
+    expect(setUserRole).toHaveBeenCalledWith('new-uid', 'deacon', 'deacon@example.com', undefined)
     // Claimed invitations are cleared so they cannot be reused.
     expect(deleteInvitation).toHaveBeenCalledWith('deacon@example.com')
   })

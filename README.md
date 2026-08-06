@@ -593,7 +593,21 @@ Once a Super Admin exists, everyone else is invited from the app — no console,
 
 The invitee receives a sign-in link; opening it creates their account and applies the role. Pending invitations are listed on the same card and can be revoked until claimed. Where an account already exists and only needs a role, use the collapsed **"Or grant an existing account by UID"** fallback.
 
+Optionally link the invitation to a nominal-roll member. That carries through to `users/{uid}.memberId` when the invitation is claimed, so the login and the member record describe one person rather than two unrelated things. Rules require any `memberId` on a claim to match the one the invitation names, so a claimer cannot attach their login to someone else's record.
+
 This works without Cloud Functions or the Blaze plan by having the invitee claim their own role, with the rules policing the claim: `users/{uid}` may be **created** (never updated) only for the caller's own uid, only with a **verified** email, and only with the exact `roleId` the invitation names. Knowing an invited address is not enough — you must be able to read that mailbox. The invitation is deleted on claim so it cannot be reused.
+
+### Signing in
+
+Three routes, because invited accounts are created by email link and therefore have **no password**:
+
+| Route                       | For                                                                               |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| Email + password            | Accounts that have set one                                                        |
+| **Email me a sign-in link** | Invited accounts with no password, or any device where you are signed out         |
+| **Forgot your password?**   | Resetting — and also how a link-only account _sets_ a password for the first time |
+
+All three are on `/login`. Without the middle one an invited person is locked out the moment they sign out or open the dashboard on another device, since they have no password to type.
 
 ### Environment variables on Netlify
 

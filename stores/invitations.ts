@@ -68,13 +68,23 @@ export const useInvitationsStore = defineStore('invitations', () => {
    * send, the invitation still exists and can be re-sent, whereas a link with no invitation
    * behind it would sign someone in with no role at all.
    */
-  async function invite(email: string, roleId: ChurchRoleId, invitedBy?: string) {
+  async function invite(
+    email: string,
+    roleId: ChurchRoleId,
+    invitedBy?: string,
+    memberId?: string
+  ) {
     const trimmed = email.trim()
     if (!trimmed) return
     saving.value = true
     error.value = null
     try {
-      const created = await useInvitationsRepository().createInvitation(trimmed, roleId, invitedBy)
+      const created = await useInvitationsRepository().createInvitation(
+        trimmed,
+        roleId,
+        invitedBy,
+        memberId
+      )
       const existing = invitations.value.findIndex((i) => i.email === created.email)
       if (existing === -1) invitations.value.push(created)
       else invitations.value[existing] = created
@@ -144,10 +154,12 @@ export const useInvitationsStore = defineStore('invitations', () => {
           'No invitation found for this address. Ask a Super Admin to invite you again.'
         )
       }
+      // Carrying memberId through is what ties the login to its nominal-roll record.
       await useUsersRepository().setUserRole(
         credential.user.uid,
         invitation.roleId,
-        credential.user.email ?? invitation.email
+        credential.user.email ?? invitation.email,
+        invitation.memberId
       )
       // Best-effort: the role is granted either way, and a leftover invitation is harmless
       // because `users/{uid}` already exists so it can no longer be claimed.

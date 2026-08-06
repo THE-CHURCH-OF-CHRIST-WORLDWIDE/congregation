@@ -211,6 +211,8 @@ export interface AuditEntry {
 export interface Invitation {
   email: string
   roleId: ChurchRoleId
+  /** Nominal-roll record this account belongs to, carried through to `users/{uid}` on claim. */
+  memberId?: string
   invitedBy?: string
   invitedAt: string
 }

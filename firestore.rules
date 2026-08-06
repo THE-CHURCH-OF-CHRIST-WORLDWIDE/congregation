@@ -99,12 +99,17 @@ service cloud.firestore {
       //     its own role, because the document already exists;
       //   * only its OWN uid;
       //   * only a verified email, so knowing an invited address is not enough;
-      //   * only the exact role the invitation names, so the payload cannot ask for more.
+      //   * only the exact role the invitation names, so the payload cannot ask for more;
+      //   * only the member record the invitation names — otherwise a claimer could attach
+      //     their login to anyone on the nominal roll. Omitting it entirely is fine.
       allow create: if signedIn()
                     && request.auth.uid == uid
                     && request.auth.token.email_verified == true
                     && hasInvitation(request.auth.token.email)
-                    && request.resource.data.roleId == invitationFor(request.auth.token.email).roleId;
+                    && request.resource.data.roleId == invitationFor(request.auth.token.email).roleId
+                    && (!('memberId' in request.resource.data)
+                        || request.resource.data.memberId
+                           == invitationFor(request.auth.token.email).memberId);
     }
 
     // ── Invitations ────────────────────────────────────────────────────────
