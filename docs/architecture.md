@@ -13,7 +13,7 @@ Congregation is a **Single-Page Application (SPA)** built with Nuxt 4 and Vue 3 
 
 Firebase is the backend, providing Authentication, Firestore (database), Storage, and (planned) Cloud Functions.
 
-> **Implementation status.** Auth and route protection are live, and the member, settings, roles, access, invitation and audit domains all read and write Firestore through the repository layer. Attendance, events, finance and teachings still hold state in `localStorage` pending the same migration — see [Data Access via Repositories](#data-access-via-repositories). The mock-data composables this note used to cite have been removed.
+> **Implementation status.** Auth and route protection are live, and every domain — members, settings, roles, access, invitations, audit, finance, teachings, attendance and events — reads and writes Firestore through the repository layer. The mock-data composables this note used to cite have been removed.
 
 ---
 
@@ -108,17 +108,21 @@ The target architecture is that all Firebase operations (Firestore reads/writes,
 
 **Wired through this layer today** — one repository per Firestore collection:
 
-| Repository                     | Collection        |
-| ------------------------------ | ----------------- |
-| `churchSettingsRepository.ts`  | `settings/church` |
-| `membersRepository.ts`         | `members`         |
-| `usersRepository.ts`           | `users/{uid}`     |
-| `invitationsRepository.ts`     | `invitations`     |
-| `rolesRepository.ts`           | `roles/{roleId}`  |
-| `roleAssignmentsRepository.ts` | `roleAssignments` |
-| `auditRepository.ts`           | `auditLog`        |
+| Repository                     | Collection                              |
+| ------------------------------ | --------------------------------------- |
+| `churchSettingsRepository.ts`  | `settings/church`                       |
+| `membersRepository.ts`         | `members`                               |
+| `usersRepository.ts`           | `users/{uid}`                           |
+| `invitationsRepository.ts`     | `invitations`                           |
+| `rolesRepository.ts`           | `roles/{roleId}`                        |
+| `roleAssignmentsRepository.ts` | `roleAssignments`                       |
+| `auditRepository.ts`           | `auditLog`                              |
+| `financeRepository.ts`         | `financeCollections`, `financeExpenses` |
+| `teachingsRepository.ts`       | `teachings`                             |
+| `attendanceRepository.ts`      | `attendance`                            |
+| `eventsRepository.ts`          | `events`                                |
 
-> **Still to migrate.** The attendance, events, finance and teachings stores keep their state in `localStorage` and contain no `await` at all. That is why their save buttons have no loading state — there is nothing to wait for yet. Moving them behind repositories is the remaining work, and it gives them loading states for free.
+Every domain is wired; nothing persists to `localStorage` any more. Finance and teachings previously held their data in a plain in-memory array, so figures and sermon uploads vanished on refresh while the UI reported success.
 
 ### Pinia for State Management
 

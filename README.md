@@ -516,6 +516,14 @@ Staff roles are `super-admin`, `admin`, `elder`, `deacon`, `preacher`, `secretar
 
 Rules are the coarse floor; the per-page matrix in Settings → Roles & Permissions is finer-grained on top of it.
 
+> **The floor is narrower than the matrix for four collections.** Teachings, attendance and events
+> accept writes only from Super Admin, Admin and Secretary (`canEditRecords()`); finance only from
+> Super Admin, Admin and Financial Secretary (`canEditFinance()`). The default matrix is more
+> generous — an Elder shows full access to all three record areas, a Preacher to teachings and
+> events, a Deacon and Youth Leader to attendance. Those roles will see the controls and have the
+> write refused. Either narrow the matrix in Settings → Roles & Permissions to match, or widen the
+> rules.
+
 ### Roles & permissions
 
 Three things carry the word "role" and are deliberately separate. Confusing them is the most common source of "why can't this person do X":
@@ -705,10 +713,9 @@ await run(member.id, () => membersStore.deleteMember(member.id))
 </button>
 ```
 
-A spinner is only worth adding where something is actually awaited. The attendance, events,
-finance and teachings stores are still synchronous (localStorage, pending their repository
-migration), so a spinner there would never paint a frame — those buttons get one for free once
-those stores move behind repositories.
+A spinner is only worth adding where something is actually awaited — around synchronous work it
+never paints a frame. Every store now writes to Firestore, so every save and delete has a real
+loading state.
 
 ### Form fields
 

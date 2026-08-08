@@ -186,8 +186,16 @@ What each tier may do, per [`firestore.rules`](../firestore.rules):
 | Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               | —            |
 
 Rules are the coarse security floor; the per-page permission matrix in Settings → Roles &
-Permissions stays finer-grained on top of it. Keep the staff list in `isStaff()` in step with
-`STAFF_ROLES` in [`stores/auth.ts`](../stores/auth.ts).
+Permissions stays finer-grained on top of it.
+
+> **The floor is narrower than the matrix for four collections.** Teachings, attendance and events
+> accept writes only from Super Admin, Admin and Secretary (`canEditRecords()`); finance only from
+> Super Admin, Admin and Financial Secretary (`canEditFinance()`). The default matrix is more
+> generous — an Elder shows full access to all three record areas, a Preacher to teachings and
+> events, a Deacon and Youth Leader to attendance. Those roles will see the controls and have the
+> write refused. Either narrow the matrix in Settings → Roles & Permissions to match, or widen the
+> rules. Keep the staff list in `isStaff()` in step with
+> `STAFF_ROLES` in [`stores/auth.ts`](../stores/auth.ts).
 
 `roles/{roleId}` holds **permission overrides only** — the eight roles, their ids, names and
 colours live in `DEFAULT_ROLES` in [`stores/roles.ts`](../stores/roles.ts) and are not editable.
