@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { Member, EmergencyContact } from '~/types'
 
+// The parent handles the actual write, but the button that triggers it lives here — so it
+// reads the store's pending flag directly rather than threading a prop through.
+const membersStore = useMembersStore()
+
 interface Props {
   modelValue: boolean
   title?: string
@@ -347,7 +351,7 @@ watch(
     <template #footer>
       <div class="flex gap-2 justify-end">
         <Button variant="secondary" @click="close">Cancel</Button>
-        <Button @click="save">
+        <Button :loading="membersStore.saving" @click="save">
           <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
           Add Member
         </Button>

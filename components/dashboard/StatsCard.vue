@@ -3,12 +3,18 @@ interface Props {
   title: string
   value: string | number
   subtitle?: string
+  /**
+   * Percentage change against the previous period. Leave undefined when there is nothing to
+   * compare against — the badge is then hidden rather than claiming a flat 0%.
+   */
   change?: number
   changeLabel?: string
   sparkValues?: number[]
   sparkColor?: string
 }
-const props = withDefaults(defineProps<Props>(), { change: 0, sparkColor: '#93c5fd' })
+// No default for `change`: defaulting it to 0 made the badge render on every card, which is
+// what put a "+10%" on figures nothing was actually tracking.
+const props = withDefaults(defineProps<Props>(), { sparkColor: '#93c5fd' })
 
 const changeIsPositive = computed(() => (props.change ?? 0) >= 0)
 </script>
@@ -36,7 +42,7 @@ const changeIsPositive = computed(() => (props.change ?? 0) >= 0)
           <p v-if="subtitle" class="text-xs text-gray-400 truncate">{{ subtitle }}</p>
         </div>
       </div>
-      <div class="flex-shrink-0 pt-1">
+      <div v-if="sparkValues?.length" class="flex-shrink-0 pt-1">
         <SparkLine
           v-if="sparkValues && sparkValues.length"
           :values="sparkValues"

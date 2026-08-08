@@ -11,13 +11,20 @@ import type { AppUserRecord } from '~/types'
 let stored: AppUserRecord[] = []
 let failNextWrite = false
 
-const setUserRole = vi.fn(async (uid: string, roleId: string, email?: string) => {
-  if (failNextWrite) throw new Error('Missing or insufficient permissions.')
-  const existing = stored.findIndex((r) => r.uid === uid)
-  const record = { uid, roleId, ...(email ? { email } : {}) } as AppUserRecord
-  if (existing === -1) stored.push(record)
-  else stored[existing] = record
-})
+const setUserRole = vi.fn(
+  async (uid: string, roleId: string, email?: string, memberId?: string) => {
+    if (failNextWrite) throw new Error('Missing or insufficient permissions.')
+    const existing = stored.findIndex((r) => r.uid === uid)
+    const record = {
+      uid,
+      roleId,
+      ...(email ? { email } : {}),
+      ...(memberId ? { memberId } : {}),
+    } as AppUserRecord
+    if (existing === -1) stored.push(record)
+    else stored[existing] = record
+  }
+)
 
 const removeUserRecord = vi.fn(async (uid: string) => {
   if (failNextWrite) throw new Error('Missing or insufficient permissions.')
@@ -69,8 +76,18 @@ describe('useAccountsStore', () => {
 
     await store.grantRole('uid-2', 'deacon', 'deacon@example.com')
 
-    expect(setUserRole).toHaveBeenCalledWith('uid-2', 'deacon', 'deacon@example.com')
+    expect(setUserRole).toHaveBeenCalledWith('uid-2', 'deacon', 'deacon@example.com', undefined)
     expect(store.records.map((r) => r.uid)).toEqual(['uid-1', 'uid-2'])
+  })
+
+  it('records the linked member when one is given', async () => {
+    const store = useAccountsStore()
+    await store.load()
+
+    await store.grantRole('uid-2', 'deacon', 'deacon@example.com', 'm-42')
+
+    expect(setUserRole).toHaveBeenCalledWith('uid-2', 'deacon', 'deacon@example.com', 'm-42')
+    expect(store.records.find((r) => r.uid === 'uid-2')?.memberId).toBe('m-42')
   })
 
   it('changes the role of an existing account in place', async () => {

@@ -8,62 +8,73 @@ const { setHeader } = usePageHeader()
 const attendanceStore = useAttendanceStore()
 const { exportCSV } = useExportCSV()
 
-const MONTH_LABELS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
+/** The trend chart covers one service; the grid below it has its own service selector. */
+const TREND_SERVICE = 'Sunday Worship'
 
 onMounted(() => {
   setHeader('Attendance Tracker', 'Attendance summaries by activity')
 })
 
+/**
+ * Per-session averages, not totals.
+ *
+ * These lines used to divide by a hard-coded 4 — an assumed four sessions a month. That
+ * understated any month with five Sundays, wildly overstated a month with one recorded session,
+ * and made the two lines incomparable across months. Divide by the sessions actually recorded.
+ *
+ * Months with no sessions are `null`, not 0: Chart.js leaves a gap, whereas a zero would draw a
+ * line to the floor and read as "nobody attended".
+ */
+const rollingMonths = computed(() => attendanceStore.rollingMonthsByService(TREND_SERVICE))
+
 const lineChartData = computed<ChartData<'line'>>(() => {
-  const monthly = attendanceStore.monthlyPresenceCounts
+  const monthly = rollingMonths.value
+
+  const perSession = (value: (m: (typeof monthly)[number]) => number) =>
+    monthly.map((m) => (m.sessions ? Math.round(value(m) / m.sessions) : null))
+
   return {
-    labels: MONTH_LABELS,
+    labels: monthly.map((m) => m.label),
     datasets: [
       {
-        label: 'Members Listed',
-        data: monthly.map((m) => m.listedCount / 4),
+        label: 'Members listed per session',
+        data: perSession((m) => m.total),
         borderColor: '#2563eb',
         backgroundColor: 'rgba(37,99,235,0.08)',
         fill: true,
         tension: 0.4,
         pointRadius: 4,
+        spanGaps: false,
       },
       {
-        label: 'Number Present',
-        data: monthly.map((m) => m.presentCount / 4),
+        label: 'Present per session',
+        data: perSession((m) => m.present),
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239,68,68,0.08)',
         fill: true,
         tension: 0.4,
         pointRadius: 4,
+        spanGaps: false,
       },
     ],
   }
 })
 
+/** Nothing across the whole window — show a message instead of two flat empty lines. */
+const hasAttendanceData = computed(() => rollingMonths.value.some((m) => m.sessions > 0))
+
 const currentYear = String(new Date().getFullYear())
 
 function doExport() {
+  // Mirrors the chart's window, keyed by YYYY-MM — "Jan" alone is ambiguous once the window
+  // spans two years.
   exportCSV(
-    attendanceStore.monthlyPresenceCounts.map((m, i) => ({
-      Month: MONTH_LABELS[i],
-      Sessions: m.totalSessions,
-      Present: m.presentCount,
-      Listed: m.listedCount,
-      'Rate %': m.listedCount ? Math.round((m.presentCount / m.listedCount) * 100) : 0,
+    rollingMonths.value.map((m) => ({
+      Month: m.month,
+      Sessions: m.sessions,
+      Present: m.present,
+      Listed: m.total,
+      'Rate %': m.rate,
     })),
     'attendance-summary'
   )
@@ -97,8 +108,17 @@ function doImport() {
     <!-- Chart + Performance -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
       <Card class="xl:col-span-2">
-        <h3 class="text-sm font-semibold text-gray-900 mb-4">Monthly Attendance Trend</h3>
-        <LineChart :data="lineChartData" :height="260" />
+        <h3 class="text-sm font-semibold text-gray-900 mb-1">Monthly Attendance Trend</h3>
+        <p class="mb-4 text-xs text-gray-500">
+          {{ TREND_SERVICE }} · average per recorded session, last 12 months
+        </p>
+        <LineChart v-if="hasAttendanceData" :data="lineChartData" :height="260" />
+        <EmptyState
+          v-else
+          icon="mdi:chart-line"
+          title="No attendance in the last 12 months"
+          description="Record a service and the monthly trend will appear here."
+        />
       </Card>
 
       <AttendancePerformance :year="currentYear" />

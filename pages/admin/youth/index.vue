@@ -2,6 +2,7 @@
 import type { Member } from '~/types'
 import type { ChartData } from 'chart.js'
 
+import { MEMBER_STATUSES } from '~/constants'
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Youth', description: 'Youth members management.' })
 
@@ -87,28 +88,51 @@ function viewList(tab: 'all' | 'boys' | 'girls' | 'active' | 'inactive') {
 }
 
 // ─── Donut chart ─────────────────────────────────────────────────────────────
+/**
+ * Driven by `MEMBER_STATUSES` rather than a hand-written list: this chart previously named five
+ * of the eight statuses, so any youth marked Disfellowshipped, Transfer or Late vanished from it.
+ *
+ * Plots counts, not percentages. Chart.js works out the arcs, tooltips then show real numbers,
+ * and rounding each slice to a whole percent no longer makes them fail to add up to 100.
+ */
+const STATUS_COLORS: Record<string, string> = {
+  Active: '#3b82f6',
+  Backslider: '#f59e0b',
+  Weak: '#22c55e',
+  Distant: '#6366f1',
+  Withdrawal: '#ef4444',
+  Disfellowshipped: '#dc2626',
+  Transfer: '#0ea5e9',
+  Late: '#a855f7',
+}
+
+/**
+ * Youth membership is derived from date of birth, so a roll with no birthdays recorded looks
+ * identical to one with no youth. Say which it is — "no youth members" sends someone hunting for
+ * a bug when the answer is a missing field.
+ */
+const emptyYouthReason = computed(() => {
+  const withDob = membersStore.members.filter((m) => m.dob).length
+  if (!membersStore.members.length) return 'No members on the roll yet.'
+  if (!withDob) return 'No dates of birth recorded, so nobody can be identified as youth (13–35).'
+  return 'No members aged 13–35 on the roll.'
+})
+
+const youthByStatus = computed(() =>
+  MEMBER_STATUSES.map((status) => ({
+    status,
+    count: membersStore.youthMembers.filter((m) => m.status === status).length,
+  })).filter((entry) => entry.count > 0)
+)
+
 const donutData = computed<ChartData<'doughnut'>>(() => {
-  const youth = membersStore.youthMembers
-  const total = youth.length || 1
-
-  const active = youth.filter((m) => m.status === 'Active').length
-  const backsliders = youth.filter((m) => m.status === 'Backslider').length
-  const distant = youth.filter((m) => m.status === 'Distant').length
-  const withdrawal = youth.filter((m) => m.status === 'Withdrawal').length
-  const weak = youth.filter((m) => m.status === 'Weak').length
-
+  const entries = youthByStatus.value
   return {
-    labels: ['Active', 'Backsliders', 'Distant', 'Withdrawal', 'Weak'],
+    labels: entries.map((e) => e.status),
     datasets: [
       {
-        data: [
-          Math.round((active / total) * 100),
-          Math.round((backsliders / total) * 100),
-          Math.round((distant / total) * 100),
-          Math.round((withdrawal / total) * 100),
-          Math.round((weak / total) * 100),
-        ],
-        backgroundColor: ['#3b82f6', '#f59e0b', '#6366f1', '#ef4444', '#22c55e'],
+        data: entries.map((e) => e.count),
+        backgroundColor: entries.map((e) => STATUS_COLORS[e.status] ?? '#94a3b8'),
         borderWidth: 0,
       },
     ],
@@ -209,7 +233,10 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
       <!-- Donut chart -->
       <div class="bg-slate-800 rounded-xl p-4 flex flex-col">
         <h3 class="text-sm font-semibold text-white mb-3">Youth Summary</h3>
-        <DonutChart :data="donutData" :height="180" />
+        <DonutChart v-if="youthByStatus.length" :data="donutData" :height="180" />
+        <p v-else class="py-10 text-center text-xs leading-relaxed text-slate-400">
+          {{ emptyYouthReason }}
+        </p>
       </div>
     </div>
 

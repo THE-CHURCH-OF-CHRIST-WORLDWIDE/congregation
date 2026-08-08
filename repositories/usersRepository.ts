@@ -36,9 +36,15 @@ export function useUsersRepository() {
   }
 
   /** Grant or change an account's role. Rules restrict this to a Super Admin. */
-  async function setUserRole(uid: string, roleId: ChurchRoleId, email?: string): Promise<void> {
+  async function setUserRole(
+    uid: string,
+    roleId: ChurchRoleId,
+    email?: string,
+    memberId?: string
+  ): Promise<void> {
     const payload: Record<string, unknown> = { roleId }
     if (email) payload.email = email
+    if (memberId) payload.memberId = memberId
     await setDoc(doc(nuxt.$firestore, COLLECTION, uid), payload, { merge: true })
   }
 

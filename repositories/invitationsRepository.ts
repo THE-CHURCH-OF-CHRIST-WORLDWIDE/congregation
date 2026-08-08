@@ -36,7 +36,8 @@ export function useInvitationsRepository() {
   async function createInvitation(
     email: string,
     roleId: ChurchRoleId,
-    invitedBy?: string
+    invitedBy?: string,
+    memberId?: string
   ): Promise<Invitation> {
     const id = invitationId(email)
     const invitation: Invitation = {
@@ -44,6 +45,7 @@ export function useInvitationsRepository() {
       roleId,
       invitedAt: new Date().toISOString(),
       ...(invitedBy ? { invitedBy } : {}),
+      ...(memberId ? { memberId } : {}),
     }
     await setDoc(doc(nuxt.$firestore, COLLECTION, id), invitation)
     return invitation

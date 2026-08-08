@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { MEMBER_STATUSES } from '~/constants'
 interface Slice {
   label: string
   value: number
@@ -8,42 +9,32 @@ interface Slice {
 const membersStore = useMembersStore()
 const currentYear = new Date().getFullYear()
 
-const slices = computed<Slice[]>(() => {
-  const m = membersStore.members
-  const buckets: Slice[] = [
-    {
-      label: 'Active',
-      value: m.filter((x) => x.status === 'Active').length,
-      color: '#e5e7eb',
-    },
-    {
-      label: 'Backsliders',
-      value: m.filter((x) => x.status === 'Backslider').length,
-      color: '#7dd3fc',
-    },
-    {
-      label: 'Distant',
-      value: m.filter((x) => x.status === 'Distant').length,
-      color: '#38bdf8',
-    },
-    {
-      label: 'Withdrawal/Transfer',
-      value: m.filter((x) => x.status === 'Withdrawal' || x.status === 'Transfer').length,
-      color: '#0ea5e9',
-    },
-    {
-      label: 'Weak',
-      value: m.filter((x) => x.status === 'Weak').length,
-      color: '#0284c7',
-    },
-    {
-      label: 'Late',
-      value: m.filter((x) => x.status === 'Late').length,
-      color: '#0369a1',
-    },
-  ]
-  return buckets
-})
+/**
+ * Built from `MEMBER_STATUSES` so a status can never be silently missing — the hand-written
+ * bucket list this replaces omitted Disfellowshipped, which meant those members were absent
+ * from the chart *and* from the total beneath it.
+ */
+const STATUS_COLORS: Record<string, string> = {
+  Active: '#e5e7eb',
+  Backslider: '#7dd3fc',
+  Weak: '#0284c7',
+  Distant: '#38bdf8',
+  Withdrawal: '#0ea5e9',
+  Disfellowshipped: '#075985',
+  Transfer: '#0369a1',
+  Late: '#38bdf8',
+}
+
+const slices = computed<Slice[]>(() =>
+  MEMBER_STATUSES.map((status) => ({
+    label: status,
+    value: membersStore.members.filter((m) => m.status === status).length,
+    color: STATUS_COLORS[status] ?? '#94a3b8',
+  }))
+)
+
+/** Statuses that at least one member holds. */
+const presentSlices = computed(() => slices.value.filter((s) => s.value > 0))
 
 const totalCount = computed(() => slices.value.reduce((a, b) => a + b.value, 0))
 
@@ -65,6 +56,10 @@ const arcs = computed(() => {
       const endAngle = angle + sweep
       const endX = cx + r * Math.cos(endAngle)
       const endY = cy + r * Math.sin(endAngle)
+      // A slice covering the whole circle starts and ends at the same point, and an SVG arc
+      // between two identical points draws nothing — which is why a single-status roll rendered
+      // a legend, a percentage, and no pie. Full circles are drawn as a <circle> instead.
+      const full = portion >= 1
       const largeArc = sweep > Math.PI ? 1 : 0
       const path = `M ${cx} ${cy} L ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${endX} ${endY} Z`
       // Label position: 65% out from center along the slice's midpoint angle
@@ -74,7 +69,7 @@ const arcs = computed(() => {
       const labelY = cy + labelR * Math.sin(midAngle)
       const pct = Math.round(portion * 100)
       angle = endAngle
-      return { ...s, path, labelX, labelY, pct }
+      return { ...s, path, labelX, labelY, pct, full }
     })
 })
 </script>
@@ -89,14 +84,18 @@ const arcs = computed(() => {
     <div class="flex items-center gap-6">
       <!-- Legend -->
       <ul class="flex flex-col gap-2 text-sm">
-        <li v-for="s in slices" :key="s.label" class="flex items-center gap-2">
+        <!-- Only statuses anyone actually holds, with the count. Listing all eight against a
+             single member was eight lines of noise that said nothing. -->
+        <li v-for="s in presentSlices" :key="s.label" class="flex items-center gap-2">
           <span
             class="inline-block h-2.5 w-2.5 rounded-full shrink-0"
             :style="{ backgroundColor: s.color }"
             aria-hidden="true"
           ></span>
           <span class="text-white/90">{{ s.label }}</span>
+          <span class="ml-auto pl-3 font-medium text-white/60">{{ s.value }}</span>
         </li>
+        <li v-if="!presentSlices.length" class="text-white/60">No members yet</li>
       </ul>
 
       <!-- Pie -->
@@ -108,7 +107,10 @@ const arcs = computed(() => {
           :aria-label="`Member status distribution for ${currentYear}`"
         >
           <g v-if="totalCount > 0">
-            <path v-for="(a, i) in arcs" :key="i" :d="a.path" :fill="a.color" />
+            <template v-for="(a, i) in arcs" :key="i">
+              <circle v-if="a.full" cx="100" cy="100" r="90" :fill="a.color" />
+              <path v-else :d="a.path" :fill="a.color" />
+            </template>
             <text
               v-for="(a, i) in arcs"
               :key="`label-${i}`"

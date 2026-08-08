@@ -2,7 +2,11 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Six collections, with deliberately different exposure:
+// Seven collections, with deliberately different exposure:
+//
+//   auditLog        — append-only record of who changed what. Any staff account may add an
+//                     entry as itself; only a Super Admin may read it; nobody may edit or
+//                     delete one.
 //
 //   invitations     — pending invitations, keyed by lower-cased email. A Super Admin creates
 //                     one; the invitee claims it on first sign-in, which is the only way an
@@ -19,7 +23,7 @@ rules_version = '2';
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
 //                     about pages read this while signed out, so it is world
-//                     readable. Only a Super Admin may write.
+//                     readable. Super Admin and Admin may write.
 //
 //   members         — the nominal roll. Contains names, phone numbers, home
 //                     addresses and dates of birth, so it is NEVER publicly
@@ -62,9 +66,15 @@ service cloud.firestore {
     // Mirrors STAFF_ROLES in stores/auth.ts — keep the two lists in step.
     function isStaff() {
       return roleId() in [
-        'super-admin', 'elder', 'deacon', 'preacher',
+        'super-admin', 'admin', 'elder', 'deacon', 'preacher',
         'secretary', 'youth-leader', 'financial-secretary'
       ];
+    }
+
+    // Church settings sit a tier below access control: Admin may edit the site's content,
+    // but managing accounts, roles and invitations stays Super Admin only.
+    function canEditSettings() {
+      return roleId() in ['super-admin', 'admin'];
     }
 
     function invitationFor(email) {
@@ -89,12 +99,17 @@ service cloud.firestore {
       //     its own role, because the document already exists;
       //   * only its OWN uid;
       //   * only a verified email, so knowing an invited address is not enough;
-      //   * only the exact role the invitation names, so the payload cannot ask for more.
+      //   * only the exact role the invitation names, so the payload cannot ask for more;
+      //   * only the member record the invitation names — otherwise a claimer could attach
+      //     their login to anyone on the nominal roll. Omitting it entirely is fine.
       allow create: if signedIn()
                     && request.auth.uid == uid
                     && request.auth.token.email_verified == true
                     && hasInvitation(request.auth.token.email)
-                    && request.resource.data.roleId == invitationFor(request.auth.token.email).roleId;
+                    && request.resource.data.roleId == invitationFor(request.auth.token.email).roleId
+                    && (!('memberId' in request.resource.data)
+                        || request.resource.data.memberId
+                           == invitationFor(request.auth.token.email).memberId);
     }
 
     // ── Invitations ────────────────────────────────────────────────────────
@@ -108,6 +123,24 @@ service cloud.firestore {
       // Cleared by the Super Admin who sent it, or by the invitee once claimed.
       allow delete: if isSuperAdmin()
                     || (signedIn() && request.auth.token.email == email);
+    }
+
+    // ── Audit log ──────────────────────────────────────────────────────────
+    // Append-only by design: no rule grants update or delete, so an entry cannot be edited
+    // or quietly removed — not even by a Super Admin. Any staff account may add an entry,
+    // because every staff action needs to record itself, but only as itself: `actorUid` must
+    // be the caller. Reading the log is Super Admin only.
+    //
+    // This is written by the client, so it evidences what the app did, not everything that
+    // happened: nothing can force a client to write an entry. A trail that cannot be bypassed
+    // needs a Firestore trigger in Cloud Functions.
+    match /auditLog/{entryId} {
+      allow read: if isSuperAdmin();
+      allow create: if isStaff()
+                    && request.resource.data.actorUid == request.auth.uid
+                    && request.resource.data.action is string
+                    && request.resource.data.at == request.time;
+      allow update, delete: if false;
     }
 
     // ── Role definitions ───────────────────────────────────────────────────
@@ -130,9 +163,9 @@ service cloud.firestore {
     // ── Church settings ────────────────────────────────────────────────────
     match /settings/{document} {
       allow read: if true;
-      // Settings is Super Admin only in the app's permission matrix; elders and
-      // secretaries have view access there, so they get no write here.
-      allow write: if isSuperAdmin();
+      // Super Admin and Admin. Elders and secretaries hold view-only Settings in the app's
+      // matrix, so they get no write here.
+      allow write: if canEditSettings();
     }
 
     // ── Members ────────────────────────────────────────────────────────────

@@ -30,9 +30,16 @@ function isActive(item: { to: string; exact?: boolean }) {
   return route.path.startsWith(item.to)
 }
 
+const signingOut = ref(false)
+
 async function logout() {
-  await authStore.logout()
-  await navigateTo('/login')
+  signingOut.value = true
+  try {
+    await authStore.logout()
+    await navigateTo('/login')
+  } finally {
+    signingOut.value = false
+  }
 }
 </script>
 
@@ -105,11 +112,15 @@ async function logout() {
           Go to Home
         </NuxtLink>
         <button
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all disabled:opacity-60"
+          :disabled="signingOut"
           @click="logout"
         >
-          <Icon icon="mdi:logout" class="text-[18px]" />
-          Logout
+          <Icon
+            :icon="signingOut ? 'mdi:loading' : 'mdi:logout'"
+            :class="['text-[18px]', signingOut && 'animate-spin']"
+          />
+          {{ signingOut ? 'Signing out…' : 'Logout' }}
         </button>
       </div>
     </aside>

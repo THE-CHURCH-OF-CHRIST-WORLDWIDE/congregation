@@ -37,7 +37,8 @@ export const useAttendanceStore = defineStore('attendance', () => {
   const persisted = readPersisted()
   const records = ref<AttendanceRecord[]>(persisted ?? [])
   const currentService = ref('Sunday Worship')
-  const currentMonth = ref('2025-12')
+  // Default to the month the user is actually in, not a fixed one.
+  const currentMonth = ref(new Date().toISOString().slice(0, 7))
   // pendingChanges maps recordId → the value at the moment editing began,
   // so cancelChanges can revert and saveChanges can persist the new state.
   const pendingChanges = ref<Record<string, boolean>>({})
@@ -81,36 +82,42 @@ export const useAttendanceStore = defineStore('attendance', () => {
     }
   })
 
-  // ── Monthly presence counts by service type ────────────────────────────────
-  const monthlyPresenceCounts = computed(() => {
-    const months = [
-      '2025-01',
-      '2025-02',
-      '2025-03',
-      '2025-04',
-      '2025-05',
-      '2025-06',
-      '2025-07',
-      '2025-08',
-      '2025-09',
-      '2025-10',
-      '2025-11',
-      '2025-12',
-    ]
-    return months.map((m) => {
-      const monthRecs = records.value.filter(
-        (r) => r.date.startsWith(m) && r.serviceType === 'Sunday Worship'
+  /**
+   * The last `count` months ending with the current one.
+   *
+   * Trend charts used a calendar year, so on 1 January they emptied and a year of history became
+   * unreachable. A rolling window has no such cliff — it always shows recent direction, which is
+   * what a trend is for. Browsing a specific year is the monthly grid's job; it has a year
+   * selector.
+   */
+  function rollingMonthsByService(serviceType: string, count = 12) {
+    const now = new Date()
+    return Array.from({ length: count }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (count - 1 - i), 1)
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      const recs = records.value.filter(
+        (r) => r.date.startsWith(key) && r.serviceType === serviceType
       )
-      const uniqueDates = [...new Set(monthRecs.map((r) => r.date))]
-      const totalSessions = uniqueDates.length
-      const presentCount = monthRecs.filter((r) => r.present).length
-      const listedCount = monthRecs.length
-      return { month: m, totalSessions, presentCount, listedCount }
+      const sessions = [...new Set(recs.map((r) => r.date))].length
+      const present = recs.filter((r) => r.present).length
+      const total = recs.length
+      // A window can span two years, so January carries its year to mark the wrap.
+      const month = d.toLocaleString(undefined, { month: 'short' })
+      const label =
+        d.getMonth() === 0 || i === 0 ? `${month} ${String(d.getFullYear()).slice(2)}` : month
+      return {
+        month: key,
+        label,
+        sessions,
+        present,
+        total,
+        rate: total ? Math.round((present / total) * 100) : 0,
+      }
     })
-  })
+  }
 
   // ── Reactive monthly data for a given service + year ─────────────────────
-  function monthlyByService(serviceType: string, year: string | number = 2025) {
+  function monthlyByService(serviceType: string, year: string | number = new Date().getFullYear()) {
     const yr = String(year)
     return Array.from({ length: 12 }, (_, i) => {
       const m = `${yr}-${String(i + 1).padStart(2, '0')}`
@@ -265,8 +272,8 @@ export const useAttendanceStore = defineStore('attendance', () => {
     absentCount,
     attendanceRate,
     memberMonthlySummary,
-    monthlyPresenceCounts,
     monthlyByService,
+    rollingMonthsByService,
     weeklyByService,
     findRecord,
     setAttendance,

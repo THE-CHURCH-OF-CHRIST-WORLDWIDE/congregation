@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { recordAudit } from '~/utils/audit'
 import { useUsersRepository } from '~/repositories/usersRepository'
 import type { AppUserRecord, ChurchRoleId } from '~/types'
 
@@ -40,21 +41,27 @@ export const useAccountsStore = defineStore('accounts', () => {
   }
 
   /** Grant or change a role. Rules refuse this unless the caller is a Super Admin. */
-  async function grantRole(uid: string, roleId: ChurchRoleId, email?: string) {
+  async function grantRole(uid: string, roleId: ChurchRoleId, email?: string, memberId?: string) {
     const trimmed = uid.trim()
     if (!trimmed) return
     saving.value = true
     error.value = null
     try {
-      await useUsersRepository().setUserRole(trimmed, roleId, email?.trim() || undefined)
+      await useUsersRepository().setUserRole(trimmed, roleId, email?.trim() || undefined, memberId)
       const existing = records.value.findIndex((r) => r.uid === trimmed)
       const next: AppUserRecord = {
         uid: trimmed,
         roleId,
         ...(email?.trim() ? { email: email.trim() } : {}),
+        ...(memberId ? { memberId } : {}),
       }
       if (existing === -1) records.value.push(next)
       else records.value[existing] = { ...records.value[existing], ...next }
+      recordAudit({
+        action: 'access.grant',
+        targetId: trimmed,
+        targetLabel: email?.trim() || roleId,
+      })
       useToast().success('Access updated')
     } catch (e: unknown) {
       fail(e, 'Failed to update access')
@@ -67,8 +74,14 @@ export const useAccountsStore = defineStore('accounts', () => {
     saving.value = true
     error.value = null
     try {
+      const revoked = records.value.find((r) => r.uid === uid)
       await useUsersRepository().removeUserRecord(uid)
       records.value = records.value.filter((r) => r.uid !== uid)
+      recordAudit({
+        action: 'access.revoke',
+        targetId: uid,
+        targetLabel: revoked?.email,
+      })
       useToast().success('Access revoked')
     } catch (e: unknown) {
       fail(e, 'Failed to revoke access')

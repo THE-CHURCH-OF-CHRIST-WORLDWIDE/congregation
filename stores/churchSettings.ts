@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { recordAudit } from '~/utils/audit'
 import {
   useChurchSettingsRepository,
   type ChurchSettings,
@@ -208,6 +209,7 @@ export const useChurchSettingsStore = defineStore('churchSettings', () => {
     try {
       const repo = useChurchSettingsRepository()
       await repo.saveSettings(settings.value)
+      recordAudit({ action: 'settings.update' })
       useToast().success('Settings saved')
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : 'Failed to save church settings'

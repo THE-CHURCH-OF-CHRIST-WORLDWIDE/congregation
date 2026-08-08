@@ -66,8 +66,8 @@ VITE_FIREBASE_APP_ID=appId
 4. After creation, go to the **Rules** tab and configure security rules
 
 Do not hand-write rules in the console. This repository's [`firestore.rules`](../firestore.rules)
-is the real configuration — it covers the six collections the app actually uses (`users`,
-`invitations`, `roles`, `roleAssignments`, `settings`, `members`), validates the shape of
+is the real configuration — it covers the seven collections the app actually uses (`users`,
+`invitations`, `auditLog`, `roles`, `roleAssignments`, `settings`, `members`), validates the shape of
 self-registrations, and gates every write on the account's role. Deploy it as described in
 [Deploy Firebase Security Rules](#7-deploy-firebase-security-rules) below, and read
 [Account roles](#account-roles) first: the rules require a `users/{uid}` document to exist
@@ -166,7 +166,7 @@ The document shape (see `AppUserRecord` in [`types/index.ts`](../types/index.ts)
 }
 ```
 
-`roleId` must be one of `super-admin`, `elder`, `deacon`, `preacher`, `secretary`,
+`roleId` must be one of `super-admin`, `admin`, `elder`, `deacon`, `preacher`, `secretary`,
 `youth-leader`, `financial-secretary`. Anything else — or a missing document — means the
 account can sign in and see the dashboard shell but cannot write. The admin header shows a
 red banner in that state so the cause is visible rather than appearing as random save
@@ -177,18 +177,19 @@ Permissions → Dashboard Access → Invite by email**. See [Invitations](#invit
 
 What each tier may do, per [`firestore.rules`](../firestore.rules):
 
-|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   |
-| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- |
-| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      |
-| Other staff        | read       | read+write                   | read                | read    | read              | read            |
-| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only |
-| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               |
+|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   | `auditLog`   |
+| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- | ------------ |
+| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      | read, append |
+| Admin              | read+write | read+write                   | read                | read    | read              | read            | append only  |
+| Other staff        | read       | read+write                   | read                | read    | read              | read            | append only  |
+| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only | —            |
+| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               | —            |
 
 Rules are the coarse security floor; the per-page permission matrix in Settings → Roles &
 Permissions stays finer-grained on top of it. Keep the staff list in `isStaff()` in step with
 `STAFF_ROLES` in [`stores/auth.ts`](../stores/auth.ts).
 
-`roles/{roleId}` holds **permission overrides only** — the seven roles, their ids, names and
+`roles/{roleId}` holds **permission overrides only** — the eight roles, their ids, names and
 colours live in `DEFAULT_ROLES` in [`stores/roles.ts`](../stores/roles.ts) and are not editable.
 On load the app rebuilds the list from those defaults and applies any stored `permissions` on
 top, so a role added to the code later still appears and a stored override for a role that no

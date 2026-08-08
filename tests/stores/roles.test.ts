@@ -170,7 +170,7 @@ describe('useRolesStore permission overrides', () => {
     await store.load()
 
     expect(store.roles.map((r) => r.id)).not.toContain('archdeacon')
-    expect(store.roles).toHaveLength(7)
+    expect(store.roles).toHaveLength(8)
   })
 
   it('persists an edited matrix', async () => {

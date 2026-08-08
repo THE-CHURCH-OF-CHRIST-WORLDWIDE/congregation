@@ -7,7 +7,8 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   serviceType: 'Sunday Worship',
-  month: '2025-12',
+  // Current month by default; a fixed one renders a register for a month nobody is in.
+  month: () => new Date().toISOString().slice(0, 7),
   dayOfWeek: 0,
 })
 

@@ -13,7 +13,7 @@ Congregation is a **Single-Page Application (SPA)** built with Nuxt 4 and Vue 3 
 
 Firebase is the backend, providing Authentication, Firestore (database), Storage, and (planned) Cloud Functions.
 
-> **Implementation status.** Congregation is in active development. Auth wiring, route protection, and most Firestore reads/writes are stubbed against mock data during development. See [`composables/useMockData.ts`](../composables/useMockData.ts), [`composables/usePublicMockData.ts`](../composables/usePublicMockData.ts), and [`composables/useEventsMockData.ts`](../composables/useEventsMockData.ts). Mock seeding is gated behind `import.meta.dev` in [`app.vue`](../app.vue) and will not run in production builds.
+> **Implementation status.** Auth and route protection are live, and the member, settings, roles, access, invitation and audit domains all read and write Firestore through the repository layer. Attendance, events, finance and teachings still hold state in `localStorage` pending the same migration — see [Data Access via Repositories](#data-access-via-repositories). The mock-data composables this note used to cite have been removed.
 
 ---
 
@@ -106,7 +106,19 @@ The target architecture is that all Firebase operations (Firestore reads/writes,
 - Isolates Firebase API changes to one location
 - Keeps business logic out of UI components
 
-> **Current status (as of writing).** Only [`churchSettingsRepository.ts`](../repositories/churchSettingsRepository.ts) is wired through this layer. Every other domain (members, attendance, events, finance, teachings, roles, public sermons/streams) holds in-memory state seeded from mock composables — see [`composables/useMockData.ts`](../composables/useMockData.ts), [`composables/useEventsMockData.ts`](../composables/useEventsMockData.ts), and [`composables/usePublicMockData.ts`](../composables/usePublicMockData.ts). Treat the repository pattern as the convention for any **new** Firebase access, and as a migration target for the existing domains rather than as a description of how they work today.
+**Wired through this layer today** — one repository per Firestore collection:
+
+| Repository                     | Collection        |
+| ------------------------------ | ----------------- |
+| `churchSettingsRepository.ts`  | `settings/church` |
+| `membersRepository.ts`         | `members`         |
+| `usersRepository.ts`           | `users/{uid}`     |
+| `invitationsRepository.ts`     | `invitations`     |
+| `rolesRepository.ts`           | `roles/{roleId}`  |
+| `roleAssignmentsRepository.ts` | `roleAssignments` |
+| `auditRepository.ts`           | `auditLog`        |
+
+> **Still to migrate.** The attendance, events, finance and teachings stores keep their state in `localStorage` and contain no `await` at all. That is why their save buttons have no loading state — there is nothing to wait for yet. Moving them behind repositories is the remaining work, and it gives them loading states for free.
 
 ### Pinia for State Management
 
@@ -139,7 +151,9 @@ The intended flow is:
 
 Client-side route protection is the first layer only. Authoritative enforcement lives in `firestore.rules` and `storage.rules` — even an authenticated client cannot read or write data that the rules deny.
 
-> **Current status (as of writing).** The body of [`middleware/auth.ts`](../middleware/auth.ts) is intentionally commented out so the admin UI is reachable without signing in during development. **This must be re-enabled before any production deployment** — without it, `/admin/*` routes are not gated client-side at all. Firestore/Storage rules still enforce the data layer, but the admin UI itself will load for anyone.
+[`middleware/auth.ts`](../middleware/auth.ts) is active on every `/admin/*` page. It awaits `authStore.whenReady()` first, because Firebase restores a persisted session asynchronously — without that wait, refreshing an admin page would read `isAuthenticated === false` and bounce a user who is in fact signed in.
+
+**Signing in is not the same as being allowed to write.** Privilege comes from a `users/{uid}` document, which Firestore rules read on every write; the auth store loads it into `roleId` / `isStaff` / `isSuperAdmin`. That fetch deliberately runs _after_ `whenReady()` resolves, so a slow Firestore read can never stall routing. An account with no role reaches the dashboard shell and sees a banner explaining that saves will be refused. See [Deployment & Access Control](../README.md#deployment--access-control).
 
 ---
 
