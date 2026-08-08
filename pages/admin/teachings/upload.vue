@@ -9,6 +9,7 @@ const { setHeader } = usePageHeader()
 const teachingsStore = useTeachingsStore()
 
 onMounted(() => {
+  teachingsStore.load()
   setHeader('Teachings Upload', 'Add new Sunday School teachings and sermons to your library')
 })
 

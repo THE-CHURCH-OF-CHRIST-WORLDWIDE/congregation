@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { useFinanceRepository } from '~/repositories/financeRepository'
+import { recordAudit } from '~/utils/audit'
 import type { FinanceCollection, FinanceExpense, ExpenseCategory } from '~/types'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -26,6 +28,37 @@ function yearKey(date: Date): string {
 export const useFinanceStore = defineStore('finance', () => {
   const collections = ref<FinanceCollection[]>([])
   const expenses = ref<FinanceExpense[]>([])
+  const loading = ref(false)
+  const saving = ref(false)
+  const error = ref<string | null>(null)
+  const loaded = ref(false)
+
+  function fail(e: unknown, fallback: string): never {
+    error.value = e instanceof Error ? e.message : fallback
+    useToast().error(error.value)
+    throw e
+  }
+
+  async function load(force = false) {
+    if (loaded.value && !force) return
+    loading.value = true
+    error.value = null
+    try {
+      const repo = useFinanceRepository()
+      const [fetchedCollections, fetchedExpenses] = await Promise.all([
+        repo.fetchCollections(),
+        repo.fetchExpenses(),
+      ])
+      collections.value = fetchedCollections
+      expenses.value = fetchedExpenses
+      loaded.value = true
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to load finance records'
+      useToast().error(error.value)
+    } finally {
+      loading.value = false
+    }
+  }
 
   // ── Totals ──────────────────────────────────────────────────────────────────
   const totalIncome = computed(() => collections.value.reduce((s, c) => s + c.amount, 0))
@@ -117,26 +150,78 @@ export const useFinanceStore = defineStore('finance', () => {
   const thisMonthNet = computed(() => thisMonthIncome.value - thisMonthExpenses.value)
 
   // ── CRUD ───────────────────────────────────────────────────────────────────
-  function addCollection(entry: Omit<FinanceCollection, 'id'>) {
-    collections.value.push({ ...entry, id: String(Date.now()) })
-    useToast().success('Collection recorded')
+  // Local state follows what Firestore accepted, never the other way round: a refused write
+  // must not leave a figure on screen that is not in the books.
+  async function addCollection(entry: Omit<FinanceCollection, 'id'>) {
+    saving.value = true
+    error.value = null
+    try {
+      const created = await useFinanceRepository().createCollection(entry)
+      collections.value.unshift(created)
+      recordAudit({
+        action: 'finance.collection.create',
+        targetId: created.id,
+        targetLabel: `${created.amount} on ${created.date}`,
+      })
+      useToast().success('Collection recorded')
+      return created
+    } catch (e: unknown) {
+      fail(e, 'Failed to record collection')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function addExpense(entry: Omit<FinanceExpense, 'id'>) {
-    expenses.value.push({ ...entry, id: String(Date.now()) })
-    useToast().success('Expense recorded')
+  async function addExpense(entry: Omit<FinanceExpense, 'id'>) {
+    saving.value = true
+    error.value = null
+    try {
+      const created = await useFinanceRepository().createExpense(entry)
+      expenses.value.unshift(created)
+      recordAudit({
+        action: 'finance.expense.create',
+        targetId: created.id,
+        targetLabel: `${created.amount} — ${created.category}`,
+      })
+      useToast().success('Expense recorded')
+      return created
+    } catch (e: unknown) {
+      fail(e, 'Failed to record expense')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function deleteCollection(id: string) {
-    const existed = collections.value.some((c) => c.id === id)
-    collections.value = collections.value.filter((c) => c.id !== id)
-    if (existed) useToast().success('Collection deleted')
+  async function deleteCollection(id: string) {
+    if (!collections.value.some((c) => c.id === id)) return
+    saving.value = true
+    error.value = null
+    try {
+      await useFinanceRepository().deleteCollection(id)
+      collections.value = collections.value.filter((c) => c.id !== id)
+      recordAudit({ action: 'finance.collection.delete', targetId: id })
+      useToast().success('Collection deleted')
+    } catch (e: unknown) {
+      fail(e, 'Failed to delete collection')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function deleteExpense(id: string) {
-    const existed = expenses.value.some((e) => e.id === id)
-    expenses.value = expenses.value.filter((e) => e.id !== id)
-    if (existed) useToast().success('Expense deleted')
+  async function deleteExpense(id: string) {
+    if (!expenses.value.some((e) => e.id === id)) return
+    saving.value = true
+    error.value = null
+    try {
+      await useFinanceRepository().deleteExpense(id)
+      expenses.value = expenses.value.filter((e) => e.id !== id)
+      recordAudit({ action: 'finance.expense.delete', targetId: id })
+      useToast().success('Expense deleted')
+    } catch (e: unknown) {
+      fail(e, 'Failed to delete expense')
+    } finally {
+      saving.value = false
+    }
   }
 
   // ── Report rows (for export) ───────────────────────────────────────────────
@@ -173,6 +258,11 @@ export const useFinanceStore = defineStore('finance', () => {
   return {
     collections,
     expenses,
+    loading,
+    saving,
+    error,
+    loaded,
+    load,
     totalIncome,
     totalExpenses,
     netBalance,

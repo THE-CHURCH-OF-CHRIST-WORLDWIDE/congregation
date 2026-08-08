@@ -25,8 +25,10 @@ function getCategoryColor(cat: string) {
   return categoryColors[cat] ?? 'bg-gray-100 text-gray-700'
 }
 
-function deleteSermon(id: string) {
-  teachingsStore.deleteSermon(id)
+const { isPending, run } = usePendingAction()
+
+async function deleteSermon(id: string) {
+  await run(id, () => teachingsStore.deleteSermon(id).catch(() => {}))
   showMenu.value = false
 }
 </script>
@@ -115,6 +117,7 @@ function deleteSermon(id: string) {
         >
           <button
             class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            :disabled="isPending(sermon.id)"
             @click="deleteSermon(sermon.id)"
           >
             <Icon icon="mdi:trash-can-outline" />Delete

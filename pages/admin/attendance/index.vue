@@ -12,6 +12,7 @@ const { exportCSV } = useExportCSV()
 const TREND_SERVICE = 'Sunday Worship'
 
 onMounted(() => {
+  attendanceStore.load()
   setHeader('Attendance Tracker', 'Attendance summaries by activity')
 })
 

@@ -17,6 +17,17 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   'invitation.send': 'Sent invitation',
   'invitation.revoke': 'Revoked invitation',
   'invitation.claim': 'Accepted invitation',
+  'finance.collection.create': 'Recorded a collection',
+  'finance.collection.delete': 'Deleted a collection',
+  'finance.expense.create': 'Recorded an expense',
+  'finance.expense.delete': 'Deleted an expense',
+  'teaching.create': 'Uploaded a teaching',
+  'teaching.update': 'Updated a teaching',
+  'teaching.delete': 'Deleted a teaching',
+  'event.create': 'Added an event',
+  'event.update': 'Updated an event',
+  'event.delete': 'Deleted an event',
+  'attendance.record': 'Recorded attendance',
 }
 
 export function auditActionLabel(action: AuditAction): string {

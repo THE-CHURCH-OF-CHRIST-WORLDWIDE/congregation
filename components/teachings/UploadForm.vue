@@ -172,9 +172,7 @@ async function submit() {
       @click="submit"
     >
       <template #icon-left><Icon icon="mdi:upload" /></template>
-      {{
-        teachingsStore.uploading ? `Uploading… ${teachingsStore.uploadProgress}%` : 'Upload Sermon'
-      }}
+      {{ teachingsStore.uploading ? 'Uploading…' : 'Upload Sermon' }}
     </Button>
 
     <!-- Document Upload -->

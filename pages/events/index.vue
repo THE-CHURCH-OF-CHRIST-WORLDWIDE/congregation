@@ -17,6 +17,7 @@ const eventsStore = useEventsStore()
 
 // Sync URL → store on mount
 onMounted(() => {
+  eventsStore.load()
   const tab = route.query.tab as string
   if (tab === 'past' || tab === 'upcoming') {
     eventsStore.setTab(tab)

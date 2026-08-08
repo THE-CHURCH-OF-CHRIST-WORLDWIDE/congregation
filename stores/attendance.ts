@@ -1,32 +1,7 @@
 import { defineStore } from 'pinia'
+import { attendanceDocId, useAttendanceRepository } from '~/repositories/attendanceRepository'
+import { recordAudit } from '~/utils/audit'
 import type { AttendanceRecord } from '~/types'
-
-const STORAGE_KEY = 'congregation:attendance'
-
-function readPersisted(): AttendanceRecord[] | null {
-  if (typeof window === 'undefined') return null
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as AttendanceRecord[]
-    return Array.isArray(parsed) ? parsed : null
-  } catch {
-    return null
-  }
-}
-
-function writePersisted(records: AttendanceRecord[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(records))
-  } catch {
-    // Storage may be unavailable (private mode, quota); ignore.
-  }
-}
-
-function makeRecordId(): string {
-  return `att-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-}
 
 function makeServiceId(serviceType: string, date: string): string {
   return `${serviceType.toLowerCase().replace(/\s+/g, '-')}-${date}`
@@ -34,8 +9,26 @@ function makeServiceId(serviceType: string, date: string): string {
 
 export const useAttendanceStore = defineStore('attendance', () => {
   // Hydrate from localStorage on first store access (client-only).
-  const persisted = readPersisted()
-  const records = ref<AttendanceRecord[]>(persisted ?? [])
+  const records = ref<AttendanceRecord[]>([])
+  const loading = ref(false)
+  const saving = ref(false)
+  const error = ref<string | null>(null)
+  const loaded = ref(false)
+
+  async function load(force = false) {
+    if (loaded.value && !force) return
+    loading.value = true
+    error.value = null
+    try {
+      records.value = await useAttendanceRepository().fetchRecords()
+      loaded.value = true
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to load attendance'
+      useToast().error(error.value)
+    } finally {
+      loading.value = false
+    }
+  }
   const currentService = ref('Sunday Worship')
   // Default to the month the user is actually in, not a fixed one.
   const currentMonth = ref(new Date().toISOString().slice(0, 7))
@@ -194,7 +187,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
       return existing
     }
     const rec: AttendanceRecord = {
-      id: makeRecordId(),
+      id: attendanceDocId({ memberId, date, serviceType }),
       memberId,
       serviceId: makeServiceId(serviceType, date),
       date,
@@ -236,12 +229,30 @@ export const useAttendanceStore = defineStore('attendance', () => {
     }
   }
 
-  function saveChanges() {
-    const count = Object.keys(pendingChanges.value).length
-    writePersisted(records.value)
-    pendingChanges.value = {}
-    if (count > 0) {
-      useToast().success(`Attendance saved (${count} change${count === 1 ? '' : 's'})`)
+  /**
+   * Writes only the records that changed, in one batch. `pendingChanges` is cleared solely on
+   * success — if the write is refused the ticks stay pending, so nothing looks saved that is not.
+   */
+  async function saveChanges() {
+    const ids = Object.keys(pendingChanges.value)
+    if (!ids.length) return
+    const changed = records.value.filter((r) => ids.includes(r.id))
+    saving.value = true
+    error.value = null
+    try {
+      await useAttendanceRepository().saveRecords(changed)
+      pendingChanges.value = {}
+      recordAudit({
+        action: 'attendance.record',
+        targetLabel: `${changed.length} change${changed.length === 1 ? '' : 's'}`,
+      })
+      useToast().success(`Attendance saved (${ids.length} change${ids.length === 1 ? '' : 's'})`)
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to save attendance'
+      useToast().error(error.value)
+      throw e
+    } finally {
+      saving.value = false
     }
   }
 
@@ -256,14 +267,16 @@ export const useAttendanceStore = defineStore('attendance', () => {
   }
 
   // Persist the whole records array. Useful for bulk operations (CSV import, seed overrides).
-  function persist() {
-    writePersisted(records.value)
-  }
 
   const hasPendingChanges = computed(() => Object.keys(pendingChanges.value).length > 0)
 
   return {
     records,
+    loading,
+    saving,
+    error,
+    loaded,
+    load,
     currentService,
     currentMonth,
     pendingChanges,
@@ -278,7 +291,6 @@ export const useAttendanceStore = defineStore('attendance', () => {
     findRecord,
     setAttendance,
     toggleForMemberDate,
-    persist,
     markPresent,
     markAbsent,
     toggleAttendance,

@@ -97,8 +97,12 @@ function getMonthlySummary(memberId: string) {
   return { sessionsTotal, sessionsPresent, percentage }
 }
 
-function save() {
-  attendanceStore.saveChanges()
+async function save() {
+  try {
+    await attendanceStore.saveChanges()
+  } catch {
+    return // Refused — keep the ticks pending so nothing looks saved that is not.
+  }
   hasChanged.value = false
 }
 
@@ -294,7 +298,7 @@ function doExport() {
         v-if="hasChanged"
         class="sticky bottom-4 flex justify-end gap-2 mt-4 bg-white rounded-xl shadow-lg border border-gray-200 p-3"
       >
-        <Button @click="save">Save Changes</Button>
+        <Button :loading="attendanceStore.saving" @click="save">Save Changes</Button>
         <Button variant="secondary" @click="cancel">Cancel</Button>
       </div>
     </Transition>

@@ -176,6 +176,17 @@ export type AuditAction =
   | 'invitation.send'
   | 'invitation.revoke'
   | 'invitation.claim'
+  | 'finance.collection.create'
+  | 'finance.collection.delete'
+  | 'finance.expense.create'
+  | 'finance.expense.delete'
+  | 'teaching.create'
+  | 'teaching.update'
+  | 'teaching.delete'
+  | 'event.create'
+  | 'event.update'
+  | 'event.delete'
+  | 'attendance.record'
 
 /**
  * One recorded change, stored append-only at `auditLog/{id}`.
