@@ -724,6 +724,41 @@ Density is inheritable. A container declares it once instead of every field repe
 
 An explicit `size` on a field still wins, so a single field can opt out.
 
+### Hiding a page in production
+
+Some pages are ready for staging but not for the congregation. Add the route to
+`STAGING_ONLY_ROUTES` in [`constants/index.ts`](constants/index.ts):
+
+```ts
+export const STAGING_ONLY_ROUTES: string[] = [
+  '/admin/finance', // and everything beneath it
+  '/salvation',
+]
+```
+
+That is the only edit. The route then 404s in production via a global middleware, and it drops out
+of the admin sidebar and the footer's link lists automatically. Staging and local development are
+untouched — the work stays reachable where it is reviewed.
+
+Matching is by path segment, so `/admin/finance` covers `/admin/finance/reports` but not
+`/admin/finance-archive`. Query strings and hashes are ignored, so `/salvation` also hides
+`/salvation#hear`.
+
+For a link written inline rather than driven by an array — most of the public navbar — guard it
+with the composable:
+
+```vue
+<NuxtLink v-if="!isHidden('/events')" to="/events">Events</NuxtLink>
+```
+
+```ts
+const { isHidden, isProduction } = useRouteVisibility()
+```
+
+> **This hides pages; it does not secure them.** The code still ships in the production bundle, so
+> anyone can read it, and the data is still whatever Firestore will serve. Anything that must not
+> be reachable belongs in `firestore.rules`.
+
 ### Settings panels
 
 Three primitives, in [`components/settings/`](components/settings/):

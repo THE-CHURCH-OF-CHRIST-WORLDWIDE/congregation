@@ -149,3 +149,32 @@ export const ADMIN_ROUTES = {
   YOUTH: '/admin/youth',
   SETTINGS: '/admin/settings',
 } as const
+
+// ─── Route visibility ─────────────────────────────────────────────────────────
+
+/**
+ * Routes that exist on staging and local development but not in production.
+ *
+ * Add a path here and it disappears from production: the route itself 404s, and any nav link
+ * driven by an array (the admin sidebar, the footer's link lists) stops rendering. Matching is by
+ * path segment, so `/admin/finance` also covers `/admin/finance/reports` — but not
+ * `/admin/finance-archive`.
+ *
+ * ```ts
+ * export const STAGING_ONLY_ROUTES: string[] = [
+ *   '/admin/finance',   // and everything beneath it
+ *   '/salvation',
+ * ]
+ * ```
+ *
+ * This hides pages; it does not secure them. The code still ships in the production bundle, so
+ * anyone can read it. Anything that must not be reachable has to be enforced by
+ * `firestore.rules`, not by this list.
+ */
+export const STAGING_ONLY_ROUTES: string[] = [
+  '/', // the landing page itself — the contact section lives on it, so /#contact goes too
+  '/live-streams',
+  '/teachings', // covers /teachings/sermons and /teachings/sunday-school
+  '/events',
+  '/about-us',
+]

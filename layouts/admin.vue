@@ -14,7 +14,9 @@ onMounted(() => {
   settingsStore.load()
 })
 
-const navItems = [
+const { visible } = useRouteVisibility()
+
+const allNavItems = [
   { label: 'Dashboard', to: '/admin', icon: 'mdi:view-dashboard-outline', exact: true },
   { label: 'Nominal Roll', to: '/admin/nominal-roll', icon: 'mdi:account-group-outline' },
   { label: 'Youth', to: '/admin/youth', icon: 'mdi:account-star-outline' },
@@ -24,6 +26,9 @@ const navItems = [
   { label: 'Finance', to: '/admin/finance', icon: 'mdi:cash-multiple' },
   { label: 'Settings', to: '/admin/settings', icon: 'mdi:cog-outline' },
 ]
+
+/** Staging-only areas drop out of the sidebar in production; see STAGING_ONLY_ROUTES. */
+const navItems = computed(() => visible(allNavItems))
 
 function isActive(item: { to: string; exact?: boolean }) {
   if (item.exact) return route.path === item.to
