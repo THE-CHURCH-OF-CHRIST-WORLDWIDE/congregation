@@ -15,7 +15,17 @@ interface FooterLink {
   icon?: 'github'
 }
 
-const quickLinks: FooterLink[] = [
+const { isHidden } = useRouteVisibility()
+
+/**
+ * Drops links whose route is hidden in this environment, keeping the original order. External
+ * links have no route to hide, so they always stay.
+ */
+function keep(links: FooterLink[]) {
+  return links.filter((link) => link.external || !isHidden(link.href))
+}
+
+const allQuickLinks: FooterLink[] = [
   // The congregation finder is a section of the landing page, not a route of its own.
   { label: 'Find a Congregation', href: '/#congregations' },
   { label: 'Watch Live Streams', href: '/live-streams' },
@@ -24,7 +34,7 @@ const quickLinks: FooterLink[] = [
   { label: 'About the Church', href: '/about-us' },
 ]
 
-const salvationLinks: FooterLink[] = [
+const allSalvationLinks: FooterLink[] = [
   { label: 'Hear the Gospel', href: '/salvation#hear' },
   { label: 'Believe the Gospel', href: '/salvation#believe' },
   { label: 'Repent of your sins', href: '/salvation#repent' },
@@ -32,7 +42,7 @@ const salvationLinks: FooterLink[] = [
   { label: 'Get Baptized', href: '/salvation#baptized' },
 ]
 
-const resourceLinks: FooterLink[] = [
+const allResourceLinks: FooterLink[] = [
   { label: 'Biblical Teachings', href: '/teachings/sermons' },
   // The contact form is a section of the landing page, not a route of its own.
   { label: 'Contact Us', href: '/#contact' },
@@ -43,6 +53,10 @@ const resourceLinks: FooterLink[] = [
     icon: 'github',
   },
 ]
+
+const quickLinks = computed(() => keep(allQuickLinks))
+const salvationLinks = computed(() => keep(allSalvationLinks))
+const resourceLinks = computed(() => keep(allResourceLinks))
 </script>
 
 <template>
@@ -125,7 +139,7 @@ const resourceLinks: FooterLink[] = [
         </div>
 
         <!-- Col 2: Quick Links -->
-        <div :class="['reveal', 'delay-100', isVisible && 'is-visible']">
+        <div v-if="quickLinks.length" :class="['reveal', 'delay-100', isVisible && 'is-visible']">
           <h4 class="mb-5 text-[15px] font-semibold text-white">Quick Links</h4>
           <ul>
             <li v-for="link in quickLinks" :key="link.href">
@@ -140,7 +154,10 @@ const resourceLinks: FooterLink[] = [
         </div>
 
         <!-- Col 3: God's Plan for Salvation -->
-        <div :class="['reveal', 'delay-200', isVisible && 'is-visible']">
+        <div
+          v-if="salvationLinks.length"
+          :class="['reveal', 'delay-200', isVisible && 'is-visible']"
+        >
           <h4 class="mb-5 text-[15px] font-semibold text-white">God's Plan for Salvation</h4>
           <ul>
             <li v-for="link in salvationLinks" :key="link.href">
@@ -155,7 +172,10 @@ const resourceLinks: FooterLink[] = [
         </div>
 
         <!-- Col 4: Resources -->
-        <div :class="['reveal', 'delay-300', isVisible && 'is-visible']">
+        <div
+          v-if="resourceLinks.length"
+          :class="['reveal', 'delay-300', isVisible && 'is-visible']"
+        >
           <h4 class="mb-5 text-[15px] font-semibold text-white">Resources</h4>
           <ul>
             <li v-for="link in resourceLinks" :key="link.href">

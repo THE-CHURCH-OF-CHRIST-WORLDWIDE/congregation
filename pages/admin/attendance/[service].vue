@@ -4,6 +4,7 @@ import { serviceBySlug } from '~/constants'
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 
 const { setHeader } = usePageHeader()
+const attendanceStore = useAttendanceStore()
 const route = useRoute()
 
 const slug = computed(() => String(route.params.service))
@@ -38,7 +39,10 @@ function applyHeader() {
   )
 }
 
-onMounted(applyHeader)
+onMounted(() => {
+  attendanceStore.load()
+  applyHeader()
+})
 watch([serviceLabel, monthLabel], applyHeader)
 
 useSeoMeta({

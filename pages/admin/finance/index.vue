@@ -12,7 +12,10 @@ const { exportCSV } = useExportCSV()
 const { download: downloadFinancePdf } = useFinancePdf()
 const toast = useToast()
 
-onMounted(() => setHeader('Finance & Accounting', 'Track income, expenses and financial reports'))
+onMounted(() => {
+  setHeader('Finance & Accounting', 'Track income, expenses and financial reports')
+  financeStore.load()
+})
 
 // ─── Active report period ─────────────────────────────────────────────────────
 const activePeriod = ref<'weekly' | 'monthly' | 'quarterly' | 'yearly'>('monthly')
@@ -365,11 +368,26 @@ const newCollection = reactive<Omit<FinanceCollection, 'id'>>({
 })
 const collectionErrors = reactive({ date: '', amount: '' })
 
-function saveCollection() {
+const { isPending, run } = usePendingAction()
+
+async function removeEntry(tx: { id: string; type: string }) {
+  await run(tx.id, () =>
+    (tx.type === 'income'
+      ? financeStore.deleteCollection(tx.id)
+      : financeStore.deleteExpense(tx.id)
+    ).catch(() => {})
+  )
+}
+
+async function saveCollection() {
   collectionErrors.date = newCollection.date ? '' : 'Date is required'
   collectionErrors.amount = newCollection.amount > 0 ? '' : 'Amount must be > 0'
   if (collectionErrors.date || collectionErrors.amount) return
-  financeStore.addCollection({ ...newCollection })
+  try {
+    await financeStore.addCollection({ ...newCollection })
+  } catch {
+    return // Store already surfaced the reason; keep the entry on screen.
+  }
   showAddCollection.value = false
   Object.assign(newCollection, { date: '', amount: 0, description: '' })
   Object.assign(collectionErrors, { date: '', amount: '' })
@@ -397,12 +415,16 @@ const expenseCategoryOptions = [
   { label: 'Others', value: 'Others' },
 ]
 
-function saveExpense() {
+async function saveExpense() {
   expenseErrors.date = newExpense.date ? '' : 'Date is required'
   expenseErrors.amount = newExpense.amount > 0 ? '' : 'Amount must be > 0'
   expenseErrors.description = newExpense.description.trim() ? '' : 'Description is required'
   if (expenseErrors.date || expenseErrors.amount || expenseErrors.description) return
-  financeStore.addExpense({ ...newExpense })
+  try {
+    await financeStore.addExpense({ ...newExpense })
+  } catch {
+    return // Store already surfaced the reason; keep the entry on screen.
+  }
   showAddExpense.value = false
   Object.assign(newExpense, { date: '', amount: 0, category: 'Building', description: '' })
   Object.assign(expenseErrors, { date: '', amount: '', description: '' })
@@ -677,15 +699,15 @@ function saveExpense() {
               </td>
               <td class="px-4 py-3 text-right">
                 <button
-                  class="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                  class="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
                   :aria-label="`Delete ${tx.description}`"
-                  @click="
-                    tx.type === 'income'
-                      ? financeStore.deleteCollection(tx.id)
-                      : financeStore.deleteExpense(tx.id)
-                  "
+                  :disabled="isPending(tx.id)"
+                  @click="removeEntry(tx)"
                 >
-                  <Icon icon="mdi:trash-can-outline" class="text-base" />
+                  <Icon
+                    :icon="isPending(tx.id) ? 'mdi:loading' : 'mdi:trash-can-outline'"
+                    :class="['text-base', isPending(tx.id) && 'animate-spin']"
+                  />
                 </button>
               </td>
             </tr>
@@ -755,7 +777,7 @@ function saveExpense() {
       <template #footer>
         <div class="flex gap-2 justify-end">
           <Button variant="secondary" @click="showAddCollection = false">Cancel</Button>
-          <Button @click="saveCollection">
+          <Button :loading="financeStore.saving" @click="saveCollection">
             <template #icon-left><Icon icon="mdi:check" /></template>
             Save Collection
           </Button>
@@ -821,7 +843,7 @@ function saveExpense() {
       <template #footer>
         <div class="flex gap-2 justify-end">
           <Button variant="secondary" @click="showAddExpense = false">Cancel</Button>
-          <Button @click="saveExpense">
+          <Button :loading="financeStore.saving" @click="saveExpense">
             <template #icon-left><Icon icon="mdi:check" /></template>
             Save Expense
           </Button>

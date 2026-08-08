@@ -516,6 +516,14 @@ Staff roles are `super-admin`, `admin`, `elder`, `deacon`, `preacher`, `secretar
 
 Rules are the coarse floor; the per-page matrix in Settings → Roles & Permissions is finer-grained on top of it.
 
+> **The floor is narrower than the matrix for four collections.** Teachings, attendance and events
+> accept writes only from Super Admin, Admin and Secretary (`canEditRecords()`); finance only from
+> Super Admin, Admin and Financial Secretary (`canEditFinance()`). The default matrix is more
+> generous — an Elder shows full access to all three record areas, a Preacher to teachings and
+> events, a Deacon and Youth Leader to attendance. Those roles will see the controls and have the
+> write refused. Either narrow the matrix in Settings → Roles & Permissions to match, or widen the
+> rules.
+
 ### Roles & permissions
 
 Three things carry the word "role" and are deliberately separate. Confusing them is the most common source of "why can't this person do X":
@@ -705,10 +713,9 @@ await run(member.id, () => membersStore.deleteMember(member.id))
 </button>
 ```
 
-A spinner is only worth adding where something is actually awaited. The attendance, events,
-finance and teachings stores are still synchronous (localStorage, pending their repository
-migration), so a spinner there would never paint a frame — those buttons get one for free once
-those stores move behind repositories.
+A spinner is only worth adding where something is actually awaited — around synchronous work it
+never paints a frame. Every store now writes to Firestore, so every save and delete has a real
+loading state.
 
 ### Form fields
 
@@ -723,6 +730,41 @@ Density is inheritable. A container declares it once instead of every field repe
 ```
 
 An explicit `size` on a field still wins, so a single field can opt out.
+
+### Hiding a page in production
+
+Some pages are ready for staging but not for the congregation. Add the route to
+`STAGING_ONLY_ROUTES` in [`constants/index.ts`](constants/index.ts):
+
+```ts
+export const STAGING_ONLY_ROUTES: string[] = [
+  '/admin/finance', // and everything beneath it
+  '/salvation',
+]
+```
+
+That is the only edit. The route then 404s in production via a global middleware, and it drops out
+of the admin sidebar and the footer's link lists automatically. Staging and local development are
+untouched — the work stays reachable where it is reviewed.
+
+Matching is by path segment, so `/admin/finance` covers `/admin/finance/reports` but not
+`/admin/finance-archive`. Query strings and hashes are ignored, so `/salvation` also hides
+`/salvation#hear`.
+
+For a link written inline rather than driven by an array — most of the public navbar — guard it
+with the composable:
+
+```vue
+<NuxtLink v-if="!isHidden('/events')" to="/events">Events</NuxtLink>
+```
+
+```ts
+const { isHidden, isProduction } = useRouteVisibility()
+```
+
+> **This hides pages; it does not secure them.** The code still ships in the production bundle, so
+> anyone can read it, and the data is still whatever Firestore will serve. Anything that must not
+> be reachable belongs in `firestore.rules`.
 
 ### Settings panels
 

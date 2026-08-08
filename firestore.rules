@@ -2,7 +2,7 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Seven collections, with deliberately different exposure:
+// Twelve collections, with deliberately different exposure:
 //
 //   auditLog        — append-only record of who changed what. Any staff account may add an
 //                     entry as itself; only a Super Admin may read it; nobody may edit or
@@ -19,6 +19,10 @@ rules_version = '2';
 //
 //   roleAssignments — which nominal-roll member holds which role in the congregation.
 //                     Records standing, not access; most of these people have no login.
+//
+//   financeCollections, financeExpenses
+//                   — the congregation's books. Staff may read; only Super Admin, Admin and
+//                     the Financial Secretary may write.
 //
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
@@ -75,6 +79,19 @@ service cloud.firestore {
     // but managing accounts, roles and invitations stays Super Admin only.
     function canEditSettings() {
       return roleId() in ['super-admin', 'admin'];
+    }
+
+    // Money has its own tier: Super Admin, Admin and the Financial Secretary. Everyone else on
+    // staff can read the books but not change them.
+    function canEditFinance() {
+      return roleId() in ['super-admin', 'admin', 'financial-secretary'];
+    }
+
+    // Records staff keep: teachings, attendance registers and events. Super Admin, Admin and
+    // the Secretary. Deliberately narrower than the app's permission matrix — see the note in
+    // README § Roles & permissions.
+    function canEditRecords() {
+      return roleId() in ['super-admin', 'admin', 'secretary'];
     }
 
     function invitationFor(email) {
@@ -158,6 +175,41 @@ service cloud.firestore {
     match /roleAssignments/{assignmentId} {
       allow read: if isStaff();
       allow write: if isSuperAdmin();
+    }
+
+    // ── Finances ───────────────────────────────────────────────────────────
+    // Money in and money out, kept apart because they are reported on separately. Never public:
+    // these are the congregation's books.
+    match /financeCollections/{entryId} {
+      allow read: if isStaff();
+      allow write: if canEditFinance();
+    }
+
+    match /financeExpenses/{entryId} {
+      allow read: if isStaff();
+      allow write: if canEditFinance();
+    }
+
+    // ── Teachings ──────────────────────────────────────────────────────────
+    // Sermons and Sunday School lessons. Staff-read for now: the public teachings pages still
+    // read their own store, so nothing outside the dashboard needs this yet.
+    match /teachings/{sermonId} {
+      allow read: if isStaff();
+      allow write: if canEditRecords();
+    }
+
+    // ── Attendance ─────────────────────────────────────────────────────────
+    // Who was present at which service. Personal data about named members, so never public.
+    match /attendance/{recordId} {
+      allow read: if isStaff();
+      allow write: if canEditRecords();
+    }
+
+    // ── Events ─────────────────────────────────────────────────────────────
+    // Publicly readable: the /events page lists these to visitors while signed out.
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if canEditRecords();
     }
 
     // ── Church settings ────────────────────────────────────────────────────

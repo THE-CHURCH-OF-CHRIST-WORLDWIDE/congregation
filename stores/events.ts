@@ -1,44 +1,16 @@
 import { defineStore } from 'pinia'
+import { useEventsRepository } from '~/repositories/eventsRepository'
+import { recordAudit } from '~/utils/audit'
 import type { UpcomingEvent, PastEvent } from '~/types/events'
 
-const STORAGE_KEY = 'congregation:events'
-
-interface PersistedShape {
-  upcoming: UpcomingEvent[]
-  past: PastEvent[]
-}
-
-function readPersisted(): PersistedShape | null {
-  if (typeof window === 'undefined') return null
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw) as PersistedShape
-    if (!parsed || !Array.isArray(parsed.upcoming) || !Array.isArray(parsed.past)) return null
-    return parsed
-  } catch {
-    return null
-  }
-}
-
-function writePersisted(upcoming: UpcomingEvent[], past: PastEvent[]): void {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ upcoming, past }))
-  } catch {
-    // Storage unavailable (private mode, quota). Ignore.
-  }
-}
-
-function makeId(prefix: string): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
-}
-
 export const useEventsStore = defineStore('events', () => {
-  const persisted = readPersisted()
   const activeTab = ref<'upcoming' | 'past'>('upcoming')
-  const upcomingEvents = ref<UpcomingEvent[]>(persisted?.upcoming ?? [])
-  const pastEvents = ref<PastEvent[]>(persisted?.past ?? [])
+  const upcomingEvents = ref<UpcomingEvent[]>([])
+  const pastEvents = ref<PastEvent[]>([])
+  const loading = ref(false)
+  const saving = ref(false)
+  const error = ref<string | null>(null)
+  const loaded = ref(false)
   const selectedUpcomingEvent = ref<UpcomingEvent | null>(null)
   const selectedPastEvent = ref<PastEvent | null>(null)
   const pastSubTab = ref<'month' | 'year'>('month')
@@ -46,8 +18,27 @@ export const useEventsStore = defineStore('events', () => {
   const galleryImages = ref<string[]>([])
   const galleryStartIndex = ref(0)
 
-  function persist() {
-    writePersisted(upcomingEvents.value, pastEvents.value)
+  function fail(e: unknown, fallback: string): never {
+    error.value = e instanceof Error ? e.message : fallback
+    useToast().error(error.value)
+    throw e
+  }
+
+  async function load(force = false) {
+    if (loaded.value && !force) return
+    loading.value = true
+    error.value = null
+    try {
+      const { upcoming, past } = await useEventsRepository().fetchEvents()
+      upcomingEvents.value = upcoming
+      pastEvents.value = past
+      loaded.value = true
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to load events'
+      useToast().error(error.value)
+    } finally {
+      loading.value = false
+    }
   }
 
   function setTab(tab: 'upcoming' | 'past') {
@@ -87,61 +78,121 @@ export const useEventsStore = defineStore('events', () => {
   }
 
   // ── CRUD: Upcoming ────────────────────────────────────────────────────────
-  function addUpcomingEvent(event: Omit<UpcomingEvent, 'id'>): UpcomingEvent {
-    const created: UpcomingEvent = { ...event, id: makeId('ue') }
-    upcomingEvents.value.push(created)
-    persist()
-    useToast().success(`"${created.title || 'Event'}" added`)
-    return created
+  async function addUpcomingEvent(event: Omit<UpcomingEvent, 'id'>): Promise<UpcomingEvent> {
+    saving.value = true
+    error.value = null
+    try {
+      const created = await useEventsRepository().createEvent<UpcomingEvent>('upcoming', event)
+      upcomingEvents.value.push(created)
+      recordAudit({ action: 'event.create', targetId: created.id, targetLabel: created.title })
+      useToast().success(`"${created.title || 'Event'}" added`)
+      return created
+    } catch (e: unknown) {
+      fail(e, 'Failed to add event')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function updateUpcomingEvent(id: string, updates: Partial<Omit<UpcomingEvent, 'id'>>) {
+  async function updateUpcomingEvent(id: string, updates: Partial<Omit<UpcomingEvent, 'id'>>) {
     const idx = upcomingEvents.value.findIndex((e) => e.id === id)
     if (idx === -1) return
-    upcomingEvents.value[idx] = { ...upcomingEvents.value[idx]!, ...updates }
-    if (selectedUpcomingEvent.value?.id === id) {
-      selectedUpcomingEvent.value = upcomingEvents.value[idx] ?? null
+    saving.value = true
+    error.value = null
+    try {
+      await useEventsRepository().updateEvent(id, updates)
+      upcomingEvents.value[idx] = { ...upcomingEvents.value[idx]!, ...updates }
+      if (selectedUpcomingEvent.value?.id === id) {
+        selectedUpcomingEvent.value = upcomingEvents.value[idx] ?? null
+      }
+      recordAudit({
+        action: 'event.update',
+        targetId: id,
+        targetLabel: upcomingEvents.value[idx]!.title,
+      })
+      useToast().success(`"${upcomingEvents.value[idx]!.title}" updated`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to update event')
+    } finally {
+      saving.value = false
     }
-    persist()
-    useToast().success(`"${upcomingEvents.value[idx]!.title}" updated`)
   }
 
-  function deleteUpcomingEvent(id: string) {
+  async function deleteUpcomingEvent(id: string) {
     const existing = upcomingEvents.value.find((e) => e.id === id)
     if (!existing) return
-    upcomingEvents.value = upcomingEvents.value.filter((e) => e.id !== id)
-    if (selectedUpcomingEvent.value?.id === id) selectedUpcomingEvent.value = null
-    persist()
-    useToast().success(`"${existing.title}" deleted`)
+    saving.value = true
+    error.value = null
+    try {
+      await useEventsRepository().deleteEvent(id)
+      upcomingEvents.value = upcomingEvents.value.filter((e) => e.id !== id)
+      if (selectedUpcomingEvent.value?.id === id) selectedUpcomingEvent.value = null
+      recordAudit({ action: 'event.delete', targetId: id, targetLabel: existing.title })
+      useToast().success(`"${existing.title}" deleted`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to delete event')
+    } finally {
+      saving.value = false
+    }
   }
 
   // ── CRUD: Past ────────────────────────────────────────────────────────────
-  function addPastEvent(event: Omit<PastEvent, 'id'>): PastEvent {
-    const created: PastEvent = { ...event, id: makeId('pe') }
-    pastEvents.value.push(created)
-    persist()
-    useToast().success(`"${created.title || 'Event'}" added`)
-    return created
+  async function addPastEvent(event: Omit<PastEvent, 'id'>): Promise<PastEvent> {
+    saving.value = true
+    error.value = null
+    try {
+      const created = await useEventsRepository().createEvent<PastEvent>('past', event)
+      pastEvents.value.push(created)
+      recordAudit({ action: 'event.create', targetId: created.id, targetLabel: created.title })
+      useToast().success(`"${created.title || 'Event'}" added`)
+      return created
+    } catch (e: unknown) {
+      fail(e, 'Failed to add event')
+    } finally {
+      saving.value = false
+    }
   }
 
-  function updatePastEvent(id: string, updates: Partial<Omit<PastEvent, 'id'>>) {
+  async function updatePastEvent(id: string, updates: Partial<Omit<PastEvent, 'id'>>) {
     const idx = pastEvents.value.findIndex((e) => e.id === id)
     if (idx === -1) return
-    pastEvents.value[idx] = { ...pastEvents.value[idx]!, ...updates }
-    if (selectedPastEvent.value?.id === id) {
-      selectedPastEvent.value = pastEvents.value[idx] ?? null
+    saving.value = true
+    error.value = null
+    try {
+      await useEventsRepository().updateEvent(id, updates)
+      pastEvents.value[idx] = { ...pastEvents.value[idx]!, ...updates }
+      if (selectedPastEvent.value?.id === id) {
+        selectedPastEvent.value = pastEvents.value[idx] ?? null
+      }
+      recordAudit({
+        action: 'event.update',
+        targetId: id,
+        targetLabel: pastEvents.value[idx]!.title,
+      })
+      useToast().success(`"${pastEvents.value[idx]!.title}" updated`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to update event')
+    } finally {
+      saving.value = false
     }
-    persist()
-    useToast().success(`"${pastEvents.value[idx]!.title}" updated`)
   }
 
-  function deletePastEvent(id: string) {
+  async function deletePastEvent(id: string) {
     const existing = pastEvents.value.find((e) => e.id === id)
     if (!existing) return
-    pastEvents.value = pastEvents.value.filter((e) => e.id !== id)
-    if (selectedPastEvent.value?.id === id) selectedPastEvent.value = null
-    persist()
-    useToast().success(`"${existing.title}" deleted`)
+    saving.value = true
+    error.value = null
+    try {
+      await useEventsRepository().deleteEvent(id)
+      pastEvents.value = pastEvents.value.filter((e) => e.id !== id)
+      if (selectedPastEvent.value?.id === id) selectedPastEvent.value = null
+      recordAudit({ action: 'event.delete', targetId: id, targetLabel: existing.title })
+      useToast().success(`"${existing.title}" deleted`)
+    } catch (e: unknown) {
+      fail(e, 'Failed to delete event')
+    } finally {
+      saving.value = false
+    }
   }
 
   const thisMonthEvents = computed(() => {
@@ -182,13 +233,17 @@ export const useEventsStore = defineStore('events', () => {
     openGallery,
     closeGallery,
     setPastSubTab,
+    loading,
+    saving,
+    error,
+    loaded,
+    load,
     addUpcomingEvent,
     updateUpcomingEvent,
     deleteUpcomingEvent,
     addPastEvent,
     updatePastEvent,
     deletePastEvent,
-    persist,
     thisMonthEvents,
     thisYearEvents,
     thisMonthCount,

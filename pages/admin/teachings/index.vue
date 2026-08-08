@@ -6,6 +6,7 @@ const { setHeader } = usePageHeader()
 const teachingsStore = useTeachingsStore()
 
 onMounted(() => {
+  teachingsStore.load()
   setHeader('Teachings Library', 'Browse all sermons and teaching materials')
 })
 

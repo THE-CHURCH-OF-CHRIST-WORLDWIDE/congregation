@@ -34,7 +34,11 @@ const SUMMARY_SERVICE = 'Sunday Worship'
 const summary = useAttendanceSummary(SUMMARY_SERVICE)
 const noAttendanceYet = computed(() => !summary.hasData.value)
 
+const teachingsStore = useTeachingsStore()
+
 onMounted(() => {
+  attendanceStore.load()
+  teachingsStore.load()
   setHeader(
     `Welcome - ${greeting.value}`,
     `Membership and ${SUMMARY_SERVICE} attendance at a glance`

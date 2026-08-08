@@ -1,4 +1,8 @@
 <script setup lang="ts">
+// Public pages can be hidden in production via STAGING_ONLY_ROUTES; their links must go too,
+// or the nav points at a 404.
+const { isHidden, visible } = useRouteVisibility()
+
 const route = useRoute()
 const liveStore = usePublicLiveStreamStore()
 
@@ -33,7 +37,7 @@ watch(route, () => {
   teachingsOpen.value = false
 })
 
-const teachingLinks = [
+const allTeachingLinks = [
   {
     icon: 'heroicons:microphone',
     label: 'Sermons',
@@ -47,6 +51,9 @@ const teachingLinks = [
     to: '/teachings/sunday-school',
   },
 ]
+
+/** Empties when /teachings is hidden, which also removes the dropdown that opens it. */
+const teachingLinks = computed(() => visible(allTeachingLinks))
 
 onBeforeUnmount(() => {
   if (teachingsTimer) clearTimeout(teachingsTimer)
@@ -65,7 +72,13 @@ onBeforeUnmount(() => {
   >
     <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
       <!-- Logo: church seal -->
-      <NuxtLink to="/" class="flex shrink-0 items-center" aria-label="Church of Christ home">
+      <!-- When the landing page is hidden the seal stays, but stops being a link to a 404. -->
+      <component
+        :is="isHidden('/') ? 'div' : resolveComponent('NuxtLink')"
+        :to="isHidden('/') ? undefined : '/'"
+        class="flex shrink-0 items-center"
+        :aria-label="isHidden('/') ? undefined : 'Church of Christ home'"
+      >
         <div
           class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border-2 border-navy"
         >
@@ -133,12 +146,12 @@ onBeforeUnmount(() => {
             </text>
           </svg>
         </div>
-      </NuxtLink>
+      </component>
 
       <!-- Desktop nav -->
       <ul class="hidden items-center gap-7 lg:flex">
         <!-- Static links -->
-        <li>
+        <li v-if="!isHidden('/')">
           <NuxtLink
             to="/"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
@@ -146,7 +159,7 @@ onBeforeUnmount(() => {
             >Home</NuxtLink
           >
         </li>
-        <li>
+        <li v-if="!isHidden('/live-streams')">
           <NuxtLink
             to="/live-streams"
             class="flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-gray-900"
@@ -165,7 +178,12 @@ onBeforeUnmount(() => {
 
         <!-- Teachings dropdown — opens on hover for pointers, and on click for
              touch and keyboard users, who have no hover to give. -->
-        <li class="relative" @mouseenter="openTeachings" @mouseleave="closeTeachings">
+        <li
+          v-if="teachingLinks.length"
+          class="relative"
+          @mouseenter="openTeachings"
+          @mouseleave="closeTeachings"
+        >
           <button
             class="flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
             :aria-expanded="teachingsOpen"
@@ -217,7 +235,7 @@ onBeforeUnmount(() => {
           </Transition>
         </li>
 
-        <li>
+        <li v-if="!isHidden('/events')">
           <NuxtLink
             to="/events"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
@@ -235,7 +253,7 @@ onBeforeUnmount(() => {
             >Gallery</NuxtLink
           >
         </li>
-        <li>
+        <li v-if="!isHidden('/about-us')">
           <NuxtLink
             to="/about-us"
             class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
@@ -285,7 +303,7 @@ onBeforeUnmount(() => {
       <div v-if="mobileOpen" class="border-t border-gray-100 bg-white lg:hidden">
         <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6">
           <ul class="flex flex-col gap-1">
-            <li>
+            <li v-if="!isHidden('/')">
               <NuxtLink
                 to="/"
                 class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -294,7 +312,7 @@ onBeforeUnmount(() => {
                 Home
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="!isHidden('/live-streams')">
               <NuxtLink
                 to="/live-streams"
                 class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -340,7 +358,7 @@ onBeforeUnmount(() => {
                 </ul>
               </Transition>
             </li>
-            <li>
+            <li v-if="!isHidden('/events')">
               <NuxtLink
                 to="/events"
                 active-class="text-blue-600 bg-blue-50"
@@ -358,7 +376,7 @@ onBeforeUnmount(() => {
                 >Gallery</NuxtLink
               >
             </li>
-            <li>
+            <li v-if="!isHidden('/about-us')">
               <NuxtLink
                 to="/about-us"
                 active-class="text-blue-600 bg-blue-50"

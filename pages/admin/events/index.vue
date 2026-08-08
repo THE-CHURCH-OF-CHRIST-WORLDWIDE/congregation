@@ -8,6 +8,7 @@ const { setHeader } = usePageHeader()
 const eventsStore = useEventsStore()
 
 onMounted(() => {
+  eventsStore.load()
   setHeader('Events', 'Manage church events and programmes')
 })
 
