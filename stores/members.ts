@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { recordAudit } from '~/utils/audit'
 import { useMembersRepository } from '~/repositories/membersRepository'
+import { churchNumberKey, normaliseChurchNumber } from '~/utils/churchNumber'
 import type { Member, MemberFilters } from '~/types'
 
 export const useMembersStore = defineStore('members', () => {
@@ -52,6 +53,22 @@ export const useMembersStore = defineStore('members', () => {
     return result
   })
 
+  /**
+   * Who, if anyone, already holds this church number — ignoring `exceptId`, so a member editing
+   * their own record does not collide with themselves.
+   *
+   * This is for immediate feedback in the form. It only knows about the members already loaded,
+   * so it is not the guarantee: `membersRepository` claims the number in a transaction, which is
+   * what actually holds when two people save at once.
+   */
+  function churchNumberHolder(churchNumber: string, exceptId?: string): Member | undefined {
+    const key = churchNumberKey(churchNumber)
+    if (!key) return undefined
+    return members.value.find(
+      (m) => m.id !== exceptId && churchNumberKey(m.churchNumber ?? '') === key
+    )
+  }
+
   const backsliders = computed(() => members.value.filter((m) => m.absenceCount >= 3))
 
   const activeCount = computed(() => members.value.filter((m) => m.status === 'Active').length)
@@ -89,6 +106,16 @@ export const useMembersStore = defineStore('members', () => {
     () => youthMembers.value.filter((m) => m.gender === 'Male').length
   )
 
+  /**
+   * Store the number as typed but tidied — trimmed, inner spaces collapsed. A blank one is
+   * stored as `''` rather than dropped, so clearing a number releases its reservation instead
+   * of silently leaving the old one in place.
+   */
+  function withNormalisedNumber<T extends { churchNumber?: string }>(input: T): T {
+    if (!('churchNumber' in input)) return input
+    return { ...input, churchNumber: normaliseChurchNumber(input.churchNumber ?? '') }
+  }
+
   function fail(e: unknown, fallback: string): never {
     error.value = e instanceof Error ? e.message : fallback
     useToast().error(error.value)
@@ -114,6 +141,7 @@ export const useMembersStore = defineStore('members', () => {
 
   async function addMember(member: Omit<Member, 'id'>): Promise<Member> {
     const repo = useMembersRepository()
+    member = withNormalisedNumber(member)
     saving.value = true
     error.value = null
     try {
@@ -137,6 +165,7 @@ export const useMembersStore = defineStore('members', () => {
     const idx = members.value.findIndex((m) => m.id === id)
     if (idx === -1) return
     const repo = useMembersRepository()
+    updates = withNormalisedNumber(updates)
     saving.value = true
     error.value = null
     try {
@@ -184,6 +213,7 @@ export const useMembersStore = defineStore('members', () => {
     loaded,
     filters,
     filteredMembers,
+    churchNumberHolder,
     backsliders,
     activeCount,
     sisterCount,

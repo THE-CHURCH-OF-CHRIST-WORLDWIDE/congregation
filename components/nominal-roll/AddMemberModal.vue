@@ -37,6 +37,7 @@ const form = reactive<
   phone: '',
   email: '',
   dob: '',
+  churchNumber: '',
   status: 'Active',
   maritalStatus: '',
   dateOfBaptism: '',
@@ -60,6 +61,18 @@ const form = reactive<
 })
 
 const errors = reactive({ name: '', email: '', phone: '' })
+
+/**
+ * A church number nobody else holds. Advisory only — `membersRepository` claims the number in a
+ * transaction, which is what stops two people assigning it at the same moment. This just shows
+ * the clash before the save is attempted.
+ */
+const churchNumberError = computed(() => {
+  const typed = form.churchNumber?.trim()
+  if (!typed) return ''
+  const holder = membersStore.churchNumberHolder(typed)
+  return holder ? `Already assigned to ${holder.name}.` : ''
+})
 
 const genderOptions = [
   { label: 'Male', value: 'Male' },
@@ -90,7 +103,7 @@ function save() {
   errors.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) ? '' : 'Valid email required'
   errors.phone = form.phone.trim() ? '' : 'Phone is required'
 
-  if (errors.name || errors.email || errors.phone) return
+  if (errors.name || errors.email || errors.phone || churchNumberError.value) return
 
   const emergencyContact: EmergencyContact | undefined =
     form.ecName || form.ecPhone
@@ -108,6 +121,7 @@ function save() {
     phone: form.phone,
     email: form.email,
     dob: form.dob,
+    churchNumber: form.churchNumber,
     status: form.status,
     maritalStatus: form.maritalStatus,
     dateOfBaptism: form.dateOfBaptism,
@@ -138,6 +152,7 @@ function reset() {
     phone: '',
     email: '',
     dob: '',
+    churchNumber: '',
     status: 'Active',
     maritalStatus: '',
     dateOfBaptism: '',
@@ -196,11 +211,27 @@ watch(
             </EditField>
           </div>
 
-          <!-- Date of Baptism | Date of Registration -->
+          <!-- Church Number | Date of Baptism -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <EditField
+              label="Church Number"
+              :error="churchNumberError"
+              hint="Must be unique. Leave blank to assign one later."
+            >
+              <input
+                v-model="form.churchNumber"
+                type="text"
+                placeholder="e.g. COC/001"
+                :aria-invalid="Boolean(churchNumberError)"
+              />
+            </EditField>
             <EditField label="Date of Baptism">
               <input v-model="form.dateOfBaptism" type="date" />
             </EditField>
+          </div>
+
+          <!-- Date of Registration -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <EditField label="Date of Registration">
               <input v-model="form.dateJoined" type="date" />
             </EditField>
@@ -351,7 +382,7 @@ watch(
     <template #footer>
       <div class="flex gap-2 justify-end">
         <Button variant="secondary" @click="close">Cancel</Button>
-        <Button :loading="membersStore.saving" @click="save">
+        <Button :loading="membersStore.saving" :disabled="Boolean(churchNumberError)" @click="save">
           <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
           Add Member
         </Button>

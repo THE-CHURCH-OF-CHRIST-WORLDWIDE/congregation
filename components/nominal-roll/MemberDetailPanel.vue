@@ -66,6 +66,7 @@ const ef = reactive<
   phone: '',
   email: '',
   dob: '',
+  churchNumber: '',
   status: 'Active',
   maritalStatus: '',
   dateOfBaptism: '',
@@ -93,6 +94,7 @@ function startEdit() {
     phone: m.phone ?? '',
     email: m.email ?? '',
     dob: m.dob ?? '',
+    churchNumber: m.churchNumber ?? '',
     status: m.status ?? 'Active',
     maritalStatus: m.maritalStatus ?? '',
     dateOfBaptism: m.dateOfBaptism ?? '',
@@ -113,8 +115,24 @@ function startEdit() {
   mode.value = 'edit'
 }
 
+/**
+ * The church number already on somebody else's record, if any.
+ *
+ * Only covers members loaded into the store — the real guarantee is the transactional claim in
+ * `membersRepository`, which is what holds when two people save at the same moment. This exists
+ * so the clash is visible while typing instead of after a failed save.
+ */
+const churchNumberError = computed(() => {
+  const typed = ef.churchNumber?.trim()
+  if (!typed || !props.member) return ''
+  const holder = membersStore.churchNumberHolder(typed, props.member.id)
+  return holder ? `Already assigned to ${holder.name}.` : ''
+})
+
 async function saveEdit() {
   if (!props.member) return
+  // Refuse locally rather than letting the transaction reject it after a round trip.
+  if (churchNumberError.value) return
   await membersStore
     .updateMember(props.member.id, {
       name: ef.name,
@@ -122,6 +140,7 @@ async function saveEdit() {
       phone: ef.phone,
       email: ef.email,
       dob: ef.dob,
+      churchNumber: ef.churchNumber,
       status: ef.status,
       maritalStatus: ef.maritalStatus,
       dateOfBaptism: ef.dateOfBaptism,
@@ -568,11 +587,27 @@ const initials = computed(() =>
                   </EditField>
                 </div>
 
-                <!-- Date of Baptism | Date of Registration -->
+                <!-- Church Number | Date of Baptism -->
                 <div class="grid grid-cols-2 gap-3">
+                  <EditField
+                    label="Church Number"
+                    :error="churchNumberError"
+                    hint="Must be unique. Leave blank if none has been assigned."
+                  >
+                    <input
+                      v-model="ef.churchNumber"
+                      type="text"
+                      placeholder="e.g. COC/001"
+                      :aria-invalid="Boolean(churchNumberError)"
+                    />
+                  </EditField>
                   <EditField label="Date of Baptism">
                     <input v-model="ef.dateOfBaptism" type="date" />
                   </EditField>
+                </div>
+
+                <!-- Date of Registration -->
+                <div class="grid grid-cols-2 gap-3">
                   <EditField label="Date of Registration">
                     <input v-model="ef.dateJoined" type="date" />
                   </EditField>
@@ -681,7 +716,7 @@ const initials = computed(() =>
             <div class="flex gap-3">
               <button
                 class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-                :disabled="membersStore.saving"
+                :disabled="membersStore.saving || Boolean(churchNumberError)"
                 @click="saveEdit"
               >
                 <Icon v-if="membersStore.saving" icon="mdi:loading" class="animate-spin" />
