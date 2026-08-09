@@ -2,7 +2,7 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Twelve collections, with deliberately different exposure:
+// Thirteen collections, with deliberately different exposure:
 //
 //   auditLog        — append-only record of who changed what. Any staff account may add an
 //                     entry as itself; only a Super Admin may read it; nobody may edit or
@@ -28,6 +28,9 @@ rules_version = '2';
 //                     gallery, congregations, homepage events). The landing and
 //                     about pages read this while signed out, so it is world
 //                     readable. Super Admin and Admin may write.
+//
+//   memberNumbers   — reservation documents that make church (membership) numbers unique.
+//                     Firestore has no unique constraint; this collection is it.
 //
 //   members         — the nominal roll. Contains names, phone numbers, home
 //                     addresses and dates of birth, so it is NEVER publicly
@@ -256,6 +259,23 @@ service cloud.firestore {
       allow create: if shapeIsValid(request.resource.data)
                     && (isStaff() || selfRegistrationIsSane(request.resource.data));
       allow update, delete: if isStaff();
+    }
+
+    // ── Church number reservations ─────────────────────────────────────────
+    // One document per assigned church (membership) number, keyed by a normalised form of it,
+    // holding the member it belongs to. Firestore has no unique constraint, so this collection
+    // IS the constraint: the app claims a number in a transaction, and a second claim on the
+    // same key fails.
+    //
+    // Only staff touch these, and never directly — `membersRepository` writes them alongside
+    // the member record. The update rule refuses to repoint an existing reservation at a
+    // different member, so a number cannot be taken off whoever holds it by a stray write;
+    // reassigning it means releasing it first, which is what the transaction does.
+    match /memberNumbers/{numberKey} {
+      allow read: if isStaff();
+      allow create, delete: if isStaff();
+      allow update: if isStaff()
+                    && request.resource.data.memberId == resource.data.memberId;
     }
 
     // Anything not matched above stays closed.

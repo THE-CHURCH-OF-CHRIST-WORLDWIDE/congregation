@@ -490,17 +490,22 @@ Everything needed to stand a congregation up on its own Firebase projects and Ne
 
 Signing in and being allowed to write are separate things. Privilege comes from exactly one place: a `users/{uid}` document in Firestore, which [`firestore.rules`](firestore.rules) reads on every write. An account with no such document can sign in and see the dashboard shell but cannot change anything — the admin header shows a red banner saying so, rather than letting each save fail on its own.
 
-Six collections, with deliberately different exposure:
+Thirteen collections, with deliberately different exposure:
 
-| Collection        | Holds                                           | Notes                                                      |
-| ----------------- | ----------------------------------------------- | ---------------------------------------------------------- |
-| `users/{uid}`     | The role a Firebase Auth account carries        | **Grants privilege.** Every write rule is gated on it      |
-| `invitations`     | Pending invitations, keyed by lower-cased email | Claimed on first sign-in; the only self-service role grant |
-| `roles/{roleId}`  | Permission-matrix overrides only                | Names, ids and colours stay in code                        |
-| `roleAssignments` | Which nominal-roll member holds which role      | Presentational — records standing, not access              |
-| `auditLog`        | Append-only record of who changed what          | Super Admin reads; staff append; nobody edits or deletes   |
-| `settings/church` | Public site content                             | World-readable; the landing page reads it signed out       |
-| `members`         | The nominal roll                                | Never publicly readable; `/register` may create only       |
+| Collection                              | Holds                                           | Notes                                                        |
+| --------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| `users/{uid}`                           | The role a Firebase Auth account carries        | **Grants privilege.** Every write rule is gated on it        |
+| `invitations`                           | Pending invitations, keyed by lower-cased email | Claimed on first sign-in; the only self-service role grant   |
+| `roles/{roleId}`                        | Permission-matrix overrides only                | Names, ids and colours stay in code                          |
+| `roleAssignments`                       | Which nominal-roll member holds which role      | Presentational — records standing, not access                |
+| `auditLog`                              | Append-only record of who changed what          | Super Admin reads; staff append; nobody edits or deletes     |
+| `settings/church`                       | Public site content                             | World-readable; the landing page reads it signed out         |
+| `members`                               | The nominal roll                                | Never publicly readable; `/register` may create only         |
+| `memberNumbers`                         | Church-number reservations, keyed by the number | Firestore has no unique constraint — this collection is it   |
+| `financeCollections`, `financeExpenses` | The congregation's books                        | Staff read; `canEditFinance()` writes                        |
+| `teachings`                             | Sermons and Sunday School lessons               | Staff read; `canEditRecords()` writes                        |
+| `attendance`                            | Who was present at which service                | Never public; deterministic ids keep re-saves idempotent     |
+| `events`                                | Upcoming and past events                        | World-readable — `/events` lists them to signed-out visitors |
 
 Who may do what:
 
@@ -535,6 +540,31 @@ Three things carry the word "role" and are deliberately separate. Confusing them
 | **Account access**  | `users/{uid}`                      | "May this login change church data?" | **Firestore rules**           |
 
 A member on the nominal roll can be an elder with no login at all, and a login can exist with no member record. Only `users/{uid}` gates anything.
+
+### Church numbers are unique
+
+A member's church (membership) number is assigned when adding or editing them on the nominal
+roll, and no two members may hold the same one.
+
+Firestore has no unique constraint, so uniqueness is enforced with a reservation document at
+`memberNumbers/{key}` naming the member who holds that number. `membersRepository` claims it
+**inside a transaction**, together with the member write — which is the only thing that stops
+two secretaries assigning the same number at the same moment. A plain "is this taken?" query
+would let both read _no_ before either wrote.
+
+The key is a normalised form of the number: lower-cased, with every run of non-alphanumeric
+characters collapsed to a hyphen (`utils/churchNumber.ts`). So `COC/001`, `coc-001` and
+`COC 001` are all the same number, and the key can never contain the `/` that Firestore forbids
+in a document id. The number is _stored_ as typed, only trimmed.
+
+The reservation moves with the member: released when the number changes, when it is cleared,
+and when the member is deleted. The form also checks the loaded roll as you type, so a clash
+shows up before you save — but that check is only for feedback; the transaction is the
+guarantee.
+
+**Numbers already in the roll have no reservation.** Nothing wrote `churchNumber` before this,
+so in practice there is nothing to backfill. If a record does carry one, re-save that member
+once to claim it — until then the number is not actually reserved.
 
 #### Default permission matrix
 
