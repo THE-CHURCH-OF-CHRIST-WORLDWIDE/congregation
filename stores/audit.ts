@@ -28,6 +28,9 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   'event.update': 'Updated an event',
   'event.delete': 'Deleted an event',
   'attendance.record': 'Recorded attendance',
+  'message.read': 'Read a message',
+  'message.handled': 'Triaged a message',
+  'message.delete': 'Deleted a message',
 }
 
 export function auditActionLabel(action: AuditAction): string {

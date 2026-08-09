@@ -1,13 +1,32 @@
 <script setup lang="ts">
-const form = reactive({ name: '', email: '', message: '' })
+const form = reactive({ name: '', email: '', phone: '', message: '' })
 const submitted = ref(false)
-const submitting = ref(false)
+const error = ref('')
 
+const messagesStore = useMessagesStore()
+
+/**
+ * Sends the message to Firestore, where staff read it in Admin → Messages.
+ *
+ * This used to be a 900ms `setTimeout` followed by "Message Sent!" — nothing was ever sent
+ * anywhere. On failure the form now stays on screen with what was typed still in it, because
+ * clearing it would lose a message the visitor believes they sent.
+ */
 async function handleSubmit() {
-  submitting.value = true
-  await new Promise((r) => setTimeout(r, 900))
-  submitted.value = true
-  submitting.value = false
+  error.value = ''
+  try {
+    await messagesStore.submit({
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      message: form.message,
+    })
+    submitted.value = true
+    Object.assign(form, { name: '', email: '', phone: '', message: '' })
+  } catch {
+    error.value =
+      messagesStore.error ?? 'Your message could not be sent. Please try again, or call us.'
+  }
 }
 
 const { el: sectionRef, isVisible } = useScrollReveal()
@@ -202,6 +221,22 @@ onMounted(() => settingsStore.load())
                   />
                 </div>
 
+                <!-- Phone -->
+                <div>
+                  <label class="mb-1.5 block text-[13px] font-medium text-gray-700" for="cf-phone"
+                    >Phone Number</label
+                  >
+                  <input
+                    id="cf-phone"
+                    v-model="form.phone"
+                    type="tel"
+                    autocomplete="tel"
+                    required
+                    placeholder="+234 800 000 0000"
+                    class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  />
+                </div>
+
                 <!-- Message -->
                 <div>
                   <label class="mb-1.5 block text-[13px] font-medium text-gray-700" for="cf-message"
@@ -218,12 +253,14 @@ onMounted(() => settingsStore.load())
                   <p class="mt-1 text-[12px] text-gray-400">Keep this simple of 500 words max.</p>
                 </div>
 
+                <p v-if="error" role="alert" class="text-[13px] text-red-600">{{ error }}</p>
+
                 <button
                   type="submit"
-                  :disabled="submitting"
+                  :disabled="messagesStore.submitting"
                   class="mt-1 w-full rounded-full bg-[#026AA2] py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
                 >
-                  {{ submitting ? 'Sending…' : 'Send message' }}
+                  {{ messagesStore.submitting ? 'Sending…' : 'Send message' }}
                 </button>
               </div>
             </form>

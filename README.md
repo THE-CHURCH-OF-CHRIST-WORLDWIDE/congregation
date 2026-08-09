@@ -277,7 +277,8 @@ congregation/
 │   ├── auditRepository.ts            # auditLog — append-only activity record
 │   ├── churchSettingsRepository.ts   # settings/church document
 │   ├── invitationsRepository.ts      # invitations/{email} — pending invites
-│   ├── membersRepository.ts          # members collection (nominal roll)
+│   ├── membersRepository.ts          # members collection (nominal roll) + memberNumbers
+│   ├── messagesRepository.ts         # messages collection (public contact form)
 │   ├── roleAssignmentsRepository.ts  # roleAssignments — member ↔ role
 │   ├── rolesRepository.ts            # roles/{roleId} — permission overrides
 │   └── usersRepository.ts            # users/{uid} — account roles (grants access)
@@ -490,7 +491,7 @@ Everything needed to stand a congregation up on its own Firebase projects and Ne
 
 Signing in and being allowed to write are separate things. Privilege comes from exactly one place: a `users/{uid}` document in Firestore, which [`firestore.rules`](firestore.rules) reads on every write. An account with no such document can sign in and see the dashboard shell but cannot change anything — the admin header shows a red banner saying so, rather than letting each save fail on its own.
 
-Thirteen collections, with deliberately different exposure:
+Fourteen collections, with deliberately different exposure:
 
 | Collection                              | Holds                                           | Notes                                                        |
 | --------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
@@ -502,6 +503,7 @@ Thirteen collections, with deliberately different exposure:
 | `settings/church`                       | Public site content                             | World-readable; the landing page reads it signed out         |
 | `members`                               | The nominal roll                                | Never publicly readable; `/register` may create only         |
 | `memberNumbers`                         | Church-number reservations, keyed by the number | Firestore has no unique constraint — this collection is it   |
+| `messages`                              | The public contact form's inbox                 | The only collection anonymous callers may write; create-only |
 | `financeCollections`, `financeExpenses` | The congregation's books                        | Staff read; `canEditFinance()` writes                        |
 | `teachings`                             | Sermons and Sunday School lessons               | Staff read; `canEditRecords()` writes                        |
 | `attendance`                            | Who was present at which service                | Never public; deterministic ids keep re-saves idempotent     |
@@ -540,6 +542,30 @@ Three things carry the word "role" and are deliberately separate. Confusing them
 | **Account access**  | `users/{uid}`                      | "May this login change church data?" | **Firestore rules**           |
 
 A member on the nominal roll can be an elder with no login at all, and a login can exist with no member record. Only `users/{uid}` gates anything.
+
+### Contact messages
+
+The "Send Us A Message" form on the landing page writes to the `messages` collection, and staff
+read it at **Admin → Messages**. The sidebar item carries an unread count.
+
+Each message has two independent flags. `read` is set when somebody opens it. `handled` is set
+by hand, and means somebody has actually replied or dealt with it — a message can be read and
+still open, which is the state that matters. Replying uses the staff member's own mail client
+via `mailto:`; nothing is sent from inside the app.
+
+**This is the only collection an anonymous caller may write to**, which makes it the app's spam
+surface. Two things bound it, and neither is rate-limiting:
+
+- The rules pin the shape — exactly the seven expected fields, a length cap on each, `read` and
+  `handled` forced to `false`, and `submittedAt` forced to the server's time. It cannot be used
+  as free storage, and a message cannot arrive pre-dismissed from the inbox.
+- Create-only. A visitor cannot list, read, edit or delete any message, including their own.
+  Staff updates are restricted to the two flags, so the text as sent can never be rewritten.
+
+Firestore rules cannot rate-limit, so a determined flood is still possible. If that happens, the
+fix is [App Check](https://firebase.google.com/docs/app-check) with reCAPTCHA on the web app —
+it turns away automated clients without adding a puzzle for real visitors — or moving the write
+behind a Cloud Function that can throttle by IP.
 
 ### Church numbers are unique
 

@@ -2,7 +2,7 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Thirteen collections, with deliberately different exposure:
+// Fourteen collections, with deliberately different exposure:
 //
 //   auditLog        — append-only record of who changed what. Any staff account may add an
 //                     entry as itself; only a Super Admin may read it; nobody may edit or
@@ -23,6 +23,10 @@ rules_version = '2';
 //   financeCollections, financeExpenses
 //                   — the congregation's books. Staff may read; only Super Admin, Admin and
 //                     the Financial Secretary may write.
+//
+//   messages        — the public contact form's inbox. The ONLY collection an anonymous
+//                     caller may write to, and create-only: a visitor cannot read back any
+//                     message, including their own. Staff read and triage.
 //
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
@@ -213,6 +217,38 @@ service cloud.firestore {
     match /events/{eventId} {
       allow read: if true;
       allow write: if canEditRecords();
+    }
+
+    // ── Contact messages ───────────────────────────────────────────────────
+    // The public "Send Us A Message" form writes here while signed out, which makes this the
+    // one collection anonymous callers can add to. Create-only for them, and nothing else:
+    // a visitor cannot list, read, edit or delete a message, including their own.
+    //
+    // The shape is pinned so the endpoint cannot be used as free storage, and `read`/`handled`
+    // are forced false so a submission cannot arrive already dismissed from the inbox.
+    // `submittedAt` must be the server's time, not a client's claim about it.
+    //
+    // What this does NOT do is rate-limit — rules cannot. A flood is still possible; the fix
+    // is App Check or a Cloud Function, see README § Contact messages.
+    match /messages/{messageId} {
+      function messageIsValid(data) {
+        return data.keys().hasOnly(['name', 'email', 'phone', 'message', 'submittedAt', 'read', 'handled'])
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+          && data.email is string && data.email.size() > 0 && data.email.size() <= 200
+          && data.phone is string && data.phone.size() <= 40
+          && data.message is string && data.message.size() > 0 && data.message.size() <= 4000
+          && data.read == false
+          && data.handled == false
+          && data.submittedAt == request.time;
+      }
+
+      allow read: if isStaff();
+      allow create: if messageIsValid(request.resource.data);
+      // Staff triage: only the two flags may change, so an edit cannot rewrite what was sent.
+      allow update: if isStaff()
+                    && request.resource.data.diff(resource.data)
+                       .affectedKeys().hasOnly(['read', 'handled']);
+      allow delete: if isStaff();
     }
 
     // ── Church settings ────────────────────────────────────────────────────

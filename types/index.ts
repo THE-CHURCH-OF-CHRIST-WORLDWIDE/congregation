@@ -43,6 +43,28 @@ export interface Member {
   emergencyContact?: EmergencyContact
 }
 
+/**
+ * A message left through the public "Send Us A Message" form.
+ *
+ * Anonymous visitors create these, so the collection is the app's one publicly writable
+ * surface — see the shape constraints in `firestore.rules`. Staff read them in
+ * Admin → Messages; `handled` records that somebody has dealt with it, rather than deleting
+ * the message and losing the record of what was asked.
+ */
+export interface ContactMessage {
+  id: string
+  name: string
+  email: string
+  phone: string
+  message: string
+  /** ISO string once read back; `serverTimestamp()` on write. */
+  submittedAt?: string
+  /** Somebody on staff has read it. */
+  read: boolean
+  /** Somebody on staff has replied or otherwise dealt with it. */
+  handled: boolean
+}
+
 export interface AttendanceRecord {
   id: string
   memberId: string
@@ -187,6 +209,9 @@ export type AuditAction =
   | 'event.update'
   | 'event.delete'
   | 'attendance.record'
+  | 'message.read'
+  | 'message.handled'
+  | 'message.delete'
 
 /**
  * One recorded change, stored append-only at `auditLog/{id}`.

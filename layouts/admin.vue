@@ -4,14 +4,17 @@ const uiStore = useUiStore()
 const authStore = useAuthStore()
 const membersStore = useMembersStore()
 const settingsStore = useChurchSettingsStore()
+const messagesStore = useMessagesStore()
 const { title, subtitle } = usePageHeader()
 
-// The nominal roll backs the dashboard, youth, attendance and roles screens, and the
-// church settings name the congregation in the sidebar, so load both once here rather
-// than in each page. `load()` is a no-op if already done.
+// The nominal roll backs the dashboard, youth, attendance and roles screens, the church
+// settings name the congregation in the sidebar, and unread messages drive the inbox badge.
+// Loaded once here rather than in each page; `load()` is a no-op if already done.
 onMounted(() => {
   membersStore.load()
   settingsStore.load()
+  // Backs the unread badge on the Messages item, so it is loaded from every admin page.
+  messagesStore.load()
 })
 
 const { visible } = useRouteVisibility()
@@ -24,6 +27,7 @@ const allNavItems = [
   { label: 'Teachings', to: '/admin/teachings', icon: 'mdi:book-open-page-variant-outline' },
   { label: 'Events', to: '/admin/events', icon: 'mdi:calendar-outline' },
   { label: 'Finance', to: '/admin/finance', icon: 'mdi:cash-multiple' },
+  { label: 'Messages', to: '/admin/messages', icon: 'mdi:email-outline', badge: 'messages' },
   { label: 'Settings', to: '/admin/settings', icon: 'mdi:cog-outline' },
 ]
 
@@ -101,6 +105,14 @@ async function logout() {
         >
           <Icon :icon="item.icon" class="text-[18px] flex-shrink-0" />
           {{ item.label }}
+          <!-- Unread enquiries, so a message left overnight is visible from any page. -->
+          <span
+            v-if="item.badge === 'messages' && messagesStore.unreadCount"
+            class="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-semibold text-white"
+            :aria-label="`${messagesStore.unreadCount} unread`"
+          >
+            {{ messagesStore.unreadCount }}
+          </span>
         </NuxtLink>
       </nav>
 
