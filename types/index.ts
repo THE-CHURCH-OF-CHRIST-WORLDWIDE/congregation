@@ -12,8 +12,14 @@ export interface Member {
   phone: string
   email: string
   dob?: string
+  /**
+   * `Active` and `Inactive` are the only two the app sets by itself — see
+   * `utils/attendanceStatus.ts`, which flips between them as Sunday registers are taken. The
+   * rest are pastoral decisions and are never overwritten automatically.
+   */
   status:
     | 'Active'
+    | 'Inactive'
     | 'Backslider'
     | 'Weak'
     | 'Distant'
@@ -21,6 +27,12 @@ export interface Member {
     | 'Disfellowshipped'
     | 'Transfer'
     | 'Late'
+  /**
+   * @deprecated Nothing maintains this. It is written as 0 when a member is registered and never
+   * updated, which is why the dashboard's follow-up table was permanently empty. Absences are
+   * derived from the register instead — see `absenceStreaks` and `useAbsenceTracking`. The field
+   * stays only because existing documents carry it and `firestore.rules` still permits it.
+   */
   absenceCount: number
   avatar?: string
   // Extended profile
@@ -210,6 +222,8 @@ export interface ChurchRole {
 export type AuditAction =
   | 'member.create'
   | 'member.update'
+  /** The app relabelled somebody Active/Inactive off the Sunday register — no person chose it. */
+  | 'member.autoStatus'
   | 'member.delete'
   | 'settings.update'
   | 'role.permissions'

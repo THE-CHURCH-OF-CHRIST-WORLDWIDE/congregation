@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Member } from '~/types'
-import { YOUTH_LEVELS, YOUTH_PROGRAMS } from '~/constants'
+import { MEMBER_STATUSES, YOUTH_LEVELS, YOUTH_PROGRAMS } from '~/constants'
 
 interface Props {
   member: Member | null
@@ -252,6 +252,7 @@ function fmt(d?: string) {
 
 const statusConfig = {
   Active: { variant: 'success', label: 'Active Member' },
+  Inactive: { variant: 'neutral', label: 'Inactive' },
   Backslider: { variant: 'danger', label: 'Backslider' },
   Weak: { variant: 'warning', label: 'Weak Brethren' },
   Distant: { variant: 'info', label: 'Distant Member' },
@@ -293,16 +294,9 @@ const genderOptions = [
   { label: 'Male', value: 'Male' },
   { label: 'Female', value: 'Female' },
 ]
-const statusOptions = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Backslider', value: 'Backslider' },
-  { label: 'Weak', value: 'Weak' },
-  { label: 'Distant', value: 'Distant' },
-  { label: 'Withdrawal', value: 'Withdrawal' },
-  { label: 'Disfellowshipped', value: 'Disfellowshipped' },
-  { label: 'Transfer', value: 'Transfer' },
-  { label: 'Late', value: 'Late' },
-]
+// Derived from MEMBER_STATUSES rather than hand-listed, so adding a status cannot leave it
+// missing from the dropdown that sets it.
+const statusOptions = MEMBER_STATUSES.map((s) => ({ label: s, value: s }))
 /** Fallback for members who registered without a passport photograph. */
 const initials = computed(() =>
   (props.member?.name ?? '')

@@ -97,6 +97,7 @@ function viewList(tab: 'all' | 'boys' | 'girls' | 'active' | 'inactive') {
  */
 const STATUS_COLORS: Record<string, string> = {
   Active: '#3b82f6',
+  Inactive: '#94a3b8',
   Backslider: '#f59e0b',
   Weak: '#22c55e',
   Distant: '#6366f1',

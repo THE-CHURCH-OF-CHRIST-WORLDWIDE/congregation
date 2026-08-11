@@ -254,6 +254,19 @@ export const useAttendanceStore = defineStore('attendance', () => {
     } finally {
       saving.value = false
     }
+
+    // The register just changed, so who counts as inactive may have too. Deliberately outside the
+    // try above, and swallowing its own failures: this follows a register that has already saved
+    // successfully, and must never be able to report that register as failed.
+    try {
+      const membersStore = useMembersStore()
+      // Only relabel against a roll already in memory. Fetching one here would put a full read of
+      // the members collection behind every register save, on a page that has necessarily loaded
+      // them already to draw the register in the first place.
+      if (membersStore.loaded) await membersStore.syncAttendanceStatuses(records.value)
+    } catch {
+      // Bookkeeping only — never the user's problem.
+    }
   }
 
   function cancelChanges() {

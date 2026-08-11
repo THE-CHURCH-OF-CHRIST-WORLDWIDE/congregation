@@ -10,6 +10,10 @@ const { title, subtitle } = usePageHeader()
 // The nominal roll backs the dashboard, youth, attendance and roles screens, the church
 // settings name the congregation in the sidebar, and unread messages drive the inbox badge.
 // Loaded once here rather than in each page; `load()` is a no-op if already done.
+//
+// Attendance is deliberately NOT loaded here, and neither is the label refresh that needs it:
+// `fetchRecords` reads the whole collection, which grows as members × services × dates. That
+// belongs on the two screens that already pay for it — see `autoSyncWhenReady`.
 onMounted(() => {
   membersStore.load()
   settingsStore.load()

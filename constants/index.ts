@@ -4,6 +4,7 @@ import type { Member, ServiceType, ExpenseCategory, RoleName, AppPage, AppAction
 
 export const MEMBER_STATUSES: Member['status'][] = [
   'Active',
+  'Inactive',
   'Backslider',
   'Weak',
   'Distant',

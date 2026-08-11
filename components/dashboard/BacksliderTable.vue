@@ -1,12 +1,15 @@
 <script setup lang="ts">
 const membersStore = useMembersStore()
 const { exportCSV } = useExportCSV()
+// Absences come from the Sunday register, not from `Member.absenceCount` — nothing ever wrote to
+// that field, so this table showed nobody however long people had been away.
+const { backsliders, absencesFor, BACKSLIDER_THRESHOLD } = useAbsenceTracking()
 
 const search = ref('')
 
 const filtered = computed(() => {
   const q = search.value.toLowerCase()
-  return membersStore.backsliders.filter(
+  return backsliders.value.filter(
     (m) => !q || m.name.toLowerCase().includes(q) || m.phone.includes(q)
   )
 })
@@ -15,10 +18,10 @@ const { page, total, totalPages, paginated, rangeStart, rangeEnd } = usePaginati
 
 function doExport() {
   exportCSV(
-    membersStore.backsliders.map((m) => ({
+    backsliders.value.map((m) => ({
       Name: m.name,
       Phone: m.phone,
-      'Absence Count': m.absenceCount,
+      'Consecutive Sundays Missed': absencesFor(m.id),
       Status: m.status,
     })),
     'backsliders'
@@ -35,7 +38,9 @@ function doExport() {
         <h3 class="text-sm font-semibold text-gray-900">
           Backslider Summary - Members Needing Follow-up
         </h3>
-        <p class="text-xs text-gray-400 mt-0.5">Members absent 3 or more times</p>
+        <p class="text-xs text-gray-400 mt-0.5">
+          Members who have missed {{ BACKSLIDER_THRESHOLD }} or more Sunday services in a row
+        </p>
       </div>
       <button
         class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors"
@@ -82,7 +87,7 @@ function doExport() {
               Phone Number
             </th>
             <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
-              Absence Count
+              Consecutive Absences
             </th>
             <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
               Action Required
@@ -106,7 +111,7 @@ function doExport() {
             <td class="px-4 py-3">
               <Badge variant="danger" size="sm">
                 <template #icon><Icon icon="mdi:alert-circle" class="text-[10px]" /></template>
-                {{ member.absenceCount }} times
+                {{ absencesFor(member.id) }} Sundays missed
               </Badge>
             </td>
             <td class="px-4 py-3">

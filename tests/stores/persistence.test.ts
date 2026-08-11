@@ -3,6 +3,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { useTeachingsStore } from '~/stores/teachings'
 import { useEventsStore } from '~/stores/events'
 import { useAttendanceStore } from '~/stores/attendance'
+import { useMembersStore } from '~/stores/members'
 import type { AttendanceRecord, Sermon } from '~/types'
 
 /**
@@ -172,5 +173,39 @@ describe('attendance persistence', () => {
     await store.saveChanges()
 
     expect(saveRecords).not.toHaveBeenCalled()
+  })
+
+  /**
+   * Saving a register is what re-decides who counts as inactive, so the two are wired together —
+   * but only against a roll already in memory. Fetching one here would put a full read of the
+   * members collection behind every register save.
+   */
+  it('relabels the roll after a saved register, and only when the roll is loaded', async () => {
+    const store = useAttendanceStore()
+    const members = useMembersStore()
+    const sync = vi.spyOn(members, 'syncAttendanceStatuses').mockResolvedValue([])
+
+    members.loaded = false
+    store.setAttendance('m-1', '2026-08-02', 'Sunday Worship', true)
+    await store.saveChanges()
+    expect(sync).not.toHaveBeenCalled()
+
+    members.loaded = true
+    store.setAttendance('m-1', '2026-08-09', 'Sunday Worship', true)
+    await store.saveChanges()
+    expect(sync).toHaveBeenCalledOnce()
+  })
+
+  it('reports a saved register as saved even if relabelling blows up', async () => {
+    const store = useAttendanceStore()
+    const members = useMembersStore()
+    members.loaded = true
+    vi.spyOn(members, 'syncAttendanceStatuses').mockRejectedValue(new Error('offline'))
+
+    store.setAttendance('m-1', '2026-08-02', 'Sunday Worship', true)
+
+    await expect(store.saveChanges()).resolves.toBeUndefined()
+    expect(store.hasPendingChanges).toBe(false)
+    expect(store.error).toBeNull()
   })
 })

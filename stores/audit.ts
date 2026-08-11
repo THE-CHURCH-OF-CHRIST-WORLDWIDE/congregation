@@ -6,6 +6,7 @@ import type { AuditAction, AuditEntry } from '~/types'
 const ACTION_LABELS: Record<AuditAction, string> = {
   'member.create': 'Added member',
   'member.update': 'Updated member',
+  'member.autoStatus': 'Relabelled from the register',
   'member.delete': 'Deleted member',
   'settings.update': 'Updated church settings',
   'role.permissions': 'Changed role permissions',

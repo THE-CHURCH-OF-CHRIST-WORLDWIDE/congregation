@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Member, EmergencyContact } from '~/types'
-import { YOUTH_LEVELS, YOUTH_PROGRAMS } from '~/constants'
+import { MEMBER_STATUSES, YOUTH_LEVELS, YOUTH_PROGRAMS } from '~/constants'
 
 // The parent handles the actual write, but the button that triggers it lives here — so it
 // reads the store's pending flag directly rather than threading a prop through.
@@ -102,16 +102,9 @@ const genderOptions = [
   { label: 'Female', value: 'Female' },
 ]
 
-const statusOptions = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Backslider', value: 'Backslider' },
-  { label: 'Weak', value: 'Weak' },
-  { label: 'Distant', value: 'Distant' },
-  { label: 'Withdrawal', value: 'Withdrawal' },
-  { label: 'Disfellowshipped', value: 'Disfellowshipped' },
-  { label: 'Transfer', value: 'Transfer' },
-  { label: 'Late', value: 'Late' },
-]
+// Derived from MEMBER_STATUSES rather than hand-listed, so adding a status cannot leave it
+// missing from the dropdown that sets it.
+const statusOptions = MEMBER_STATUSES.map((s) => ({ label: s, value: s }))
 
 const maritalOptions = [
   { label: 'Single', value: 'Single' },

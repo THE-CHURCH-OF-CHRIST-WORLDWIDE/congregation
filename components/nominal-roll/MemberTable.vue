@@ -27,6 +27,7 @@ const hasAnyMembers = computed(() =>
 
 const statusBadge = {
   Active: 'success',
+  Inactive: 'neutral',
   Backslider: 'danger',
   Weak: 'warning',
   Distant: 'info',
