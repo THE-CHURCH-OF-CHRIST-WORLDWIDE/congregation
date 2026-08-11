@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { recordAudit } from '~/utils/audit'
 import { useMembersRepository } from '~/repositories/membersRepository'
 import { churchNumberKey, normaliseChurchNumber } from '~/utils/churchNumber'
+import { isYouth } from '~/utils/youth'
 import type { Member, MemberFilters } from '~/types'
 
 export const useMembersStore = defineStore('members', () => {
@@ -84,14 +85,11 @@ export const useMembersStore = defineStore('members', () => {
       ).length
   )
 
-  // Youth: members aged 13–35
+  // Youth: members aged 13–35. `isYouth` is shared with the detail panel, which offers the
+  // schooling fields on the same basis.
   const youthMembers = computed(() => {
     const now = new Date()
-    return members.value.filter((m) => {
-      if (!m.dob) return false
-      const age = now.getFullYear() - new Date(m.dob).getFullYear()
-      return age >= 13 && age <= 35
-    })
+    return members.value.filter((m) => isYouth(m, now))
   })
 
   const youthActiveCount = computed(

@@ -90,6 +90,39 @@ export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   'Others',
 ]
 
+// ─── Youth schooling ──────────────────────────────────────────────────────────
+
+/**
+ * Year of study. Nigerian institutions count in hundreds, so `100`–`600` covers an
+ * undergraduate run; the two trailing entries exist because a level is still worth recording
+ * once someone is past the numbered years.
+ *
+ * Free text would be cheaper but unsortable — "200", "2nd year" and "Year 2" would all appear
+ * for the same thing.
+ */
+export const YOUTH_LEVELS = [
+  '100',
+  '200',
+  '300',
+  '400',
+  '500',
+  '600',
+  'Postgraduate',
+  'Graduated',
+] as const
+
+/** Qualification being read for. `Other` is the escape hatch, so the list need not be complete. */
+export const YOUTH_PROGRAMS = [
+  'Secondary School',
+  'ND',
+  'HND',
+  "Bachelor's",
+  "Master's",
+  'PhD',
+  'Apprenticeship',
+  'Other',
+] as const
+
 // ─── Roles & Permissions ──────────────────────────────────────────────────────
 
 export const ROLE_NAMES: RoleName[] = [

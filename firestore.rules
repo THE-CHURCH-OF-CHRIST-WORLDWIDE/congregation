@@ -270,7 +270,10 @@ service cloud.firestore {
           'avatar', 'churchNumber', 'maritalStatus', 'dateOfBaptism',
           'dateJoined', 'country', 'state', 'localGovernment', 'village',
           'address', 'occupation', 'previousCongregation',
-          'previousMinisterPhone', 'emergencyContact', 'createdAt', 'updatedAt'
+          'previousMinisterPhone', 'emergencyContact', 'createdAt', 'updatedAt',
+          // Youth schooling details — see the `Member` type.
+          'school', 'department', 'courseOfStudy', 'program', 'level',
+          'hallOfResidence', 'yearOfEntry', 'yearOfExit', 'comment'
         ];
       }
 
@@ -280,7 +283,10 @@ service cloud.firestore {
           && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 40
           && data.gender in ['Male', 'Female']
           && (!('email' in data) || (data.email is string && data.email.size() <= 200))
-          && (!('address' in data) || (data.address is string && data.address.size() <= 300));
+          && (!('address' in data) || (data.address is string && data.address.size() <= 300))
+          // `comment` is the only free-form text box on the record, so it is the one worth
+          // capping — an uncapped note is a document-size limit waiting to be hit.
+          && (!('comment' in data) || (data.comment is string && data.comment.size() <= 2000));
       }
 
       // A self-registration may not hand itself a privileged status or a

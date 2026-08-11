@@ -173,6 +173,15 @@ function doExport() {
       Email: m.email,
       'Date of Birth': m.dob ?? '',
       Status: m.status,
+      School: m.school ?? '',
+      Department: m.department ?? '',
+      'Course of Study': m.courseOfStudy ?? '',
+      Programme: m.program ?? '',
+      Level: m.level ?? '',
+      'Hall of Residence': m.hallOfResidence ?? '',
+      'Year of Entry': m.yearOfEntry ?? '',
+      'Year of Exit': m.yearOfExit ?? '',
+      Comment: m.comment ?? '',
     })),
     'youth-members'
   )

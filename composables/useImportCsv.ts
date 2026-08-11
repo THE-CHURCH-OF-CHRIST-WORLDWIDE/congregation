@@ -17,6 +17,16 @@ export interface ParsedRow {
   village: string
   address: string
   occupation: string
+  // Schooling (youth)
+  school: string
+  department: string
+  courseOfStudy: string
+  program: string
+  level: string
+  hallOfResidence: string
+  yearOfEntry: string
+  yearOfExit: string
+  comment: string
   // Validation
   errors: string[]
   valid: boolean
@@ -67,6 +77,35 @@ const HEADER_MAP: Record<string, keyof Omit<ParsedRow, 'raw' | 'errors' | 'valid
   fulladdress: 'address',
   occupation: 'occupation',
   job: 'occupation',
+  // Schooling. Spellings are generous on purpose — these headers come from spreadsheets kept by
+  // hand, where "Institution" and "School" mean the same column.
+  school: 'school',
+  institution: 'school',
+  schoolinstitution: 'school',
+  university: 'school',
+  department: 'department',
+  dept: 'department',
+  courseofstudy: 'courseOfStudy',
+  course: 'courseOfStudy',
+  programme: 'program',
+  program: 'program',
+  degree: 'program',
+  level: 'level',
+  yearofstudy: 'level',
+  hallofresidence: 'hallOfResidence',
+  hall: 'hallOfResidence',
+  hostel: 'hallOfResidence',
+  yearofentry: 'yearOfEntry',
+  entryyear: 'yearOfEntry',
+  yearofadmission: 'yearOfEntry',
+  yearofexit: 'yearOfExit',
+  exityear: 'yearOfExit',
+  yearofgraduation: 'yearOfExit',
+  comment: 'comment',
+  comments: 'comment',
+  notes: 'comment',
+  remark: 'comment',
+  remarks: 'comment',
 }
 
 function parseCSVLine(line: string): string[] {
@@ -133,6 +172,15 @@ export function useImportCsv() {
         village: '',
         address: '',
         occupation: '',
+        school: '',
+        department: '',
+        courseOfStudy: '',
+        program: '',
+        level: '',
+        hallOfResidence: '',
+        yearOfEntry: '',
+        yearOfExit: '',
+        comment: '',
         errors: [],
         valid: false,
       }
@@ -150,6 +198,10 @@ export function useImportCsv() {
         errs.push(`Gender must be Male or Female`)
       if (row.status && !VALID_STATUSES.includes(row.status))
         errs.push(`Unknown status "${row.status}"`)
+      // Flagged, not rejected — like the gender and status warnings below, this shows in the
+      // preview so it can be corrected, but it does not hold up an otherwise usable row.
+      if (row.yearOfEntry && row.yearOfExit && Number(row.yearOfExit) < Number(row.yearOfEntry))
+        errs.push('Year of exit is before year of entry')
 
       // Normalise gender capitalisation
       if (row.gender) {

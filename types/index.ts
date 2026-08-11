@@ -41,6 +41,29 @@ export interface Member {
   previousMinisterPhone?: string
   // Emergency contact
   emergencyContact?: EmergencyContact
+  /**
+   * Schooling details, collected for youth (see `isYouth`) — most of the roll's 13–35s are in
+   * a tertiary institution, and the Youth Leader needs to know who is on campus, in which hall,
+   * and when they are due to leave.
+   *
+   * Stored on `Member` rather than a separate collection because youth membership is derived
+   * from date of birth, not recorded: there is no youth document to hang them off. All optional,
+   * so a member who never attended is simply blank rather than half-filled.
+   */
+  school?: string
+  department?: string
+  courseOfStudy?: string
+  /** Qualification being read for, e.g. `HND`, `Bachelor's`. See `YOUTH_PROGRAMS`. */
+  program?: string
+  /** Year of study, e.g. `200`. See `YOUTH_LEVELS`. */
+  level?: string
+  hallOfResidence?: string
+  /** Four-digit year, held as a string like the other date fields. */
+  yearOfEntry?: string
+  /** Four-digit year. Expected rather than actual for anyone still studying. */
+  yearOfExit?: string
+  /** Free-text note — anything the fixed fields have nowhere to put. */
+  comment?: string
 }
 
 /**
