@@ -140,6 +140,25 @@ export interface ChildrenCount {
   count: number
 }
 
+/**
+ * Where a member worshipped when they were counted present.
+ *
+ * `elsewhere` is a real attendance, not an absence: a member who travels and worships with another
+ * congregation has kept the Lord's day, and brings back a certificate of worship as evidence.
+ * Recording it as plain "present" loses the distinction; recording it as absent is simply wrong.
+ */
+export type WorshipPlace = 'local' | 'elsewhere'
+
+export interface WorshipDetails {
+  place: WorshipPlace
+  /** The congregation worshipped with. Expected whenever `place` is `elsewhere`. */
+  congregation?: string
+  /** Whether the certificate of worship was actually produced, as opposed to just reported. */
+  certificate?: boolean
+  /** Anything written on the certificate worth keeping — who signed it, a reference. */
+  certificateRef?: string
+}
+
 export interface AttendanceRecord {
   id: string
   memberId: string
@@ -147,6 +166,14 @@ export interface AttendanceRecord {
   date: string
   present: boolean
   serviceType: string
+  /**
+   * Absent on records written before this was collected. Treat a missing value as `local` — that
+   * is what every one of them meant.
+   */
+  place?: WorshipPlace
+  congregation?: string
+  certificate?: boolean
+  certificateRef?: string
 }
 
 export interface Sermon {
