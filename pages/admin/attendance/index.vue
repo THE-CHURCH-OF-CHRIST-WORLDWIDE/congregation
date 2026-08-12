@@ -143,5 +143,8 @@ function doImport() {
 
     <!-- Monthly grid -->
     <MonthlyGrid />
+
+    <!-- Visitors and children, recorded per Sunday Worship -->
+    <VisitorsAndChildren :service-type="TREND_SERVICE" />
   </div>
 </template>

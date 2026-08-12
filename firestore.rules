@@ -24,6 +24,11 @@ rules_version = '2';
 //                   — the congregation's books. Staff may read; only Super Admin, Admin and
 //                     the Financial Secretary may write.
 //
+//   visitors, childrenAttendance
+//                   — who was at a service without being on the roll. Visitors carry biodata
+//                     for people who are not even members, so never public. Staff read;
+//                     Super Admin, Admin and the Secretary write.
+//
 //   messages        — the public contact form's inbox. The ONLY collection an anonymous
 //                     caller may write to, and create-only: a visitor cannot read back any
 //                     message, including their own. Staff read and triage.
@@ -210,6 +215,46 @@ service cloud.firestore {
     match /attendance/{recordId} {
       allow read: if isStaff();
       allow write: if canEditRecords();
+    }
+
+    // ── Visitors & children ────────────────────────────────────────────────
+    // Who was at a service without being on the roll. Visitors hand over a name, phone number,
+    // address and email on a slip of paper, so this is personal data about people who are not
+    // even members — never public, staff read only.
+    match /visitors/{visitorId} {
+      // Pinned so the collection cannot become a dumping ground. Only the name is required: the
+      // rest is whatever the visitor was willing to write down, and a declined phone number must
+      // not stop the visit being recorded.
+      function visitorShapeIsValid(data) {
+        return data.keys().hasOnly([
+                 'name', 'address', 'phone', 'email', 'church',
+                 'date', 'serviceType', 'createdAt'
+               ])
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+          && data.date is string && data.date.size() <= 10
+          && data.serviceType is string && data.serviceType.size() <= 60
+          && (!('address' in data) || (data.address is string && data.address.size() <= 300))
+          && (!('phone' in data) || (data.phone is string && data.phone.size() <= 40))
+          && (!('email' in data) || (data.email is string && data.email.size() <= 200))
+          && (!('church' in data) || (data.church is string && data.church.size() <= 200));
+      }
+
+      allow read: if isStaff();
+      allow create, update: if canEditRecords() && visitorShapeIsValid(request.resource.data);
+      allow delete: if canEditRecords();
+    }
+
+    // How many children were at a service. A count, not a register — the children's class is not
+    // on the nominal roll. Negative or absurd figures are refused rather than stored and puzzled
+    // over later.
+    match /childrenAttendance/{serviceKey} {
+      allow read: if isStaff();
+      allow write: if canEditRecords()
+                   && request.resource.data.count is int
+                   && request.resource.data.count >= 0
+                   && request.resource.data.count <= 10000
+                   && request.resource.data.date is string
+                   && request.resource.data.serviceType is string;
     }
 
     // ── Events ─────────────────────────────────────────────────────────────

@@ -100,6 +100,46 @@ export interface ContactMessage {
   handled: boolean
 }
 
+/**
+ * Somebody who worshipped with the congregation without being on the roll.
+ *
+ * One document per visit rather than per person: a visitor who returns a month later is a second
+ * record, because the question the church asks of this data is "who was with us on that Sunday",
+ * and collapsing repeat visits would lose the answer. Names are not deduplicated for the same
+ * reason — two women called Grace Etim are two visitors.
+ *
+ * Only the name is required. The rest is what somebody was willing to write on a slip of paper
+ * on their way out, and an address they declined to give must not stop the visit being recorded.
+ */
+export interface Visitor {
+  id: string
+  name: string
+  address?: string
+  phone?: string
+  email?: string
+  /** The congregation they came from, where they have one. */
+  church?: string
+  /** ISO date of the service they attended. */
+  date: string
+  serviceType: string
+  /** ISO string once read back; `serverTimestamp()` on write. */
+  createdAt?: string
+}
+
+/**
+ * How many children were at one service.
+ *
+ * A count, not a register: the children's class is not on the nominal roll, so there is nobody to
+ * tick. Keyed deterministically by service and date — see `childrenDocId` — so recording the same
+ * Sunday twice corrects the figure instead of adding a second one.
+ */
+export interface ChildrenCount {
+  id: string
+  date: string
+  serviceType: string
+  count: number
+}
+
 export interface AttendanceRecord {
   id: string
   memberId: string
@@ -246,6 +286,10 @@ export type AuditAction =
   | 'event.update'
   | 'event.delete'
   | 'attendance.record'
+  | 'visitor.create'
+  | 'visitor.update'
+  | 'visitor.delete'
+  | 'children.record'
   | 'message.read'
   | 'message.handled'
   | 'message.delete'

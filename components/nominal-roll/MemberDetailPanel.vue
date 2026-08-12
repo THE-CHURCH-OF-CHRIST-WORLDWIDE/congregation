@@ -201,8 +201,10 @@ async function saveEdit() {
             program: ef.program,
             level: ef.level,
             hallOfResidence: ef.hallOfResidence,
-            yearOfEntry: ef.yearOfEntry,
-            yearOfExit: ef.yearOfExit,
+            // See `yearAsString` — a number input's v-model hands back a number, not the string
+            // the `Member` type declares.
+            yearOfEntry: yearAsString(ef.yearOfEntry),
+            yearOfExit: yearAsString(ef.yearOfExit),
             comment: ef.comment,
           }
         : {}),

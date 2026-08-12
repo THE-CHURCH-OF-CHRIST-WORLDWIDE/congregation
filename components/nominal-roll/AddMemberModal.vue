@@ -161,8 +161,11 @@ function save() {
           program: form.program,
           level: form.level,
           hallOfResidence: form.hallOfResidence,
-          yearOfEntry: form.yearOfEntry,
-          yearOfExit: form.yearOfExit,
+          // Coerced because `v-model` on an `<input type="number">` casts through `parseFloat`
+          // and stores a number, whatever the declared type says. Without this, `yearOfEntry`
+          // reaches Firestore as a number on some records and a string on others.
+          yearOfEntry: yearAsString(form.yearOfEntry),
+          yearOfExit: yearAsString(form.yearOfExit),
           comment: form.comment,
         }
       : {}),
