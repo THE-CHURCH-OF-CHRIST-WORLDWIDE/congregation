@@ -36,6 +36,11 @@ const noAttendanceYet = computed(() => !summary.hasData.value)
 
 const teachingsStore = useTeachingsStore()
 
+// Refresh the Active / Inactive labels once the roll and the registers are both in memory. This
+// screen loads attendance anyway, and it is the admin landing page, so in practice it is where a
+// session catches up on registers taken elsewhere.
+useAbsenceTracking().autoSyncWhenReady()
+
 onMounted(() => {
   attendanceStore.load()
   teachingsStore.load()

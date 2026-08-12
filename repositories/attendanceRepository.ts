@@ -9,7 +9,7 @@
  * for the whole sitting, and either all of it lands or none of it does.
  */
 
-import { collection, getDocs, query, writeBatch, doc } from 'firebase/firestore'
+import { collection, deleteField, getDocs, query, writeBatch, doc } from 'firebase/firestore'
 import type { AttendanceRecord } from '~/types'
 
 const COLLECTION = 'attendance'
@@ -30,12 +30,25 @@ export function useAttendanceRepository() {
     return snap.docs.map((d) => ({ ...(d.data() as Omit<AttendanceRecord, 'id'>), id: d.id }))
   }
 
-  /** Upserts every supplied record in one batch. */
+  /**
+   * Upserts every supplied record in one batch.
+   *
+   * `undefined` becomes `deleteField()` rather than being dropped. Firestore rejects `undefined`
+   * outright, and simply omitting the key would be wrong here anyway: these writes merge, so an
+   * omitted field keeps whatever the document already held. Un-marking a member who had worshipped
+   * elsewhere would leave their old congregation and certificate attached to an absence.
+   */
   async function saveRecords(records: AttendanceRecord[]): Promise<void> {
     if (!records.length) return
     const batch = writeBatch(nuxt.$firestore)
     for (const record of records) {
-      const { id: _ignored, ...data } = record
+      const { id: _ignored, ...rest } = record
+      const data = Object.fromEntries(
+        Object.entries(rest).map(([key, value]) => [
+          key,
+          value === undefined ? deleteField() : value,
+        ])
+      )
       batch.set(doc(nuxt.$firestore, COLLECTION, attendanceDocId(record)), data, { merge: true })
     }
     await batch.commit()

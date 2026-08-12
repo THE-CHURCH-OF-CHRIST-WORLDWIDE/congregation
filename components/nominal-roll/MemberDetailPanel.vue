@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Member } from '~/types'
+import { MEMBER_STATUSES, YOUTH_LEVELS, YOUTH_PROGRAMS } from '~/constants'
 
 interface Props {
   member: Member | null
@@ -79,6 +80,15 @@ const ef = reactive<
   occupation: '',
   previousCongregation: '',
   previousMinisterPhone: '',
+  school: '',
+  department: '',
+  courseOfStudy: '',
+  program: '',
+  level: '',
+  hallOfResidence: '',
+  yearOfEntry: '',
+  yearOfExit: '',
+  comment: '',
   ecName: '',
   ecRelationship: '',
   ecPhone: '',
@@ -107,6 +117,15 @@ function startEdit() {
     occupation: m.occupation ?? '',
     previousCongregation: m.previousCongregation ?? '',
     previousMinisterPhone: m.previousMinisterPhone ?? '',
+    school: m.school ?? '',
+    department: m.department ?? '',
+    courseOfStudy: m.courseOfStudy ?? '',
+    program: m.program ?? '',
+    level: m.level ?? '',
+    hallOfResidence: m.hallOfResidence ?? '',
+    yearOfEntry: m.yearOfEntry ?? '',
+    yearOfExit: m.yearOfExit ?? '',
+    comment: m.comment ?? '',
     ecName: m.emergencyContact?.name ?? '',
     ecRelationship: m.emergencyContact?.relationship ?? '',
     ecPhone: m.emergencyContact?.phone ?? '',
@@ -129,10 +148,29 @@ const churchNumberError = computed(() => {
   return holder ? `Already assigned to ${holder.name}.` : ''
 })
 
+/** Blocks the save while both years are filled in and back to front. */
+const yearRangeError = computed(() => {
+  const from = Number(ef.yearOfEntry)
+  const to = Number(ef.yearOfExit)
+  if (!from || !to) return ''
+  return to < from ? 'Year of exit cannot be before year of entry.' : ''
+})
+
+/**
+ * Whether to offer the schooling fields for this member.
+ *
+ * This panel serves the whole roll, so it asks rather than being told: youth by age, plus
+ * anyone who already has details recorded — someone who has since turned 36 must still be able
+ * to see and correct what was entered when they were 24.
+ */
+const showSchooling = computed(
+  () => !!props.member && (isYouth(props.member) || hasSchoolingDetails(props.member))
+)
+
 async function saveEdit() {
   if (!props.member) return
   // Refuse locally rather than letting the transaction reject it after a round trip.
-  if (churchNumberError.value) return
+  if (churchNumberError.value || yearRangeError.value) return
   await membersStore
     .updateMember(props.member.id, {
       name: ef.name,
@@ -153,6 +191,23 @@ async function saveEdit() {
       occupation: ef.occupation,
       previousCongregation: ef.previousCongregation,
       previousMinisterPhone: ef.previousMinisterPhone,
+      // Only when the section was actually shown. Sending these unconditionally would stamp nine
+      // empty strings onto every member the secretary edits, including those never asked for them.
+      ...(showSchooling.value
+        ? {
+            school: ef.school,
+            department: ef.department,
+            courseOfStudy: ef.courseOfStudy,
+            program: ef.program,
+            level: ef.level,
+            hallOfResidence: ef.hallOfResidence,
+            // See `yearAsString` — a number input's v-model hands back a number, not the string
+            // the `Member` type declares.
+            yearOfEntry: yearAsString(ef.yearOfEntry),
+            yearOfExit: yearAsString(ef.yearOfExit),
+            comment: ef.comment,
+          }
+        : {}),
       emergencyContact: {
         name: ef.ecName ?? '',
         relationship: ef.ecRelationship ?? '',
@@ -185,9 +240,16 @@ function close() {
   emit('update:modelValue', false)
 }
 
+const { confirmDelete } = useConfirm()
+
 async function onDelete() {
   if (!props.member) return
   const member = props.member
+  const ok = await confirmDelete(member.name, {
+    message:
+      'Their record, and their place on the nominal roll, will be removed. This cannot be undone.',
+  })
+  if (!ok) return
   await membersStore.deleteMember(member.id).catch(() => {})
   emit('delete', member)
   close()
@@ -199,6 +261,7 @@ function fmt(d?: string) {
 
 const statusConfig = {
   Active: { variant: 'success', label: 'Active Member' },
+  Inactive: { variant: 'neutral', label: 'Inactive' },
   Backslider: { variant: 'danger', label: 'Backslider' },
   Weak: { variant: 'warning', label: 'Weak Brethren' },
   Distant: { variant: 'info', label: 'Distant Member' },
@@ -240,16 +303,9 @@ const genderOptions = [
   { label: 'Male', value: 'Male' },
   { label: 'Female', value: 'Female' },
 ]
-const statusOptions = [
-  { label: 'Active', value: 'Active' },
-  { label: 'Backslider', value: 'Backslider' },
-  { label: 'Weak', value: 'Weak' },
-  { label: 'Distant', value: 'Distant' },
-  { label: 'Withdrawal', value: 'Withdrawal' },
-  { label: 'Disfellowshipped', value: 'Disfellowshipped' },
-  { label: 'Transfer', value: 'Transfer' },
-  { label: 'Late', value: 'Late' },
-]
+// Derived from MEMBER_STATUSES rather than hand-listed, so adding a status cannot leave it
+// missing from the dropdown that sets it.
+const statusOptions = MEMBER_STATUSES.map((s) => ({ label: s, value: s }))
 /** Fallback for members who registered without a passport photograph. */
 const initials = computed(() =>
   (props.member?.name ?? '')
@@ -459,6 +515,52 @@ const initials = computed(() =>
                   icon="mdi:briefcase-outline"
                   label="Occupation"
                   :value="member.occupation ?? '—'"
+                />
+              </div>
+            </div>
+
+            <!-- School & Education — youth, or anyone with details already on file -->
+            <div v-if="showSchooling" class="bg-white rounded-2xl p-4 border-[#7CD4FD] border">
+              <h3 class="text-xs font-bold text-gray-700 mb-3">School &amp; Education</h3>
+              <div class="grid grid-cols-2 gap-x-3 gap-y-3">
+                <InfoField icon="mdi:school-outline" label="School" :value="member.school ?? '—'" />
+                <InfoField
+                  icon="mdi:office-building-outline"
+                  label="Department"
+                  :value="member.department ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:book-open-page-variant-outline"
+                  label="Course of Study"
+                  :value="member.courseOfStudy ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:certificate-outline"
+                  label="Programme"
+                  :value="member.program ?? '—'"
+                />
+                <InfoField icon="mdi:stairs-up" label="Level" :value="member.level ?? '—'" />
+                <InfoField
+                  icon="mdi:bed-outline"
+                  label="Hall of Residence"
+                  :value="member.hallOfResidence ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:calendar-start-outline"
+                  label="Year of Entry"
+                  :value="member.yearOfEntry ?? '—'"
+                />
+                <InfoField
+                  icon="mdi:calendar-end-outline"
+                  label="Year of Exit"
+                  :value="member.yearOfExit ?? '—'"
+                />
+                <InfoField
+                  v-if="member.comment"
+                  icon="mdi:comment-text-outline"
+                  label="Comment"
+                  :value="member.comment"
+                  class="col-span-2"
                 />
               </div>
             </div>
@@ -691,6 +793,84 @@ const initials = computed(() =>
               </div>
             </section>
 
+            <!-- ── School & Education ──────────────────────── -->
+            <section v-if="showSchooling">
+              <h3 class="text-base font-bold text-gray-900 mb-4">School &amp; Education</h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                  <EditField label="School / Institution">
+                    <input v-model="ef.school" type="text" placeholder="e.g. University of Uyo" />
+                  </EditField>
+                  <EditField label="Department">
+                    <input v-model="ef.department" type="text" placeholder="e.g. Microbiology" />
+                  </EditField>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <EditField label="Course of Study">
+                    <input
+                      v-model="ef.courseOfStudy"
+                      type="text"
+                      placeholder="e.g. Industrial Microbiology"
+                    />
+                  </EditField>
+                  <EditField label="Programme">
+                    <select v-model="ef.program">
+                      <option value="">— Select —</option>
+                      <option v-for="p in YOUTH_PROGRAMS" :key="p" :value="p">{{ p }}</option>
+                    </select>
+                  </EditField>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <EditField label="Level">
+                    <select v-model="ef.level">
+                      <option value="">— Select —</option>
+                      <option v-for="l in YOUTH_LEVELS" :key="l" :value="l">{{ l }}</option>
+                    </select>
+                  </EditField>
+                  <EditField label="Hall of Residence">
+                    <input
+                      v-model="ef.hallOfResidence"
+                      type="text"
+                      placeholder="e.g. Akpan Isemin Hall"
+                    />
+                  </EditField>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <EditField label="Year of Entry">
+                    <input
+                      v-model="ef.yearOfEntry"
+                      type="number"
+                      min="1900"
+                      max="2200"
+                      placeholder="2023"
+                    />
+                  </EditField>
+                  <EditField
+                    label="Year of Exit"
+                    :error="yearRangeError"
+                    hint="Expected year, if still studying."
+                  >
+                    <input
+                      v-model="ef.yearOfExit"
+                      type="number"
+                      min="1900"
+                      max="2200"
+                      placeholder="2027"
+                      :aria-invalid="Boolean(yearRangeError)"
+                    />
+                  </EditField>
+                </div>
+                <EditField label="Comment">
+                  <textarea
+                    v-model="ef.comment"
+                    rows="3"
+                    maxlength="2000"
+                    placeholder="Anything else worth recording about this member"
+                  ></textarea>
+                </EditField>
+              </div>
+            </section>
+
             <!-- ── Previous Congregation ───────────────────── -->
             <section>
               <h3 class="text-base font-bold text-gray-900 mb-4">Previous Congregation</h3>
@@ -716,7 +896,7 @@ const initials = computed(() =>
             <div class="flex gap-3">
               <button
                 class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-                :disabled="membersStore.saving || Boolean(churchNumberError)"
+                :disabled="membersStore.saving || Boolean(churchNumberError || yearRangeError)"
                 @click="saveEdit"
               >
                 <Icon v-if="membersStore.saving" icon="mdi:loading" class="animate-spin" />

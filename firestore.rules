@@ -2,7 +2,7 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Thirteen collections, with deliberately different exposure:
+// Fourteen collections, with deliberately different exposure:
 //
 //   auditLog        — append-only record of who changed what. Any staff account may add an
 //                     entry as itself; only a Super Admin may read it; nobody may edit or
@@ -23,6 +23,15 @@ rules_version = '2';
 //   financeCollections, financeExpenses
 //                   — the congregation's books. Staff may read; only Super Admin, Admin and
 //                     the Financial Secretary may write.
+//
+//   visitors, childrenAttendance
+//                   — who was at a service without being on the roll. Visitors carry biodata
+//                     for people who are not even members, so never public. Staff read;
+//                     Super Admin, Admin and the Secretary write.
+//
+//   messages        — the public contact form's inbox. The ONLY collection an anonymous
+//                     caller may write to, and create-only: a visitor cannot read back any
+//                     message, including their own. Staff read and triage.
 //
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
@@ -74,14 +83,29 @@ service cloud.firestore {
     function isStaff() {
       return roleId() in [
         'super-admin', 'admin', 'elder', 'deacon', 'preacher',
-        'secretary', 'youth-leader', 'financial-secretary'
+        'secretary', 'youth-leader', 'financial-secretary', 'content-editor'
       ];
     }
 
-    // Church settings sit a tier below access control: Admin may edit the site's content,
+    // Church settings sit a tier below access control: these roles may edit the site's content,
     // but managing accounts, roles and invitations stays Super Admin only.
+    //
+    // The Content Editor is here because `settings/church` IS the public website — church
+    // details, leaders, gallery, congregations, and the Home and About page copy. Nothing
+    // privileged lives in it; roles and accounts are separate collections, gated below on
+    // isSuperAdmin(), so this grant cannot be walked up into access control.
     function canEditSettings() {
-      return roleId() in ['super-admin', 'admin'];
+      return roleId() in ['super-admin', 'admin', 'content-editor'];
+    }
+
+    // What the congregation publishes: teachings and events, which appear on the public site.
+    //
+    // Deliberately separate from canEditRecords(). That gate also covers attendance registers,
+    // visitors and children's figures — personal data about named members that a website editor
+    // has no business writing. Splitting the two is what stops "can update the events page" from
+    // quietly meaning "can rewrite the attendance register".
+    function canEditPublishedContent() {
+      return roleId() in ['super-admin', 'admin', 'secretary', 'content-editor'];
     }
 
     // Money has its own tier: Super Admin, Admin and the Financial Secretary. Everyone else on
@@ -198,7 +222,7 @@ service cloud.firestore {
     // read their own store, so nothing outside the dashboard needs this yet.
     match /teachings/{sermonId} {
       allow read: if isStaff();
-      allow write: if canEditRecords();
+      allow write: if canEditPublishedContent();
     }
 
     // ── Attendance ─────────────────────────────────────────────────────────
@@ -208,11 +232,83 @@ service cloud.firestore {
       allow write: if canEditRecords();
     }
 
+    // ── Visitors & children ────────────────────────────────────────────────
+    // Who was at a service without being on the roll. Visitors hand over a name, phone number,
+    // address and email on a slip of paper, so this is personal data about people who are not
+    // even members — never public, staff read only.
+    match /visitors/{visitorId} {
+      // Pinned so the collection cannot become a dumping ground. Only the name is required: the
+      // rest is whatever the visitor was willing to write down, and a declined phone number must
+      // not stop the visit being recorded.
+      function visitorShapeIsValid(data) {
+        return data.keys().hasOnly([
+                 'name', 'address', 'phone', 'email', 'church',
+                 'date', 'serviceType', 'createdAt'
+               ])
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+          && data.date is string && data.date.size() <= 10
+          && data.serviceType is string && data.serviceType.size() <= 60
+          && (!('address' in data) || (data.address is string && data.address.size() <= 300))
+          && (!('phone' in data) || (data.phone is string && data.phone.size() <= 40))
+          && (!('email' in data) || (data.email is string && data.email.size() <= 200))
+          && (!('church' in data) || (data.church is string && data.church.size() <= 200));
+      }
+
+      allow read: if isStaff();
+      allow create, update: if canEditRecords() && visitorShapeIsValid(request.resource.data);
+      allow delete: if canEditRecords();
+    }
+
+    // How many children were at a service. A count, not a register — the children's class is not
+    // on the nominal roll. Negative or absurd figures are refused rather than stored and puzzled
+    // over later.
+    match /childrenAttendance/{serviceKey} {
+      allow read: if isStaff();
+      allow write: if canEditRecords()
+                   && request.resource.data.count is int
+                   && request.resource.data.count >= 0
+                   && request.resource.data.count <= 10000
+                   && request.resource.data.date is string
+                   && request.resource.data.serviceType is string;
+    }
+
     // ── Events ─────────────────────────────────────────────────────────────
     // Publicly readable: the /events page lists these to visitors while signed out.
     match /events/{eventId} {
       allow read: if true;
-      allow write: if canEditRecords();
+      allow write: if canEditPublishedContent();
+    }
+
+    // ── Contact messages ───────────────────────────────────────────────────
+    // The public "Send Us A Message" form writes here while signed out, which makes this the
+    // one collection anonymous callers can add to. Create-only for them, and nothing else:
+    // a visitor cannot list, read, edit or delete a message, including their own.
+    //
+    // The shape is pinned so the endpoint cannot be used as free storage, and `read`/`handled`
+    // are forced false so a submission cannot arrive already dismissed from the inbox.
+    // `submittedAt` must be the server's time, not a client's claim about it.
+    //
+    // What this does NOT do is rate-limit — rules cannot. A flood is still possible; the fix
+    // is App Check or a Cloud Function, see README § Contact messages.
+    match /messages/{messageId} {
+      function messageIsValid(data) {
+        return data.keys().hasOnly(['name', 'email', 'phone', 'message', 'submittedAt', 'read', 'handled'])
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+          && data.email is string && data.email.size() > 0 && data.email.size() <= 200
+          && data.phone is string && data.phone.size() <= 40
+          && data.message is string && data.message.size() > 0 && data.message.size() <= 4000
+          && data.read == false
+          && data.handled == false
+          && data.submittedAt == request.time;
+      }
+
+      allow read: if isStaff();
+      allow create: if messageIsValid(request.resource.data);
+      // Staff triage: only the two flags may change, so an edit cannot rewrite what was sent.
+      allow update: if isStaff()
+                    && request.resource.data.diff(resource.data)
+                       .affectedKeys().hasOnly(['read', 'handled']);
+      allow delete: if isStaff();
     }
 
     // ── Church settings ────────────────────────────────────────────────────
@@ -234,7 +330,10 @@ service cloud.firestore {
           'avatar', 'churchNumber', 'maritalStatus', 'dateOfBaptism',
           'dateJoined', 'country', 'state', 'localGovernment', 'village',
           'address', 'occupation', 'previousCongregation',
-          'previousMinisterPhone', 'emergencyContact', 'createdAt', 'updatedAt'
+          'previousMinisterPhone', 'emergencyContact', 'createdAt', 'updatedAt',
+          // Youth schooling details — see the `Member` type.
+          'school', 'department', 'courseOfStudy', 'program', 'level',
+          'hallOfResidence', 'yearOfEntry', 'yearOfExit', 'comment'
         ];
       }
 
@@ -244,7 +343,10 @@ service cloud.firestore {
           && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 40
           && data.gender in ['Male', 'Female']
           && (!('email' in data) || (data.email is string && data.email.size() <= 200))
-          && (!('address' in data) || (data.address is string && data.address.size() <= 300));
+          && (!('address' in data) || (data.address is string && data.address.size() <= 300))
+          // `comment` is the only free-form text box on the record, so it is the one worth
+          // capping — an uncapped note is a document-size limit waiting to be hit.
+          && (!('comment' in data) || (data.comment is string && data.comment.size() <= 2000));
       }
 
       // A self-registration may not hand itself a privileged status or a

@@ -2,6 +2,10 @@
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt({
+  // vue-tsc/Volar can emit generated `.vue.js` files next to components; they are
+  // build artifacts full of `__VLS_*` codegen and must never be linted.
+  ignores: ['**/*.vue.js', '**/*.vue.d.ts'],
+
   rules: {
     // Nuxt/Vue conventions use single-word names for pages and layouts
     'vue/multi-word-component-names': 'off',

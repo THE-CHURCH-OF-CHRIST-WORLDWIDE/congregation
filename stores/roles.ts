@@ -117,6 +117,23 @@ const DEFAULT_ROLES: ChurchRole[] = [
       ...perm(['Nominal Roll'], ['view']),
     },
   },
+  {
+    id: 'content-editor',
+    name: 'Content Editor',
+    color: '#a855f7',
+    description:
+      'Keeps the public website up to date: teachings, sermons, events, and every page of site content. No access to the nominal roll, attendance, or finances.',
+    permissions: {
+      // Settings is where the public pages are edited — church details, leaders, gallery,
+      // congregations, and the Home and About page content. The Access group inside it stays
+      // Super-Admin-only, so this does not reach roles or accounts.
+      ...perm(['Teachings', 'Events', 'Settings'], ['view', 'add', 'edit', 'delete', 'export']),
+      // Dashboard is the admin landing page; without it there is nowhere to arrive after signing
+      // in. Deliberately view-only, and no Nominal Roll, Youth, Attendance or Finance at all —
+      // this role exists to edit the website, not to see the congregation's records.
+      ...perm(['Dashboard'], ['view']),
+    },
+  },
 ]
 
 /**

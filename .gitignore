@@ -7,6 +7,15 @@
 dist
 CLAUDE.md
 
+# Stray tsc/vue-tsc output emitted next to sources. These directories are
+# TypeScript-only, so any .js sibling here is a build artifact, never source.
+*.vue.js
+*.vue.d.ts
+/composables/**/*.js
+/plugins/**/*.js
+/stores/**/*.js
+/utils/**/*.js
+
 
 # Node dependencies
 node_modules

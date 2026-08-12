@@ -54,7 +54,7 @@
     "lint-staged": "^15.2.10",
     "prettier": "^3.5.3",
     "vitest": "^3.2.4",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^3.3.9"
   },
   "lint-staged": {
     "*.{ts,vue,js,mjs}": [

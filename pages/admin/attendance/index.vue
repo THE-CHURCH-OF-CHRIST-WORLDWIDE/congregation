@@ -11,6 +11,10 @@ const { exportCSV } = useExportCSV()
 /** The trend chart covers one service; the grid below it has its own service selector. */
 const TREND_SERVICE = 'Sunday Worship'
 
+// Registers are managed here, so labels written in an earlier session are caught up as soon as
+// the roll and the records are both in memory.
+useAbsenceTracking().autoSyncWhenReady()
+
 onMounted(() => {
   attendanceStore.load()
   setHeader('Attendance Tracker', 'Attendance summaries by activity')
@@ -139,5 +143,8 @@ function doImport() {
 
     <!-- Monthly grid -->
     <MonthlyGrid />
+
+    <!-- Visitors and children, recorded per Sunday Worship -->
+    <VisitorsAndChildren :service-type="TREND_SERVICE" />
   </div>
 </template>

@@ -12,8 +12,14 @@ export interface Member {
   phone: string
   email: string
   dob?: string
+  /**
+   * `Active` and `Inactive` are the only two the app sets by itself — see
+   * `utils/attendanceStatus.ts`, which flips between them as Sunday registers are taken. The
+   * rest are pastoral decisions and are never overwritten automatically.
+   */
   status:
     | 'Active'
+    | 'Inactive'
     | 'Backslider'
     | 'Weak'
     | 'Distant'
@@ -21,6 +27,12 @@ export interface Member {
     | 'Disfellowshipped'
     | 'Transfer'
     | 'Late'
+  /**
+   * @deprecated Nothing maintains this. It is written as 0 when a member is registered and never
+   * updated, which is why the dashboard's follow-up table was permanently empty. Absences are
+   * derived from the register instead — see `absenceStreaks` and `useAbsenceTracking`. The field
+   * stays only because existing documents carry it and `firestore.rules` still permits it.
+   */
   absenceCount: number
   avatar?: string
   // Extended profile
@@ -41,6 +53,110 @@ export interface Member {
   previousMinisterPhone?: string
   // Emergency contact
   emergencyContact?: EmergencyContact
+  /**
+   * Schooling details, collected for youth (see `isYouth`) — most of the roll's 13–35s are in
+   * a tertiary institution, and the Youth Leader needs to know who is on campus, in which hall,
+   * and when they are due to leave.
+   *
+   * Stored on `Member` rather than a separate collection because youth membership is derived
+   * from date of birth, not recorded: there is no youth document to hang them off. All optional,
+   * so a member who never attended is simply blank rather than half-filled.
+   */
+  school?: string
+  department?: string
+  courseOfStudy?: string
+  /** Qualification being read for, e.g. `HND`, `Bachelor's`. See `YOUTH_PROGRAMS`. */
+  program?: string
+  /** Year of study, e.g. `200`. See `YOUTH_LEVELS`. */
+  level?: string
+  hallOfResidence?: string
+  /** Four-digit year, held as a string like the other date fields. */
+  yearOfEntry?: string
+  /** Four-digit year. Expected rather than actual for anyone still studying. */
+  yearOfExit?: string
+  /** Free-text note — anything the fixed fields have nowhere to put. */
+  comment?: string
+}
+
+/**
+ * A message left through the public "Send Us A Message" form.
+ *
+ * Anonymous visitors create these, so the collection is the app's one publicly writable
+ * surface — see the shape constraints in `firestore.rules`. Staff read them in
+ * Admin → Messages; `handled` records that somebody has dealt with it, rather than deleting
+ * the message and losing the record of what was asked.
+ */
+export interface ContactMessage {
+  id: string
+  name: string
+  email: string
+  phone: string
+  message: string
+  /** ISO string once read back; `serverTimestamp()` on write. */
+  submittedAt?: string
+  /** Somebody on staff has read it. */
+  read: boolean
+  /** Somebody on staff has replied or otherwise dealt with it. */
+  handled: boolean
+}
+
+/**
+ * Somebody who worshipped with the congregation without being on the roll.
+ *
+ * One document per visit rather than per person: a visitor who returns a month later is a second
+ * record, because the question the church asks of this data is "who was with us on that Sunday",
+ * and collapsing repeat visits would lose the answer. Names are not deduplicated for the same
+ * reason — two women called Grace Etim are two visitors.
+ *
+ * Only the name is required. The rest is what somebody was willing to write on a slip of paper
+ * on their way out, and an address they declined to give must not stop the visit being recorded.
+ */
+export interface Visitor {
+  id: string
+  name: string
+  address?: string
+  phone?: string
+  email?: string
+  /** The congregation they came from, where they have one. */
+  church?: string
+  /** ISO date of the service they attended. */
+  date: string
+  serviceType: string
+  /** ISO string once read back; `serverTimestamp()` on write. */
+  createdAt?: string
+}
+
+/**
+ * How many children were at one service.
+ *
+ * A count, not a register: the children's class is not on the nominal roll, so there is nobody to
+ * tick. Keyed deterministically by service and date — see `childrenDocId` — so recording the same
+ * Sunday twice corrects the figure instead of adding a second one.
+ */
+export interface ChildrenCount {
+  id: string
+  date: string
+  serviceType: string
+  count: number
+}
+
+/**
+ * Where a member worshipped when they were counted present.
+ *
+ * `elsewhere` is a real attendance, not an absence: a member who travels and worships with another
+ * congregation has kept the Lord's day, and brings back a certificate of worship as evidence.
+ * Recording it as plain "present" loses the distinction; recording it as absent is simply wrong.
+ */
+export type WorshipPlace = 'local' | 'elsewhere'
+
+export interface WorshipDetails {
+  place: WorshipPlace
+  /** The congregation worshipped with. Expected whenever `place` is `elsewhere`. */
+  congregation?: string
+  /** Whether the certificate of worship was actually produced, as opposed to just reported. */
+  certificate?: boolean
+  /** Anything written on the certificate worth keeping — who signed it, a reference. */
+  certificateRef?: string
 }
 
 export interface AttendanceRecord {
@@ -50,6 +166,14 @@ export interface AttendanceRecord {
   date: string
   present: boolean
   serviceType: string
+  /**
+   * Absent on records written before this was collected. Treat a missing value as `local` — that
+   * is what every one of them meant.
+   */
+  place?: WorshipPlace
+  congregation?: string
+  certificate?: boolean
+  certificateRef?: string
 }
 
 export interface Sermon {
@@ -138,6 +262,7 @@ export type RoleName =
   | 'Secretary'
   | 'Youth Leader'
   | 'Financial Secretary'
+  | 'Content Editor'
 
 /** Ids of the built-in roles in `stores/roles.ts`. Firestore rules match on these strings. */
 export type ChurchRoleId =
@@ -149,6 +274,7 @@ export type ChurchRoleId =
   | 'secretary'
   | 'youth-leader'
   | 'financial-secretary'
+  | 'content-editor'
 
 export interface ChurchRole {
   id: ChurchRoleId
@@ -165,6 +291,8 @@ export interface ChurchRole {
 export type AuditAction =
   | 'member.create'
   | 'member.update'
+  /** The app relabelled somebody Active/Inactive off the Sunday register — no person chose it. */
+  | 'member.autoStatus'
   | 'member.delete'
   | 'settings.update'
   | 'role.permissions'
@@ -187,6 +315,13 @@ export type AuditAction =
   | 'event.update'
   | 'event.delete'
   | 'attendance.record'
+  | 'visitor.create'
+  | 'visitor.update'
+  | 'visitor.delete'
+  | 'children.record'
+  | 'message.read'
+  | 'message.handled'
+  | 'message.delete'
 
 /**
  * One recorded change, stored append-only at `auditLog/{id}`.

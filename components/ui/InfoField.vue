@@ -25,7 +25,11 @@ withDefaults(defineProps<Props>(), { variant: 'default' })
     </div>
     <div class="min-w-0">
       <p class="text-[10px] text-gray-400 leading-tight mb-0.5">{{ label }}</p>
-      <p class="text-xs font-medium leading-snug wrap-break-word text-gray-800">{{ value }}</p>
+      <!-- `whitespace-pre-line` so a multi-line value (a member's comment) keeps its line
+           breaks. No effect on the single-line values every other field holds. -->
+      <p class="text-xs font-medium leading-snug wrap-break-word whitespace-pre-line text-gray-800">
+        {{ value }}
+      </p>
     </div>
   </div>
 </template>

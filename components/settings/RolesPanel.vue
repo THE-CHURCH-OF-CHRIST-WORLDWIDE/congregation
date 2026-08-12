@@ -127,7 +127,17 @@ async function doAssign() {
 // shared store flag.
 const { isPending, run } = usePendingAction()
 
+const { confirm } = useConfirm()
+
 async function revoke(assignmentId: string) {
+  const assignment = rolesStore.assignments.find((a) => a.id === assignmentId)
+  const who = membersStore.members.find((m) => m.id === assignment?.memberId)?.name
+  const ok = await confirm({
+    title: who ? `Revoke ${who}'s role?` : 'Revoke this role?',
+    message: 'They keep their place on the nominal roll — only the role is removed.',
+    confirmLabel: 'Revoke',
+  })
+  if (!ok) return
   await run(assignmentId, () => rolesStore.revokeAssignment(assignmentId).catch(() => {}))
 }
 
@@ -155,6 +165,16 @@ async function changeAccountRole(uid: string, roleId: string, email?: string) {
 }
 
 async function doRevokeAccess(uid: string) {
+  const account = accountsStore.records.find((a) => a.uid === uid)
+  const ok = await confirm({
+    title: `Revoke dashboard access for ${account?.email || 'this account'}?`,
+    // The consequence worth stating: this is the document Firestore rules read, so revoking it
+    // takes effect everywhere at once, not just in this screen.
+    message:
+      'They will be able to sign in but not read or change anything until access is granted again.',
+    confirmLabel: 'Revoke access',
+  })
+  if (!ok) return
   await run(uid, () => accountsStore.revokeAccess(uid).catch(() => {}))
 }
 
@@ -197,6 +217,12 @@ async function doInvite() {
 }
 
 async function doRevokeInvite(email: string) {
+  const ok = await confirm({
+    title: `Revoke the invitation to ${email}?`,
+    message: 'Their invitation link will stop working. A new invitation can be sent at any time.',
+    confirmLabel: 'Revoke invitation',
+  })
+  if (!ok) return
   await run(email, () => invitationsStore.revoke(email).catch(() => {}))
 }
 

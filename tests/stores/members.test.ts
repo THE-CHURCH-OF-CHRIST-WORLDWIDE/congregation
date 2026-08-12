@@ -88,15 +88,9 @@ describe('useMembersStore', () => {
     expect(store.filteredMembers.map((m) => m.id)).toEqual(['2'])
   })
 
-  it('flags members with 3+ absences as backsliders', () => {
-    const store = useMembersStore()
-    store.members = [
-      makeMember({ id: '1', absenceCount: 0 }),
-      makeMember({ id: '2', absenceCount: 3 }),
-      makeMember({ id: '3', absenceCount: 7 }),
-    ]
-    expect(store.backsliders.map((m) => m.id)).toEqual(['2', '3'])
-  })
+  // Backsliders used to be `absenceCount >= 3` on the member record — a field nothing ever wrote
+  // to, so the list was always empty. They are derived from the register now; see
+  // tests/composables/useAbsenceTracking.test.ts.
 
   it('classifies members aged 13–35 as youth', () => {
     const store = useMembersStore()
@@ -152,5 +146,66 @@ describe('useMembersStore', () => {
     await expect(store.addMember(makeMember())).rejects.toThrow('offline')
     expect(store.members).toEqual([])
     expect(store.error).toBe('offline')
+  })
+
+  describe('syncAttendanceStatuses', () => {
+    const sunday = (memberId: string, date: string, present: boolean) => ({
+      id: `${memberId}-${date}`,
+      memberId,
+      serviceId: 'sid',
+      date,
+      present,
+      serviceType: 'Sunday Worship',
+    })
+
+    it('writes the labels the register implies and updates local state', async () => {
+      const store = useMembersStore()
+      store.members = [
+        makeMember({ id: 'away', name: 'Away', status: 'Active' }),
+        makeMember({ id: 'here', name: 'Here', status: 'Active' }),
+      ]
+
+      const applied = await store.syncAttendanceStatuses([
+        sunday('here', '2026-01-18', true),
+        sunday('here', '2026-01-11', true),
+      ])
+
+      expect(applied.map((u) => [u.id, u.to])).toEqual([['away', 'Inactive']])
+      expect(repo.updateMember).toHaveBeenCalledExactlyOnceWith('away', { status: 'Inactive' })
+      expect(store.members.find((m) => m.id === 'away')!.status).toBe('Inactive')
+      expect(store.members.find((m) => m.id === 'here')!.status).toBe('Active')
+    })
+
+    it('writes nothing when the register implies no change', async () => {
+      const store = useMembersStore()
+      store.members = [makeMember({ id: 'here', status: 'Active' })]
+
+      const applied = await store.syncAttendanceStatuses([sunday('here', '2026-01-18', true)])
+
+      expect(applied).toEqual([])
+      expect(repo.updateMember).not.toHaveBeenCalled()
+    })
+
+    /**
+     * This runs after a register has already saved successfully, so a failure here must not
+     * surface — and must not stop the rest of the roll being relabelled.
+     */
+    it('carries on past a failed write and leaves that member as they were', async () => {
+      repo.updateMember.mockRejectedValueOnce(new Error('offline'))
+      const store = useMembersStore()
+      store.members = [
+        makeMember({ id: 'first', name: 'First', status: 'Active' }),
+        makeMember({ id: 'second', name: 'Second', status: 'Active' }),
+      ]
+
+      const applied = await store.syncAttendanceStatuses([
+        sunday('other', '2026-01-18', true),
+        sunday('other', '2026-01-11', true),
+      ])
+
+      expect(applied.map((u) => u.id)).toEqual(['second'])
+      expect(store.members.find((m) => m.id === 'first')!.status).toBe('Active')
+      expect(store.members.find((m) => m.id === 'second')!.status).toBe('Inactive')
+    })
   })
 })

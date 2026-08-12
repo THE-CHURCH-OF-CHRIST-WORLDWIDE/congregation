@@ -2,7 +2,13 @@ import { defineStore } from 'pinia'
 import { recordAudit } from '~/utils/audit'
 import { useMembersRepository } from '~/repositories/membersRepository'
 import { churchNumberKey, normaliseChurchNumber } from '~/utils/churchNumber'
-import type { Member, MemberFilters } from '~/types'
+import { isYouth } from '~/utils/youth'
+import {
+  statusUpdatesForRoll,
+  summariseStatusUpdates,
+  type StatusUpdate,
+} from '~/utils/attendanceStatus'
+import type { AttendanceRecord, Member, MemberFilters } from '~/types'
 
 export const useMembersStore = defineStore('members', () => {
   const members = ref<Member[]>([])
@@ -69,8 +75,6 @@ export const useMembersStore = defineStore('members', () => {
     )
   }
 
-  const backsliders = computed(() => members.value.filter((m) => m.absenceCount >= 3))
-
   const activeCount = computed(() => members.value.filter((m) => m.status === 'Active').length)
 
   const sisterCount = computed(() => members.value.filter((m) => m.gender === 'Female').length)
@@ -84,14 +88,11 @@ export const useMembersStore = defineStore('members', () => {
       ).length
   )
 
-  // Youth: members aged 13–35
+  // Youth: members aged 13–35. `isYouth` is shared with the detail panel, which offers the
+  // schooling fields on the same basis.
   const youthMembers = computed(() => {
     const now = new Date()
-    return members.value.filter((m) => {
-      if (!m.dob) return false
-      const age = now.getFullYear() - new Date(m.dob).getFullYear()
-      return age >= 13 && age <= 35
-    })
+    return members.value.filter((m) => isYouth(m, now))
   })
 
   const youthActiveCount = computed(
@@ -184,6 +185,45 @@ export const useMembersStore = defineStore('members', () => {
     }
   }
 
+  /**
+   * Apply the `Active` / `Inactive` labels the Sunday register implies.
+   *
+   * Called after attendance is saved, which is the only moment the answer can change. Writes each
+   * affected member individually — the repository has no batch API — but reports once: a dozen
+   * "X updated" toasts for something the user did not ask for would bury the register they did
+   * save. Each change still gets its own audit entry, so the log shows exactly who was relabelled
+   * and that the app rather than a person did it.
+   *
+   * Failures are swallowed deliberately. This is bookkeeping that follows a successful save, and
+   * it must not turn a saved register into an error.
+   */
+  async function syncAttendanceStatuses(records: AttendanceRecord[]): Promise<StatusUpdate[]> {
+    const updates = statusUpdatesForRoll(members.value, records)
+    if (!updates.length) return []
+
+    const repo = useMembersRepository()
+    const applied: StatusUpdate[] = []
+
+    for (const update of updates) {
+      try {
+        await repo.updateMember(update.id, { status: update.to })
+        const idx = members.value.findIndex((m) => m.id === update.id)
+        if (idx !== -1) members.value[idx] = { ...members.value[idx], status: update.to } as Member
+        applied.push(update)
+        recordAudit({
+          action: 'member.autoStatus',
+          targetId: update.id,
+          targetLabel: `${update.name}: ${update.from} → ${update.to}`,
+        })
+      } catch {
+        // Leave the member as they were and carry on with the rest of the roll.
+      }
+    }
+
+    if (applied.length) useToast().info(summariseStatusUpdates(applied))
+    return applied
+  }
+
   async function deleteMember(id: string) {
     const name = members.value.find((m) => m.id === id)?.name
     const repo = useMembersRepository()
@@ -214,7 +254,6 @@ export const useMembersStore = defineStore('members', () => {
     filters,
     filteredMembers,
     churchNumberHolder,
-    backsliders,
     activeCount,
     sisterCount,
     brotherCount,
@@ -226,6 +265,7 @@ export const useMembersStore = defineStore('members', () => {
     load,
     addMember,
     updateMember,
+    syncAttendanceStatuses,
     deleteMember,
     setFilter,
   }

@@ -165,12 +165,20 @@ describe('useRolesStore permission overrides', () => {
   })
 
   it('ignores an override for a role id that no longer exists', async () => {
+    // Compared against the built-in set rather than a hard-coded count: the assertion is that a
+    // stale override adds nothing, which should not need revisiting every time a role is added.
+    storedOverrides = []
+    const baseline = useRolesStore()
+    await baseline.load()
+    const builtInIds = baseline.roles.map((r) => r.id)
+
+    setActivePinia(createPinia())
     storedOverrides = [{ id: 'archdeacon', permissions: { Finance: { view: true } } }]
     const store = useRolesStore()
     await store.load()
 
+    expect(store.roles.map((r) => r.id)).toEqual(builtInIds)
     expect(store.roles.map((r) => r.id)).not.toContain('archdeacon')
-    expect(store.roles).toHaveLength(8)
   })
 
   it('persists an edited matrix', async () => {

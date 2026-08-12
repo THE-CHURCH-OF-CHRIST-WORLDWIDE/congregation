@@ -16,6 +16,7 @@ const currentYear = new Date().getFullYear()
  */
 const STATUS_COLORS: Record<string, string> = {
   Active: '#e5e7eb',
+  Inactive: '#94a3b8',
   Backslider: '#7dd3fc',
   Weak: '#0284c7',
   Distant: '#38bdf8',

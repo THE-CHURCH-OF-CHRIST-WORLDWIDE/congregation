@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { WorshipDetails } from '~/types'
+
 interface Props {
   serviceType?: string
   month?: string
@@ -54,9 +56,93 @@ function isPresent(memberId: string, date: string) {
   return attendanceStore.findRecord(memberId, date, props.serviceType)?.present ?? false
 }
 
-function toggle(memberId: string, date: string) {
-  attendanceStore.toggleForMemberDate(memberId, date, props.serviceType)
+// ─── Marking present asks where ──────────────────────────────────────────────
+/**
+ * What the open `WorshipPlaceModal` will apply its answer to.
+ *
+ * `dates` is a list because the row menu marks a whole month in one go — one answer covers all of
+ * them rather than putting the same dialog in front of the user four times.
+ *
+ * `revert` puts the checkbox back if the dialog is declined. The box is bound with `:checked`
+ * rather than `v-model`, so the browser has already drawn it ticked while the store still says
+ * absent; without this it would sit there ticked and unsaved.
+ */
+const pendingMark = ref<{
+  memberId: string
+  dates: string[]
+  subject: string
+  scopeNote: string
+  revert: () => void
+} | null>(null)
+
+const showWorshipModal = ref(false)
+
+function memberName(memberId: string) {
+  return membersStore.members.find((m) => m.id === memberId)?.name ?? 'This member'
+}
+
+function toggle(memberId: string, date: string, event: Event) {
+  const turningOn = !isPresent(memberId, date)
+
+  if (!turningOn) {
+    // Un-marking makes no claim about where anybody worshipped, so it needs no dialog.
+    attendanceStore.setAttendance(memberId, date, props.serviceType, false)
+    hasChanged.value = true
+    return
+  }
+
+  const checkbox = event.target as HTMLInputElement
+  pendingMark.value = {
+    memberId,
+    dates: [date],
+    subject: `${memberName(memberId)} · ${formatDate(date, 'full')}`,
+    scopeNote: '',
+    revert: () => {
+      checkbox.checked = false
+    },
+  }
+  showWorshipModal.value = true
+}
+
+// Both handlers close the dialog themselves rather than leaving it to the child's `v-model` emit.
+// The parent owns `pendingMark`, so it owns whether the dialog is open — one of the two going
+// stale is how you end up with a dialog that answers for the wrong row.
+function onWorshipConfirmed(details: WorshipDetails) {
+  const pending = pendingMark.value
+  pendingMark.value = null
+  showWorshipModal.value = false
+  if (!pending) return
+  for (const date of pending.dates) {
+    attendanceStore.setAttendance(pending.memberId, date, props.serviceType, true, details)
+  }
   hasChanged.value = true
+}
+
+function onWorshipCancelled() {
+  pendingMark.value?.revert()
+  pendingMark.value = null
+  showWorshipModal.value = false
+}
+
+/** The record for a cell, so the sheet can show that a tick came from another congregation. */
+function recordFor(memberId: string, date: string) {
+  return attendanceStore.findRecord(memberId, date, props.serviceType)
+}
+
+function worshippedElsewhere(memberId: string, date: string) {
+  const record = recordFor(memberId, date)
+  return Boolean(record?.present && record.place === 'elsewhere')
+}
+
+/** Hover text naming the congregation, and whether the certificate was actually produced. */
+function elsewhereTitle(memberId: string, date: string) {
+  const record = recordFor(memberId, date)
+  if (!record) return ''
+  const where = record.congregation || 'another congregation'
+  const certificate = record.certificate
+    ? 'certificate of worship produced'
+    : 'certificate not yet produced'
+  return `Worshipped with ${where} — ${certificate}`
 }
 
 // Registers can run to hundreds of names; page them so the sheet stays usable.
@@ -72,13 +158,33 @@ const {
 // ─── Per-member row menu ─────────────────────────────────────────────────────
 const openRowMenu = ref<string | null>(null)
 
-/** Marks every Sunday in the displayed month for one member in a single go. */
+/**
+ * Marks every Sunday in the displayed month for one member in a single go.
+ *
+ * Asks where once, not once per Sunday — a month of dialogs to record a month of attendance would
+ * make the shortcut slower than ticking the boxes. The one answer applies to all of them, which the
+ * dialog says plainly so nobody records four services abroad by accident.
+ */
 function markMonth(memberId: string, present: boolean) {
-  for (const date of sundaysInMonth.value) {
-    attendanceStore.setAttendance(memberId, date, props.serviceType, present)
-  }
-  hasChanged.value = true
   openRowMenu.value = null
+  const dates = sundaysInMonth.value
+
+  if (!present) {
+    for (const date of dates) {
+      attendanceStore.setAttendance(memberId, date, props.serviceType, false)
+    }
+    hasChanged.value = true
+    return
+  }
+
+  pendingMark.value = {
+    memberId,
+    dates: [...dates],
+    subject: `${memberName(memberId)} · ${dates.length} ${props.serviceType} services`,
+    scopeNote: `This answer applies to all ${dates.length} services in ${formatDate(props.month + '-01', 'monthYear')}.`,
+    revert: () => {},
+  }
+  showWorshipModal.value = true
 }
 
 onMounted(() => {
@@ -123,7 +229,19 @@ function doExport() {
         'Attendance %': summary.percentage,
       }
       sundaysInMonth.value.forEach((d) => {
-        row[d] = isPresent(m.id, d) ? 'Present' : 'Absent'
+        // Names the congregation in the cell, so an exported register still shows which ticks were
+        // earned elsewhere — a bare "Present" would flatten the two back together.
+        if (!isPresent(m.id, d)) {
+          row[d] = 'Absent'
+          return
+        }
+        const record = recordFor(m.id, d)
+        if (record?.place !== 'elsewhere') {
+          row[d] = 'Present'
+          return
+        }
+        const where = record.congregation || 'another congregation'
+        row[d] = `Present (${where}${record.certificate ? '' : ', certificate pending'})`
       })
       return row
     }),
@@ -226,13 +344,25 @@ function doExport() {
                 </div>
               </td>
               <td v-for="date in sundaysInMonth" :key="date" class="px-2 py-2.5 text-center">
-                <input
-                  type="checkbox"
-                  class="attendance-check"
-                  :checked="isPresent(member.id, date)"
-                  :aria-label="`${member.name} attendance on ${date}`"
-                  @change="toggle(member.id, date)"
-                />
+                <span class="inline-flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    class="attendance-check"
+                    :checked="isPresent(member.id, date)"
+                    :aria-label="`${member.name} attendance on ${date}`"
+                    @change="toggle(member.id, date, $event)"
+                  />
+                  <!-- Marks a tick that came from another congregation. Without it the sheet shows
+                       an ordinary present and the distinction is invisible once saved. -->
+                  <Icon
+                    v-if="worshippedElsewhere(member.id, date)"
+                    icon="mdi:certificate-outline"
+                    class="text-xs text-amber-500"
+                    :class="!recordFor(member.id, date)?.certificate && 'opacity-50'"
+                    :title="elsewhereTitle(member.id, date)"
+                    :aria-label="elsewhereTitle(member.id, date)"
+                  />
+                </span>
               </td>
               <td class="px-2 py-2.5 relative">
                 <button
@@ -302,5 +432,13 @@ function doExport() {
         <Button variant="secondary" @click="cancel">Cancel</Button>
       </div>
     </Transition>
+
+    <WorshipPlaceModal
+      v-model="showWorshipModal"
+      :subject="pendingMark?.subject ?? ''"
+      :scope-note="pendingMark?.scopeNote ?? ''"
+      @confirm="onWorshipConfirmed"
+      @cancel="onWorshipCancelled"
+    />
   </div>
 </template>

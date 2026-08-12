@@ -370,7 +370,29 @@ const collectionErrors = reactive({ date: '', amount: '' })
 
 const { isPending, run } = usePendingAction()
 
-async function removeEntry(tx: { id: string; type: string }) {
+const { confirm } = useConfirm()
+
+async function removeEntry(tx: {
+  id: string
+  type: string
+  description?: string
+  amount?: number
+}) {
+  const kind = tx.type === 'income' ? 'collection' : 'expense'
+  const ok = await confirm({
+    title: `Delete this ${kind}?`,
+    // Names the amount as well as the description: these are the books, and deleting the wrong
+    // line is the kind of mistake that only shows up when the figures stop reconciling.
+    message: [
+      tx.description,
+      typeof tx.amount === 'number' ? `₦${tx.amount.toLocaleString('en-NG')}` : null,
+    ]
+      .filter(Boolean)
+      .join(' — ')
+      .concat('. This cannot be undone.'),
+    confirmLabel: 'Delete',
+  })
+  if (!ok) return
   await run(tx.id, () =>
     (tx.type === 'income'
       ? financeStore.deleteCollection(tx.id)

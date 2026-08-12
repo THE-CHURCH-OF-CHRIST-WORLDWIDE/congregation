@@ -11,7 +11,6 @@
  */
 
 import {
-  Timestamp,
   addDoc,
   collection,
   getDocs,
@@ -21,17 +20,12 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import type { AuditEntry } from '~/types'
+import { toIsoString } from '~/utils/firestoreDates'
 
 const COLLECTION = 'auditLog'
 
 /** What the caller supplies; `actorUid`, `actorEmail` and `at` are filled in by the store. */
 export type AuditDraft = Pick<AuditEntry, 'action' | 'targetId' | 'targetLabel'>
-
-function toIso(value: unknown): string | undefined {
-  if (value instanceof Timestamp) return value.toDate().toISOString()
-  if (typeof value === 'string') return value
-  return undefined
-}
 
 export function useAuditRepository() {
   const nuxt = useNuxtApp()
@@ -55,7 +49,7 @@ export function useAuditRepository() {
       return {
         ...(data as Omit<AuditEntry, 'id' | 'at'>),
         id: d.id,
-        at: toIso(data.at),
+        at: toIsoString(data.at),
       }
     })
   }

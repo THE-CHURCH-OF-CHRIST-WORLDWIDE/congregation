@@ -86,6 +86,15 @@ function doImport() {
     village: r.village || undefined,
     address: r.address || undefined,
     occupation: r.occupation || undefined,
+    school: r.school || undefined,
+    department: r.department || undefined,
+    courseOfStudy: r.courseOfStudy || undefined,
+    program: r.program || undefined,
+    level: r.level || undefined,
+    hallOfResidence: r.hallOfResidence || undefined,
+    yearOfEntry: r.yearOfEntry || undefined,
+    yearOfExit: r.yearOfExit || undefined,
+    comment: r.comment || undefined,
   }))
   emit('import', members)
   close()

@@ -6,6 +6,7 @@ import type { AuditAction, AuditEntry } from '~/types'
 const ACTION_LABELS: Record<AuditAction, string> = {
   'member.create': 'Added member',
   'member.update': 'Updated member',
+  'member.autoStatus': 'Relabelled from the register',
   'member.delete': 'Deleted member',
   'settings.update': 'Updated church settings',
   'role.permissions': 'Changed role permissions',
@@ -27,7 +28,14 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   'event.create': 'Added an event',
   'event.update': 'Updated an event',
   'event.delete': 'Deleted an event',
+  'visitor.create': 'Recorded a visitor',
+  'visitor.update': 'Updated a visitor',
+  'visitor.delete': 'Deleted a visitor',
+  'children.record': "Recorded children's attendance",
   'attendance.record': 'Recorded attendance',
+  'message.read': 'Read a message',
+  'message.handled': 'Triaged a message',
+  'message.delete': 'Deleted a message',
 }
 
 export function auditActionLabel(action: AuditAction): string {

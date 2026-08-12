@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { attendanceDocId, useAttendanceRepository } from '~/repositories/attendanceRepository'
 import { recordAudit } from '~/utils/audit'
-import type { AttendanceRecord } from '~/types'
+import type { AttendanceRecord, WorshipDetails } from '~/types'
 
 function makeServiceId(serviceType: string, date: string): string {
   return `${serviceType.toLowerCase().replace(/\s+/g, '-')}-${date}`
@@ -174,16 +174,56 @@ export const useAttendanceStore = defineStore('attendance', () => {
 
   // Toggle by (member, date, service). Creates a record if none exists so the
   // table can be ticked even on dates that were never seeded.
+  /**
+   * Where a present member worshipped, or nothing at all for an absence.
+   *
+   * Marking somebody absent clears the place, congregation and certificate: they are claims about
+   * a service the member did not attend, and leaving them behind would have a record read as
+   * "absent, with a certificate of worship from Uyo".
+   */
+  function worshipFields(
+    present: boolean,
+    details?: WorshipDetails
+  ): Pick<AttendanceRecord, 'place' | 'congregation' | 'certificate' | 'certificateRef'> {
+    if (!present) {
+      return {
+        place: undefined,
+        congregation: undefined,
+        certificate: undefined,
+        certificateRef: undefined,
+      }
+    }
+    const place = details?.place ?? 'local'
+    // Only an `elsewhere` record carries a congregation or a certificate.
+    if (place === 'local') {
+      return {
+        place,
+        congregation: undefined,
+        certificate: undefined,
+        certificateRef: undefined,
+      }
+    }
+    return {
+      place,
+      congregation: details?.congregation,
+      certificate: details?.certificate,
+      certificateRef: details?.certificateRef,
+    }
+  }
+
   function setAttendance(
     memberId: string,
     date: string,
     serviceType: string,
-    present: boolean
+    present: boolean,
+    details?: WorshipDetails
   ): AttendanceRecord {
+    const worship = worshipFields(present, details)
     const existing = findRecord(memberId, date, serviceType)
     if (existing) {
       trackOriginal(existing.id, existing.present)
       existing.present = present
+      Object.assign(existing, worship)
       return existing
     }
     const rec: AttendanceRecord = {
@@ -193,6 +233,7 @@ export const useAttendanceStore = defineStore('attendance', () => {
       date,
       present,
       serviceType,
+      ...worship,
     }
     records.value.push(rec)
     // For brand-new records, the "original" state is "absent" (no record == not marked).
@@ -200,9 +241,14 @@ export const useAttendanceStore = defineStore('attendance', () => {
     return rec
   }
 
-  function toggleForMemberDate(memberId: string, date: string, serviceType: string) {
+  function toggleForMemberDate(
+    memberId: string,
+    date: string,
+    serviceType: string,
+    details?: WorshipDetails
+  ) {
     const existing = findRecord(memberId, date, serviceType)
-    return setAttendance(memberId, date, serviceType, !(existing?.present ?? false))
+    return setAttendance(memberId, date, serviceType, !(existing?.present ?? false), details)
   }
 
   function markPresent(recordId: string) {
@@ -253,6 +299,19 @@ export const useAttendanceStore = defineStore('attendance', () => {
       throw e
     } finally {
       saving.value = false
+    }
+
+    // The register just changed, so who counts as inactive may have too. Deliberately outside the
+    // try above, and swallowing its own failures: this follows a register that has already saved
+    // successfully, and must never be able to report that register as failed.
+    try {
+      const membersStore = useMembersStore()
+      // Only relabel against a roll already in memory. Fetching one here would put a full read of
+      // the members collection behind every register save, on a page that has necessarily loaded
+      // them already to draw the register in the first place.
+      if (membersStore.loaded) await membersStore.syncAttendanceStatuses(records.value)
+    } catch {
+      // Bookkeeping only — never the user's problem.
     }
   }
 
