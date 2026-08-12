@@ -262,6 +262,7 @@ export type RoleName =
   | 'Secretary'
   | 'Youth Leader'
   | 'Financial Secretary'
+  | 'Content Editor'
 
 /** Ids of the built-in roles in `stores/roles.ts`. Firestore rules match on these strings. */
 export type ChurchRoleId =
@@ -273,6 +274,7 @@ export type ChurchRoleId =
   | 'secretary'
   | 'youth-leader'
   | 'financial-secretary'
+  | 'content-editor'
 
 export interface ChurchRole {
   id: ChurchRoleId

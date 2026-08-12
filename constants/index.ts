@@ -134,6 +134,7 @@ export const ROLE_NAMES: RoleName[] = [
   'Secretary',
   'Youth Leader',
   'Financial Secretary',
+  'Content Editor',
 ]
 
 export const APP_PAGES: AppPage[] = [

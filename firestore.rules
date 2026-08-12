@@ -83,14 +83,29 @@ service cloud.firestore {
     function isStaff() {
       return roleId() in [
         'super-admin', 'admin', 'elder', 'deacon', 'preacher',
-        'secretary', 'youth-leader', 'financial-secretary'
+        'secretary', 'youth-leader', 'financial-secretary', 'content-editor'
       ];
     }
 
-    // Church settings sit a tier below access control: Admin may edit the site's content,
+    // Church settings sit a tier below access control: these roles may edit the site's content,
     // but managing accounts, roles and invitations stays Super Admin only.
+    //
+    // The Content Editor is here because `settings/church` IS the public website — church
+    // details, leaders, gallery, congregations, and the Home and About page copy. Nothing
+    // privileged lives in it; roles and accounts are separate collections, gated below on
+    // isSuperAdmin(), so this grant cannot be walked up into access control.
     function canEditSettings() {
-      return roleId() in ['super-admin', 'admin'];
+      return roleId() in ['super-admin', 'admin', 'content-editor'];
+    }
+
+    // What the congregation publishes: teachings and events, which appear on the public site.
+    //
+    // Deliberately separate from canEditRecords(). That gate also covers attendance registers,
+    // visitors and children's figures — personal data about named members that a website editor
+    // has no business writing. Splitting the two is what stops "can update the events page" from
+    // quietly meaning "can rewrite the attendance register".
+    function canEditPublishedContent() {
+      return roleId() in ['super-admin', 'admin', 'secretary', 'content-editor'];
     }
 
     // Money has its own tier: Super Admin, Admin and the Financial Secretary. Everyone else on
@@ -207,7 +222,7 @@ service cloud.firestore {
     // read their own store, so nothing outside the dashboard needs this yet.
     match /teachings/{sermonId} {
       allow read: if isStaff();
-      allow write: if canEditRecords();
+      allow write: if canEditPublishedContent();
     }
 
     // ── Attendance ─────────────────────────────────────────────────────────
@@ -261,7 +276,7 @@ service cloud.firestore {
     // Publicly readable: the /events page lists these to visitors while signed out.
     match /events/{eventId} {
       allow read: if true;
-      allow write: if canEditRecords();
+      allow write: if canEditPublishedContent();
     }
 
     // ── Contact messages ───────────────────────────────────────────────────

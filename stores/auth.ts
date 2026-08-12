@@ -12,8 +12,14 @@ import {
 import { useUsersRepository } from '~/repositories/usersRepository'
 import type { ChurchRoleId } from '~/types'
 
-/** Roles that may write church data. Mirrors `isStaff()` in firestore.rules. */
-const STAFF_ROLES: ChurchRoleId[] = [
+/**
+ * Roles that may write church data. Mirrors `isStaff()` in firestore.rules.
+ *
+ * Exported so a test can compare the two lists directly. The comment saying "keep them in step"
+ * had no way of noticing when they drifted, and a role missing from the rules can sign in and then
+ * fail every read — which looks like a broken app rather than a missing entry in a list.
+ */
+export const STAFF_ROLES: ChurchRoleId[] = [
   'super-admin',
   'admin',
   'elder',
@@ -22,6 +28,7 @@ const STAFF_ROLES: ChurchRoleId[] = [
   'secretary',
   'youth-leader',
   'financial-secretary',
+  'content-editor',
 ]
 
 /** Firebase reports configuration problems as bare codes; name the setting instead. */

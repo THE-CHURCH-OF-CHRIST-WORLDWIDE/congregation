@@ -85,28 +85,35 @@ const baseNavGroups: { label: string; items: NavItem[] }[] = [
 ]
 
 /**
- * The audit log is Super-Admin-only, enforced by Firestore rules. Hiding the nav item keeps the
- * UI honest about that instead of offering a panel that would fail to load.
+ * Roles, accounts and the audit log are Super-Admin-only, enforced by Firestore rules. Hiding the
+ * whole Access group keeps the UI honest about that instead of offering panels that would fail to
+ * load — every other group on this page is public site content, which is why a Content Editor can
+ * be given Settings without being handed account management.
  */
 const navGroups = computed(() =>
-  baseNavGroups.map((group) =>
-    group.label === 'Access' && authStore.isSuperAdmin
-      ? {
-          ...group,
-          items: [
-            ...group.items,
-            { label: 'Audit Log', value: 'audit' as Tab, icon: 'mdi:history' },
-          ],
-        }
-      : group
-  )
+  baseNavGroups
+    .filter((group) => group.label !== 'Access' || authStore.isSuperAdmin)
+    .map((group) =>
+      group.label === 'Access'
+        ? {
+            ...group,
+            items: [
+              ...group.items,
+              { label: 'Audit Log', value: 'audit' as Tab, icon: 'mdi:history' },
+            ],
+          }
+        : group
+    )
 )
 
-// If a Super Admin loses that role while sitting on the panel, don't leave them on a dead tab.
+// If a Super Admin loses that role while sitting on one of those panels, don't leave them on a
+// dead tab.
 watch(
   () => authStore.isSuperAdmin,
   (allowed) => {
-    if (!allowed && activeTab.value === 'audit') activeTab.value = 'general'
+    if (!allowed && (activeTab.value === 'audit' || activeTab.value === 'roles')) {
+      activeTab.value = 'general'
+    }
   }
 )
 
@@ -1323,13 +1330,15 @@ function removeSundayDetail(i: number) {
           </SettingsSection>
         </div>
 
-        <!-- ── Roles ────────────────────────────────────────────────────── -->
-        <div v-else-if="activeTab === 'roles'" key="roles">
+        <!-- ── Roles & audit (Super Admin only) ─────────────────────────
+             Guarded on the role as well as the tab. The nav no longer offers these to anyone
+             else, so this is unreachable — but these panels list other people's accounts and
+             email addresses, and "unreachable" is a weaker promise than "cannot render". -->
+        <div v-else-if="activeTab === 'roles' && authStore.isSuperAdmin" key="roles">
           <RolesPanel />
         </div>
 
-        <!-- ── Audit log (Super Admin only) ─────────────────────────────── -->
-        <div v-else key="audit">
+        <div v-else-if="activeTab === 'audit' && authStore.isSuperAdmin" key="audit">
           <AuditLogPanel />
         </div>
       </Transition>
