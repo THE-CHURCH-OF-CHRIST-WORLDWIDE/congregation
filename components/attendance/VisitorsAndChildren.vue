@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const visitorsStore = useVisitorsStore()
 const { exportCSV } = useExportCSV()
+const { confirmDelete, confirm } = useConfirm()
 
 onMounted(() => visitorsStore.load())
 
@@ -83,6 +84,14 @@ async function saveChildren() {
 
 /** Explicit action, so removing a figure does not depend on knowing to empty the box. */
 async function clearChildren() {
+  const ok = await confirm({
+    title: "Remove the children's figure?",
+    // Says what removing means, because it is not the same as setting it to zero — the service
+    // goes back to having no count at all.
+    message: `${formatDate(selectedDate.value, 'full')} will show as not counted, rather than as zero children.`,
+    confirmLabel: 'Remove',
+  })
+  if (!ok) return
   await visitorsStore.setChildrenCount(selectedDate.value, props.serviceType, null).catch(() => {})
 }
 
@@ -151,6 +160,10 @@ async function onSave(payload: Omit<Visitor, 'id' | 'createdAt'>) {
 const { isPending, run } = usePendingAction()
 
 async function remove(visitor: Visitor) {
+  const ok = await confirmDelete(visitor.name, {
+    message: `Their visit on ${formatDate(visitor.date, 'full')} will be removed from the record.`,
+  })
+  if (!ok) return
   await run(visitor.id, () => visitorsStore.deleteVisitor(visitor.id).catch(() => {}))
 }
 

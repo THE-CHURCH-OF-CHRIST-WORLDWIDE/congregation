@@ -28,4 +28,6 @@ authStore.init()
     <NuxtPage />
   </NuxtLayout>
   <ToastContainer />
+  <!-- Host for `useConfirm()`. One instance for the whole app, like the toasts. -->
+  <ConfirmDialog />
 </template>

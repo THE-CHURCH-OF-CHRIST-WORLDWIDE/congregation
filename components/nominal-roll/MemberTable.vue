@@ -41,8 +41,17 @@ const statusBadge = {
 // reacting to the store's shared `saving` flag.
 const { isPending, run } = usePendingAction()
 
+const { confirmDelete } = useConfirm()
+
 async function deleteMember(id: string) {
   openMenuId.value = null
+  const member = sourceMembers.value.find((m) => m.id === id)
+  // Named, so somebody who clicked the wrong row in a long table can see that they did.
+  const ok = await confirmDelete(member?.name ?? 'this member', {
+    message:
+      'Their record, and their place on the nominal roll, will be removed. This cannot be undone.',
+  })
+  if (!ok) return
   await run(id, () => membersStore.deleteMember(id).catch(() => {}))
 }
 

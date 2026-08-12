@@ -4,7 +4,7 @@ import type { Sermon } from '~/types'
 interface Props {
   sermon: Sermon
 }
-defineProps<Props>()
+const props = defineProps<Props>()
 const teachingsStore = useTeachingsStore()
 const showMenu = ref(false)
 const expanded = ref(false)
@@ -27,9 +27,15 @@ function getCategoryColor(cat: string) {
 
 const { isPending, run } = usePendingAction()
 
+const { confirmDelete } = useConfirm()
+
 async function deleteSermon(id: string) {
-  await run(id, () => teachingsStore.deleteSermon(id).catch(() => {}))
   showMenu.value = false
+  const ok = await confirmDelete(props.sermon.topic || 'this teaching', {
+    message: 'The teaching and its uploaded files will no longer appear on the site.',
+  })
+  if (!ok) return
+  await run(id, () => teachingsStore.deleteSermon(id).catch(() => {}))
 }
 </script>
 

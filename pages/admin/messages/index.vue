@@ -74,15 +74,23 @@ async function toggleHandled(message: ContactMessage) {
   }
 }
 
-const confirmingDelete = ref<ContactMessage | null>(null)
+const { confirm } = useConfirm()
 
-async function confirmDelete() {
-  const message = confirmingDelete.value
-  if (!message) return
+/**
+ * Was a hand-rolled `<Modal>` plus a `confirmingDelete` ref in this page. Now the same shared
+ * dialog every other delete uses — the wording it carried was worth keeping, the second copy of
+ * the dialog was not.
+ */
+async function confirmDelete(message: ContactMessage) {
+  const ok = await confirm({
+    title: 'Delete this message?',
+    message: `The message from ${message.name} will be removed permanently. There is no other copy of it.`,
+    confirmLabel: 'Delete',
+  })
+  if (!ok) return
   busyId.value = message.id
   try {
     await messagesStore.remove(message.id)
-    confirmingDelete.value = null
     if (openMessage.value?.id === message.id) openMessage.value = null
   } catch {
     // Reported by the store; the message stays listed.
@@ -209,7 +217,7 @@ function preview(text: string) {
 
       <template #footer>
         <div v-if="selected" class="flex flex-wrap justify-end gap-2">
-          <Button variant="secondary" @click="confirmingDelete = selected">Delete</Button>
+          <Button variant="secondary" @click="confirmDelete(selected)">Delete</Button>
           <Button
             variant="secondary"
             :loading="busyId === selected.id"
@@ -229,29 +237,7 @@ function preview(text: string) {
       </template>
     </Modal>
 
-    <!-- Deleting is permanent, and the message is the only record of what was asked. -->
-    <Modal
-      :model-value="Boolean(confirmingDelete)"
-      title="Delete this message?"
-      size="sm"
-      @update:model-value="confirmingDelete = null"
-    >
-      <p class="text-sm text-gray-600">
-        The message from <span class="font-medium">{{ confirmingDelete?.name }}</span> will be
-        removed permanently. There is no other copy of it.
-      </p>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button variant="secondary" @click="confirmingDelete = null">Cancel</Button>
-          <Button
-            variant="danger"
-            :loading="busyId === confirmingDelete?.id"
-            @click="confirmDelete"
-          >
-            Delete
-          </Button>
-        </div>
-      </template>
-    </Modal>
+    <!-- Deleting is permanent, and the message is the only record of what was asked — the
+         confirmation now comes from `useConfirm()`, rendered once in app.vue. -->
   </div>
 </template>

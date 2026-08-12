@@ -29,9 +29,15 @@ function onEdit() {
   if (props.visitor) emit('edit', props.visitor)
 }
 
+const { confirmDelete } = useConfirm()
+
 async function onDelete() {
   if (!props.visitor) return
   const visitor = props.visitor
+  const ok = await confirmDelete(visitor.name, {
+    message: `Their visit on ${formatDate(visitor.date, 'full')} will be removed from the record.`,
+  })
+  if (!ok) return
   await visitorsStore.deleteVisitor(visitor.id).catch(() => {})
   emit('delete', visitor)
   close()

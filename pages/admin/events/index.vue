@@ -84,8 +84,17 @@ function openView(event: UpcomingEvent | PastEvent) {
   viewOpen.value = true
 }
 
-function confirmDelete(event: UpcomingEvent | PastEvent) {
-  if (!window.confirm(`Delete "${event.title}"? This cannot be undone.`)) return
+const { confirmDelete: askDelete } = useConfirm()
+
+/**
+ * Was `window.confirm`, which is a browser chrome dialog: unstyled, unfocusable, and blocking.
+ * Every other confirmation in the app is now the same in-app dialog.
+ */
+async function confirmDelete(event: UpcomingEvent | PastEvent) {
+  const ok = await askDelete(`"${event.title}"`, {
+    message: 'The event will no longer appear on the public site. This cannot be undone.',
+  })
+  if (!ok) return
   if (isPast(event)) {
     eventsStore.deletePastEvent(event.id)
   } else {

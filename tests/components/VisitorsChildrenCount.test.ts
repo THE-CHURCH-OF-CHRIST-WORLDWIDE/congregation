@@ -3,6 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import VisitorsAndChildren from '~/components/attendance/VisitorsAndChildren.vue'
 import { useVisitorsStore } from '~/stores/visitors'
+import { useConfirmStore } from '~/stores/confirm'
 import type { ChildrenCount } from '~/types'
 
 vi.mock('~/utils/audit', () => ({ recordAudit: vi.fn() }))
@@ -133,10 +134,18 @@ describe("children's figure", () => {
     await saveButton(w).trigger('click')
     await flushPromises()
 
-    expect(w.text()).toContain('recorded for this service')
+    expect(w.text()).toContain('Recorded for this service')
 
     const shownDate = (w.find('select').element as HTMLSelectElement).value
     await clearButton(w)!.trigger('click')
+    await flushPromises()
+
+    // Removing a figure is confirmed like any other delete.
+    const confirmStore = useConfirmStore()
+    expect(confirmStore.request).not.toBeNull()
+    expect(deleteChildrenCount).not.toHaveBeenCalled()
+
+    confirmStore.settle(true)
     await flushPromises()
 
     expect(deleteChildrenCount).toHaveBeenCalledWith(`sunday-worship__${shownDate}`)

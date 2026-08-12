@@ -240,9 +240,16 @@ function close() {
   emit('update:modelValue', false)
 }
 
+const { confirmDelete } = useConfirm()
+
 async function onDelete() {
   if (!props.member) return
   const member = props.member
+  const ok = await confirmDelete(member.name, {
+    message:
+      'Their record, and their place on the nominal roll, will be removed. This cannot be undone.',
+  })
+  if (!ok) return
   await membersStore.deleteMember(member.id).catch(() => {})
   emit('delete', member)
   close()

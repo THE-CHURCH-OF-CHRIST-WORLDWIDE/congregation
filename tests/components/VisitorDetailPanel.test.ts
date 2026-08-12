@@ -3,6 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import VisitorDetailPanel from '~/components/attendance/VisitorDetailPanel.vue'
 import { useVisitorsStore } from '~/stores/visitors'
+import { useConfirmStore } from '~/stores/confirm'
 import type { Visitor } from '~/types'
 
 vi.mock('~/utils/audit', () => ({ recordAudit: vi.fn() }))
@@ -143,19 +144,48 @@ describe('VisitorDetailPanel', () => {
     expect(w.emitted('edit')?.[0]).toEqual([visitor()])
   })
 
-  it('deletes through the store, then reports it and closes', async () => {
-    const store = useVisitorsStore()
-    store.visitors = [visitor()]
-    const w = render(visitor())
+  describe('delete', () => {
+    /** The dialog lives in `app.vue`, so a component test answers it through the store. */
+    async function clickDelete(w: ReturnType<typeof render>) {
+      await w
+        .findAll('button')
+        .find((b) => b.text().includes('Delete'))!
+        .trigger('click')
+      await flushPromises()
+    }
 
-    await w
-      .findAll('button')
-      .find((b) => b.text().includes('Delete'))!
-      .trigger('click')
-    await flushPromises()
+    it('asks first, then deletes and closes once confirmed', async () => {
+      const confirmStore = useConfirmStore()
+      useVisitorsStore().visitors = [visitor()]
+      const w = render(visitor())
 
-    expect(deleteVisitor).toHaveBeenCalledWith('v1')
-    expect(w.emitted('delete')).toBeTruthy()
-    expect(w.emitted('update:modelValue')?.at(-1)).toEqual([false])
+      await clickDelete(w)
+
+      // Nothing has happened yet — the request is waiting on an answer.
+      expect(confirmStore.request?.title).toContain('Grace Etim')
+      expect(deleteVisitor).not.toHaveBeenCalled()
+
+      confirmStore.settle(true)
+      await flushPromises()
+
+      expect(deleteVisitor).toHaveBeenCalledWith('v1')
+      expect(w.emitted('delete')).toBeTruthy()
+      expect(w.emitted('update:modelValue')?.at(-1)).toEqual([false])
+    })
+
+    it('does nothing at all when declined', async () => {
+      const confirmStore = useConfirmStore()
+      useVisitorsStore().visitors = [visitor()]
+      const w = render(visitor())
+
+      await clickDelete(w)
+      confirmStore.settle(false)
+      await flushPromises()
+
+      expect(deleteVisitor).not.toHaveBeenCalled()
+      expect(w.emitted('delete')).toBeUndefined()
+      // The panel stays open, so the record is still in front of whoever declined.
+      expect(w.emitted('update:modelValue')).toBeUndefined()
+    })
   })
 })
