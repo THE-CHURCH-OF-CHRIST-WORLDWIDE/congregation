@@ -206,13 +206,7 @@ export const ADMIN_ROUTES = {
  * anyone can read it. Anything that must not be reachable has to be enforced by
  * `firestore.rules`, not by this list.
  */
-export const STAGING_ONLY_ROUTES: string[] = [
-  '/', // the landing page itself — the contact section lives on it, so /#contact goes too
-  '/live-streams',
-  '/teachings', // covers /teachings/sermons and /teachings/sunday-school
-  '/events',
-  '/about-us',
-]
+export const STAGING_ONLY_ROUTES: string[] = []
 
 /**
  * Public nav items an admin can individually show or hide, from Admin → Settings → Navigation.
