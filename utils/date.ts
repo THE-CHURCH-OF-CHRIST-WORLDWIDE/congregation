@@ -27,6 +27,8 @@ export type DateStyle =
   | 'monthYear'
   /** ISO date "2026-03-05" — for storage / form inputs */
   | 'iso'
+  /** "5 Mar 2026, 3:45 PM" — date plus time of day, e.g. a submission timestamp */
+  | 'dateTime'
 
 const PATTERNS: Record<DateStyle, string> = {
   short: 'd MMM yyyy',
@@ -36,6 +38,7 @@ const PATTERNS: Record<DateStyle, string> = {
   dayMonth: 'd MMM',
   monthYear: 'MMMM yyyy',
   iso: 'yyyy-MM-dd',
+  dateTime: 'd MMM yyyy, h:mm a',
 }
 
 function toDate(input: DateInput): Date | null {

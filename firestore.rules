@@ -35,7 +35,8 @@ rules_version = '2';
 //
 //   lectureshipRegistrations
 //                   — signups from the public Bible Lectureship registration form. Same
-//                     anonymous create-only shape as messages. Staff read.
+//                     anonymous create-only shape as messages. Staff read, and may update only
+//                     the attendedSat/attendedSun flags to check registrants in on the day.
 //
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
@@ -331,7 +332,14 @@ service cloud.firestore {
 
       allow read: if isStaff();
       allow create: if registrationIsValid(request.resource.data);
-      allow update, delete: if isStaff();
+      // Staff check-in on the day: only the two attendance flags may change, so an edit
+      // cannot rewrite what the registrant originally submitted.
+      allow update: if isStaff()
+                    && request.resource.data.diff(resource.data)
+                       .affectedKeys().hasOnly(['attendedSat', 'attendedSun'])
+                    && request.resource.data.attendedSat is bool
+                    && request.resource.data.attendedSun is bool;
+      allow delete: if isStaff();
     }
 
     // ── Church settings ────────────────────────────────────────────────────

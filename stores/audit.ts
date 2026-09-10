@@ -36,6 +36,8 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   'message.read': 'Read a message',
   'message.handled': 'Triaged a message',
   'message.delete': 'Deleted a message',
+  'lectureship.delete': 'Deleted a lectureship registration',
+  'lectureship.attendance': 'Marked lectureship attendance',
 }
 
 export function auditActionLabel(action: AuditAction): string {

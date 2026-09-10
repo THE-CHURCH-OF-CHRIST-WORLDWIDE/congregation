@@ -114,6 +114,9 @@ export interface LectureshipRegistration {
   phone: string
   /** ISO string once read back; `serverTimestamp()` on write. */
   submittedAt?: string
+  /** Checked in by staff on the day. Absent on records from before attendance was tracked. */
+  attendedSat?: boolean
+  attendedSun?: boolean
 }
 
 /**
@@ -338,6 +341,8 @@ export type AuditAction =
   | 'message.read'
   | 'message.handled'
   | 'message.delete'
+  | 'lectureship.delete'
+  | 'lectureship.attendance'
 
 /**
  * One recorded change, stored append-only at `auditLog/{id}`.
