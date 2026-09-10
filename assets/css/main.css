@@ -55,6 +55,13 @@
 .fade-leave-to {
   opacity: 0;
 }
+/* No transition `mode`, so the leaving and entering pages briefly coexist in the DOM (see
+   nuxt.config.ts for why `out-in` isn't used). Taking the leaving one out of flow stops it from
+   pushing the entering page's layout down for that instant. */
+.fade-leave-active {
+  position: absolute;
+  width: 100%;
+}
 
 /* Scrollbar styling */
 .sidebar-scroll::-webkit-scrollbar {

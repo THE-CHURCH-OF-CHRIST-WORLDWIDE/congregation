@@ -38,7 +38,13 @@ export default defineNuxtConfig({
     storesDirs: ['./stores/**'],
   },
   app: {
-    pageTransition: { name: 'fade', mode: 'out-in' },
+    // No `mode: 'out-in'`: that forces the old page to fully leave before the new one enters,
+    // which races Nuxt's Suspense-wrapped page resolution if a second navigation starts before
+    // the first's leave/resolve cycle finishes (e.g. clicking one nav link, then another, before
+    // the fade settles) — the resulting `page:finish` / route-sync feedback loop is an infinite
+    // `flushJobs` recursion ("Maximum call stack size exceeded"). Simultaneous enter/leave still
+    // reads as a crossfade for a simple opacity transition, without that race.
+    pageTransition: { name: 'fade' },
     head: {
       title: 'Congregation',
       titleTemplate: '%s | Congregation',
