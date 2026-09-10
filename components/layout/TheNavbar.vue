@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
               font-family="Georgia, serif"
               fill="#1E3A5F"
               font-weight="bold"
-              letter-spacing="1.5"
+              letter-spacing="0.6"
             >
               <textPath href="#topCurve" startOffset="50%" text-anchor="middle">
                 CHURCH OF CHRIST
