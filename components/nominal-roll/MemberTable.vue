@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
 import type { Member } from '~/types'
 
 interface Props {
@@ -20,6 +21,12 @@ const openMenuId = ref<string | null>(null)
  * container instead of floating above the page.
  */
 const menuPos = ref<{ top: number; left: number } | null>(null)
+/** Actions buttons keyed by member id, so `toggleMenu` can compute a position without depending
+ * on a click event being passed through correctly. */
+const menuButtons: Record<string, HTMLElement | null> = {}
+function setMenuButtonRef(id: string, el: Element | ComponentPublicInstance | null) {
+  menuButtons[id] = el instanceof HTMLElement ? el : null
+}
 
 // Use injected items if provided, otherwise fall back to store's filtered list
 const sourceMembers = computed(() => props.items ?? membersStore.filteredMembers)
@@ -73,14 +80,16 @@ function startEdit(member: Member) {
 /** The member the open row menu belongs to, for the teleported menu template. */
 const openMenuMember = computed(() => paginated.value.find((m) => m.id === openMenuId.value))
 
-function toggleMenu(id: string, event: MouseEvent) {
+function toggleMenu(id: string) {
   if (openMenuId.value === id) {
     openMenuId.value = null
     return
   }
-  const button = event.currentTarget as HTMLElement
-  const rect = button.getBoundingClientRect()
-  menuPos.value = { top: rect.bottom + 4, left: rect.right - 128 } // 128px = the menu's w-32
+  const button = menuButtons[id]
+  if (button) {
+    const rect = button.getBoundingClientRect()
+    menuPos.value = { top: rect.bottom + 4, left: rect.right - 128 } // 128px = the menu's w-32
+  }
   openMenuId.value = id
 }
 
@@ -153,9 +162,10 @@ onUnmounted(() => {
             </td>
             <td class="px-4 py-3 relative">
               <button
+                :ref="(el) => setMenuButtonRef(member.id, el)"
                 class="p-1 rounded hover:bg-gray-100 text-gray-400"
                 :aria-label="`Actions for ${member.name}`"
-                @click.stop="toggleMenu(member.id, $event)"
+                @click.stop="toggleMenu(member.id)"
               >
                 <Icon icon="mdi:dots-vertical" />
               </button>
