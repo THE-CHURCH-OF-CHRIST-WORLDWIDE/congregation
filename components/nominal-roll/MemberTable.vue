@@ -10,6 +10,16 @@ const membersStore = useMembersStore()
 const emit = defineEmits<{ add: []; select: [member: Member]; edit: [member: Member] }>()
 
 const openMenuId = ref<string | null>(null)
+/**
+ * Fixed-position coordinates for the open row menu, in viewport space.
+ *
+ * The menu is teleported to `body` (see template) rather than positioned relative to its row,
+ * because the table sits in an `overflow-x-auto` container — and per the CSS overflow spec,
+ * giving one axis `auto` while the other is `visible` forces that one to behave as `auto` too. So
+ * an absolutely-positioned menu near the bottom of the table got clipped by that same scroll
+ * container instead of floating above the page.
+ */
+const menuPos = ref<{ top: number; left: number } | null>(null)
 
 // Use injected items if provided, otherwise fall back to store's filtered list
 const sourceMembers = computed(() => props.items ?? membersStore.filteredMembers)
@@ -60,8 +70,18 @@ function startEdit(member: Member) {
   openMenuId.value = null
 }
 
-function toggleMenu(id: string) {
-  openMenuId.value = openMenuId.value === id ? null : id
+/** The member the open row menu belongs to, for the teleported menu template. */
+const openMenuMember = computed(() => paginated.value.find((m) => m.id === openMenuId.value))
+
+function toggleMenu(id: string, event: MouseEvent) {
+  if (openMenuId.value === id) {
+    openMenuId.value = null
+    return
+  }
+  const button = event.currentTarget as HTMLElement
+  const rect = button.getBoundingClientRect()
+  menuPos.value = { top: rect.bottom + 4, left: rect.right - 128 } // 128px = the menu's w-32
+  openMenuId.value = id
 }
 
 // A click anywhere dismisses an open row menu. The handler has to be a named
@@ -72,8 +92,16 @@ function closeRowMenu() {
   openMenuId.value = null
 }
 
-onMounted(() => document.addEventListener('click', closeRowMenu))
-onUnmounted(() => document.removeEventListener('click', closeRowMenu))
+onMounted(() => {
+  document.addEventListener('click', closeRowMenu)
+  // The menu is fixed-positioned from a snapshot of the button's coordinates, so a scroll
+  // anywhere would leave it floating over the wrong row instead of tracking it.
+  window.addEventListener('scroll', closeRowMenu, { passive: true, capture: true })
+})
+onUnmounted(() => {
+  document.removeEventListener('click', closeRowMenu)
+  window.removeEventListener('scroll', closeRowMenu, true)
+})
 </script>
 
 <template>
@@ -127,34 +155,10 @@ onUnmounted(() => document.removeEventListener('click', closeRowMenu))
               <button
                 class="p-1 rounded hover:bg-gray-100 text-gray-400"
                 :aria-label="`Actions for ${member.name}`"
-                @click.stop="toggleMenu(member.id)"
+                @click.stop="toggleMenu(member.id, $event)"
               >
                 <Icon icon="mdi:dots-vertical" />
               </button>
-              <div
-                v-if="openMenuId === member.id"
-                class="absolute right-0 top-8 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-32"
-                @click.stop
-              >
-                <button
-                  class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  @click="startEdit(member)"
-                >
-                  <Icon icon="mdi:pencil-outline" />
-                  Edit
-                </button>
-                <button
-                  class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 disabled:opacity-50"
-                  :disabled="isPending(member.id)"
-                  @click="deleteMember(member.id)"
-                >
-                  <Icon
-                    :icon="isPending(member.id) ? 'mdi:loading' : 'mdi:trash-can-outline'"
-                    :class="isPending(member.id) && 'animate-spin'"
-                  />
-                  {{ isPending(member.id) ? 'Deleting…' : 'Delete' }}
-                </button>
-              </div>
             </td>
           </tr>
 
@@ -189,4 +193,34 @@ onUnmounted(() => document.removeEventListener('click', closeRowMenu))
       label="members"
     />
   </Card>
+
+  <!-- Row actions menu: teleported to `body` and fixed-positioned (see `menuPos`) so the
+       table's `overflow-x-auto` scroll container can't clip it. -->
+  <Teleport to="body">
+    <div
+      v-if="openMenuMember && menuPos"
+      class="fixed z-50 w-32 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+      :style="{ top: `${menuPos.top}px`, left: `${menuPos.left}px` }"
+      @click.stop
+    >
+      <button
+        class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+        @click="startEdit(openMenuMember)"
+      >
+        <Icon icon="mdi:pencil-outline" />
+        Edit
+      </button>
+      <button
+        class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+        :disabled="isPending(openMenuMember.id)"
+        @click="deleteMember(openMenuMember.id)"
+      >
+        <Icon
+          :icon="isPending(openMenuMember.id) ? 'mdi:loading' : 'mdi:trash-can-outline'"
+          :class="isPending(openMenuMember.id) && 'animate-spin'"
+        />
+        {{ isPending(openMenuMember.id) ? 'Deleting…' : 'Delete' }}
+      </button>
+    </div>
+  </Teleport>
 </template>
