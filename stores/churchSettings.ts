@@ -177,6 +177,19 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
 
   // Landing page: upcoming events, managed from the admin Settings page
   homepageEvents: [],
+
+  // Public navigation — everything visible until an admin turns something off
+  navVisibility: {
+    home: true,
+    liveStreams: true,
+    teachings: true,
+    events: true,
+    lectureship: true,
+    gallery: true,
+    aboutUs: true,
+    register: true,
+    contactUs: true,
+  },
 }
 
 export const useChurchSettingsStore = defineStore('churchSettings', () => {

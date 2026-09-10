@@ -1,4 +1,5 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore'
+import type { NavVisibilityKey } from '~/constants'
 
 export interface Activity {
   name: string
@@ -127,6 +128,13 @@ export interface HomepageEvent {
   colorClass: string
 }
 
+/**
+ * Which public nav items are switched on. Keyed by `NavVisibilityKey` (see `constants/index.ts`
+ * for the full list and what each `path` guards). A key missing from a stored document — every
+ * document written before this field existed — is treated as visible; see `useNavVisibility`.
+ */
+export type NavVisibilitySettings = Record<NavVisibilityKey, boolean>
+
 export interface ChurchSettings {
   // ── General ──────────────────────────────────────────────────────────────
   name: string
@@ -185,6 +193,9 @@ export interface ChurchSettings {
 
   // ── Landing Page: Upcoming Events ─────────────────────────────────────────
   homepageEvents: HomepageEvent[]
+
+  // ── Public Navigation ──────────────────────────────────────────────────────
+  navVisibility: NavVisibilitySettings
 }
 
 const COLLECTION = 'settings'

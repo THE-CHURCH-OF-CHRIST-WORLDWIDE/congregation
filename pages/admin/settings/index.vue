@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { NAV_VISIBILITY_ITEMS } from '~/constants'
+
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Settings', description: 'Church admin settings.' })
 
@@ -37,6 +39,7 @@ type Tab =
   | 'gallery'
   | 'congregations'
   | 'events'
+  | 'navigation'
   | 'roles'
   | 'audit'
 const activeTab = ref<Tab>('general')
@@ -77,6 +80,10 @@ const baseNavGroups: { label: string; items: NavItem[] }[] = [
       { label: 'Activity Calendar', value: 'calendar', icon: 'mdi:calendar-month-outline' },
       { label: 'Worship This Sunday', value: 'sunday', icon: 'mdi:church' },
     ],
+  },
+  {
+    label: 'Navigation',
+    items: [{ label: 'Public Nav Menu', value: 'navigation', icon: 'mdi:menu-open' }],
   },
   {
     label: 'Access',
@@ -1327,6 +1334,45 @@ function removeSundayDetail(i: number) {
             <p v-if="!draft.homepageEvents.length" class="py-4 text-center text-sm text-gray-400">
               No events added yet.
             </p>
+          </SettingsSection>
+        </div>
+
+        <!-- ── Public Navigation ────────────────────────────────────────── -->
+        <div
+          v-else-if="activeTab === 'navigation'"
+          key="navigation"
+          class="flex max-w-2xl flex-col gap-5"
+        >
+          <SettingsSection
+            title="Public Nav Menu"
+            description="Choose which links appear on the public site's navigation. Turning an item off also blocks its page directly — visiting the URL shows a 404, not just a hidden link."
+          >
+            <div class="flex flex-col divide-y divide-gray-100">
+              <label
+                v-for="item in NAV_VISIBILITY_ITEMS"
+                :key="item.key"
+                class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
+              >
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900">{{ item.label }}</p>
+                  <p class="text-xs text-gray-500">
+                    {{
+                      item.key === 'home'
+                        ? "Doesn't 404 — visiting / instead lands on the first other enabled page"
+                        : item.path
+                          ? `Blocks ${item.path} when off`
+                          : 'Removes the link only — it points to a section on the home page'
+                    }}
+                  </p>
+                </div>
+                <input
+                  v-model="draft.navVisibility[item.key]"
+                  type="checkbox"
+                  class="attendance-check shrink-0"
+                  :aria-label="`Show ${item.label} in navigation`"
+                />
+              </label>
+            </div>
           </SettingsSection>
         </div>
 

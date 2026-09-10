@@ -213,3 +213,43 @@ export const STAGING_ONLY_ROUTES: string[] = [
   '/events',
   '/about-us',
 ]
+
+/**
+ * Public nav items an admin can individually show or hide, from Admin → Settings → Navigation.
+ *
+ * Unlike `STAGING_ONLY_ROUTES` (an env-based, developer-edited list), this is backed by
+ * `ChurchSettings.navVisibility` in Firestore and editable at runtime. `path` is the route base
+ * `middleware/nav-visibility.global.ts` guards when an item is off — matched the same way as
+ * `STAGING_ONLY_ROUTES`, by segment prefix. `path: null` means the item is a same-page anchor
+ * (Contact Us lives on the landing page) with no separate route to block; turning it off only
+ * removes the nav link.
+ *
+ * `home` is special-cased by the middleware: turning it off does not 404 `/` — unlike every
+ * other item here, `/` has nowhere else to send a visitor, so the middleware instead redirects
+ * it to the first *other* item in this list that is both enabled and reachable, in the order
+ * below. That item effectively becomes the site's landing page. If nothing else is enabled, `/`
+ * is left alone rather than breaking the site entirely.
+ */
+export type NavVisibilityKey =
+  | 'home'
+  | 'liveStreams'
+  | 'teachings'
+  | 'events'
+  | 'lectureship'
+  | 'gallery'
+  | 'aboutUs'
+  | 'register'
+  | 'contactUs'
+
+export const NAV_VISIBILITY_ITEMS: { key: NavVisibilityKey; label: string; path: string | null }[] =
+  [
+    { key: 'home', label: 'Home', path: '/' },
+    { key: 'liveStreams', label: 'Live Streams', path: '/live-streams' },
+    { key: 'teachings', label: 'Teachings', path: '/teachings' },
+    { key: 'events', label: 'Events', path: '/events' },
+    { key: 'lectureship', label: 'Lectureship', path: '/lectureship' },
+    { key: 'gallery', label: 'Gallery', path: '/gallery' },
+    { key: 'aboutUs', label: 'About Us', path: '/about-us' },
+    { key: 'register', label: 'Member Registration', path: '/register' },
+    { key: 'contactUs', label: 'Contact Us', path: null },
+  ]
