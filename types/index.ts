@@ -101,6 +101,22 @@ export interface ContactMessage {
 }
 
 /**
+ * A registration submitted through the public Bible Lectureship form. Staff-readable only —
+ * see the shape constraints in `firestore.rules`.
+ */
+export interface LectureshipRegistration {
+  id: string
+  fullName: string
+  email: string
+  /** Name of the congregation/church the registrant worships with. */
+  congregation: string
+  /** Phone / WhatsApp number. */
+  phone: string
+  /** ISO string once read back; `serverTimestamp()` on write. */
+  submittedAt?: string
+}
+
+/**
  * Somebody who worshipped with the congregation without being on the roll.
  *
  * One document per visit rather than per person: a visitor who returns a month later is a second

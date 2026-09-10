@@ -2,7 +2,7 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Fourteen collections, with deliberately different exposure:
+// Fifteen collections, with deliberately different exposure:
 //
 //   auditLog        — append-only record of who changed what. Any staff account may add an
 //                     entry as itself; only a Super Admin may read it; nobody may edit or
@@ -29,9 +29,13 @@ rules_version = '2';
 //                     for people who are not even members, so never public. Staff read;
 //                     Super Admin, Admin and the Secretary write.
 //
-//   messages        — the public contact form's inbox. The ONLY collection an anonymous
-//                     caller may write to, and create-only: a visitor cannot read back any
-//                     message, including their own. Staff read and triage.
+//   messages        — the public contact form's inbox. An anonymous caller may only create
+//                     an entry: a visitor cannot read back any message, including their own.
+//                     Staff read and triage.
+//
+//   lectureshipRegistrations
+//                   — signups from the public Bible Lectureship registration form. Same
+//                     anonymous create-only shape as messages. Staff read.
 //
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
@@ -309,6 +313,25 @@ service cloud.firestore {
                     && request.resource.data.diff(resource.data)
                        .affectedKeys().hasOnly(['read', 'handled']);
       allow delete: if isStaff();
+    }
+
+    // ── Bible Lectureship registrations ────────────────────────────────────
+    // The public Lectureship registration form writes here while signed out — the same
+    // anonymous-create shape as `messages`, above. Create-only for them: a visitor cannot
+    // list, read, edit or delete a registration, including their own.
+    match /lectureshipRegistrations/{registrationId} {
+      function registrationIsValid(data) {
+        return data.keys().hasOnly(['fullName', 'email', 'congregation', 'phone', 'submittedAt'])
+          && data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 120
+          && data.email is string && data.email.size() > 0 && data.email.size() <= 200
+          && data.congregation is string && data.congregation.size() > 0 && data.congregation.size() <= 200
+          && data.phone is string && data.phone.size() > 0 && data.phone.size() <= 40
+          && data.submittedAt == request.time;
+      }
+
+      allow read: if isStaff();
+      allow create: if registrationIsValid(request.resource.data);
+      allow update, delete: if isStaff();
     }
 
     // ── Church settings ────────────────────────────────────────────────────

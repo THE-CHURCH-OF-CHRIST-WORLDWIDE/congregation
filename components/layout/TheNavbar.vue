@@ -244,6 +244,15 @@ onBeforeUnmount(() => {
             >Events</NuxtLink
           >
         </li>
+        <li v-if="!isHidden('/lectureship')">
+          <NuxtLink
+            to="/lectureship"
+            class="text-sm font-medium text-gray-700 transition-colors hover:text-gray-900"
+            active-class="text-blue-600"
+            aria-label="Lectureship"
+            >Lectureship</NuxtLink
+          >
+        </li>
         <li>
           <NuxtLink
             to="/gallery/sunday-service"
@@ -365,6 +374,15 @@ onBeforeUnmount(() => {
                 class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 @click="mobileOpen = false"
                 >Events</NuxtLink
+              >
+            </li>
+            <li v-if="!isHidden('/lectureship')">
+              <NuxtLink
+                to="/lectureship"
+                active-class="text-blue-600 bg-blue-50"
+                class="block rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                @click="mobileOpen = false"
+                >Lectureship</NuxtLink
               >
             </li>
             <li>
