@@ -18,7 +18,7 @@ watchEffect(() => {
       description: sermon.value.description,
       ogTitle: sermon.value.title,
       ogDescription: sermon.value.description,
-      ogImage: sermon.value.thumbnailSrc,
+      ogImage: displayableImageUrl(sermon.value.thumbnailSrc),
     })
     useHead({
       script: [
@@ -29,7 +29,7 @@ watchEffect(() => {
             '@type': 'VideoObject',
             name: sermon.value.title,
             description: sermon.value.description,
-            thumbnailUrl: sermon.value.thumbnailSrc,
+            thumbnailUrl: displayableImageUrl(sermon.value.thumbnailSrc),
             uploadDate: sermon.value.date,
             author: { '@type': 'Person', name: sermon.value.preacher },
           }),
@@ -228,7 +228,7 @@ function share() {
                 <div v-for="rel in related.slice(0, 3)" :key="rel!.id" class="group">
                   <NuxtLink :to="`/teachings/sermons/${rel!.slug}`" class="flex gap-3">
                     <img
-                      :src="rel!.thumbnailSrc"
+                      :src="displayableImageUrl(rel!.thumbnailSrc)"
                       :alt="rel!.title"
                       loading="lazy"
                       class="h-16 w-24 shrink-0 rounded-lg object-cover"

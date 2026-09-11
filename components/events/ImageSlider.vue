@@ -58,7 +58,7 @@ function onTouchEnd(e: TouchEvent) {
     <Transition name="img-fade" mode="out-in">
       <img
         :key="currentIndex"
-        :src="images[currentIndex]"
+        :src="displayableImageUrl(images[currentIndex])"
         :alt="`Event photo ${currentIndex + 1} of ${images.length}`"
         class="absolute inset-0 w-full h-full object-cover"
       />

@@ -98,7 +98,7 @@ const containerHeight = computed(() => {
       <!-- Existing image -->
       <img
         v-if="modelValue && !uploading"
-        :src="modelValue"
+        :src="displayableImageUrl(modelValue)"
         alt="Upload preview"
         class="h-full w-full object-cover"
       />

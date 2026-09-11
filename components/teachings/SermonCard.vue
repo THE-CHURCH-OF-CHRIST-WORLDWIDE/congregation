@@ -47,7 +47,7 @@ async function deleteSermon(id: string) {
     >
       <img
         v-if="sermon.thumbnail"
-        :src="sermon.thumbnail"
+        :src="displayableImageUrl(sermon.thumbnail)"
         :alt="sermon.topic"
         class="w-full h-full object-cover"
       />

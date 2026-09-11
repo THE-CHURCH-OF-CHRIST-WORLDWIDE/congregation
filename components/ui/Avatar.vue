@@ -16,6 +16,7 @@ watch(
   }
 )
 const showImage = computed(() => !!props.src && !failed.value)
+const imageSrc = computed(() => displayableImageUrl(props.src))
 
 const initials = computed(() => {
   if (!props.name) return '?'
@@ -59,7 +60,7 @@ const colorClass = computed(() => {
   >
     <img
       v-if="showImage"
-      :src="src"
+      :src="imageSrc"
       :alt="name"
       class="w-full h-full object-cover"
       @error="failed = true"

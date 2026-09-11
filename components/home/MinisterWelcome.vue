@@ -18,14 +18,26 @@ const { el: sectionRef, isVisible } = useScrollReveal()
       <div aria-hidden="true" :class="['reveal-left', isVisible && 'is-visible']">
         <div class="photo-stack-wrapper">
           <div class="photo-card photo-card--back">
-            <img :src="cfg.congregationPhotos[0]" alt="Congregation gathering 1" loading="lazy" />
+            <img
+              :src="displayableImageUrl(cfg.congregationPhotos[0])"
+              alt="Congregation gathering 1"
+              loading="lazy"
+            />
           </div>
           <div class="photo-card photo-card--mid">
-            <img :src="cfg.congregationPhotos[1]" alt="Congregation gathering 2" loading="lazy" />
+            <img
+              :src="displayableImageUrl(cfg.congregationPhotos[1])"
+              alt="Congregation gathering 2"
+              loading="lazy"
+            />
           </div>
           <div class="photo-card photo-card--front">
             <div class="photo-pin"></div>
-            <img :src="cfg.ministerPhoto" alt="Minister headshot" loading="eager" />
+            <img
+              :src="displayableImageUrl(cfg.ministerPhoto)"
+              alt="Minister headshot"
+              loading="eager"
+            />
           </div>
         </div>
       </div>

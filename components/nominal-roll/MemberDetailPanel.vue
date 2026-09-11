@@ -397,7 +397,7 @@ const initials = computed(() =>
             <div class="bg-[#F0F9FF] rounded-2xl px-4 py-2 flex items-center gap-4">
               <img
                 v-if="member.avatar"
-                :src="member.avatar"
+                :src="displayableImageUrl(member.avatar)"
                 :alt="member.name"
                 class="w-30 h-30 mb-3 shadow-2xl rounded-2xl object-cover object-center"
               />

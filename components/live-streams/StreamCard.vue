@@ -17,7 +17,7 @@ function formatViews(n: number): string {
     <!-- Thumbnail -->
     <div class="relative overflow-hidden" style="aspect-ratio: 16/9">
       <img
-        :src="stream.thumbnailSrc"
+        :src="displayableImageUrl(stream.thumbnailSrc)"
         :alt="stream.title"
         loading="lazy"
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"

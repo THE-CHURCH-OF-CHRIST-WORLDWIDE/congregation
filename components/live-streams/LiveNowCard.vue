@@ -10,7 +10,7 @@ defineProps<{ stream: LiveStream }>()
     style="background-image: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.95))"
   >
     <img
-      :src="stream.thumbnailSrc"
+      :src="displayableImageUrl(stream.thumbnailSrc)"
       :alt="stream.title"
       class="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
       loading="lazy"

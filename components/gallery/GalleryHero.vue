@@ -12,7 +12,7 @@ defineProps<{
       <div class="relative" style="width: 220px; height: 90px">
         <img
           v-if="previewImages?.[0]"
-          :src="previewImages[0]"
+          :src="displayableImageUrl(previewImages[0])"
           alt=""
           class="absolute left-0 top-3 h-[70px] w-[100px] rounded-md border-2 border-white object-cover"
           style="transform: rotate(-3deg); z-index: 1"
@@ -20,7 +20,7 @@ defineProps<{
         />
         <img
           v-if="previewImages?.[1]"
-          :src="previewImages[1]"
+          :src="displayableImageUrl(previewImages[1])"
           alt=""
           class="absolute left-[60px] top-1 h-[70px] w-[100px] rounded-md border-2 border-white object-cover"
           style="transform: rotate(2deg); z-index: 2"

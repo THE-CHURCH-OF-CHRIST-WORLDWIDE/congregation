@@ -44,7 +44,7 @@ function onImgError(e: Event) {
         >
           <div class="relative h-[110px] w-[110px] shrink-0">
             <img
-              :src="leader.avatar"
+              :src="displayableImageUrl(leader.avatar)"
               :alt="leader.name"
               class="h-[110px] w-[110px] rounded-full object-cover"
               @error="onImgError"

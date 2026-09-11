@@ -31,7 +31,7 @@ function onImgError(e: Event) {
       <div class="flex flex-col items-center gap-1">
         <div class="relative w-10 h-10">
           <img
-            :src="moderator.avatar"
+            :src="displayableImageUrl(moderator.avatar)"
             :alt="moderator.name"
             class="w-10 h-10 rounded-full object-cover ring-2 ring-white/30"
             @error="onImgError"
@@ -62,7 +62,7 @@ function onImgError(e: Event) {
         >
           <div class="relative w-10 h-10">
             <img
-              :src="speaker.avatar"
+              :src="displayableImageUrl(speaker.avatar)"
               :alt="speaker.name"
               class="w-10 h-10 rounded-full object-cover ring-2 ring-white/30"
               @error="onImgError"
