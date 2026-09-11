@@ -8,7 +8,7 @@ const cfg = computed(() => s.settings.aboutHero)
   <div class="relative h-[200px] w-full overflow-hidden md:h-[280px]">
     <!-- Background image -->
     <img
-      :src="cfg.backgroundImage"
+      :src="displayableImageUrl(cfg.backgroundImage)"
       alt="Congregation gathering"
       class="absolute inset-0 h-full w-full object-cover object-center"
     />

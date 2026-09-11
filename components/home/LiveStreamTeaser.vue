@@ -35,7 +35,10 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           >
             <!-- Background image -->
             <img
-              :src="stream?.thumbnailSrc ?? 'https://picsum.photos/seed/live-bg/800/500'"
+              :src="
+                displayableImageUrl(stream?.thumbnailSrc) ??
+                'https://picsum.photos/seed/live-bg/800/500'
+              "
               alt=""
               class="live-preview-img"
               loading="eager"

@@ -20,7 +20,7 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
       @click="emit('image-click', index)"
       @keydown.enter="emit('image-click', index)"
     >
-      <img :src="img.src" :alt="img.alt" loading="lazy" class="masonry-img" />
+      <img :src="displayableImageUrl(img.src)" :alt="img.alt" loading="lazy" class="masonry-img" />
     </div>
   </div>
 </template>

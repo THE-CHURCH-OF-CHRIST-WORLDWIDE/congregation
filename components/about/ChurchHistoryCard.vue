@@ -12,25 +12,25 @@ const cfg = computed(() => s.settings.aboutHistory)
         <!-- Corner decorative images (desktop only) -->
         <img
           v-if="cfg.cornerImages[0]"
-          :src="cfg.cornerImages[0]"
+          :src="displayableImageUrl(cfg.cornerImages[0])"
           alt=""
           class="absolute -top-8 -left-8 z-10 hidden h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg md:block"
         />
         <img
           v-if="cfg.cornerImages[1]"
-          :src="cfg.cornerImages[1]"
+          :src="displayableImageUrl(cfg.cornerImages[1])"
           alt=""
           class="absolute -top-8 -right-8 z-10 hidden h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg md:block"
         />
         <img
           v-if="cfg.cornerImages[2]"
-          :src="cfg.cornerImages[2]"
+          :src="displayableImageUrl(cfg.cornerImages[2])"
           alt=""
           class="absolute -bottom-8 -left-8 z-10 hidden h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg md:block"
         />
         <img
           v-if="cfg.cornerImages[3]"
-          :src="cfg.cornerImages[3]"
+          :src="displayableImageUrl(cfg.cornerImages[3])"
           alt=""
           class="absolute -bottom-8 -right-8 z-10 hidden h-20 w-20 rounded-full object-cover ring-4 ring-white shadow-lg md:block"
         />

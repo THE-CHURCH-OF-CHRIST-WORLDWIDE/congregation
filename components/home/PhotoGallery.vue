@@ -67,7 +67,7 @@ onMounted(() => {
           @keydown.enter="openLightbox(photo)"
         >
           <img
-            :src="photo.src"
+            :src="displayableImageUrl(photo.src)"
             :alt="photo.alt"
             loading="lazy"
             class="w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -96,7 +96,7 @@ onMounted(() => {
             <Icon icon="heroicons:x-mark" class="h-7 w-7" />
           </button>
           <img
-            :src="selectedPhoto.src"
+            :src="displayableImageUrl(selectedPhoto.src)"
             :alt="selectedPhoto.alt"
             class="max-h-[90vh] max-w-full rounded-xl object-contain shadow-2xl"
           />

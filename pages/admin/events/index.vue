@@ -299,7 +299,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
       <div v-if="viewTarget" class="flex flex-col gap-4">
         <img
           v-if="isPast(viewTarget) && viewTarget.featuredImage"
-          :src="viewTarget.featuredImage"
+          :src="displayableImageUrl(viewTarget.featuredImage)"
           :alt="viewTarget.title"
           class="w-full h-48 object-cover rounded-lg"
         />
@@ -328,7 +328,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
             <div class="flex items-center gap-2">
               <img
                 v-if="viewTarget.moderator.avatar"
-                :src="viewTarget.moderator.avatar"
+                :src="displayableImageUrl(viewTarget.moderator.avatar)"
                 :alt="viewTarget.moderator.name"
                 class="h-8 w-8 rounded-full object-cover"
               />
@@ -345,7 +345,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
               >
                 <img
                   v-if="sp.avatar"
-                  :src="sp.avatar"
+                  :src="displayableImageUrl(sp.avatar)"
                   :alt="sp.name"
                   class="h-8 w-8 rounded-full object-cover"
                 />
@@ -361,7 +361,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
             <img
               v-for="(src, idx) in viewTarget.galleryImages"
               :key="idx"
-              :src="src"
+              :src="displayableImageUrl(src)"
               :alt="`${viewTarget.title} ${idx + 1}`"
               class="h-24 w-full object-cover rounded-md"
             />

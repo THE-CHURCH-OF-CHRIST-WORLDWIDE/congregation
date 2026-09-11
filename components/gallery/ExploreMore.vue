@@ -32,7 +32,7 @@ const categories = computed(() =>
       >
         <img
           v-if="cat.src"
-          :src="cat.src"
+          :src="displayableImageUrl(cat.src)"
           :alt="cat.label"
           class="absolute inset-0 h-full w-full object-cover"
           loading="lazy"

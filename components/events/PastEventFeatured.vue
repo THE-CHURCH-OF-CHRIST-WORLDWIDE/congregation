@@ -20,7 +20,7 @@ const event = computed(() => eventsStore.selectedPastEvent)
     >
       <!-- Background image -->
       <img
-        :src="event.featuredImage"
+        :src="displayableImageUrl(event.featuredImage)"
         :alt="event.title"
         class="absolute inset-0 h-full w-full object-cover transition-all duration-500"
       />

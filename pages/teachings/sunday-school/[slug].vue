@@ -20,7 +20,7 @@ watchEffect(() => {
       description: lesson.value.overviewGoals[0] ?? '',
       ogTitle: lesson.value.title,
       ogDescription: lesson.value.overviewGoals[0] ?? '',
-      ogImage: lesson.value.thumbnailSrc,
+      ogImage: displayableImageUrl(lesson.value.thumbnailSrc),
     })
     useHead({
       script: [
@@ -31,7 +31,7 @@ watchEffect(() => {
             '@type': 'VideoObject',
             name: lesson.value.title,
             description: lesson.value.overviewGoals[0] ?? '',
-            thumbnailUrl: lesson.value.thumbnailSrc,
+            thumbnailUrl: displayableImageUrl(lesson.value.thumbnailSrc),
             uploadDate: lesson.value.date,
             author: { '@type': 'Person', name: lesson.value.preacher },
           }),
@@ -93,7 +93,7 @@ function share() {
             <!-- Lesson thumbnail -->
             <div class="relative overflow-hidden rounded-2xl" style="aspect-ratio: 16/9">
               <img
-                :src="lesson.thumbnailSrc"
+                :src="displayableImageUrl(lesson.thumbnailSrc)"
                 :alt="lesson.title"
                 loading="lazy"
                 class="h-full w-full object-cover"
@@ -221,7 +221,7 @@ function share() {
                 <div v-for="rel in related.slice(0, 3)" :key="rel!.id" class="group">
                   <NuxtLink :to="`/teachings/sunday-school/${rel!.slug}`" class="flex gap-3">
                     <img
-                      :src="rel!.thumbnailSrc"
+                      :src="displayableImageUrl(rel!.thumbnailSrc)"
                       :alt="rel!.title"
                       loading="lazy"
                       class="h-16 w-24 shrink-0 rounded-lg object-cover"

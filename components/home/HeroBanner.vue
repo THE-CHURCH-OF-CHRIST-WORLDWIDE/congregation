@@ -33,7 +33,7 @@ const secondaryCtaHref = computed(() => settingsStore.settings.heroSecondaryCtaH
   >
     <!-- Background image -->
     <img
-      :src="image"
+      :src="displayableImageUrl(image)"
       :alt="`${name} building`"
       class="absolute inset-0 h-full w-full object-cover opacity-30 pointer-events-none select-none"
       loading="eager"

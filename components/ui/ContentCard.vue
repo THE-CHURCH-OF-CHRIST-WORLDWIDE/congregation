@@ -23,7 +23,7 @@ const linkPath = computed(() => {
     <!-- Thumbnail -->
     <NuxtLink :to="linkPath" class="block relative overflow-hidden" style="aspect-ratio: 16/9">
       <img
-        :src="props.thumbnail"
+        :src="displayableImageUrl(props.thumbnail)"
         :alt="props.title"
         loading="lazy"
         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"

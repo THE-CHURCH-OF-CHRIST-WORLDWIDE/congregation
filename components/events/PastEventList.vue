@@ -75,7 +75,7 @@ function categoryClass(cat: string): string {
         <div class="flex gap-3">
           <!-- Thumbnail -->
           <img
-            :src="event.thumbnail"
+            :src="displayableImageUrl(event.thumbnail)"
             :alt="event.title"
             class="h-[60px] w-20 flex-shrink-0 rounded-md object-cover"
           />

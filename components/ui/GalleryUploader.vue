@@ -108,7 +108,11 @@ function removeAt(index: number) {
         :key="`${src}-${i}`"
         class="relative aspect-square overflow-hidden rounded-lg border border-gray-200 group"
       >
-        <img :src="src" :alt="`Gallery image ${i + 1}`" class="h-full w-full object-cover" />
+        <img
+          :src="displayableImageUrl(src)"
+          :alt="`Gallery image ${i + 1}`"
+          class="h-full w-full object-cover"
+        />
         <button
           type="button"
           class="absolute top-1 right-1 rounded-full bg-white/90 p-1 text-gray-700 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500 hover:text-white"

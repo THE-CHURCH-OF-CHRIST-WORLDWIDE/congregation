@@ -118,7 +118,7 @@ onUnmounted(() => {
         <Transition name="img-fade" mode="out-in">
           <img
             :key="currentIndex"
-            :src="images[currentIndex]"
+            :src="displayableImageUrl(images[currentIndex])"
             :alt="`Gallery item ${currentIndex + 1} of ${images.length}`"
             class="max-h-[82vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
           />

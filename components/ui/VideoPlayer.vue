@@ -17,7 +17,7 @@ function play() {
     <!-- Thumbnail + play button -->
     <template v-if="!playing">
       <img
-        :src="props.thumbnail"
+        :src="displayableImageUrl(props.thumbnail)"
         :alt="props.title"
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover"
