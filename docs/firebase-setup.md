@@ -66,8 +66,8 @@ VITE_FIREBASE_APP_ID=appId
 4. After creation, go to the **Rules** tab and configure security rules
 
 Do not hand-write rules in the console. This repository's [`firestore.rules`](../firestore.rules)
-is the real configuration — it covers the seven collections the app actually uses (`users`,
-`invitations`, `auditLog`, `roles`, `roleAssignments`, `settings`, `members`), validates the shape of
+is the real configuration — it covers the six collections the app actually uses (`users`,
+`auditLog`, `roles`, `roleAssignments`, `settings`, `members`), validates the shape of
 self-registrations, and gates every write on the account's role. Deploy it as described in
 [Deploy Firebase Security Rules](#7-deploy-firebase-security-rules) below, and read
 [Account roles](#account-roles) first: the rules require a `users/{uid}` document to exist
@@ -172,18 +172,19 @@ account can sign in and see the dashboard shell but cannot write. The admin head
 red banner in that state so the cause is visible rather than appearing as random save
 failures.
 
-Once a Super Admin exists, everyone else is invited from the app: **Settings → Roles &
-Permissions → Dashboard Access → Invite by email**. See [Invitations](#invitations) below.
+Once a Super Admin exists, everyone else is granted access from the app: **Settings → Roles &
+Permissions → Dashboard Access → Create login with password**. See
+[Granting dashboard access](#granting-dashboard-access) below.
 
 What each tier may do, per [`firestore.rules`](../firestore.rules):
 
-|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   | `auditLog`   |
-| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- | ------------ |
-| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      | read, append |
-| Admin              | read+write | read+write                   | read                | read    | read              | read            | append only  |
-| Other staff        | read       | read+write                   | read                | read    | read              | read            | append only  |
-| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only | —            |
-| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               | —            |
+|                    | `settings` | `members`                    | `users`    | `roles` | `roleAssignments` | `auditLog`   |
+| ------------------ | ---------- | ---------------------------- | ---------- | ------- | ----------------- | ------------ |
+| Super Admin        | read+write | read+write                   | read+write | r+w     | read+write        | read, append |
+| Admin              | read+write | read+write                   | read       | read    | read              | append only  |
+| Other staff        | read       | read+write                   | read       | read    | read              | append only  |
+| Signed in, no role | read       | —                            | own doc    | —       | —                 | —            |
+| Anonymous          | read       | create only, via `/register` | —          | —       | —                 | —            |
 
 Rules are the coarse security floor; the per-page permission matrix in Settings → Roles &
 Permissions stays finer-grained on top of it.
@@ -221,49 +222,37 @@ Every later account is granted a role by an existing Super Admin writing its `us
 document. There is no UI for this yet — do it in the console, or ask for the Roles screen to
 be wired to Firestore.
 
-## Invitations
+## Granting dashboard access
 
-A Super Admin invites people from **Settings → Roles & Permissions → Dashboard Access**: enter an
-email, pick a role, send. The invitee gets a sign-in link; opening it creates their account and
-applies the role. Nobody has to touch the Firebase console, and no password is ever shared.
+A Super Admin grants access from **Settings → Roles & Permissions → Dashboard Access → Create
+login with password**: enter an email and a password, pick a role, create. The account is
+created immediately with that role applied — share the password with them directly, there is no
+way to look it up again afterwards.
 
-**One-time setup per project**, or invitations will fail to send:
-
-1. **Authentication → Sign-in method** → enable **Email link (passwordless sign-in)**.
-2. **Authentication → Settings → Authorized domains** → include the site's domain
-   (`coc-abadina-prod.netlify.app`, `coc-abadina-staging.netlify.app`, `localhost`).
-
-Email/password sign-in stays enabled alongside it — existing accounts keep signing in as before.
+The same "give them a login" step is also offered inline from **Member Assignments → Assign
+Role**, so assigning a role and creating the login can happen in one action.
 
 ### How it works, and why it is safe without a backend
 
 Creating a Firebase Auth account normally needs the Admin SDK, which needs Cloud Functions and
-the **Blaze** plan. This flow avoids both by having the invitee claim their own role, with rules
-policing the claim:
+the **Blaze** plan. This flow avoids both with a second, isolated Firebase App instance
+(`getSecondaryAuth()`, see [`utils/secondaryAuth.ts`](../utils/secondaryAuth.ts)) instead of the
+app's primary one:
 
-1. A Super Admin writes `invitations/{email}` (id lower-cased) holding the role. Rules allow
-   `create` here only for a Super Admin.
-2. Firebase emails a sign-in link pointing at `/invite`.
-3. The invitee confirms their address, `signInWithEmailLink` creates the account — with the email
-   already **verified**, because they demonstrably received the mail.
-4. The app writes `users/{uid}` with the invited role. This is the one place rules let an account
-   grant itself anything, and it is narrow: **create only** (an account that already has a record
-   cannot re-run it to change its role), **own uid only**, **verified email only**, and the
-   `roleId` must equal the one the invitation names. Knowing an invited address is not enough —
-   you must be able to read that mailbox.
-5. The invitation is deleted, so it cannot be reused.
+1. `createUserWithEmailAndPassword` runs against the **secondary** Auth instance. This also signs
+   in as the new account — but on the secondary instance, so the admin's own session on the
+   primary instance is untouched.
+2. The secondary instance immediately signs back out, so it never holds a lingering session.
+3. The app writes `users/{uid}` with the chosen role, using the admin's own (Super-Admin) session
+   on the primary instance — the same write the "grant by UID" fallback below makes, gated by
+   `allow write: if isSuperAdmin();` in `firestore.rules`.
 
-Two deliberate consequences:
+Nobody but a Super Admin can create an account or grant a role this way — there is no
+self-service path in the rules at all, unlike the email-invite flow this replaced.
 
-- **Invitations grant roles; they do not restrict who may hold an account.** Anyone can still sign
-  up for an account with no role, which grants nothing.
-- **The link is single-use and expires** (Firebase's default), so a forwarded email cannot be
-  replayed later.
-
-A pending invitation can be revoked from the same screen at any point before it is claimed.
-
-Where an account already exists and just needs a role, the same card has an **"Or grant an
-existing account by UID"** fallback — paste the UID from Authentication → Users.
+Where an account already exists (created elsewhere, or in a previous Firebase project) and just
+needs a role, the same card has an **"Or grant an existing account by UID"** fallback — paste the
+UID from Authentication → Users.
 
 ### If you lock yourself out
 

@@ -1,12 +1,15 @@
 import { defineStore } from 'pinia'
 import {
+  EmailAuthProvider,
   isSignInWithEmailLink,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   sendSignInLinkToEmail,
   signInWithEmailAndPassword,
   signInWithEmailLink,
   signOut,
+  updatePassword,
   type User,
 } from 'firebase/auth'
 import { useUsersRepository } from '~/repositories/usersRepository'
@@ -48,6 +51,15 @@ function authErrorMessage(e: unknown): string {
     case 'auth/invalid-action-code':
     case 'auth/expired-action-code':
       return 'That sign-in link has expired or has already been used. Request a new one.'
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Your current password is incorrect.'
+    case 'auth/weak-password':
+      return 'Choose a new password with at least 6 characters.'
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Wait a moment and try again.'
+    case 'auth/requires-recent-login':
+      return 'This action needs a recent sign-in. Sign out and back in, then try again.'
     default:
       return e instanceof Error ? e.message : 'Something went wrong. Try again.'
   }
@@ -186,6 +198,29 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Self-service password change for a signed-in user. Firebase requires a *recent* sign-in for
+   * a sensitive action like this, so it re-authenticates with the current password first rather
+   * than assuming the session is fresh enough — otherwise this throws `auth/requires-recent-login`
+   * for anyone who signed in more than a few minutes ago.
+   */
+  async function changePassword(currentPassword: string, newPassword: string) {
+    error.value = null
+    const current = user.value
+    if (!current?.email) {
+      error.value = 'Not signed in'
+      throw new Error(error.value)
+    }
+    try {
+      const credential = EmailAuthProvider.credential(current.email, currentPassword)
+      await reauthenticateWithCredential(current, credential)
+      await updatePassword(current, newPassword)
+    } catch (err: unknown) {
+      error.value = authErrorMessage(err)
+      throw err
+    }
+  }
+
   async function logout() {
     await signOut($auth)
     user.value = null
@@ -209,6 +244,7 @@ export const useAuthStore = defineStore('auth', () => {
     isLoginLink,
     completeLinkSignIn,
     sendReset,
+    changePassword,
     logout,
   }
 })

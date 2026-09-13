@@ -114,9 +114,6 @@ describe('useAuditStore', () => {
       'roleAssignment.delete',
       'access.grant',
       'access.revoke',
-      'invitation.send',
-      'invitation.revoke',
-      'invitation.claim',
     ] as const
 
     for (const action of actions) {

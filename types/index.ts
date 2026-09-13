@@ -320,9 +320,6 @@ export type AuditAction =
   | 'roleAssignment.delete'
   | 'access.grant'
   | 'access.revoke'
-  | 'invitation.send'
-  | 'invitation.revoke'
-  | 'invitation.claim'
   | 'finance.collection.create'
   | 'finance.collection.delete'
   | 'finance.expense.create'
@@ -364,24 +361,6 @@ export interface AuditEntry {
   targetLabel?: string
   /** ISO string once read back; `serverTimestamp()` on write. */
   at?: string
-}
-
-/**
- * A pending invitation, stored at `invitations/{email}` with the email lower-cased as the
- * document id so rules can match it against the caller's token.
- *
- * The invitee claims it on first sign-in: the app creates their `users/{uid}` record with the
- * role named here, then deletes the invitation. Rules allow that self-claim only for a
- * verified email that matches an existing invitation, so an invitation is the only way an
- * account can acquire a role without a Super Admin writing it directly.
- */
-export interface Invitation {
-  email: string
-  roleId: ChurchRoleId
-  /** Nominal-roll record this account belongs to, carried through to `users/{uid}` on claim. */
-  memberId?: string
-  invitedBy?: string
-  invitedAt: string
 }
 
 /**

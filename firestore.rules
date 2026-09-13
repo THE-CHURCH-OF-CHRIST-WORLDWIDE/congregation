@@ -2,20 +2,18 @@ rules_version = '2';
 
 // Security rules for the Congregation CMS.
 //
-// Fifteen collections, with deliberately different exposure:
+// Fourteen collections, with deliberately different exposure:
 //
 //   auditLog        — append-only record of who changed what. Any staff account may add an
 //                     entry as itself; only a Super Admin may read it; nobody may edit or
 //                     delete one.
 //
-//   invitations     — pending invitations, keyed by lower-cased email. A Super Admin creates
-//                     one; the invitee claims it on first sign-in, which is the only way an
-//                     account can gain a role without a Super Admin writing it directly.
-//
 //   users/{uid}     — the role granted to a Firebase Auth account. This collection is
 //                     the ONLY thing that grants privilege: every write rule below is
 //                     gated on it. An account with no document here can sign in and
-//                     reach the dashboard shell, but cannot write anything.
+//                     reach the dashboard shell, but cannot write anything. Only a Super
+//                     Admin may write it — there is no self-service path, so an account
+//                     always gains a role because a Super Admin granted it directly.
 //
 //   roleAssignments — which nominal-roll member holds which role in the congregation.
 //                     Records standing, not access; most of these people have no login.
@@ -93,7 +91,7 @@ service cloud.firestore {
     }
 
     // Church settings sit a tier below access control: these roles may edit the site's content,
-    // but managing accounts, roles and invitations stays Super Admin only.
+    // but managing accounts and roles stays Super Admin only.
     //
     // The Content Editor is here because `settings/church` IS the public website — church
     // details, leaders, gallery, congregations, and the Home and About page copy. Nothing
@@ -126,52 +124,14 @@ service cloud.firestore {
       return roleId() in ['super-admin', 'admin', 'secretary'];
     }
 
-    function invitationFor(email) {
-      return get(/databases/$(database)/documents/invitations/$(email)).data;
-    }
-
-    function hasInvitation(email) {
-      return exists(/databases/$(database)/documents/invitations/$(email));
-    }
-
     match /users/{uid} {
       // An account reads its own record so the app can tell which role it holds.
       allow read: if signedIn() && request.auth.uid == uid;
       // Staff may read the roster to see who holds what.
       allow read: if isStaff();
-      // Granting or changing a role is Super Admin only. Deliberately no general self-write:
-      // otherwise any account could promote itself.
+      // Granting or changing a role is Super Admin only. Deliberately no self-write of any
+      // kind: otherwise any account could promote itself.
       allow write: if isSuperAdmin();
-
-      // Claiming an invitation. Narrow on purpose:
-      //   * create only — an account that already has a record cannot re-run this to change
-      //     its own role, because the document already exists;
-      //   * only its OWN uid;
-      //   * only a verified email, so knowing an invited address is not enough;
-      //   * only the exact role the invitation names, so the payload cannot ask for more;
-      //   * only the member record the invitation names — otherwise a claimer could attach
-      //     their login to anyone on the nominal roll. Omitting it entirely is fine.
-      allow create: if signedIn()
-                    && request.auth.uid == uid
-                    && request.auth.token.email_verified == true
-                    && hasInvitation(request.auth.token.email)
-                    && request.resource.data.roleId == invitationFor(request.auth.token.email).roleId
-                    && (!('memberId' in request.resource.data)
-                        || request.resource.data.memberId
-                           == invitationFor(request.auth.token.email).memberId);
-    }
-
-    // ── Invitations ────────────────────────────────────────────────────────
-    // Keyed by lower-cased email so the id can be matched against the caller's token.
-    match /invitations/{email} {
-      // The invitee reads the invitation addressed to them in order to claim it.
-      allow read: if signedIn() && request.auth.token.email == email;
-      allow read: if isStaff();
-      // Only a Super Admin may invite, or change what role an invitation carries.
-      allow create, update: if isSuperAdmin();
-      // Cleared by the Super Admin who sent it, or by the invitee once claimed.
-      allow delete: if isSuperAdmin()
-                    || (signedIn() && request.auth.token.email == email);
     }
 
     // ── Audit log ──────────────────────────────────────────────────────────

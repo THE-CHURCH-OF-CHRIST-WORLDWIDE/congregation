@@ -58,7 +58,7 @@ Congregation is a single-page application (SPA) with two distinct areas:
 - **Finance** — Income/expense tracking and reporting
 - **Events** — Internal event management
 - **Teachings** — Sermon and Sunday School upload/management
-- **Settings** — Church and public-site content across 14 panels, roles and permissions, dashboard access and email invitations, plus a Super-Admin-only audit log
+- **Settings** — Church and public-site content across 14 panels, roles and permissions, dashboard access (create logins with a password or grant existing accounts by UID), plus a Super-Admin-only audit log
 - **Youth** — Youth ministry section
 
 ### Platform
@@ -225,8 +225,6 @@ congregation/
 │   ├── login.vue                     # Login (/login)
 │   ├── about-us/
 │   │   └── index.vue                 # About Us (/about-us)
-│   ├── invite/
-│   │   └── index.vue                 # Accept an emailed invitation (/invite)
 │   ├── register/
 │   │   └── index.vue                 # Public member registration (/register)
 │   ├── salvation/
@@ -276,7 +274,6 @@ congregation/
 ├── repositories/                     # Firestore data access layer
 │   ├── auditRepository.ts            # auditLog — append-only activity record
 │   ├── churchSettingsRepository.ts   # settings/church document
-│   ├── invitationsRepository.ts      # invitations/{email} — pending invites
 │   ├── membersRepository.ts          # members collection (nominal roll) + memberNumbers
 │   ├── messagesRepository.ts         # messages collection (public contact form)
 │   ├── roleAssignmentsRepository.ts  # roleAssignments — member ↔ role
@@ -291,7 +288,6 @@ congregation/
 │   ├── churchSettings.ts             # Church configuration
 │   ├── events.ts                     # Public events state
 │   ├── finance.ts                    # Finance records (admin)
-│   ├── invitations.ts                # Invite by email, and claiming an invite
 │   ├── members.ts                    # Member records (admin)
 │   ├── publicLiveStream.ts           # Public live stream state
 │   ├── publicTeachings.ts            # Public sermons/lessons state
@@ -491,12 +487,11 @@ Everything needed to stand a congregation up on its own Firebase projects and Ne
 
 Signing in and being allowed to write are separate things. Privilege comes from exactly one place: a `users/{uid}` document in Firestore, which [`firestore.rules`](firestore.rules) reads on every write. An account with no such document can sign in and see the dashboard shell but cannot change anything — the admin header shows a red banner saying so, rather than letting each save fail on its own.
 
-Fourteen collections, with deliberately different exposure:
+Thirteen collections, with deliberately different exposure:
 
 | Collection                              | Holds                                           | Notes                                                        |
 | --------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
-| `users/{uid}`                           | The role a Firebase Auth account carries        | **Grants privilege.** Every write rule is gated on it        |
-| `invitations`                           | Pending invitations, keyed by lower-cased email | Claimed on first sign-in; the only self-service role grant   |
+| `users/{uid}`                           | The role a Firebase Auth account carries        | **Grants privilege.** Only a Super Admin may write it        |
 | `roles/{roleId}`                        | Permission-matrix overrides only                | Names, ids and colours stay in code                          |
 | `roleAssignments`                       | Which nominal-roll member holds which role      | Presentational — records standing, not access                |
 | `auditLog`                              | Append-only record of who changed what          | Super Admin reads; staff append; nobody edits or deletes     |
@@ -511,13 +506,13 @@ Fourteen collections, with deliberately different exposure:
 
 Who may do what:
 
-|                    | `settings` | `members`                    | `users`             | `roles` | `roleAssignments` | `invitations`   | `auditLog`   |
-| ------------------ | ---------- | ---------------------------- | ------------------- | ------- | ----------------- | --------------- | ------------ |
-| Super Admin        | read+write | read+write                   | read+write          | r+w     | read+write        | read+write      | read, append |
-| Admin              | read+write | read+write                   | read                | read    | read              | read            | append only  |
-| Other staff        | read       | read+write                   | read                | read    | read              | read            | append only  |
-| Signed in, no role | read       | —                            | own doc; claim only | —       | —                 | own invite only | —            |
-| Anonymous          | read       | create only, via `/register` | —                   | —       | —                 | —               | —            |
+|                    | `settings` | `members`                    | `users`    | `roles` | `roleAssignments` | `auditLog`   |
+| ------------------ | ---------- | ---------------------------- | ---------- | ------- | ----------------- | ------------ |
+| Super Admin        | read+write | read+write                   | read+write | r+w     | read+write        | read, append |
+| Admin              | read+write | read+write                   | read       | read    | read              | append only  |
+| Other staff        | read       | read+write                   | read       | read    | read              | append only  |
+| Signed in, no role | read       | —                            | own doc    | —       | —                 | —            |
+| Anonymous          | read       | create only, via `/register` | —          | —       | —                 | —            |
 
 Staff roles are `super-admin`, `admin`, `elder`, `deacon`, `preacher`, `secretary`, `youth-leader`, `financial-secretary`. That list appears in three places which must stay in step: `isStaff()` in [`firestore.rules`](firestore.rules), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `ChurchRoleId` in [`types/index.ts`](types/index.ts).
 
@@ -607,7 +602,7 @@ Eight pages × five actions — **V**iew, **A**dd, **E**dit, **D**elete, e**X**p
 | Youth Leader        | VAEX  | V     | VAEX  | VAEX  | V     | V      | —     | —     |
 | Financial Secretary | VAEDX | V     | —     | —     | —     | —      | VAEDX | —     |
 
-**Admin** matches Super Admin in the matrix above but not in the rules: it may save church settings, and manage members, attendance, finance, teachings and events — but not `users`, `roles`, `roleAssignments` or `invitations`, and it cannot read the audit log. Only **Super Admin** manages who has access. The `V` that Elder and Secretary hold on Settings is view-only, and the rules enforce that independently of the matrix.
+**Admin** matches Super Admin in the matrix above but not in the rules: it may save church settings, and manage members, attendance, finance, teachings and events — but not `users`, `roles` or `roleAssignments`, and it cannot read the audit log. Only **Super Admin** manages who has access. The `V` that Elder and Secretary hold on Settings is view-only, and the rules enforce that independently of the matrix.
 
 #### Managing them
 
@@ -615,7 +610,7 @@ All three live under **Settings → Roles & Permissions**:
 
 - **Role Definitions** — click a role to open its matrix. Toggling any action auto-enables `view`; clearing `view` clears the row. Saving writes a `roles/{roleId}` document holding **only** the permissions, so ids, names and colours stay code-defined — an override cannot rename or invent a role. On load the app rebuilds from the code defaults and layers stored overrides on top, so a role added in code later still appears and an override for a deleted role is ignored.
 - **Member Assignments** — assign a role to a nominal-roll member, optionally with **custom permissions** that override that role's defaults for that person only. Where someone holds several roles, `effectivePermissions()` merges them: any role granting an action grants it, and a custom override wins over the role default either way.
-- **Dashboard Access** — invitations and `users/{uid}` records. See [Inviting people](#inviting-people).
+- **Dashboard Access** — `users/{uid}` records, the only thing that grants privilege. See [Granting dashboard access](#granting-dashboard-access).
 
 Everything on this screen persists to Firestore. Writing any of it requires Super Admin, so a `deacon` opening the page can read the matrix but not change it — the controls render as plain text rather than inputs.
 
@@ -630,7 +625,7 @@ Do all of this on **staging first**, then repeat on production. Order matters �
 1. **Create the project** and register a web app (Project Settings → Your apps → SDK setup). Copy the config into the matching env file.
 2. **Enable Authentication** → Sign-in method:
    - **Email/Password**
-   - **Email link (passwordless sign-in)** — required for invitations to send
+   - **Email link (passwordless sign-in)** — required for the "Email me a sign-in link" option on `/login`
    - Under **Settings → Authorized domains**, add the site's Netlify domain and `localhost`. Sign-in fails silently without this.
 3. **Seed the first Super Admin.** There is no way to bootstrap this from the app:
    - **Authentication → Users** → copy the UID.
@@ -643,7 +638,7 @@ Locked out anyway? Rules never restrict the Firebase console — fix or create t
 
 ### Audit log
 
-**Settings → Access → Audit Log**, visible to Super Admins only. Every change the dashboard makes is recorded: a member added, updated or deleted; settings saved; role permissions changed; roles assigned or revoked; dashboard access granted or revoked; invitations sent, revoked or claimed. Each entry carries who did it, what changed, and a server-side timestamp.
+**Settings → Access → Audit Log**, visible to Super Admins only. Every change the dashboard makes is recorded: a member added, updated or deleted; settings saved; role permissions changed; roles assigned or revoked; dashboard access granted or revoked. Each entry carries who did it, what changed, and a server-side timestamp.
 
 The rules make the collection **append-only** — `allow update, delete: if false` — so an entry cannot be edited or quietly removed by anyone, Super Admin included. Appending requires a staff role and `actorUid` must equal the caller, so nobody can write an entry attributed to someone else. Reading requires Super Admin.
 
@@ -651,27 +646,29 @@ The rules make the collection **append-only** — `allow update, delete: if fals
 
 Logging never interferes with the work it describes: `record()` is fire-and-forget and swallows its own failures, so a refused log entry cannot turn a successful save into a visible error.
 
-### Inviting people
+### Granting dashboard access
 
-Once a Super Admin exists, everyone else is invited from the app — no console, no shared passwords: **Settings → Roles & Permissions → Dashboard Access → Invite by email**.
+Once a Super Admin exists, everyone else is granted access from the app — no console, no shared Firebase logins: **Settings → Roles & Permissions → Dashboard Access → Create login with password**.
 
-The invitee receives a sign-in link; opening it creates their account and applies the role. Pending invitations are listed on the same card and can be revoked until claimed. Where an account already exists and only needs a role, use the collapsed **"Or grant an existing account by UID"** fallback.
+Enter their email and a password, choose a role, and the account is created immediately with that role applied — share the password with them directly, there is no way to look it up again afterwards. This runs on a second, isolated Firebase App instance (`getSecondaryAuth`, see [`utils/secondaryAuth.ts`](utils/secondaryAuth.ts)) purely so creating the account — which signs in as it — never signs the admin out of their own session. No Cloud Functions or Admin SDK involved.
 
-Optionally link the invitation to a nominal-roll member. That carries through to `users/{uid}.memberId` when the invitation is claimed, so the login and the member record describe one person rather than two unrelated things. Rules require any `memberId` on a claim to match the one the invitation names, so a claimer cannot attach their login to someone else's record.
+Optionally link the account to a nominal-roll member, which is carried through to `users/{uid}.memberId`, so the login and the member record describe one person rather than two unrelated things.
 
-This works without Cloud Functions or the Blaze plan by having the invitee claim their own role, with the rules policing the claim: `users/{uid}` may be **created** (never updated) only for the caller's own uid, only with a **verified** email, and only with the exact `roleId` the invitation names. Knowing an invited address is not enough — you must be able to read that mailbox. The invitation is deleted on claim so it cannot be reused.
+Where an account already exists (created elsewhere, or in a previous Firebase project) and only needs a role, use the collapsed **"Or grant an existing account by UID"** fallback instead — paste its UID from **Authentication → Users** in the console.
+
+The same "give them a login" step is also offered inline from **Member Assignments → Assign Role**, so assigning a role and creating the login can happen in one action.
 
 ### Signing in
 
-Three routes, because invited accounts are created by email link and therefore have **no password**:
+Two routes are on `/login`:
 
-| Route                       | For                                                                               |
-| --------------------------- | --------------------------------------------------------------------------------- |
-| Email + password            | Accounts that have set one                                                        |
-| **Email me a sign-in link** | Invited accounts with no password, or any device where you are signed out         |
-| **Forgot your password?**   | Resetting — and also how a link-only account _sets_ a password for the first time |
+| Route                       | For                                                       |
+| --------------------------- | --------------------------------------------------------- |
+| Email + password            | The normal way in, for any account created above          |
+| **Email me a sign-in link** | Signing in without typing a password, on a trusted device |
+| **Forgot your password?**   | Resetting a forgotten password                            |
 
-All three are on `/login`. Without the middle one an invited person is locked out the moment they sign out or open the dashboard on another device, since they have no password to type.
+The middle option requires **Email link (passwordless sign-in)** to be enabled (see [First-time setup](#first-time-setup-per-firebase-project)) — without it, that button fails with a message naming the setting to enable.
 
 ### Environment variables on Netlify
 
@@ -709,20 +706,19 @@ firebase deploy --only firestore:rules -P production
 
 Rules are not covered by the test suite. Before a production deploy, exercise these in **Firestore → Rules → Playground** — they are the cases the rules are written against:
 
-| Attempt                                                          | Expected |
-| ---------------------------------------------------------------- | -------- |
-| `get` on `members/x` as an unauthenticated visitor               | deny     |
-| `get` on `members/x` as signed-in with no role                   | deny     |
-| `create` on `users/<own-uid>` with a role the invitation ≠ names | deny     |
-| `create` on `users/<someone-else-uid>` as an invited user        | deny     |
-| `create` on `invitations/x@y.com` as a `deacon`                  | deny     |
-| `write` on `settings/church` as your seeded Super Admin          | allow    |
+| Attempt                                                                  | Expected |
+| ------------------------------------------------------------------------ | -------- |
+| `get` on `members/x` as an unauthenticated visitor                       | deny     |
+| `get` on `members/x` as signed-in with no role                           | deny     |
+| `create` on `users/<own-uid>` as a signed-in account with no role        | deny     |
+| `write` on `users/<someone-else-uid>` as a non-Super-Admin staff account | deny     |
+| `write` on `settings/church` as your seeded Super Admin                  | allow    |
 
 ### Going live: ordered checklist
 
 1. Apply the Netlify variables for both sites and redeploy both.
 2. Complete the per-project Firebase setup above, staging first.
-3. Deploy rules to staging; confirm saves work and invitations send and can be claimed.
+3. Deploy rules to staging; confirm saves work and a Super Admin can create a login with a password.
 4. Deploy rules to production.
 5. Merge `dev` → `main`. Production is a separate site building `main`, so until then it has neither `netlify.toml` nor `public/_redirects` — wrong publish directory and 404s on deep links.
 6. Replace the placeholder copy in [`pages/salvation/index.vue`](pages/salvation/index.vue) before pointing anyone at it; it is linked from the footer on every public page.
@@ -737,7 +733,7 @@ Rules are not covered by the test suite. Before a production deploy, exercise th
 | Staging shows production data                          | Both sites hold the same variables                                    | `npm run netlify:env -- staging --apply`, then redeploy                  |
 | Deploy fails: "secrets detected in build output"       | Vite inlines `VITE_*` into the bundle by design                       | `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml` — extend it for new variables |
 | Deep links 404 in production (`/gallery/photos`)       | The SPA fallback is missing                                           | Confirm `public/_redirects` survived into `dist/_redirects`              |
-| Invitation email never arrives                         | Email link sign-in disabled, or the domain is not authorized          | Enable both under Authentication (step 2 above)                          |
+| "Email me a sign-in link" fails                        | Email link sign-in disabled, or the domain is not authorized          | Enable both under Authentication (step 2 above)                          |
 | Login works, then nothing loads                        | Rules deployed before a Super Admin was seeded                        | Create `users/<uid>` in the console                                      |
 
 ---

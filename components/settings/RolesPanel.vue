@@ -5,13 +5,11 @@ import { ALL_PAGES, ALL_ACTIONS } from '~/stores/roles'
 const rolesStore = useRolesStore()
 const membersStore = useMembersStore()
 const accountsStore = useAccountsStore()
-const invitationsStore = useInvitationsStore()
 const authStore = useAuthStore()
 
 onMounted(() => {
   rolesStore.load()
   accountsStore.load()
-  invitationsStore.load()
 })
 
 // ─── Action labels ─────────────────────────────────────────────────────────────
@@ -83,10 +81,26 @@ async function saveRolePerms() {
   closeRole()
 }
 
+/** A password the admin can hand to someone directly, without relying on email deliverability
+ * or the project's email-link sign-in setting. */
+function generatePassword(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%'
+  const bytes = new Uint32Array(12)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, (n) => chars[n % chars.length]).join('')
+}
+
 // ─── Assign role modal ─────────────────────────────────────────────────────────
 const showAssign = ref(false)
-const assignForm = reactive({ memberId: '', roleId: '' })
-const assignErrors = reactive({ memberId: '', roleId: '' })
+const showAssignPassword = ref(false)
+const assignForm = reactive({
+  memberId: '',
+  roleId: '',
+  sendInvite: false,
+  inviteEmail: '',
+  invitePassword: '',
+})
+const assignErrors = reactive({ memberId: '', roleId: '', inviteEmail: '', invitePassword: '' })
 const memberSearch = ref('')
 
 const filteredMembers = computed(() => {
@@ -96,17 +110,33 @@ const filteredMembers = computed(() => {
     .slice(0, 20)
 })
 
+/** A member already wired to a login — creating another account for them would just error. */
+const existingAccountForMember = computed(() =>
+  assignForm.memberId
+    ? accountsStore.records.find((a) => a.memberId === assignForm.memberId)
+    : undefined
+)
+
 function openAssign() {
   assignForm.memberId = ''
   assignForm.roleId = ''
+  assignForm.sendInvite = false
+  assignForm.inviteEmail = ''
+  assignForm.invitePassword = ''
+  showAssignPassword.value = false
   memberSearch.value = ''
-  Object.assign(assignErrors, { memberId: '', roleId: '' })
+  Object.assign(assignErrors, { memberId: '', roleId: '', inviteEmail: '', invitePassword: '' })
   showAssign.value = true
 }
 
-function selectMember(m: { id: string; name: string }) {
+function selectMember(m: { id: string; name: string; email?: string }) {
   assignForm.memberId = m.id
   memberSearch.value = m.name
+  assignForm.inviteEmail = m.email ?? ''
+  // Default the login on only when there's somewhere to send it and no account exists yet —
+  // an admin can still untick it for members who shouldn't get dashboard access.
+  assignForm.sendInvite = !!m.email && !existingAccountForMember.value
+  assignForm.invitePassword = assignForm.sendInvite ? generatePassword() : ''
 }
 
 // The store surfaces the reason via toast on failure. Keep the modal open in that case so
@@ -114,13 +144,42 @@ function selectMember(m: { id: string; name: string }) {
 async function doAssign() {
   assignErrors.memberId = assignForm.memberId ? '' : 'Select a member'
   assignErrors.roleId = assignForm.roleId ? '' : 'Select a role'
-  if (assignErrors.memberId || assignErrors.roleId) return
+  assignErrors.inviteEmail = ''
+  assignErrors.invitePassword = ''
+  if (assignForm.sendInvite) {
+    const email = assignForm.inviteEmail.trim()
+    assignErrors.inviteEmail = !email
+      ? 'Enter an email address'
+      : EMAIL_RE.test(email)
+        ? ''
+        : 'Enter a valid email address'
+    assignErrors.invitePassword =
+      assignForm.invitePassword.length >= 6 ? '' : 'Use at least 6 characters'
+  }
+  if (
+    assignErrors.memberId ||
+    assignErrors.roleId ||
+    assignErrors.inviteEmail ||
+    assignErrors.invitePassword
+  )
+    return
   try {
     await rolesStore.assignRole(assignForm.memberId, assignForm.roleId)
-    showAssign.value = false
   } catch {
-    // Toast already shown.
+    return // Toast already shown; keep the modal open so nothing is lost.
   }
+  showAssign.value = false
+  if (!assignForm.sendInvite) return
+  // Best-effort and separate from the assignment above: the role is already granted either
+  // way, and createAccount shows its own toast on failure.
+  await accountsStore
+    .createAccount(
+      assignForm.inviteEmail.trim(),
+      assignForm.invitePassword,
+      assignForm.roleId as ChurchRoleId,
+      assignForm.memberId
+    )
+    .catch(() => {})
 }
 
 // Row-level revokes are keyed so only the clicked row spins, not every row bound to a
@@ -131,14 +190,38 @@ const { confirm } = useConfirm()
 
 async function revoke(assignmentId: string) {
   const assignment = rolesStore.assignments.find((a) => a.id === assignmentId)
-  const who = membersStore.members.find((m) => m.id === assignment?.memberId)?.name
+  const memberId = assignment?.memberId
+  const who = membersStore.members.find((m) => m.id === memberId)?.name
+
+  // Only warn about losing login access when this is the member's last remaining role — someone
+  // holding another role assignment keeps whatever access that one grants.
+  const isLastRole =
+    !!memberId && rolesStore.assignments.filter((a) => a.memberId === memberId).length === 1
+  const account = memberId ? accountsStore.records.find((a) => a.memberId === memberId) : undefined
+  const willLoseAccess = isLastRole && !!account
+
   const ok = await confirm({
     title: who ? `Revoke ${who}'s role?` : 'Revoke this role?',
-    message: 'They keep their place on the nominal roll — only the role is removed.',
+    message: willLoseAccess
+      ? 'This is their only role, so their dashboard login will be revoked too. They keep their place on the nominal roll, and reassigning a role later can create them a fresh login.'
+      : 'They keep their place on the nominal roll — only the role is removed.',
     confirmLabel: 'Revoke',
   })
   if (!ok) return
-  await run(assignmentId, () => rolesStore.revokeAssignment(assignmentId).catch(() => {}))
+
+  await run(assignmentId, async () => {
+    try {
+      await rolesStore.revokeAssignment(assignmentId)
+    } catch {
+      return // Toast already shown; nothing else to clean up.
+    }
+    if (!willLoseAccess || !account) return
+    // Best-effort: the role assignment is already gone either way, and this shows its own
+    // toast on failure.
+    if (account.uid !== authStore.user?.uid) {
+      await accountsStore.revokeAccess(account.uid).catch(() => {})
+    }
+  })
 }
 
 // ─── Account access (users/{uid}) ──────────────────────────────────────────────
@@ -178,12 +261,6 @@ async function doRevokeAccess(uid: string) {
   await run(uid, () => accountsStore.revokeAccess(uid).catch(() => {}))
 }
 
-// ─── Invitations ───────────────────────────────────────────────────────────────
-// Preferred over pasting a UID: the invitee gets an emailed link, and claiming it creates
-// both their Auth account and their users/{uid} record. No UID hunting in the console.
-const inviteForm = reactive({ email: '', roleId: '' as ChurchRoleId | '', memberId: '' })
-const inviteErrors = reactive({ email: '', roleId: '' })
-
 /** Optional: ties the login to a nominal-roll record, so the two systems describe one person. */
 const memberOptions = computed(() =>
   membersStore.members
@@ -194,40 +271,39 @@ const memberOptions = computed(() =>
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-async function doInvite() {
-  const email = inviteForm.email.trim()
-  inviteErrors.email = !email
+// ─── Create login with password ────────────────────────────────────────────────
+// Sets a password directly for a new account — see `accountsStore.createAccount`.
+const createForm = reactive({
+  email: '',
+  password: '',
+  roleId: '' as ChurchRoleId | '',
+  memberId: '',
+})
+const createErrors = reactive({ email: '', roleId: '', password: '' })
+const showCreatePassword = ref(false)
+
+async function doCreate() {
+  const email = createForm.email.trim()
+  createErrors.email = !email
     ? 'Enter an email address'
     : EMAIL_RE.test(email)
       ? ''
       : 'Enter a valid email address'
-  inviteErrors.roleId = inviteForm.roleId ? '' : 'Choose a role'
-  if (inviteErrors.email || inviteErrors.roleId) return
+  createErrors.roleId = createForm.roleId ? '' : 'Choose a role'
+  createErrors.password = createForm.password.length >= 6 ? '' : 'Use at least 6 characters'
+  if (createErrors.email || createErrors.roleId || createErrors.password) return
   try {
-    await invitationsStore.invite(
+    await accountsStore.createAccount(
       email,
-      inviteForm.roleId as ChurchRoleId,
-      authStore.user?.email ?? undefined,
-      inviteForm.memberId || undefined
+      createForm.password,
+      createForm.roleId as ChurchRoleId,
+      createForm.memberId || undefined
     )
-    Object.assign(inviteForm, { email: '', roleId: '', memberId: '' })
+    Object.assign(createForm, { email: '', password: '', roleId: '', memberId: '' })
+    showCreatePassword.value = false
   } catch {
     // Toast already shown.
   }
-}
-
-async function doRevokeInvite(email: string) {
-  const ok = await confirm({
-    title: `Revoke the invitation to ${email}?`,
-    message: 'Their invitation link will stop working. A new invitation can be sent at any time.',
-    confirmLabel: 'Revoke invitation',
-  })
-  if (!ok) return
-  await run(email, () => invitationsStore.revoke(email).catch(() => {}))
-}
-
-function inviteRoleName(roleId: string) {
-  return rolesStore.roleById(roleId)?.name ?? roleId
 }
 
 // ─── Custom permissions modal ─────────────────────────────────────────────────
@@ -470,79 +546,68 @@ function permCount(perms: RolePermissions) {
           <p>
             This is what actually grants access: an account can only read or change church data once
             it appears here. It is separate from the member assignments above — most people on the
-            nominal roll have no login at all. Accounts are created in the Firebase console
-            (Authentication → Users); copy the UID from there to grant access.
+            nominal roll have no login at all. Create a login with a password below, or grant access
+            to an account that already exists by pasting its UID from the Firebase console.
           </p>
         </div>
 
-        <!-- Invite by email — the normal way to add someone -->
+        <!-- Create login with password -->
         <div v-if="authStore.isSuperAdmin" class="mt-4">
-          <p class="mb-2 text-xs font-semibold text-gray-500">Invite by email</p>
-          <div class="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+          <p class="mb-2 text-xs font-semibold text-gray-500">Create login with password</p>
+          <div class="grid gap-3 sm:grid-cols-2">
             <Input
-              v-model="inviteForm.email"
+              v-model="createForm.email"
               label="Email address"
               type="email"
               placeholder="person@example.com"
-              :error="inviteErrors.email"
+              :error="createErrors.email"
             />
+            <Input
+              v-model="createForm.password"
+              label="Password"
+              :type="showCreatePassword ? 'text' : 'password'"
+              placeholder="At least 6 characters"
+              :error="createErrors.password"
+            >
+              <template #icon-right>
+                <button
+                  type="button"
+                  :aria-label="showCreatePassword ? 'Hide password' : 'Show password'"
+                  class="pointer-events-auto"
+                  @click="showCreatePassword = !showCreatePassword"
+                >
+                  <Icon :icon="showCreatePassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
+                </button>
+              </template>
+            </Input>
             <Select
-              v-model="inviteForm.roleId"
+              v-model="createForm.roleId"
               label="Role"
               placeholder="Choose a role"
               :options="rolesStore.roles.map((r) => ({ label: r.name, value: r.id }))"
-              :error="inviteErrors.roleId"
+              :error="createErrors.roleId"
             />
-            <div class="flex items-end">
-              <Button :loading="invitationsStore.saving" @click="doInvite">
-                <template #icon-left><Icon icon="mdi:email-fast-outline" /></template>
-                Send Invitation
-              </Button>
-            </div>
-            <div class="sm:col-span-2">
-              <Select
-                v-model="inviteForm.memberId"
-                label="Link to a member (optional)"
-                placeholder="Not linked"
-                :options="memberOptions"
-              />
-            </div>
+            <Select
+              v-model="createForm.memberId"
+              label="Link to a member (optional)"
+              placeholder="Not linked"
+              :options="memberOptions"
+            />
+          </div>
+          <div class="mt-3 flex items-center justify-between gap-3">
+            <Button variant="secondary" size="sm" @click="createForm.password = generatePassword()">
+              <template #icon-left><Icon icon="mdi:dice-5-outline" /></template>
+              Generate a password
+            </Button>
+            <Button :loading="accountsStore.saving" @click="doCreate">
+              <template #icon-left><Icon icon="mdi:account-key-outline" /></template>
+              Create Account
+            </Button>
           </div>
           <p class="mt-2 text-xs text-gray-500">
-            They receive a sign-in link by email. Opening it creates their account and applies this
-            role — no password to share, and nothing to do in the Firebase console.
+            Creates their account immediately with this password and grants the role above — share
+            the password with them directly.
           </p>
-        </div>
-
-        <!-- Pending invitations -->
-        <div v-if="invitationsStore.invitations.length" class="mt-4">
-          <p class="mb-2 text-xs font-semibold text-gray-500">Pending invitations</p>
-          <ul class="divide-y divide-gray-100 rounded-lg border border-gray-200">
-            <li
-              v-for="invite in invitationsStore.invitations"
-              :key="invite.email"
-              class="flex items-center justify-between gap-3 px-3 py-2 text-sm"
-            >
-              <span class="min-w-0 truncate text-gray-700">{{ invite.email }}</span>
-              <span class="flex shrink-0 items-center gap-2">
-                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                  {{ inviteRoleName(invite.roleId) }}
-                </span>
-                <button
-                  v-if="authStore.isSuperAdmin"
-                  class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
-                  :aria-label="`Revoke invitation for ${invite.email}`"
-                  :disabled="isPending(invite.email)"
-                  @click="doRevokeInvite(invite.email)"
-                >
-                  <Icon
-                    :icon="isPending(invite.email) ? 'mdi:loading' : 'mdi:close'"
-                    :class="['text-sm', isPending(invite.email) && 'animate-spin']"
-                  />
-                </button>
-              </span>
-            </li>
-          </ul>
         </div>
 
         <!-- Grant by UID — fallback for an account that already exists -->
@@ -866,14 +931,86 @@ function permCount(perms: RolePermissions) {
           {{ Object.keys(rolesStore.roleById(assignForm.roleId)?.permissions ?? {}).length }} pages
         </p>
       </div>
+
+      <!-- Dashboard login — creates the same users/{uid} record as Dashboard Access below -->
+      <div
+        v-if="authStore.isSuperAdmin && assignForm.memberId"
+        class="flex flex-col gap-3 border-t border-gray-100 pt-4"
+      >
+        <label
+          for="assign-send-invite"
+          class="flex items-center gap-2 text-sm font-medium text-gray-700"
+        >
+          <input
+            id="assign-send-invite"
+            v-model="assignForm.sendInvite"
+            type="checkbox"
+            :disabled="!!existingAccountForMember"
+            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500/20"
+          />
+          Also give them a login to the dashboard
+        </label>
+
+        <p v-if="existingAccountForMember" class="text-xs text-gray-500">
+          Already has dashboard access ({{
+            existingAccountForMember.email ?? existingAccountForMember.uid
+          }}).
+        </p>
+
+        <template v-if="assignForm.sendInvite">
+          <Input
+            v-model="assignForm.inviteEmail"
+            label="Email address"
+            type="email"
+            placeholder="person@example.com"
+            :error="assignErrors.inviteEmail"
+          />
+
+          <div class="flex flex-col gap-1">
+            <div class="flex items-end gap-2">
+              <Input
+                v-model="assignForm.invitePassword"
+                label="Password"
+                :type="showAssignPassword ? 'text' : 'password'"
+                placeholder="At least 6 characters"
+                :error="assignErrors.invitePassword"
+                class="flex-1"
+              >
+                <template #icon-right>
+                  <button
+                    type="button"
+                    :aria-label="showAssignPassword ? 'Hide password' : 'Show password'"
+                    class="pointer-events-auto"
+                    @click="showAssignPassword = !showAssignPassword"
+                  >
+                    <Icon :icon="showAssignPassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
+                  </button>
+                </template>
+              </Input>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                @click="assignForm.invitePassword = generatePassword()"
+              >
+                Generate
+              </Button>
+            </div>
+            <p class="text-xs text-gray-400">
+              Share this password with them directly — there is no way to look it up again once you
+              close this window.
+            </p>
+          </div>
+        </template>
+      </div>
     </div>
 
     <template #footer>
       <div class="flex gap-2 justify-end">
         <Button variant="secondary" @click="showAssign = false">Cancel</Button>
-        <Button :loading="rolesStore.saving" @click="doAssign">
+        <Button :loading="rolesStore.saving || accountsStore.saving" @click="doAssign">
           <template #icon-left><Icon icon="mdi:shield-check-outline" /></template>
-          Assign Role
+          {{ assignForm.sendInvite ? 'Assign Role & Create Login' : 'Assign Role' }}
         </Button>
       </div>
     </template>

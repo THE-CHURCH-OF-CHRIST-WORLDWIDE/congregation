@@ -13,7 +13,7 @@ Congregation is a **Single-Page Application (SPA)** built with Nuxt 4 and Vue 3 
 
 Firebase is the backend, providing Authentication, Firestore (database), Storage, and (planned) Cloud Functions.
 
-> **Implementation status.** Auth and route protection are live, and every domain — members, settings, roles, access, invitations, audit, finance, teachings, attendance and events — reads and writes Firestore through the repository layer. The mock-data composables this note used to cite have been removed.
+> **Implementation status.** Auth and route protection are live, and every domain — members, settings, roles, access, audit, finance, teachings, attendance and events — reads and writes Firestore through the repository layer. The mock-data composables this note used to cite have been removed.
 
 ---
 
@@ -113,7 +113,6 @@ The target architecture is that all Firebase operations (Firestore reads/writes,
 | `churchSettingsRepository.ts`  | `settings/church`                       |
 | `membersRepository.ts`         | `members`                               |
 | `usersRepository.ts`           | `users/{uid}`                           |
-| `invitationsRepository.ts`     | `invitations`                           |
 | `rolesRepository.ts`           | `roles/{roleId}`                        |
 | `roleAssignmentsRepository.ts` | `roleAssignments`                       |
 | `auditRepository.ts`           | `auditLog`                              |
