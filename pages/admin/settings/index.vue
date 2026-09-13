@@ -20,6 +20,8 @@ const accountRole = computed(() => {
   return rolesStore.roleById(authStore.roleId)?.name ?? authStore.roleId
 })
 
+const showChangePassword = ref(false)
+
 onMounted(async () => {
   setHeader('Settings', 'Manage church configuration and preferences')
   await store.load()
@@ -381,12 +383,18 @@ function removeSundayDetail(i: number) {
                 </p>
                 <p class="text-xs text-gray-500">{{ accountRole }}</p>
               </div>
-              <span
-                v-if="authStore.roleLoaded && !authStore.isStaff"
-                class="ml-auto shrink-0 rounded bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700"
-              >
-                Cannot save changes
-              </span>
+              <div class="ml-auto flex shrink-0 items-center gap-2">
+                <span
+                  v-if="authStore.roleLoaded && !authStore.isStaff"
+                  class="rounded bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700"
+                >
+                  Cannot save changes
+                </span>
+                <Button variant="secondary" size="sm" @click="showChangePassword = true">
+                  <template #icon-left><Icon icon="mdi:lock-reset" /></template>
+                  Change Password
+                </Button>
+              </div>
             </div>
           </SettingsSection>
         </div>
@@ -1399,5 +1407,7 @@ function removeSundayDetail(i: number) {
         @discard="discardChanges"
       />
     </div>
+
+    <ChangePasswordModal v-model="showChangePassword" />
   </div>
 </template>

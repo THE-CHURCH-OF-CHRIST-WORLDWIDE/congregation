@@ -15,9 +15,6 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   'roleAssignment.delete': 'Revoked role',
   'access.grant': 'Granted dashboard access',
   'access.revoke': 'Revoked dashboard access',
-  'invitation.send': 'Sent invitation',
-  'invitation.revoke': 'Revoked invitation',
-  'invitation.claim': 'Accepted invitation',
   'finance.collection.create': 'Recorded a collection',
   'finance.collection.delete': 'Deleted a collection',
   'finance.expense.create': 'Recorded an expense',
@@ -78,8 +75,8 @@ export const useAuditStore = defineStore('audit', () => {
    */
   function record(draft: AuditDraft) {
     // Prefer the store, but fall back to Firebase's own currentUser: right after
-    // `signInWithEmailLink` the auth listener may not have run yet, and the invitation-claim
-    // entry would otherwise be dropped for having no actor.
+    // `signInWithEmailLink` the auth listener may not have run yet, and the entry would
+    // otherwise be dropped for having no actor.
     const auth = useAuthStore()
     const actor = auth.user ?? useNuxtApp().$auth?.currentUser ?? null
     // No signed-in actor means no attributable entry, and rules would refuse it anyway.

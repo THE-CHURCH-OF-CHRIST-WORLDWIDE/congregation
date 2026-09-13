@@ -1,7 +1,24 @@
 import { defineStore } from 'pinia'
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth'
 import { recordAudit } from '~/utils/audit'
+import { getSecondaryAuth } from '~/utils/secondaryAuth'
 import { useUsersRepository } from '~/repositories/usersRepository'
 import type { AppUserRecord, ChurchRoleId } from '~/types'
+
+/** Firebase reports these as bare codes; name what actually needs to change. */
+function createAccountErrorMessage(e: unknown): string {
+  const code = (e as { code?: string })?.code ?? ''
+  switch (code) {
+    case 'auth/email-already-in-use':
+      return 'An account with that email already exists — use "Grant an existing account by UID", or change their role from the accounts table below.'
+    case 'auth/weak-password':
+      return 'That password is too weak. Firebase requires at least 6 characters.'
+    case 'auth/invalid-email':
+      return 'That email address is not valid.'
+    default:
+      return e instanceof Error ? e.message : 'Failed to create the account'
+  }
+}
 
 /**
  * Dashboard access: the `users/{uid}` documents that Firestore rules read to authorise
@@ -70,6 +87,48 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
   }
 
+  /**
+   * Create a brand-new Firebase Auth account with a password the admin sets, then grant it a
+   * role. Runs on a second, isolated Firebase App instance (`getSecondaryAuth`) so creating the
+   * account — which signs in as it on whatever Auth instance did the creating — never signs the
+   * admin out of their own session.
+   */
+  async function createAccount(
+    email: string,
+    password: string,
+    roleId: ChurchRoleId,
+    memberId?: string
+  ) {
+    const trimmedEmail = email.trim()
+    saving.value = true
+    error.value = null
+    const secondaryAuth = getSecondaryAuth()
+    try {
+      const credential = await createUserWithEmailAndPassword(secondaryAuth, trimmedEmail, password)
+      const uid = credential.user.uid
+      await useUsersRepository().setUserRole(uid, roleId, trimmedEmail, memberId)
+      const next: AppUserRecord = {
+        uid,
+        roleId,
+        email: trimmedEmail,
+        ...(memberId ? { memberId } : {}),
+      }
+      records.value.push(next)
+      recordAudit({ action: 'access.grant', targetId: uid, targetLabel: trimmedEmail })
+      useToast().success(`Account created for ${trimmedEmail}`)
+      return uid
+    } catch (e: unknown) {
+      error.value = createAccountErrorMessage(e)
+      useToast().error(error.value)
+      throw e
+    } finally {
+      // The secondary instance signed in as the new account to create it; never leave that
+      // session sitting around, signed in or not.
+      await signOut(secondaryAuth).catch(() => {})
+      saving.value = false
+    }
+  }
+
   async function revokeAccess(uid: string) {
     saving.value = true
     error.value = null
@@ -90,5 +149,5 @@ export const useAccountsStore = defineStore('accounts', () => {
     }
   }
 
-  return { records, loading, saving, error, loaded, load, grantRole, revokeAccess }
+  return { records, loading, saving, error, loaded, load, grantRole, createAccount, revokeAccess }
 })
