@@ -11,17 +11,7 @@ const password = ref('')
 const submitting = ref(false)
 const notice = ref('')
 
-/**
- * Three ways in, because the accounts here are not all alike.
- *
- * Invited accounts are created by email link and have no password at all, so a password-only
- * form locked them out the moment they signed out or opened the dashboard on another device.
- *
- *   password  — the normal form
- *   link      — email a one-time sign-in link, for accounts with no password
- *   reset     — email a reset link, which is also how a link-only account sets a password
- */
-type Mode = 'password' | 'link' | 'reset' | 'completing'
+type Mode = 'password' | 'reset'
 const mode = ref<Mode>('password')
 
 /**
@@ -38,13 +28,6 @@ const destination = computed(() => {
 })
 
 onMounted(async () => {
-  // Arriving on an emailed sign-in link: confirm the address, then complete it. Firebase's own
-  // guidance is to ask rather than trust an address carried in the URL.
-  if (authStore.isLoginLink(window.location.href)) {
-    mode.value = 'completing'
-    return
-  }
-
   await authStore.whenReady()
   if (authStore.isAuthenticated) await navigateTo(destination.value, { replace: true })
 })
@@ -56,31 +39,6 @@ async function handleLogin() {
     await navigateTo(destination.value, { replace: true })
   } catch {
     // The store surfaces the reason via `authStore.error`, rendered below.
-  } finally {
-    submitting.value = false
-  }
-}
-
-async function completeLink() {
-  submitting.value = true
-  try {
-    await authStore.completeLinkSignIn(email.value, window.location.href)
-    await navigateTo(destination.value, { replace: true })
-  } catch {
-    // Shown via authStore.error — often just the wrong address for this link.
-  } finally {
-    submitting.value = false
-  }
-}
-
-async function sendLink() {
-  submitting.value = true
-  notice.value = ''
-  try {
-    await authStore.sendLoginLink(email.value)
-    notice.value = `A sign-in link is on its way to ${email.value}. It can only be used once.`
-  } catch {
-    // Shown via authStore.error.
   } finally {
     submitting.value = false
   }
@@ -106,36 +64,16 @@ function switchTo(next: Mode) {
   authStore.error = null
 }
 
-const heading = computed(() => {
-  switch (mode.value) {
-    case 'completing':
-      return 'Confirm your email'
-    case 'link':
-      return 'Email me a sign-in link'
-    case 'reset':
-      return 'Reset your password'
-    default:
-      return 'Sign in'
-  }
-})
+const heading = computed(() => (mode.value === 'reset' ? 'Reset your password' : 'Sign in'))
 
-const subheading = computed(() => {
-  switch (mode.value) {
-    case 'completing':
-      return 'Confirm the address this link was sent to.'
-    case 'link':
-      return 'Use this if you were invited and have no password.'
-    case 'reset':
-      return 'We will email you a link to set a new password.'
-    default:
-      return 'Access the Congregation dashboard'
-  }
-})
+const subheading = computed(() =>
+  mode.value === 'reset'
+    ? 'We will email you a link to set a new password.'
+    : 'Access the Congregation dashboard'
+)
 
 function onSubmit() {
   if (mode.value === 'password') return handleLogin()
-  if (mode.value === 'completing') return completeLink()
-  if (mode.value === 'link') return sendLink()
   return sendReset()
 }
 </script>
@@ -191,26 +129,11 @@ function onSubmit() {
           <template v-if="mode === 'password'">
             {{ submitting ? 'Signing in…' : 'Sign in' }}
           </template>
-          <template v-else-if="mode === 'completing'">
-            {{ submitting ? 'Signing in…' : 'Continue' }}
-          </template>
-          <template v-else>{{ submitting ? 'Sending…' : 'Send link' }}</template>
+          <template v-else>{{ submitting ? 'Sending…' : 'Send reset link' }}</template>
         </button>
       </form>
 
-      <!-- Alternatives. Hidden while completing a link, where there is only one thing to do. -->
-      <div
-        v-if="mode !== 'completing'"
-        class="flex flex-col items-center gap-2 border-t border-gray-100 pt-4 text-sm"
-      >
-        <button
-          v-if="mode !== 'link'"
-          type="button"
-          class="text-blue-600 hover:underline"
-          @click="switchTo('link')"
-        >
-          Email me a sign-in link instead
-        </button>
+      <div class="flex flex-col items-center gap-2 border-t border-gray-100 pt-4 text-sm">
         <button
           v-if="mode !== 'reset'"
           type="button"

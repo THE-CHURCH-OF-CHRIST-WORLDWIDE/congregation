@@ -625,7 +625,6 @@ Do all of this on **staging first**, then repeat on production. Order matters �
 1. **Create the project** and register a web app (Project Settings → Your apps → SDK setup). Copy the config into the matching env file.
 2. **Enable Authentication** → Sign-in method:
    - **Email/Password**
-   - **Email link (passwordless sign-in)** — required for the "Email me a sign-in link" option on `/login`
    - Under **Settings → Authorized domains**, add the site's Netlify domain and `localhost`. Sign-in fails silently without this.
 3. **Seed the first Super Admin.** There is no way to bootstrap this from the app:
    - **Authentication → Users** → copy the UID.
@@ -662,13 +661,10 @@ The same "give them a login" step is also offered inline from **Member Assignmen
 
 Two routes are on `/login`:
 
-| Route                       | For                                                       |
-| --------------------------- | --------------------------------------------------------- |
-| Email + password            | The normal way in, for any account created above          |
-| **Email me a sign-in link** | Signing in without typing a password, on a trusted device |
-| **Forgot your password?**   | Resetting a forgotten password                            |
-
-The middle option requires **Email link (passwordless sign-in)** to be enabled (see [First-time setup](#first-time-setup-per-firebase-project)) — without it, that button fails with a message naming the setting to enable.
+| Route                     | For                                              |
+| ------------------------- | ------------------------------------------------ |
+| Email + password          | The normal way in, for any account created above |
+| **Forgot your password?** | Resetting a forgotten password                   |
 
 ### Environment variables on Netlify
 
@@ -733,7 +729,6 @@ Rules are not covered by the test suite. Before a production deploy, exercise th
 | Staging shows production data                          | Both sites hold the same variables                                    | `npm run netlify:env -- staging --apply`, then redeploy                  |
 | Deploy fails: "secrets detected in build output"       | Vite inlines `VITE_*` into the bundle by design                       | `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml` — extend it for new variables |
 | Deep links 404 in production (`/gallery/photos`)       | The SPA fallback is missing                                           | Confirm `public/_redirects` survived into `dist/_redirects`              |
-| "Email me a sign-in link" fails                        | Email link sign-in disabled, or the domain is not authorized          | Enable both under Authentication (step 2 above)                          |
 | Login works, then nothing loads                        | Rules deployed before a Super Admin was seeded                        | Create `users/<uid>` in the console                                      |
 
 ---
