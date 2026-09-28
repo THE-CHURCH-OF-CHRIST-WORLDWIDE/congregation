@@ -1,4 +1,12 @@
-import type { Member, ServiceType, ExpenseCategory, RoleName, AppPage, AppAction } from '~/types'
+import type {
+  Member,
+  ServiceType,
+  ExpenseCategory,
+  RoleName,
+  AppPage,
+  AppAction,
+  LectureshipSpeakerRole,
+} from '~/types'
 
 // ─── Member ───────────────────────────────────────────────────────────────────
 
@@ -247,3 +255,88 @@ export const NAV_VISIBILITY_ITEMS: { key: NavVisibilityKey; label: string; path:
     { key: 'register', label: 'Member Registration', path: '/register' },
     { key: 'contactUs', label: 'Contact Us', path: null },
   ]
+
+// ─── Lectureship speaker/officiating profiles ────────────────────────────────
+
+/**
+ * Everything that varies by role, in one place, so the admin form's dropdown, the admin list's
+ * empty states, and the public page's card colours and section copy can't drift out of sync as
+ * roles are added.
+ */
+export interface LectureshipRoleMeta {
+  /** Singular, used in the admin "Add ..." button and dropdown option. */
+  label: string
+  /** Plural, used in admin section headings and the public "Meet the ..." heading. */
+  plural: string
+  /** Short tag shown on the public profile card's badge (uppercased by CSS). */
+  badgeText: string
+  /** Short tag shown as the public section's eyebrow, above the heading. */
+  publicEyebrow: string
+  /** Badge pill background/text classes. */
+  accentClass: string
+  /** Fallback-avatar gradient classes, shown when a profile has no photo. */
+  gradientClass: string
+  /** Eyebrow text colour class, matched to `accentClass`. */
+  eyebrowClass: string
+  emptyIcon: string
+  emptyTitle: string
+  emptyDescription: string
+}
+
+export const LECTURESHIP_ROLE_ORDER: LectureshipSpeakerRole[] = [
+  'speaker',
+  'officiating',
+  'songLeader',
+  'moderator',
+]
+
+export const LECTURESHIP_ROLES: Record<LectureshipSpeakerRole, LectureshipRoleMeta> = {
+  speaker: {
+    label: 'Speaker',
+    plural: 'Speakers',
+    badgeText: 'Speaker',
+    publicEyebrow: 'Guest Speakers',
+    accentClass: 'bg-amber-400 text-amber-950',
+    gradientClass: 'from-amber-600 to-orange-900',
+    eyebrowClass: 'text-amber-600',
+    emptyIcon: 'mdi:account-voice',
+    emptyTitle: 'No speakers yet',
+    emptyDescription: 'Guest speakers you add will appear here and on the public Lectureship page.',
+  },
+  officiating: {
+    label: 'Officiating Minister',
+    plural: 'Officiating Ministers',
+    badgeText: 'Officiating',
+    publicEyebrow: 'Officiating',
+    accentClass: 'bg-blue-500 text-white',
+    gradientClass: 'from-blue-700 to-blue-950',
+    eyebrowClass: 'text-blue-600',
+    emptyIcon: 'mdi:account-tie-outline',
+    emptyTitle: 'No officiating ministers yet',
+    emptyDescription: 'Ministers you add will appear here and on the public Lectureship page.',
+  },
+  songLeader: {
+    label: 'Song Leader',
+    plural: 'Song Leaders',
+    badgeText: 'Song Leader',
+    publicEyebrow: 'Song Ministry',
+    accentClass: 'bg-emerald-500 text-white',
+    gradientClass: 'from-emerald-600 to-emerald-950',
+    eyebrowClass: 'text-emerald-600',
+    emptyIcon: 'mdi:music-note-outline',
+    emptyTitle: 'No song leaders yet',
+    emptyDescription: 'Song leaders you add will appear here and on the public Lectureship page.',
+  },
+  moderator: {
+    label: 'Moderator',
+    plural: 'Moderators',
+    badgeText: 'Moderator',
+    publicEyebrow: 'Moderator',
+    accentClass: 'bg-purple-500 text-white',
+    gradientClass: 'from-purple-700 to-purple-950',
+    eyebrowClass: 'text-purple-600',
+    emptyIcon: 'mdi:account-star-outline',
+    emptyTitle: 'No moderator added yet',
+    emptyDescription: 'The moderator you add will appear here and on the public Lectureship page.',
+  },
+}

@@ -302,6 +302,36 @@ service cloud.firestore {
       allow delete: if isStaff();
     }
 
+    // ── Bible Lectureship registration counter ──────────────────────────────
+    // A single public counter of how many people have registered, so the public page can show a
+    // motivational "X people have registered" figure without exposing any registrant's name,
+    // email or phone number — those stay staff-only in `lectureshipRegistrations`, above. The
+    // public form increments this by exactly 1 alongside its own registration; staff may set it
+    // directly, which is how the admin page self-heals it back to the true total on every load
+    // (see `lectureshipStore.load()`), including catching up any registrations recorded before
+    // this counter existed.
+    match /lectureshipStats/{statId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['registeredCount'])
+                    && request.resource.data.registeredCount == 1;
+      allow update: if request.resource.data.keys().hasOnly(['registeredCount'])
+                    && request.resource.data.registeredCount is int
+                    && request.resource.data.registeredCount >= 0
+                    && (
+                         isStaff()
+                         || (request.resource.data.registeredCount - resource.data.registeredCount) == 1
+                       );
+      allow delete: if false;
+    }
+
+    // ── Bible Lectureship speaker/officiating profiles ─────────────────────
+    // Publicly readable — the /lectureship page shows these to visitors while signed out.
+    // Same tier as `events`: nothing sensitive here, so any Content Editor and above may write.
+    match /lectureshipSpeakers/{speakerId} {
+      allow read: if true;
+      allow write: if canEditPublishedContent();
+    }
+
     // ── Church settings ────────────────────────────────────────────────────
     match /settings/{document} {
       allow read: if true;

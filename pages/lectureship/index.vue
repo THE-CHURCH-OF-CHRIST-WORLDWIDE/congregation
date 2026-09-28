@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { LectureshipSpeakerRole } from '~/types'
+import { LECTURESHIP_ROLE_ORDER, LECTURESHIP_ROLES } from '~/constants'
+
 definePageMeta({
   layout: 'default',
   pageTransition: { name: 'fade', mode: 'out-in' },
@@ -14,6 +17,25 @@ useSeoMeta({
 
 const lectureshipStore = useLectureshipStore()
 const toast = useToast()
+
+onMounted(() => {
+  lectureshipStore.loadSpeakers()
+  lectureshipStore.loadRegisteredCount()
+})
+
+function speakersByRole(role: LectureshipSpeakerRole) {
+  return lectureshipStore.speakers.filter((s) => s.role === role).sort((a, b) => a.order - b.order)
+}
+
+// Saturday 9:00am WAT, the "prompt" start time called out in the hero below.
+const EVENT_START = '2026-10-03T09:00:00+01:00'
+const countdown = useCountdown(EVENT_START)
+const countdownUnits = computed(() => [
+  { label: 'Days', value: countdown.days.value },
+  { label: 'Hours', value: countdown.hours.value },
+  { label: 'Minutes', value: countdown.minutes.value },
+  { label: 'Seconds', value: countdown.seconds.value },
+])
 
 const form = reactive({
   fullName: '',
@@ -165,6 +187,45 @@ function registerAnother() {
               15 Alafia Estate, Ajibode, Ibadan
             </span>
           </div>
+
+          <!-- Registered-so-far nudge -->
+          <div
+            v-if="lectureshipStore.registeredCount > 0"
+            class="hero-animate mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm"
+            style="animation-delay: 480ms"
+          >
+            <Icon icon="mdi:account-group-outline" class="h-4 w-4 text-amber-300" />
+            {{ lectureshipStore.registeredCount }}
+            {{ lectureshipStore.registeredCount === 1 ? 'person has' : 'people have' }} already
+            registered
+          </div>
+
+          <!-- Countdown -->
+          <div
+            v-if="!countdown.isPast.value"
+            class="hero-animate mt-8 grid grid-cols-4 gap-2 sm:gap-4"
+            style="animation-delay: 520ms"
+          >
+            <div
+              v-for="unit in countdownUnits"
+              :key="unit.label"
+              class="flex flex-col items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 backdrop-blur-sm sm:px-5 sm:py-3"
+            >
+              <span class="font-serif text-2xl font-bold text-amber-300 sm:text-3xl">
+                {{ String(unit.value).padStart(2, '0') }}
+              </span>
+              <span class="mt-0.5 text-[10px] uppercase tracking-wide text-white/50 sm:text-xs">
+                {{ unit.label }}
+              </span>
+            </div>
+          </div>
+          <p
+            v-else
+            class="hero-animate mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-amber-300"
+            style="animation-delay: 520ms"
+          >
+            Happening now
+          </p>
         </div>
       </div>
 
@@ -195,6 +256,41 @@ function registerAnother() {
         "
       ></div>
     </section>
+
+    <!-- ── Speakers, Officiating Ministers, Song Leaders & Moderators ──────── -->
+    <template v-for="role in LECTURESHIP_ROLE_ORDER" :key="role">
+      <section
+        v-if="speakersByRole(role).length"
+        class="mx-auto max-w-5xl px-4 pt-14 sm:px-6 lg:px-8"
+      >
+        <div class="mb-6 flex items-end justify-between border-b border-gray-100 pb-4">
+          <div>
+            <p
+              :class="[
+                'text-xs font-semibold uppercase tracking-[0.2em]',
+                LECTURESHIP_ROLES[role].eyebrowClass,
+              ]"
+            >
+              {{ LECTURESHIP_ROLES[role].publicEyebrow }}
+            </p>
+            <h2 class="mt-1 font-serif text-2xl font-bold text-gray-900 sm:text-3xl">
+              Meet the {{ LECTURESHIP_ROLES[role].plural }}
+            </h2>
+          </div>
+          <p class="hidden text-sm text-gray-400 sm:block">
+            {{ speakersByRole(role).length }}
+            {{
+              speakersByRole(role).length === 1
+                ? LECTURESHIP_ROLES[role].label.toLowerCase()
+                : LECTURESHIP_ROLES[role].plural.toLowerCase()
+            }}
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <LectureshipSpeakerCard v-for="s in speakersByRole(role)" :key="s.id" :speaker="s" />
+        </div>
+      </section>
+    </template>
 
     <div class="mx-auto max-w-2xl px-4 pt-8 sm:px-6 lg:px-8">
       <!-- ── Success state ──────────────────────────────────────────────────── -->

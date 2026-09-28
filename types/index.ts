@@ -119,6 +119,21 @@ export interface LectureshipRegistration {
   attendedSun?: boolean
 }
 
+export type LectureshipSpeakerRole = 'speaker' | 'officiating' | 'songLeader' | 'moderator'
+
+/** A guest speaker or officiating minister profile shown on the public Lectureship page. */
+export interface LectureshipSpeaker {
+  id: string
+  name: string
+  role: LectureshipSpeakerRole
+  /** e.g. "Guest Speaker", "Presiding Minister", or the congregation they serve. */
+  title?: string
+  avatar: string
+  bio: string
+  /** Manual sort position within its role group; lower first. */
+  order: number
+}
+
 /**
  * Somebody who worshipped with the congregation without being on the roll.
  *
@@ -340,6 +355,9 @@ export type AuditAction =
   | 'message.delete'
   | 'lectureship.delete'
   | 'lectureship.attendance'
+  | 'lectureship.speaker.create'
+  | 'lectureship.speaker.update'
+  | 'lectureship.speaker.delete'
 
 /**
  * One recorded change, stored append-only at `auditLog/{id}`.
