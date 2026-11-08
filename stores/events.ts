@@ -3,6 +3,29 @@ import { useEventsRepository } from '~/repositories/eventsRepository'
 import { recordAudit } from '~/utils/audit'
 import type { UpcomingEvent, PastEvent } from '~/types/events'
 
+/** Today as "YYYY-MM-DD" in the viewer's local timezone (event dates are plain local dates). */
+function localToday(): string {
+  const d = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+/** An upcoming event whose day has passed, reshaped as a past event with blank extras. */
+function toPastEvent(e: UpcomingEvent): PastEvent {
+  return {
+    id: e.id,
+    title: e.title,
+    date: e.date,
+    time: e.time,
+    venue: e.venue,
+    category: 'Event',
+    thumbnail: e.galleryImages?.[0] ?? '',
+    featuredImage: e.galleryImages?.[0] ?? '',
+    moderator: { name: '', avatar: '' },
+    speakers: [],
+  }
+}
+
 export const useEventsStore = defineStore('events', () => {
   const activeTab = ref<'upcoming' | 'past'>('upcoming')
   const upcomingEvents = ref<UpcomingEvent[]>([])
@@ -18,6 +41,20 @@ export const useEventsStore = defineStore('events', () => {
   const galleryImages = ref<string[]>([])
   const galleryStartIndex = ref(0)
 
+  /**
+   * Moves any upcoming event whose date is before today into the past list. Derived on the
+   * client (not persisted) so it works for anonymous visitors and needs no scheduled job.
+   */
+  function rollOverPastEvents() {
+    const today = localToday()
+    const expired = upcomingEvents.value.filter((e) => e.date < today)
+    if (!expired.length) return
+    upcomingEvents.value = upcomingEvents.value.filter((e) => e.date >= today)
+    pastEvents.value.push(...expired.map(toPastEvent))
+    if (selectedUpcomingEvent.value && selectedUpcomingEvent.value.date < today)
+      selectedUpcomingEvent.value = null
+  }
+
   function fail(e: unknown, fallback: string): never {
     error.value = e instanceof Error ? e.message : fallback
     useToast().error(error.value)
@@ -32,6 +69,7 @@ export const useEventsStore = defineStore('events', () => {
       const { upcoming, past } = await useEventsRepository().fetchEvents()
       upcomingEvents.value = upcoming
       pastEvents.value = past
+      rollOverPastEvents()
       loaded.value = true
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : 'Failed to load events'
@@ -84,6 +122,7 @@ export const useEventsStore = defineStore('events', () => {
     try {
       const created = await useEventsRepository().createEvent<UpcomingEvent>('upcoming', event)
       upcomingEvents.value.push(created)
+      rollOverPastEvents()
       recordAudit({ action: 'event.create', targetId: created.id, targetLabel: created.title })
       useToast().success(`"${created.title || 'Event'}" added`)
       return created
@@ -101,16 +140,12 @@ export const useEventsStore = defineStore('events', () => {
     error.value = null
     try {
       await useEventsRepository().updateEvent(id, updates)
-      upcomingEvents.value[idx] = { ...upcomingEvents.value[idx]!, ...updates }
-      if (selectedUpcomingEvent.value?.id === id) {
-        selectedUpcomingEvent.value = upcomingEvents.value[idx] ?? null
-      }
-      recordAudit({
-        action: 'event.update',
-        targetId: id,
-        targetLabel: upcomingEvents.value[idx]!.title,
-      })
-      useToast().success(`"${upcomingEvents.value[idx]!.title}" updated`)
+      const merged = { ...upcomingEvents.value[idx]!, ...updates }
+      upcomingEvents.value[idx] = merged
+      if (selectedUpcomingEvent.value?.id === id) selectedUpcomingEvent.value = merged
+      recordAudit({ action: 'event.update', targetId: id, targetLabel: merged.title })
+      useToast().success(`"${merged.title}" updated`)
+      rollOverPastEvents()
     } catch (e: unknown) {
       fail(e, 'Failed to update event')
     } finally {
