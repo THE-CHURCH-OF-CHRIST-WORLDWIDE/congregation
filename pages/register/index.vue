@@ -69,12 +69,7 @@ const genderOptions: Member['gender'][] = ['Male', 'Female']
 const maritalOptions = ['Single', 'Married', 'Widowed', 'Divorced']
 
 // ─── Validation ───────────────────────────────────────────────────────────────
-type FieldErrors = Partial<
-  Record<
-    'avatar' | 'name' | 'email' | 'phone' | 'dob' | 'address' | 'previousMinisterPhone',
-    string
-  >
->
+type FieldErrors = Partial<Record<keyof RegistrationForm, string>>
 const errors = ref<FieldErrors>({})
 const submitting = ref(false)
 const submitted = ref(false)
@@ -87,37 +82,67 @@ function validate(): boolean {
   // Checked in the order the fields appear on the page, so scrolling to the
   // first error lands on the topmost one.
   const next: FieldErrors = {}
+  const blank = (v: string | undefined) => !v?.trim()
 
   if (!form.avatar) next.avatar = 'A passport photograph is required'
 
-  if (!form.name.trim()) next.name = 'Your full name is required'
+  if (blank(form.name)) next.name = 'Your full name is required'
 
-  // Email is optional — many members register with a phone number only.
-  //
   // Uniqueness is deliberately NOT checked here. This is an unauthenticated
   // page, and comparing against the roll would mean granting anonymous read
   // access to every member's record. Duplicates are cheap for the secretary to
   // spot on the nominal roll; leaked member data is not. Enforce it in
   // Firestore rules or a Cloud Function if it needs to be automatic.
   const email = form.email.trim().toLowerCase()
-  if (email && !EMAIL_RE.test(email)) next.email = 'Enter a valid email address'
+  if (!email) next.email = 'Email address is required'
+  else if (!EMAIL_RE.test(email)) next.email = 'Enter a valid email address'
 
-  if (!form.phone.trim()) next.phone = 'Phone number is required'
+  if (blank(form.phone)) next.phone = 'Phone number is required'
   else if (!PHONE_RE.test(form.phone.trim())) next.phone = 'Enter a valid phone number'
 
-  if (form.dob && form.dob > today) next.dob = 'Date of birth cannot be in the future'
+  if (!form.gender) next.gender = 'Gender is required'
+  if (!form.maritalStatus) next.maritalStatus = 'Marital status is required'
 
-  if (!form.address?.trim()) next.address = 'Residential address is required'
+  if (!form.dob) next.dob = 'Date of birth is required'
+  else if (form.dob > today) next.dob = 'Date of birth cannot be in the future'
 
+  if (blank(form.occupation)) next.occupation = 'Occupation is required'
+
+  // Baptism date is optional — leave blank if not yet baptised.
+  if (form.dateOfBaptism && form.dateOfBaptism > today)
+    next.dateOfBaptism = 'Date of baptism cannot be in the future'
+
+  if (!form.dateJoined) next.dateJoined = 'Date of registration is required'
+  else if (form.dateJoined > today) next.dateJoined = 'Date of registration cannot be in the future'
+
+  // Previous congregation and the minister's phone are optional (transfers only);
+  // the phone is still format-checked when given.
   const ministerPhone = form.previousMinisterPhone?.trim()
   if (ministerPhone && !PHONE_RE.test(ministerPhone))
     next.previousMinisterPhone = 'Enter a valid phone number'
+
+  if (blank(form.country)) next.country = 'Country is required'
+  if (blank(form.state)) next.state = 'State of origin is required'
+  if (blank(form.localGovernment)) next.localGovernment = 'Local government area is required'
+  if (blank(form.village)) next.village = 'Village is required'
+
+  if (blank(form.address)) next.address = 'Residential address is required'
+
+  if (blank(form.ecName)) next.ecName = 'Emergency contact name is required'
+  if (blank(form.ecRelationship)) next.ecRelationship = 'Relationship is required'
+  if (blank(form.ecPhone)) next.ecPhone = 'Emergency contact phone is required'
+  else if (!PHONE_RE.test(form.ecPhone.trim())) next.ecPhone = 'Enter a valid phone number'
+  if (blank(form.ecAddress)) next.ecAddress = 'Emergency contact address is required'
 
   errors.value = next
   return Object.keys(next).length === 0
 }
 
+// Errors are inserted in validate() in page order, so the first key is the topmost.
 const firstErrorField = computed(() => Object.keys(errors.value)[0])
+
+const inputError = (key: keyof FieldErrors) =>
+  errors.value[key] ? 'border-red-400 focus:border-red-400' : ''
 
 // ─── Submit ───────────────────────────────────────────────────────────────────
 async function submit() {
@@ -130,15 +155,12 @@ async function submit() {
 
   submitting.value = true
 
-  const emergencyContact: EmergencyContact | undefined =
-    form.ecName.trim() || form.ecPhone.trim()
-      ? {
-          name: form.ecName.trim(),
-          relationship: form.ecRelationship.trim(),
-          phone: form.ecPhone.trim(),
-          address: form.ecAddress.trim(),
-        }
-      : undefined
+  const emergencyContact: EmergencyContact = {
+    name: form.ecName.trim(),
+    relationship: form.ecRelationship.trim(),
+    phone: form.ecPhone.trim(),
+    address: form.ecAddress.trim(),
+  }
 
   try {
     await membersStore.addMember({
@@ -206,7 +228,7 @@ watch(submitted, (v) => {
         </div>
         <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Member Registration</h1>
         <p class="mt-1 text-sm text-gray-500">
-          Fill in your details to be added to the church nominal roll. Fields marked
+          Fill in your details to be added to the church nominal roll. All fields marked
           <span class="text-red-500">*</span> are required.
         </p>
       </div>
@@ -285,12 +307,12 @@ watch(submitted, (v) => {
                   />
                   <p v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name }}</p>
                 </EditField>
-                <EditField id="field-email" label="Email Address">
+                <EditField id="field-email" label="Email Address *">
                   <input
                     v-model="form.email"
                     type="email"
                     autocomplete="email"
-                    placeholder="you@example.com (optional)"
+                    placeholder="you@example.com"
                     :class="errors.email ? 'border-red-400 focus:border-red-400' : ''"
                   />
                   <p v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email }}</p>
@@ -308,21 +330,25 @@ watch(submitted, (v) => {
                   />
                   <p v-if="errors.phone" class="mt-1 text-xs text-red-500">{{ errors.phone }}</p>
                 </EditField>
-                <EditField label="Gender">
-                  <select v-model="form.gender">
+                <EditField id="field-gender" label="Gender *">
+                  <select v-model="form.gender" :class="inputError('gender')">
                     <option v-for="g in genderOptions" :key="g" :value="g">{{ g }}</option>
                   </select>
+                  <p v-if="errors.gender" class="mt-1 text-xs text-red-500">{{ errors.gender }}</p>
                 </EditField>
-                <EditField label="Marital Status">
-                  <select v-model="form.maritalStatus">
+                <EditField id="field-maritalStatus" label="Marital Status *">
+                  <select v-model="form.maritalStatus" :class="inputError('maritalStatus')">
                     <option value="">— Select —</option>
                     <option v-for="m in maritalOptions" :key="m" :value="m">{{ m }}</option>
                   </select>
+                  <p v-if="errors.maritalStatus" class="mt-1 text-xs text-red-500">
+                    {{ errors.maritalStatus }}
+                  </p>
                 </EditField>
               </div>
 
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <EditField id="field-dob" label="Date of Birth">
+                <EditField id="field-dob" label="Date of Birth *">
                   <input
                     v-model="form.dob"
                     type="date"
@@ -331,8 +357,16 @@ watch(submitted, (v) => {
                   />
                   <p v-if="errors.dob" class="mt-1 text-xs text-red-500">{{ errors.dob }}</p>
                 </EditField>
-                <EditField label="Occupation">
-                  <input v-model="form.occupation" type="text" placeholder="e.g. Teacher" />
+                <EditField id="field-occupation" label="Occupation *">
+                  <input
+                    v-model="form.occupation"
+                    type="text"
+                    placeholder="e.g. Teacher"
+                    :class="inputError('occupation')"
+                  />
+                  <p v-if="errors.occupation" class="mt-1 text-xs text-red-500">
+                    {{ errors.occupation }}
+                  </p>
                 </EditField>
               </div>
             </div>
@@ -355,11 +389,27 @@ watch(submitted, (v) => {
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <EditField label="Date of Baptism">
-                <input v-model="form.dateOfBaptism" type="date" :max="today" />
+              <EditField id="field-dateOfBaptism" label="Date of Baptism">
+                <input
+                  v-model="form.dateOfBaptism"
+                  type="date"
+                  :max="today"
+                  :class="inputError('dateOfBaptism')"
+                />
+                <p v-if="errors.dateOfBaptism" class="mt-1 text-xs text-red-500">
+                  {{ errors.dateOfBaptism }}
+                </p>
               </EditField>
-              <EditField label="Date of Registration">
-                <input v-model="form.dateJoined" type="date" :max="today" />
+              <EditField id="field-dateJoined" label="Date of Registration *">
+                <input
+                  v-model="form.dateJoined"
+                  type="date"
+                  :max="today"
+                  :class="inputError('dateJoined')"
+                />
+                <p v-if="errors.dateJoined" class="mt-1 text-xs text-red-500">
+                  {{ errors.dateJoined }}
+                </p>
               </EditField>
             </div>
           </section>
@@ -385,7 +435,7 @@ watch(submitted, (v) => {
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <EditField label="Previous Congregation">
+              <EditField id="field-previousCongregation" label="Previous Congregation">
                 <input
                   v-model="form.previousCongregation"
                   type="text"
@@ -421,17 +471,43 @@ watch(submitted, (v) => {
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <EditField label="Country">
-                <input v-model="form.country" type="text" placeholder="Nigeria" />
+              <EditField id="field-country" label="Country *">
+                <input
+                  v-model="form.country"
+                  type="text"
+                  placeholder="Nigeria"
+                  :class="inputError('country')"
+                />
+                <p v-if="errors.country" class="mt-1 text-xs text-red-500">{{ errors.country }}</p>
               </EditField>
-              <EditField label="State of Origin">
-                <input v-model="form.state" type="text" placeholder="Akwa Ibom State" />
+              <EditField id="field-state" label="State of Origin *">
+                <input
+                  v-model="form.state"
+                  type="text"
+                  placeholder="Akwa Ibom State"
+                  :class="inputError('state')"
+                />
+                <p v-if="errors.state" class="mt-1 text-xs text-red-500">{{ errors.state }}</p>
               </EditField>
-              <EditField label="Local Government Area">
-                <input v-model="form.localGovernment" type="text" placeholder="Ibiono Ibom" />
+              <EditField id="field-localGovernment" label="Local Government Area *">
+                <input
+                  v-model="form.localGovernment"
+                  type="text"
+                  placeholder="Ibiono Ibom"
+                  :class="inputError('localGovernment')"
+                />
+                <p v-if="errors.localGovernment" class="mt-1 text-xs text-red-500">
+                  {{ errors.localGovernment }}
+                </p>
               </EditField>
-              <EditField label="Village">
-                <input v-model="form.village" type="text" placeholder="Ikot Oku" />
+              <EditField id="field-village" label="Village *">
+                <input
+                  v-model="form.village"
+                  type="text"
+                  placeholder="Ikot Oku"
+                  :class="inputError('village')"
+                />
+                <p v-if="errors.village" class="mt-1 text-xs text-red-500">{{ errors.village }}</p>
               </EditField>
             </div>
           </section>
@@ -471,26 +547,51 @@ watch(submitted, (v) => {
                 <Icon icon="mdi:phone-alert-outline" class="text-lg text-accent" />
               </div>
               <div>
-                <h2 class="text-sm font-semibold text-gray-900">
-                  Emergency Contact
-                  <span class="text-xs font-normal text-gray-400">(optional)</span>
-                </h2>
+                <h2 class="text-sm font-semibold text-gray-900">Emergency Contact</h2>
                 <p class="text-xs text-gray-500">Someone we can reach on your behalf.</p>
               </div>
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <EditField label="Name">
-                <input v-model="form.ecName" type="text" placeholder="Brother John Adebayo" />
+              <EditField id="field-ecName" label="Name *">
+                <input
+                  v-model="form.ecName"
+                  type="text"
+                  placeholder="Brother John Adebayo"
+                  :class="inputError('ecName')"
+                />
+                <p v-if="errors.ecName" class="mt-1 text-xs text-red-500">{{ errors.ecName }}</p>
               </EditField>
-              <EditField label="Relationship">
-                <input v-model="form.ecRelationship" type="text" placeholder="Brother" />
+              <EditField id="field-ecRelationship" label="Relationship *">
+                <input
+                  v-model="form.ecRelationship"
+                  type="text"
+                  placeholder="Brother"
+                  :class="inputError('ecRelationship')"
+                />
+                <p v-if="errors.ecRelationship" class="mt-1 text-xs text-red-500">
+                  {{ errors.ecRelationship }}
+                </p>
               </EditField>
-              <EditField label="Phone Number">
-                <input v-model="form.ecPhone" type="tel" placeholder="+234 803 333 4444" />
+              <EditField id="field-ecPhone" label="Phone Number *">
+                <input
+                  v-model="form.ecPhone"
+                  type="tel"
+                  placeholder="+234 803 333 4444"
+                  :class="inputError('ecPhone')"
+                />
+                <p v-if="errors.ecPhone" class="mt-1 text-xs text-red-500">{{ errors.ecPhone }}</p>
               </EditField>
-              <EditField label="Address">
-                <input v-model="form.ecAddress" type="text" placeholder="Full address" />
+              <EditField id="field-ecAddress" label="Address *">
+                <input
+                  v-model="form.ecAddress"
+                  type="text"
+                  placeholder="Full address"
+                  :class="inputError('ecAddress')"
+                />
+                <p v-if="errors.ecAddress" class="mt-1 text-xs text-red-500">
+                  {{ errors.ecAddress }}
+                </p>
               </EditField>
             </div>
           </section>
