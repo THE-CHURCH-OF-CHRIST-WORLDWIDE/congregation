@@ -94,38 +94,44 @@ function cancel() {
     @update:model-value="cancel"
   >
     <div class="flex flex-col gap-4">
-      <p v-if="subject" class="text-xs font-medium text-gray-500">{{ subject }}</p>
-      <p v-if="scopeNote" class="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
-        {{ scopeNote }}
+      <p v-if="subject" class="num text-sm font-medium text-ink">{{ subject }}</p>
+      <p
+        v-if="scopeNote"
+        class="flex items-start gap-2 rounded-md border border-warning/25 bg-warning-soft px-4 py-3 text-sm text-warning"
+      >
+        <Icon icon="mdi:alert-circle-outline" class="mt-0.5 shrink-0 text-base" />
+        <span>{{ scopeNote }}</span>
       </p>
 
       <div class="flex flex-col gap-2">
         <!-- Radios rather than a select: two options, both worth reading before choosing. -->
         <label
-          class="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors"
+          class="flex min-h-11 cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors"
           :class="
-            place === 'local' ? 'border-[#0BA5EC] bg-[#F0F9FF]' : 'border-gray-200 hover:bg-gray-50'
+            place === 'local'
+              ? 'border-primary bg-primary-soft ring-1 ring-primary ring-inset'
+              : 'border-rule-strong hover:bg-surface-muted'
           "
         >
-          <input v-model="place" type="radio" value="local" class="mt-0.5" />
+          <input v-model="place" type="radio" value="local" class="mt-0.5 size-4 shrink-0" />
           <span class="min-w-0">
-            <span class="block text-sm font-medium text-gray-900">With this congregation</span>
-            <span class="block text-xs text-gray-500">They worshipped here.</span>
+            <span class="block text-sm font-semibold text-ink">With this congregation</span>
+            <span class="block text-xs text-ink-muted">They worshipped here.</span>
           </span>
         </label>
 
         <label
-          class="flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors"
+          class="flex min-h-11 cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors"
           :class="
             place === 'elsewhere'
-              ? 'border-[#0BA5EC] bg-[#F0F9FF]'
-              : 'border-gray-200 hover:bg-gray-50'
+              ? 'border-primary bg-primary-soft ring-1 ring-primary ring-inset'
+              : 'border-rule-strong hover:bg-surface-muted'
           "
         >
-          <input v-model="place" type="radio" value="elsewhere" class="mt-0.5" />
+          <input v-model="place" type="radio" value="elsewhere" class="mt-0.5 size-4 shrink-0" />
           <span class="min-w-0">
-            <span class="block text-sm font-medium text-gray-900"> With another congregation </span>
-            <span class="block text-xs text-gray-500">
+            <span class="block text-sm font-semibold text-ink"> With another congregation </span>
+            <span class="block text-xs text-ink-muted">
               They travelled and brought a certificate of worship.
             </span>
           </span>
@@ -133,7 +139,7 @@ function cancel() {
       </div>
 
       <!-- Only the second answer needs anything else filling in. -->
-      <div v-if="place === 'elsewhere'" class="flex flex-col gap-3 border-t border-gray-100 pt-4">
+      <div v-if="place === 'elsewhere'" class="flex flex-col gap-4 border-t border-rule pt-4">
         <EditField label="Congregation *" :error="congregationError">
           <input
             ref="congregationInput"
@@ -145,11 +151,11 @@ function cancel() {
           />
         </EditField>
 
-        <label class="flex items-start gap-2.5">
-          <input v-model="certificate" type="checkbox" class="mt-0.5" />
-          <span class="text-sm text-gray-700">
+        <label class="flex min-h-11 cursor-pointer items-start gap-2.5">
+          <input v-model="certificate" type="checkbox" class="mt-0.5 size-4 shrink-0" />
+          <span class="text-sm font-medium text-ink">
             Certificate of worship produced
-            <span class="mt-0.5 block text-xs text-gray-400">
+            <span class="mt-0.5 block text-xs font-normal text-ink-subtle">
               Leave unticked if they reported it but have not brought the certificate in yet.
             </span>
           </span>
@@ -172,7 +178,7 @@ function cancel() {
       <div class="flex justify-end gap-2">
         <button
           type="button"
-          class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink shadow-xs transition-colors hover:border-ink-subtle hover:bg-surface-muted sm:min-h-10"
           @click="cancel"
         >
           Cancel
@@ -180,10 +186,10 @@ function cancel() {
         <button
           ref="confirmButton"
           type="button"
-          class="inline-flex items-center gap-2 rounded-lg bg-[#0BA5EC] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0992D2] focus:ring-2 focus:ring-[#0BA5EC] focus:ring-offset-1 focus:outline-none"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover sm:min-h-10"
           @click="submit"
         >
-          <Icon icon="mdi:check" />
+          <Icon icon="mdi:check" class="text-base" />
           Mark Present
         </button>
       </div>

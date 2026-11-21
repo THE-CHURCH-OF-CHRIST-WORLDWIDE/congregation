@@ -43,15 +43,15 @@ function go(p: number) {
 <template>
   <div
     v-if="totalPages > 1"
-    class="flex flex-col items-center justify-between gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row"
+    class="flex flex-col items-center justify-between gap-3 border-t border-rule px-4 py-3 sm:flex-row"
   >
-    <p class="text-xs text-gray-500">
+    <p class="num text-xs text-ink-muted">
       Showing {{ rangeStart }}–{{ rangeEnd }} of {{ total }} {{ label }}
     </p>
 
     <nav class="flex items-center gap-1" aria-label="Pagination">
       <button
-        class="rounded border border-gray-200 px-2 py-1 text-xs hover:bg-gray-50 disabled:opacity-40"
+        class="inline-flex size-9 items-center justify-center rounded-md border border-rule-strong bg-surface text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink disabled:pointer-events-none disabled:opacity-40"
         :disabled="page <= 1"
         aria-label="Previous page"
         @click="go(page - 1)"
@@ -60,14 +60,14 @@ function go(p: number) {
       </button>
 
       <template v-for="(p, i) in pages" :key="`${p}-${i}`">
-        <span v-if="p === '…'" class="px-1 text-xs text-gray-400">…</span>
+        <span v-if="p === '…'" class="px-1 text-xs text-ink-subtle" aria-hidden="true">…</span>
         <button
           v-else
           :class="[
-            'min-w-[28px] rounded border px-2 py-1 text-xs',
+            'num inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 text-[13px] font-medium transition-colors',
             p === page
-              ? 'border-blue-600 bg-blue-600 text-white'
-              : 'border-gray-200 hover:bg-gray-50',
+              ? 'border-primary bg-primary text-on-primary'
+              : 'border-rule-strong bg-surface text-ink hover:bg-surface-muted',
           ]"
           :aria-current="p === page ? 'page' : undefined"
           :aria-label="`Page ${p}`"
@@ -78,7 +78,7 @@ function go(p: number) {
       </template>
 
       <button
-        class="rounded border border-gray-200 px-2 py-1 text-xs hover:bg-gray-50 disabled:opacity-40"
+        class="inline-flex size-9 items-center justify-center rounded-md border border-rule-strong bg-surface text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink disabled:pointer-events-none disabled:opacity-40"
         :disabled="page >= totalPages"
         aria-label="Next page"
         @click="go(page + 1)"

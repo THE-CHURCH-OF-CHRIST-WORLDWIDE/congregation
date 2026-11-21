@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ChartData, ChartOptions } from 'chart.js'
+import { chartAlpha, chartPalette, chartStatus } from '~/utils/chartTheme'
 
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Dashboard', description: 'Church of Christ admin dashboard overview.' })
@@ -56,7 +57,7 @@ const statsCards = computed(() => [
     value: membersStore.members.length,
     // No badge: nothing records how the roll changed month to month yet.
     subtitle: `${membersStore.activeCount} active`,
-    sparkColor: '#93c5fd',
+    sparkColor: chartPalette.ink,
   },
   {
     title: 'Attendance this month',
@@ -68,13 +69,13 @@ const statsCards = computed(() => [
     change: summary.monthOnMonthChange.value,
     changeLabel: 'Compared to last month',
     sparkValues: summary.rateTrend.value,
-    sparkColor: '#6ee7b7',
+    sparkColor: chartPalette.bookcloth,
   },
   {
     title: 'Average weekly attendance',
     value: summary.averageWeekly.value === null ? '—' : summary.averageWeekly.value,
     subtitle: summary.averageWeekly.value === null ? 'No sessions recorded' : 'People per session',
-    sparkColor: '#a5b4fc',
+    sparkColor: chartPalette.slate,
   },
   {
     title: 'Attendance rate this year',
@@ -82,7 +83,7 @@ const statsCards = computed(() => [
     subtitle:
       summary.annualRate.value === null ? `No ${summary.year} records` : `Across ${summary.year}`,
     sparkValues: summary.rateTrend.value,
-    sparkColor: '#fca5a5',
+    sparkColor: chartPalette.ink,
   },
 ])
 
@@ -96,13 +97,17 @@ const barChartData = computed<ChartData<'bar'>>(() => {
         {
           label: 'Present',
           data: data.map((d) => d.present),
-          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#2563eb' : '#bfdbfe')),
+          backgroundColor: data.map((_, i) =>
+            i === data.length - 1 ? chartStatus.positive : chartAlpha(chartStatus.positive, 0.4)
+          ),
           borderRadius: 4,
         },
         {
           label: 'Absent',
           data: data.map((d) => d.total - d.present),
-          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#f87171' : '#fecaca')),
+          backgroundColor: data.map((_, i) =>
+            i === data.length - 1 ? chartStatus.negative : chartAlpha(chartStatus.negative, 0.35)
+          ),
           borderRadius: 4,
         },
       ],
@@ -115,13 +120,17 @@ const barChartData = computed<ChartData<'bar'>>(() => {
         {
           label: 'Present',
           data: data.map((d) => d.present),
-          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#2563eb' : '#bfdbfe')),
+          backgroundColor: data.map((_, i) =>
+            i === data.length - 1 ? chartStatus.positive : chartAlpha(chartStatus.positive, 0.4)
+          ),
           borderRadius: 4,
         },
         {
           label: 'Absent',
           data: data.map((d) => d.total - d.present),
-          backgroundColor: data.map((_, i) => (i === data.length - 1 ? '#f87171' : '#fecaca')),
+          backgroundColor: data.map((_, i) =>
+            i === data.length - 1 ? chartStatus.negative : chartAlpha(chartStatus.negative, 0.35)
+          ),
           borderRadius: 4,
         },
       ],
@@ -153,15 +162,17 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
   },
   scales: {
     x: { stacked: false, grid: { display: false }, ticks: { font: { size: 11 } } },
-    y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 } }, beginAtZero: true },
+    y: { ticks: { font: { size: 11 } }, beginAtZero: true },
   },
 }))
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-6">
     <!-- Stats row -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div
+      class="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-rule bg-rule shadow-xs sm:grid-cols-2 xl:grid-cols-4"
+    >
       <StatsCard v-for="card in statsCards" :key="card.title" v-bind="card" />
     </div>
 
@@ -169,60 +180,88 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
     <NuxtLink
       v-if="noAttendanceYet"
       to="/admin/attendance"
-      class="flex items-start gap-2.5 rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600 transition-colors hover:border-blue-400 hover:text-blue-700"
+      class="group flex items-start gap-3 rounded-lg border border-dashed border-rule-strong bg-surface px-4 py-3 text-sm leading-relaxed text-ink-muted transition-colors duration-150 hover:border-primary hover:bg-primary-soft/40 hover:text-ink"
     >
-      <Icon icon="mdi:calendar-plus-outline" class="mt-0.5 shrink-0 text-gray-400" />
+      <Icon
+        icon="mdi:calendar-plus-outline"
+        class="mt-0.5 shrink-0 text-base text-ink-subtle group-hover:text-primary-ink"
+        aria-hidden="true"
+      />
       <span>
         No {{ SUMMARY_SERVICE }} attendance has been recorded yet, so the attendance figures are
-        empty. <span class="font-medium">Record a service</span> and they will fill in.
+        empty.
+        <span class="font-semibold text-primary-ink underline underline-offset-3"
+          >Record a service</span
+        >
+        and they will fill in.
       </span>
     </NuxtLink>
 
     <!-- Attendance chart + Recent video uploads, side-by-side -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <Card class="xl:col-span-2">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div>
-            <h3 class="text-sm font-semibold text-gray-900">{{ chartTitle }}</h3>
-            <div class="flex items-center gap-4 mt-2">
-              <label class="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
-                <input v-model="chartMode" type="radio" value="weekly" class="accent-blue-600" />
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+      <Card padding="none" class="p-5 xl:col-span-2">
+        <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <h3 class="font-display text-base font-semibold text-ink">{{ chartTitle }}</h3>
+          <div class="flex flex-wrap items-center gap-3">
+            <div
+              class="inline-flex items-center gap-0.5 rounded-md border border-rule bg-surface-muted p-0.5"
+              role="radiogroup"
+              aria-label="Chart period"
+            >
+              <label
+                :class="[
+                  'flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm px-2.5 text-xs font-medium transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-focus',
+                  chartMode === 'weekly'
+                    ? 'bg-surface text-ink shadow-xs'
+                    : 'text-ink-muted hover:text-ink',
+                ]"
+              >
+                <input v-model="chartMode" type="radio" value="weekly" class="sr-only" />
                 Weekly
               </label>
-              <label class="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer">
-                <input v-model="chartMode" type="radio" value="monthly" class="accent-blue-600" />
+              <label
+                :class="[
+                  'flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm px-2.5 text-xs font-medium transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-focus',
+                  chartMode === 'monthly'
+                    ? 'bg-surface text-ink shadow-xs'
+                    : 'text-ink-muted hover:text-ink',
+                ]"
+              >
+                <input v-model="chartMode" type="radio" value="monthly" class="sr-only" />
                 Monthly
               </label>
             </div>
+            <select
+              v-model="chartService"
+              class="min-h-9 shrink-0 rounded-md border border-rule-strong bg-surface px-3 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+              aria-label="Select service type"
+            >
+              <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
+            </select>
           </div>
-          <select
-            v-model="chartService"
-            class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 flex-shrink-0"
-            aria-label="Select service type"
-          >
-            <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
-          </select>
         </div>
-        <BarChart
-          v-if="attendanceStore.records.length"
-          :key="`${chartMode}-${chartService}`"
-          :data="barChartData"
-          :options="barOptions"
-          :height="240"
-        />
-        <EmptyState
-          v-else
-          icon="mdi:chart-bar"
-          title="No attendance recorded yet"
-          description="This chart fills in as registers are marked each week."
-        />
+        <div class="mt-4">
+          <BarChart
+            v-if="attendanceStore.records.length"
+            :key="`${chartMode}-${chartService}`"
+            :data="barChartData"
+            :options="barOptions"
+            :height="240"
+          />
+          <EmptyState
+            v-else
+            icon="mdi:chart-bar"
+            title="No attendance recorded yet"
+            description="This chart fills in as registers are marked each week."
+          />
+        </div>
       </Card>
       <RecentVideoUploads />
     </div>
 
     <!-- Backslider table + Recent sermon uploads, side-by-side -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <div class="xl:col-span-2">
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+      <div class="min-w-0 xl:col-span-2">
         <BacksliderTable />
       </div>
       <RecentUploads />

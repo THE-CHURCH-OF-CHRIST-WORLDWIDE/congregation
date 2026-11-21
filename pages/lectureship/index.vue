@@ -103,87 +103,100 @@ function registerAnother() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-50 pb-16">
+  <div class="lectureship-form min-h-screen bg-surface-muted pb-20">
     <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
-    <section class="relative overflow-hidden bg-[#1E3A5F] pb-14 pt-8 sm:pb-20 sm:pt-10">
-      <!-- Warm glow behind the headline, echoing the flier's gradient theme text -->
-      <div
-        class="pointer-events-none absolute left-1/2 top-32 h-72 w-72 -translate-x-1/2 rounded-full bg-orange-500/20 blur-3xl"
-      ></div>
-
-      <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex items-center gap-2 text-xs font-medium text-white/40">
-          <NuxtLink to="/" class="transition-colors hover:text-white/70">Home</NuxtLink>
-          <Icon icon="mdi:chevron-right" class="h-3.5 w-3.5" />
-          <span class="text-white/60">Lectureship</span>
+    <section class="bookcloth relative pt-6 pb-14 sm:pt-8 sm:pb-20">
+      <div class="relative mx-auto max-w-3xl px-5 sm:px-6 lg:px-8">
+        <div class="mb-8 flex items-center gap-1.5 text-sm text-white/65">
+          <NuxtLink to="/" class="rounded-sm py-1 transition-colors duration-150 hover:text-white"
+            >Home</NuxtLink
+          >
+          <Icon icon="mdi:chevron-right" class="size-4" aria-hidden="true" />
+          <span class="text-white/85">Lectureship</span>
         </div>
 
         <div class="flex flex-col items-center text-center">
           <div
-            class="hero-animate flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-white/5 backdrop-blur-sm"
+            class="hero-animate flex size-14 items-center justify-center rounded-full border border-white/20"
             style="animation-delay: 0ms"
           >
-            <Icon icon="mdi:book-open-page-variant-outline" class="h-6 w-6 text-amber-300" />
+            <Icon
+              icon="mdi:book-open-page-variant-outline"
+              class="size-6 text-[#e8c372]"
+              aria-hidden="true"
+            />
           </div>
           <p
-            class="hero-animate mt-3 text-xs font-semibold uppercase tracking-[0.25em] text-white/50"
+            class="hero-animate mt-3 text-xs font-semibold tracking-[0.2em] text-white/70 uppercase"
             style="animation-delay: 60ms"
           >
             Church of Christ &middot; University of Ibadan
           </p>
 
           <p
-            class="hero-animate mt-6 max-w-lg font-serif text-lg italic leading-relaxed text-white/85 sm:text-xl"
+            class="hero-animate mt-6 max-w-lg font-display text-lg leading-relaxed text-white/90 italic sm:text-xl"
             style="animation-delay: 120ms"
           >
             &ldquo;Be not conformed to this world&hellip; but be transformed by the renewing of your
             mind.&rdquo;
           </p>
           <p
-            class="hero-animate mt-2 text-sm font-semibold tracking-wide text-amber-300"
+            class="hero-animate mt-2 text-sm font-semibold tracking-wide text-[#e8c372]"
             style="animation-delay: 180ms"
           >
             &mdash; Romans 12:2
           </p>
 
-          <div class="hero-animate mt-8 h-px w-16 bg-white/15" style="animation-delay: 220ms"></div>
+          <div class="hero-animate mt-8 h-px w-16 bg-white/25" style="animation-delay: 220ms"></div>
 
           <p
-            class="hero-animate mt-8 text-xs font-semibold uppercase tracking-[0.3em] text-white/40"
+            class="hero-animate mt-8 text-xs font-semibold tracking-[0.2em] text-white/65 uppercase"
             style="animation-delay: 260ms"
           >
             Theme
           </p>
           <h1
-            class="hero-animate mt-3 bg-gradient-to-r from-orange-400 via-red-400 to-amber-300 bg-clip-text font-serif text-3xl font-bold leading-tight text-transparent sm:text-4xl md:text-5xl"
+            class="hero-animate mt-3 font-display text-[2rem] leading-[1.12] font-bold text-white sm:text-4xl md:text-5xl"
             style="animation-delay: 320ms"
           >
             Navigating Faith<br class="hidden sm:block" />
             in a Changing World
           </h1>
           <p
-            class="hero-animate mt-4 text-sm font-semibold uppercase tracking-[0.2em] text-white/70 sm:text-base"
+            class="hero-animate mt-4 text-sm font-semibold tracking-[0.14em] text-[#e8c372] uppercase sm:text-base"
             style="animation-delay: 380ms"
           >
             1st Annual Bible Lectureship 2026
           </p>
 
           <div
-            class="hero-animate mt-8 flex flex-col items-center gap-3 text-sm text-white/70 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-6"
+            class="hero-animate mt-8 flex w-full max-w-md flex-col items-stretch divide-y divide-white/15 border-y border-white/15 text-left text-base text-white/90 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:divide-y-0 sm:border-y-0 sm:text-center sm:text-sm"
             style="animation-delay: 440ms"
           >
-            <span class="flex items-center gap-2">
-              <Icon icon="mdi:calendar-outline" class="h-4 w-4 text-amber-300" />
+            <span class="flex items-center gap-2 py-2.5 sm:px-3 sm:py-1">
+              <Icon
+                icon="mdi:calendar-outline"
+                class="size-4 shrink-0 text-[#e8c372]"
+                aria-hidden="true"
+              />
               Sat. 3rd &amp; Sun. 4th October, 2026
             </span>
-            <span class="hidden h-1 w-1 rounded-full bg-white/30 sm:block"></span>
-            <span class="flex items-center gap-2">
-              <Icon icon="mdi:clock-outline" class="h-4 w-4 text-amber-300" />
+            <span class="hidden h-1 w-1 self-center rounded-full bg-white/35 sm:block"></span>
+            <span class="flex items-center gap-2 py-2.5 sm:px-3 sm:py-1">
+              <Icon
+                icon="mdi:clock-outline"
+                class="size-4 shrink-0 text-[#e8c372]"
+                aria-hidden="true"
+              />
               Sat. 9:00am prompt &middot; Sun. 9:00am&ndash;12pm (with worship service)
             </span>
-            <span class="hidden h-1 w-1 rounded-full bg-white/30 sm:block"></span>
-            <span class="flex items-center gap-2">
-              <Icon icon="mdi:map-marker-outline" class="h-4 w-4 text-amber-300" />
+            <span class="hidden h-1 w-1 self-center rounded-full bg-white/35 sm:block"></span>
+            <span class="flex items-center gap-2 py-2.5 sm:px-3 sm:py-1">
+              <Icon
+                icon="mdi:map-marker-outline"
+                class="size-4 shrink-0 text-[#e8c372]"
+                aria-hidden="true"
+              />
               15 Alafia Estate, Ajibode, Ibadan
             </span>
           </div>
@@ -191,11 +204,15 @@ function registerAnother() {
           <!-- Registered-so-far nudge -->
           <div
             v-if="lectureshipStore.registeredCount > 0"
-            class="hero-animate mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm"
+            class="hero-animate mt-6 inline-flex items-center gap-2 rounded-md border border-white/20 bg-black/10 px-3 py-1.5 text-sm font-medium text-white/90"
             style="animation-delay: 480ms"
           >
-            <Icon icon="mdi:account-group-outline" class="h-4 w-4 text-amber-300" />
-            {{ lectureshipStore.registeredCount }}
+            <Icon
+              icon="mdi:account-group-outline"
+              class="size-4 text-[#e8c372]"
+              aria-hidden="true"
+            />
+            <span class="num">{{ lectureshipStore.registeredCount }}</span>
             {{ lectureshipStore.registeredCount === 1 ? 'person has' : 'people have' }} already
             registered
           </div>
@@ -203,81 +220,49 @@ function registerAnother() {
           <!-- Countdown -->
           <div
             v-if="!countdown.isPast.value"
-            class="hero-animate mt-8 grid grid-cols-4 gap-2 sm:gap-4"
+            class="hero-animate mt-8 grid grid-cols-4 gap-2 sm:gap-3"
             style="animation-delay: 520ms"
           >
             <div
               v-for="unit in countdownUnits"
               :key="unit.label"
-              class="flex flex-col items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 backdrop-blur-sm sm:px-5 sm:py-3"
+              class="flex min-w-16 flex-col items-center rounded-md border border-white/20 bg-black/15 px-3 py-2.5 sm:min-w-20 sm:px-5 sm:py-3"
             >
-              <span class="font-serif text-2xl font-bold text-amber-300 sm:text-3xl">
+              <span class="num font-display text-2xl leading-none font-bold text-white sm:text-3xl">
                 {{ String(unit.value).padStart(2, '0') }}
               </span>
-              <span class="mt-0.5 text-[10px] uppercase tracking-wide text-white/50 sm:text-xs">
+              <span class="mt-1.5 text-[11px] tracking-wide text-white/70 uppercase sm:text-xs">
                 {{ unit.label }}
               </span>
             </div>
           </div>
           <p
             v-else
-            class="hero-animate mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-amber-300"
+            class="hero-animate mt-8 text-sm font-semibold tracking-[0.2em] text-[#e8c372] uppercase"
             style="animation-delay: 520ms"
           >
             Happening now
           </p>
         </div>
       </div>
-
-      <!-- Torn-paper edge, echoing the flier's ripped-paper divider -->
-      <div
-        class="absolute inset-x-0 bottom-0 h-6 bg-stone-50 sm:h-8"
-        style="
-          clip-path: polygon(
-            0% 100%,
-            6% 30%,
-            12% 70%,
-            18% 15%,
-            24% 55%,
-            30% 10%,
-            36% 65%,
-            42% 25%,
-            48% 80%,
-            54% 20%,
-            60% 60%,
-            66% 15%,
-            72% 75%,
-            78% 30%,
-            84% 90%,
-            90% 20%,
-            96% 65%,
-            100% 100%
-          );
-        "
-      ></div>
     </section>
 
     <!-- ── Speakers, Officiating Ministers, Song Leaders & Moderators ──────── -->
     <template v-for="role in LECTURESHIP_ROLE_ORDER" :key="role">
       <section
         v-if="speakersByRole(role).length"
-        class="mx-auto max-w-5xl px-4 pt-14 sm:px-6 lg:px-8"
+        class="mx-auto max-w-5xl px-4 pt-14 sm:px-6 md:pt-16 lg:px-8"
       >
-        <div class="mb-6 flex items-end justify-between border-b border-gray-100 pb-4">
-          <div>
-            <p
-              :class="[
-                'text-xs font-semibold uppercase tracking-[0.2em]',
-                LECTURESHIP_ROLES[role].eyebrowClass,
-              ]"
-            >
-              {{ LECTURESHIP_ROLES[role].publicEyebrow }}
-            </p>
-            <h2 class="mt-1 font-serif text-2xl font-bold text-gray-900 sm:text-3xl">
+        <div class="mb-6 flex items-end justify-between gap-4 border-b border-rule pb-4">
+          <div class="margin-rule">
+            <h2 class="font-display text-2xl leading-tight font-bold text-secondary sm:text-3xl">
               Meet the {{ LECTURESHIP_ROLES[role].plural }}
             </h2>
+            <p class="citation mt-2">
+              {{ LECTURESHIP_ROLES[role].publicEyebrow }}
+            </p>
           </div>
-          <p class="hidden text-sm text-gray-400 sm:block">
+          <p class="num hidden text-sm text-ink-muted sm:block">
             {{ speakersByRole(role).length }}
             {{
               speakersByRole(role).length === 1
@@ -292,19 +277,23 @@ function registerAnother() {
       </section>
     </template>
 
-    <div class="mx-auto max-w-2xl px-4 pt-8 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl px-4 pt-14 sm:px-6 md:pt-16">
       <!-- ── Success state ──────────────────────────────────────────────────── -->
       <Card v-if="submitted" padding="lg">
         <div class="flex flex-col items-center py-8 text-center">
-          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
-            <Icon icon="mdi:check-circle-outline" class="text-3xl text-green-600" />
+          <div class="flex size-14 items-center justify-center rounded-full bg-success-soft">
+            <Icon
+              icon="mdi:check-circle-outline"
+              class="text-3xl text-success"
+              aria-hidden="true"
+            />
           </div>
-          <h2 class="mt-4 text-xl font-bold text-gray-900">Registration received</h2>
-          <p class="mt-1 max-w-md text-sm text-gray-500">
+          <h2 class="mt-4 font-display text-2xl font-bold text-secondary">Registration received</h2>
+          <p class="mt-2 max-w-md text-base leading-relaxed text-ink-muted">
             Thank you for registering for the 1st Annual Bible Lectureship 2026. We look forward to
             seeing you there.
           </p>
-          <div class="mt-6 flex flex-wrap justify-center gap-2">
+          <div class="mt-6 flex flex-wrap justify-center gap-3">
             <Button variant="secondary" @click="registerAnother">
               <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
               Register another person
@@ -317,24 +306,26 @@ function registerAnother() {
       </Card>
 
       <!-- ── Form ───────────────────────────────────────────────────────────── -->
-      <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
+      <form v-else class="flex flex-col gap-5" novalidate @submit.prevent="submit">
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div
-                class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-orange-100 to-amber-100"
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex items-center gap-2 font-display text-xl font-semibold text-ink sm:text-2xl"
               >
-                <Icon icon="mdi:book-open-page-variant-outline" class="text-lg text-amber-600" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">Lectureship Registration</h2>
-                <p class="text-xs text-gray-500">
-                  Fields marked <span class="text-red-500">*</span> are required.
-                </p>
-              </div>
-            </div>
+                <Icon
+                  icon="mdi:book-open-page-variant-outline"
+                  class="size-5 shrink-0 text-primary-ink sm:size-6"
+                  aria-hidden="true"
+                />
+                Lectureship Registration
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
+                Fields marked <span class="font-bold text-error">*</span> are required.
+              </p>
+            </header>
 
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-5">
               <EditField id="field-fullName" label="Full Name *" :error="errors.fullName">
                 <input
                   v-model="form.fullName"
@@ -383,16 +374,17 @@ function registerAnother() {
 
         <!-- Submit -->
         <div
-          class="flex flex-col-reverse items-center gap-3 sm:flex-row sm:justify-between sm:gap-4"
+          class="flex flex-col-reverse items-stretch gap-3 border-t border-rule pt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
         >
-          <p class="text-xs text-gray-400">
+          <p class="flex items-start gap-1.5 text-sm text-ink-muted">
+            <Icon icon="mdi:lock-outline" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             Your details are used only to plan for the lectureship only.
           </p>
           <Button
             type="submit"
             size="lg"
             :loading="lectureshipStore.submitting"
-            class="w-full sm:w-auto"
+            class="min-h-13 w-full text-base sm:min-h-12 sm:w-auto"
           >
             <template #icon-left><Icon icon="mdi:book-check-outline" /></template>
             Submit Registration
@@ -402,3 +394,23 @@ function registerAnother() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Phones first: 16px fields (no iOS zoom), 44px targets, clearer labels. */
+.lectureship-form :deep(.edit-field-slot input) {
+  min-height: 2.75rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.lectureship-form :deep(label > span:first-child) {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+@media (min-width: 640px) {
+  .lectureship-form :deep(.edit-field-slot input) {
+    min-height: 2.625rem;
+    font-size: 0.9375rem;
+  }
+}
+</style>

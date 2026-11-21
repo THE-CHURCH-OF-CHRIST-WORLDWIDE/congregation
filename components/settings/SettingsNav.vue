@@ -22,17 +22,17 @@ const current = computed(() =>
 <template>
   <!-- Mobile -->
   <div class="lg:hidden">
-    <label for="settings-section" class="text-sm font-medium text-gray-700">Section</label>
+    <label for="settings-section" class="text-sm font-medium text-ink">Section</label>
     <div class="relative mt-1">
       <Icon
         v-if="current"
         :icon="current.icon"
-        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-primary-ink"
       />
       <select
         id="settings-section"
         :value="modelValue"
-        class="w-full appearance-none rounded-lg border border-gray-300 bg-white py-2.5 pl-9 pr-9 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        class="min-h-11 w-full appearance-none rounded-md border border-rule-strong bg-surface py-2.5 pr-9 pl-9 text-[15px] font-medium text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:text-sm"
         @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value as T)"
       >
         <optgroup v-for="group in groups" :key="group.label" :label="group.label">
@@ -43,7 +43,7 @@ const current = computed(() =>
       </select>
       <Icon
         icon="mdi:chevron-down"
-        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-subtle"
       />
     </div>
   </div>
@@ -51,10 +51,14 @@ const current = computed(() =>
   <!-- Desktop -->
   <nav
     aria-label="Settings sections"
-    class="hidden w-56 shrink-0 self-start lg:sticky lg:top-0 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"
+    class="hidden w-56 shrink-0 self-start lg:sticky lg:top-0 lg:block lg:border-r lg:border-rule lg:pr-4 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto"
   >
-    <div v-for="(group, groupIndex) in groups" :key="group.label" :class="groupIndex > 0 && 'mt-5'">
-      <p class="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+    <div
+      v-for="(group, groupIndex) in groups"
+      :key="group.label"
+      :class="groupIndex > 0 && 'mt-5 border-t border-rule pt-4'"
+    >
+      <p class="px-3 pb-1.5 text-2xs font-semibold tracking-[0.08em] text-ink-subtle uppercase">
         {{ group.label }}
       </p>
       <ul class="space-y-0.5">
@@ -63,10 +67,10 @@ const current = computed(() =>
             type="button"
             :aria-current="item.value === modelValue ? 'page' : undefined"
             :class="[
-              'flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-sm transition-colors',
+              'flex min-h-9 w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm transition-colors duration-150',
               item.value === modelValue
-                ? 'bg-blue-50 font-medium text-blue-700'
-                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                ? 'bg-primary-soft font-semibold text-primary-ink'
+                : 'font-medium text-ink-muted hover:bg-surface-sunken hover:text-ink',
             ]"
             @click="emit('update:modelValue', item.value)"
           >
@@ -74,7 +78,7 @@ const current = computed(() =>
               :icon="item.icon"
               :class="[
                 'shrink-0 text-[17px]',
-                item.value === modelValue ? 'text-blue-600' : 'text-gray-400',
+                item.value === modelValue ? 'text-primary-ink' : 'text-ink-subtle',
               ]"
             />
             <span class="truncate">{{ item.label }}</span>

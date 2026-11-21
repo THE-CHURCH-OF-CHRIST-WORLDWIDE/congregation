@@ -9,14 +9,14 @@ const projectId = String(config.public.firebaseProjectId || 'unknown project')
 
 const isProduction = env === 'production'
 const barClass =
-  env === 'development' ? 'bg-slate-700 text-slate-100' : 'bg-amber-500 text-amber-950'
+  env === 'development' ? 'bg-[#232e3e] text-[#dce2ea]' : 'bg-[#f0b450] text-[#2b1c02]'
 </script>
 
 <template>
   <div
     v-if="!isProduction"
     :class="[
-      'flex items-center justify-center gap-2 px-4 py-1 text-[11px] font-medium tracking-wide',
+      'flex items-center justify-center gap-2 px-4 py-1 text-[11px] font-semibold tracking-wide',
       barClass,
     ]"
   >

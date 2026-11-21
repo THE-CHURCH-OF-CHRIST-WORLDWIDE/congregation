@@ -28,76 +28,95 @@ const secondaryCtaHref = computed(() => settingsStore.settings.heroSecondaryCtaH
 </script>
 
 <template>
-  <section
-    class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1E3A5F]"
-  >
-    <!-- Background image -->
-    <img
-      :src="displayableImageUrl(image)"
-      :alt="`${name} building`"
-      class="absolute inset-0 h-full w-full object-cover opacity-30 pointer-events-none select-none"
-      loading="eager"
-    />
-    <!-- Overlay gradient -->
+  <!-- Bookcloth frame: the register's binding, holding the church's own photograph -->
+  <section class="bookcloth relative p-2 sm:p-3 lg:p-4">
     <div
-      class="absolute inset-0 bg-gradient-to-b from-black/60 via-[#1E3A5F]/50 to-[#1E3A5F]/90"
-    ></div>
-
-    <!-- Content -->
-    <div class="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
-      <p
-        class="hero-animate mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-white/70"
-        style="animation-delay: 0ms"
-      >
-        {{ eyebrow }}
-      </p>
-      <h1
-        class="hero-animate font-serif text-5xl font-bold leading-tight drop-shadow-lg md:text-7xl"
-        style="animation-delay: 120ms"
-      >
-        {{ name }}
-      </h1>
-      <p class="hero-animate mt-4 text-lg text-white/80 md:text-xl" style="animation-delay: 240ms">
-        {{ addr }}
-      </p>
-      <p
-        v-if="tagline"
-        class="hero-animate mt-3 text-base italic text-white/60 md:text-lg"
-        style="animation-delay: 360ms"
-      >
-        {{ tagline }}
-      </p>
-
-      <div
-        class="hero-animate mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-        style="animation-delay: 500ms"
-      >
-        <a
-          v-if="primaryCtaLabel"
-          :href="primaryCtaHref || '#'"
-          class="inline-flex items-center gap-2 rounded-full bg-[#2563EB] px-8 py-3.5 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 transition-colors"
-          :aria-label="primaryCtaLabel"
-        >
-          <Icon icon="heroicons:sun" class="h-5 w-5" />
-          {{ primaryCtaLabel }}
-        </a>
-        <a
-          v-if="secondaryCtaLabel"
-          :href="secondaryCtaHref || '#'"
-          class="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/20 transition-colors"
-          :aria-label="secondaryCtaLabel"
-        >
-          <Icon icon="heroicons:clock" class="h-5 w-5" />
-          {{ secondaryCtaLabel }}
-        </a>
-      </div>
-    </div>
-
-    <!-- Scroll indicator -->
-    <div
-      class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40 animate-bounce"
+      class="relative flex flex-col overflow-hidden rounded-md bg-surface lg:min-h-[calc(100svh-6rem)] lg:justify-end"
     >
-      <Icon icon="heroicons:chevron-down" class="h-6 w-6" />
+      <!-- Photograph: full-bleed inside the frame -->
+      <div
+        class="relative h-[42svh] min-h-64 overflow-hidden bg-primary-active sm:h-[50svh] lg:absolute lg:inset-0 lg:h-auto"
+      >
+        <img
+          :src="displayableImageUrl(image)"
+          :alt="`${name} building`"
+          class="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
+          loading="eager"
+        />
+        <!-- A quiet floor shade so the ledger panel sits on the photo, not against it -->
+        <div
+          class="absolute inset-0 hidden bg-gradient-to-t from-black/40 via-black/5 to-transparent lg:block"
+          aria-hidden="true"
+        ></div>
+
+        <!-- Scroll indicator -->
+        <div
+          class="absolute right-4 bottom-4 flex size-10 items-center justify-center rounded-md bg-black/35 text-white/85 lg:right-8 lg:bottom-8"
+        >
+          <Icon icon="mdi:chevron-down" class="h-6 w-6" />
+        </div>
+      </div>
+
+      <!-- Ledger panel: the welcome entry -->
+      <div
+        class="relative z-10 bg-surface px-5 py-8 sm:px-8 sm:py-10 lg:m-8 lg:max-w-2xl lg:rounded-md lg:px-10 lg:py-10 lg:shadow-lg xl:m-12"
+      >
+        <div class="margin-rule">
+          <h1
+            class="hero-animate font-display text-[2.25rem] leading-[1.1] font-bold text-secondary sm:text-5xl lg:text-[3.5rem]"
+            style="animation-delay: 0ms"
+          >
+            <span
+              class="mb-2 block font-display text-xl leading-snug font-medium text-ink-muted sm:text-2xl"
+            >
+              {{ eyebrow }}
+            </span>
+            {{ name }}
+          </h1>
+          <p
+            class="hero-animate mt-5 flex items-start gap-2 text-lg leading-relaxed text-ink"
+            style="animation-delay: 120ms"
+          >
+            <Icon
+              icon="mdi:map-marker-outline"
+              class="mt-1 h-5 w-5 shrink-0 text-primary-ink"
+              aria-hidden="true"
+            />
+            <span>{{ addr }}</span>
+          </p>
+          <p
+            v-if="tagline"
+            class="hero-animate mt-3 font-display text-lg leading-relaxed text-ink-muted italic"
+            style="animation-delay: 240ms"
+          >
+            {{ tagline }}
+          </p>
+
+          <div
+            class="hero-animate mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+            style="animation-delay: 360ms"
+          >
+            <a
+              v-if="primaryCtaLabel"
+              :href="primaryCtaHref || '#'"
+              class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-6 text-base font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active"
+              :aria-label="primaryCtaLabel"
+            >
+              <Icon icon="mdi:weather-sunny" class="h-5 w-5" />
+              {{ primaryCtaLabel }}
+            </a>
+            <a
+              v-if="secondaryCtaLabel"
+              :href="secondaryCtaHref || '#'"
+              class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-6 text-base font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
+              :aria-label="secondaryCtaLabel"
+            >
+              <Icon icon="mdi:clock-outline" class="h-5 w-5" />
+              {{ secondaryCtaLabel }}
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </template>

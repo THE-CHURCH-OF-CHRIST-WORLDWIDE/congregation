@@ -87,9 +87,9 @@ function close() {
     @update:model-value="close"
   >
     <div class="flex flex-col gap-4">
-      <p class="text-xs text-gray-500">{{ serviceType }} · {{ formatDate(date, 'full') }}</p>
+      <p class="stamp num">{{ serviceType }} · {{ formatDate(date, 'full') }}</p>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <EditField label="Full Name *" :error="errors.name" class="sm:col-span-2">
           <input
             v-model="form.name"
@@ -125,16 +125,16 @@ function close() {
         </EditField>
       </div>
 
-      <p class="text-xs text-gray-400">
+      <p class="text-xs text-ink-subtle">
         Only the name is required — record whatever the visitor was willing to give.
       </p>
     </div>
 
     <template #footer>
-      <div class="flex gap-2 justify-end">
+      <div class="flex justify-end gap-2">
         <Button variant="secondary" @click="close">Cancel</Button>
         <Button :loading="visitorsStore.saving" @click="save">
-          <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
+          <template #icon-left><Icon icon="mdi:account-plus-outline" class="text-base" /></template>
           {{ isEdit ? 'Save Changes' : 'Record Visitor' }}
         </Button>
       </div>

@@ -1,26 +1,466 @@
 @import 'tailwindcss';
 
+/* `dark:` fires only for the admin dashboard, and only when the OS prefers dark. */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    :root:has(.theme-admin) & {
+      @slot;
+    }
+  }
+}
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ *  Congregation design system: "The Register"
+ *
+ *  The church's record books made legible: white ledger pages, feint blue rules,
+ *  a red double margin, deep bookcloth green, blue-black ink, and gilt for stamped
+ *  labels. Every colour is a CSS variable so the admin dashboard can follow the
+ *  OS dark-mode preference with no JavaScript and no stored state.
+ *
+ *  Use the semantic utilities (bg-surface, text-ink, border-rule, bg-primary…)
+ *  rather than raw palette classes. The gray scale below is remapped to the
+ *  same tinted neutrals so anything not yet migrated still sits in the system.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ── Tokens: light (both surfaces) ─────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* Grounds */
+  --c-canvas: #eef2f7; /* rule-blue ground behind pages */
+  --c-surface: #ffffff; /* the ledger page */
+  --c-surface-muted: #f5f7fa; /* alternate rows, quiet panels */
+  --c-surface-sunken: #ebeff5; /* wells, inputs on muted ground */
+  --c-overlay: rgb(14 20 28 / 0.55); /* modal scrim */
+
+  /* Rules */
+  --c-rule: #d5deea; /* feint ledger rule: default border */
+  --c-rule-strong: #b4c3d6; /* inputs, emphasised dividers */
+  --c-margin: #c0392b; /* the red double margin; structural only */
+
+  /* Ink */
+  --c-ink: #172131; /* text-primary: 15.6:1 on white */
+  --c-ink-muted: #4b5768; /* text-muted: 7.4:1 on white */
+  --c-ink-subtle: #5f6b7c; /* captions, placeholders: 5.4:1 on white */
+
+  /* Bookcloth (primary) */
+  --c-primary: #1e4d3b; /* 9.6:1 with white */
+  --c-primary-hover: #163b2d;
+  --c-primary-active: #10301f;
+  --c-primary-soft: #e6efea;
+  --c-primary-ink: #1e4d3b; /* primary used as text */
+  --c-on-primary: #ffffff;
+
+  /* Ink-blue (secondary): headings on light sections, links */
+  --c-secondary: #24364f;
+  --c-secondary-soft: #e8edf4;
+
+  /* Gilt (accent): stamped labels, small marks */
+  --c-accent: #8a5d0f; /* 5.6:1 on white */
+  --c-accent-soft: #f6eedd;
+
+  /* Status */
+  --c-success: #1f7a45;
+  --c-success-soft: #e5f3ea;
+  --c-warning: #94570a;
+  --c-warning-soft: #fdf1dc;
+  --c-error: #b42318;
+  --c-error-soft: #fdecea;
+  --c-info: #1f5fa8;
+  --c-info-soft: #e7f0fa;
+  --c-live: #c62828;
+
+  /* Focus */
+  --c-focus: #1f5fa8;
+
+  /* Gray scale, remapped to the ledger's cool tinted neutrals */
+  --g-50: #f5f7fa;
+  --g-100: #ebeff5;
+  --g-200: #d5deea;
+  --g-300: #b4c3d6;
+  --g-400: #8693a5;
+  --g-500: #5f6b7c;
+  --g-600: #4b5768;
+  --g-700: #364152;
+  --g-800: #232e3e;
+  --g-900: #172131;
+  --g-950: #0e141c;
+
+  /* Elevation: soft, offset, ink-tinted */
+  --shadow-color: 23 33 49;
+}
+
+/*
+ * ── Tokens: admin dark mode ──────────────────────────────────────────────────
+ * Follows the OS. Scoped to documents that contain the admin shell, so the
+ * public site is always light, and teleported modals/toasts (mounted on
+ * <body>, outside the shell) still pick the dark values up.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:has(.theme-admin) {
+    color-scheme: dark;
+
+    --c-canvas: #0e141c;
+    --c-surface: #151d28;
+    --c-surface-muted: #1b2532;
+    --c-surface-sunken: #111821;
+    --c-overlay: rgb(4 7 11 / 0.7);
+
+    --c-rule: #273445;
+    --c-rule-strong: #3a4a5f;
+    --c-margin: #e0675a;
+
+    --c-ink: #e7ecf3; /* 13.9:1 on surface */
+    --c-ink-muted: #a9b4c3; /* 8.1:1 */
+    --c-ink-subtle: #8a97a9; /* 5.5:1 */
+
+    --c-primary: #6cbf98; /* bookcloth, lifted for dark ground */
+    --c-primary-hover: #86cfab;
+    --c-primary-active: #9fdabb;
+    --c-primary-soft: #18332a;
+    --c-primary-ink: #86cfab;
+    --c-on-primary: #08160f;
+
+    --c-secondary: #c9d6e8;
+    --c-secondary-soft: #1d2a3b;
+
+    --c-accent: #e0b562;
+    --c-accent-soft: #2c2415;
+
+    --c-success: #5fcf95;
+    --c-success-soft: #14301f;
+    --c-warning: #f0b450;
+    --c-warning-soft: #33260f;
+    --c-error: #f2867a;
+    --c-error-soft: #3a1714;
+    --c-info: #7fb2f2;
+    --c-info-soft: #142a44;
+    --c-live: #ff6b6b;
+
+    --c-focus: #7fb2f2;
+
+    --g-50: #1b2532;
+    --g-100: #212c3a;
+    --g-200: #273445;
+    --g-300: #3a4a5f;
+    --g-400: #6e7b8e;
+    --g-500: #8a97a9;
+    --g-600: #a9b4c3;
+    --g-700: #c5ced9;
+    --g-800: #dce2ea;
+    --g-900: #e7ecf3;
+    --g-950: #f3f6f9;
+
+    --shadow-color: 0 0 0;
+  }
+}
+
+/* ── Tailwind theme bindings ───────────────────────────────────────────────── */
+@theme inline {
+  /* Semantic colours */
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-muted: var(--c-surface-muted);
+  --color-surface-sunken: var(--c-surface-sunken);
+  --color-overlay: var(--c-overlay);
+  --color-rule: var(--c-rule);
+  --color-rule-strong: var(--c-rule-strong);
+  --color-margin: var(--c-margin);
+  --color-ink: var(--c-ink);
+  --color-ink-muted: var(--c-ink-muted);
+  --color-ink-subtle: var(--c-ink-subtle);
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-primary-active: var(--c-primary-active);
+  --color-primary-soft: var(--c-primary-soft);
+  --color-primary-ink: var(--c-primary-ink);
+  --color-on-primary: var(--c-on-primary);
+  --color-secondary: var(--c-secondary);
+  --color-secondary-soft: var(--c-secondary-soft);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-success: var(--c-success);
+  --color-success-soft: var(--c-success-soft);
+  --color-warning: var(--c-warning);
+  --color-warning-soft: var(--c-warning-soft);
+  --color-error: var(--c-error);
+  --color-error-soft: var(--c-error-soft);
+  --color-info: var(--c-info);
+  --color-info-soft: var(--c-info-soft);
+  --color-live: var(--c-live);
+  --color-focus: var(--c-focus);
+
+  /* Legacy aliases kept so older markup resolves into the system */
+  --color-navy: var(--c-secondary);
+  --color-bg-alt: var(--c-surface-muted);
+
+  /* Gray scale, remapped */
+  --color-gray-50: var(--g-50);
+  --color-gray-100: var(--g-100);
+  --color-gray-200: var(--g-200);
+  --color-gray-300: var(--g-300);
+  --color-gray-400: var(--g-400);
+  --color-gray-500: var(--g-500);
+  --color-gray-600: var(--g-600);
+  --color-gray-700: var(--g-700);
+  --color-gray-800: var(--g-800);
+  --color-gray-900: var(--g-900);
+  --color-gray-950: var(--g-950);
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / 0.06);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.06), 0 1px 3px rgb(var(--shadow-color) / 0.08);
+  --shadow-md:
+    0 2px 4px rgb(var(--shadow-color) / 0.05), 0 6px 16px rgb(var(--shadow-color) / 0.08);
+  --shadow-lg:
+    0 4px 8px rgb(var(--shadow-color) / 0.06), 0 16px 40px rgb(var(--shadow-color) / 0.14);
+  --shadow-xl:
+    0 8px 16px rgb(var(--shadow-color) / 0.08), 0 28px 64px rgb(var(--shadow-color) / 0.2);
+}
+
 @theme {
-  --color-navy: #1e3a5f;
-  --color-accent: #2563eb;
-  --color-live: #ef4444;
-  --color-bg-alt: #f8f9fa;
-  --font-family-serif: 'Playfair Display', Georgia, serif;
+  /* Typography: Bitter (record-book label slab) for headings, Public Sans for text */
+  --font-sans:
+    'Public Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bitter', 'Roboto Slab', Rockwell, Georgia, serif;
+  --font-serif: 'Bitter', 'Roboto Slab', Rockwell, Georgia, serif;
+
+  /* Type scale: 1.2 minor third on a 16px base; public body is text-base/text-lg */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  /* Radii: squared like a bound book; nothing pill-shaped except badges/avatars */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+
+  /* Motion */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-rise: rise 0.5s var(--ease-out-expo) both;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--c-ink);
+    background: var(--c-surface);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--c-primary) 22%, transparent);
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  input,
+  textarea,
+  select {
+    caret-color: var(--c-primary);
+  }
+
+  ::placeholder {
+    color: var(--c-ink-subtle);
+    opacity: 1;
+  }
+
+  /* Native date/time pickers follow the active scheme */
+  input[type='date'],
+  input[type='time'],
+  input[type='month'],
+  input[type='datetime-local'] {
+    color-scheme: inherit;
+  }
+
+  a {
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Numbers in tables line up by default */
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Native checkboxes and radios take the bookcloth colour */
+  input[type='checkbox'],
+  input[type='radio'] {
+    accent-color: var(--c-primary);
+  }
+
+  * {
+    scrollbar-color: var(--c-rule-strong) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* ── Utilities that belong to the world ───────────────────────────────────── */
+
+/* Tabular figures for money, counts, dates in columns */
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/*
+ * The red double margin: the ledger's one structural signature. Put it on the
+ * left of a page header or an entry panel. Never on cards in a grid.
+ */
+.margin-rule {
+  position: relative;
+  padding-left: 1.25rem;
+}
+.margin-rule::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px;
+  border-left: 1px solid var(--c-margin);
+  border-right: 1px solid var(--c-margin);
+  opacity: 0.85;
+}
+
+/* Feint ledger ruling: a list whose rows are separated by blue rules */
+.ruled > * + * {
+  border-top: 1px solid var(--c-rule);
+}
+
+/* Ruled-paper background for quiet sections (32px line pitch, 1px rule) */
+.ledger-paper {
+  background-color: var(--c-surface);
+  background-image: linear-gradient(
+    to bottom,
+    transparent 31px,
+    var(--c-rule) 31px,
+    var(--c-rule) 32px
+  );
+  background-size: 100% 32px;
+}
+
+/* Stamped label: small caps set in gilt, used for meta (dates, categories) */
+.stamp {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+/* Citation: a sentence-case meta line under a heading (scripture refs, labels from Settings) */
+.citation {
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  color: var(--c-ink-muted);
+}
+
+/* Bookcloth band: the deep green committed field */
+.bookcloth {
+  --c-focus: #f2c14e;
+  background-color: var(--c-primary);
+  color: #fff;
+}
+/* In admin dark mode the bookcloth goes deep rather than bright */
+@media (prefers-color-scheme: dark) {
+  :root:has(.theme-admin) .bookcloth {
+    background-color: #102a20;
+    color: var(--c-ink);
+  }
+}
+
+/* Skeleton: a shimmer across a sunken rule-coloured block */
+.skeleton {
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--c-surface-sunken) 0%,
+    var(--c-surface-muted) 50%,
+    var(--c-surface-sunken) 100%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
 }
 
 /* Public site typography */
 .font-serif {
-  font-family: 'Playfair Display', Georgia, serif;
+  font-family: var(--font-display);
 }
 
-/* Pulse ring animation for live badge */
+/* Readable prose for teachings and long-form copy */
+.prose-register {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--c-ink);
+  max-width: 68ch;
+}
+.prose-register p + p {
+  margin-top: 1.1em;
+}
+
+/* Live badge pulse */
 @keyframes pulse-ring {
   0% {
     transform: scale(0.8);
     opacity: 1;
   }
   100% {
-    transform: scale(2);
+    transform: scale(2.2);
     opacity: 0;
   }
 }
@@ -30,11 +470,11 @@
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  background: #ef4444;
-  animation: pulse-ring 1.5s ease-out infinite;
+  background: var(--c-live);
+  animation: pulse-ring 1.6s var(--ease-out-quart) infinite;
 }
 .pulse-ring::after {
-  animation-delay: 0.5s;
+  animation-delay: 0.55s;
 }
 
 /* Hide scrollbar for filter bar */
@@ -49,7 +489,7 @@
 /* Page transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity var(--duration-base) ease;
 }
 .fade-enter-from,
 .fade-leave-to {
@@ -65,14 +505,14 @@
 
 /* Scrollbar styling */
 .sidebar-scroll::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 .sidebar-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 2px;
+  background: var(--c-rule-strong);
+  border-radius: 3px;
 }
 
 /* Chart container */
@@ -81,11 +521,11 @@
   width: 100%;
 }
 
-/* Custom checkbox styling */
+/* Attendance checkboxes */
 input[type='checkbox'].attendance-check {
-  width: 16px;
-  height: 16px;
-  accent-color: #2563eb;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--c-primary);
   cursor: pointer;
 }
 
@@ -93,50 +533,45 @@ input[type='checkbox'].attendance-check {
 .progress-bar {
   height: 6px;
   border-radius: 3px;
-  background: #e5e7eb;
+  background: var(--c-surface-sunken);
   overflow: hidden;
 }
 .progress-bar-fill {
   height: 100%;
   border-radius: 3px;
-  background: #0ba5ec;
-  transition: width 0.3s ease;
+  background: var(--c-primary);
+  transition: width var(--duration-slow) var(--ease-out-quart);
 }
 
 /* ── Scroll Reveal ────────────────────────────────────────────────────────── */
-/* Base hidden states — opacity + transform only (GPU-composited, no layout) */
+/* Subtle by design: content is near its resting place, so a slow connection
+   or a missed observer never leaves a page looking empty. */
 .reveal {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(16px);
 }
 .reveal-left {
   opacity: 0;
-  transform: translateX(-36px);
+  transform: translateX(-20px);
 }
 .reveal-right {
   opacity: 0;
-  transform: translateX(36px);
+  transform: translateX(20px);
 }
 .reveal-scale {
   opacity: 0;
-  transform: scale(0.93);
+  transform: scale(0.97);
 }
 
-/* Shared smooth easing (spring-like) */
 .reveal,
 .reveal-left,
-.reveal-right {
-  transition:
-    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-}
+.reveal-right,
 .reveal-scale {
   transition:
-    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.6s var(--ease-out-expo),
+    transform 0.6s var(--ease-out-expo);
 }
 
-/* Visible state: reset both properties */
 .reveal.is-visible,
 .reveal-left.is-visible,
 .reveal-right.is-visible,
@@ -169,7 +604,7 @@ input[type='checkbox'].attendance-check {
 @keyframes hero-fade-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -178,18 +613,25 @@ input[type='checkbox'].attendance-check {
 }
 
 .hero-animate {
-  animation: hero-fade-up 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: hero-fade-up 0.7s var(--ease-out-expo) both;
 }
 
 /* ── Respect user's motion preference ───────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
   .reveal,
   .reveal-left,
   .reveal-right,
   .reveal-scale {
     opacity: 1;
     transform: none;
-    transition: none;
   }
   .hero-animate {
     animation: none;

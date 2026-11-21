@@ -32,13 +32,13 @@ function planToAttend(event: PastEvent) {
 
 // Category badge colour map
 const categoryColour: Record<string, string> = {
-  'Bible Study': 'bg-blue-100 text-blue-700',
-  'Gospel Meeting': 'bg-green-100 text-green-700',
-  "Women's Seminar": 'bg-pink-100 text-pink-700',
+  'Bible Study': 'bg-info-soft text-info',
+  'Gospel Meeting': 'bg-success-soft text-success',
+  "Women's Seminar": 'bg-accent-soft text-accent',
 }
 
 function categoryClass(cat: string): string {
-  return categoryColour[cat] ?? 'bg-gray-100 text-gray-600'
+  return categoryColour[cat] ?? 'bg-surface-sunken text-ink-muted'
 }
 </script>
 
@@ -48,7 +48,7 @@ function categoryClass(cat: string): string {
     <PastEventMonthYearTabs v-model="subTab" :month-count="monthCount" :year-count="yearCount" />
 
     <!-- Event list -->
-    <div class="flex flex-col gap-3 overflow-y-auto pr-1">
+    <div class="ruled flex flex-col overflow-y-auto border-y border-rule">
       <!-- Empty state -->
       <EmptyState
         v-if="displayedEvents.length === 0"
@@ -62,22 +62,23 @@ function categoryClass(cat: string): string {
         v-for="event in displayedEvents"
         :key="event.id"
         :class="[
-          'cursor-pointer rounded-lg border px-3 py-3 transition-colors',
-          isSelected(event)
-            ? 'border-blue-200 bg-blue-50'
-            : 'border-gray-200 bg-white hover:border-blue-100 hover:bg-blue-50/40',
+          'cursor-pointer px-3 py-4 transition-colors duration-150 focus-visible:-outline-offset-2 sm:px-4',
+          isSelected(event) ? 'bg-primary-soft' : 'bg-surface hover:bg-surface-muted',
         ]"
         role="button"
         tabindex="0"
+        :aria-pressed="isSelected(event)"
         @click="selectEvent(event)"
         @keydown.enter="selectEvent(event)"
       >
-        <div class="flex gap-3">
+        <div class="flex gap-4">
           <!-- Thumbnail -->
           <img
             :src="displayableImageUrl(event.thumbnail)"
             :alt="event.title"
-            class="h-[60px] w-20 flex-shrink-0 rounded-md object-cover"
+            class="h-16 w-24 shrink-0 rounded-md bg-surface-sunken object-cover"
+            loading="lazy"
+            decoding="async"
           />
 
           <!-- Details -->
@@ -85,7 +86,7 @@ function categoryClass(cat: string): string {
             <!-- Category -->
             <span
               :class="[
-                'mb-1 inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
+                'mb-1.5 inline-block rounded-sm px-2 py-0.5 text-xs font-semibold',
                 categoryClass(event.category),
               ]"
             >
@@ -93,29 +94,46 @@ function categoryClass(cat: string): string {
             </span>
 
             <!-- Title -->
-            <p class="truncate text-[14px] font-medium leading-snug text-gray-900">
+            <p
+              :class="[
+                'truncate font-display text-base leading-snug font-semibold',
+                isSelected(event) ? 'text-primary-ink' : 'text-ink',
+              ]"
+            >
               {{ event.title }}
             </p>
 
             <!-- Metadata -->
-            <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
-              <span class="flex items-center gap-1">
-                <Icon icon="mdi:calendar-outline" class="h-3 w-3 text-gray-400" />
+            <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
+              <span class="num flex items-center gap-1.5">
+                <Icon
+                  icon="mdi:calendar-outline"
+                  class="size-3.5 shrink-0 text-ink-subtle"
+                  aria-hidden="true"
+                />
                 {{ event.date }}
               </span>
-              <span class="flex items-center gap-1">
-                <Icon icon="mdi:clock-outline" class="h-3 w-3 text-gray-400" />
+              <span class="num flex items-center gap-1.5">
+                <Icon
+                  icon="mdi:clock-outline"
+                  class="size-3.5 shrink-0 text-ink-subtle"
+                  aria-hidden="true"
+                />
                 {{ event.time }}
               </span>
-              <span class="flex items-center gap-1">
-                <Icon icon="mdi:map-marker-outline" class="h-3 w-3 text-gray-400" />
+              <span class="flex items-center gap-1.5">
+                <Icon
+                  icon="mdi:map-marker-outline"
+                  class="size-3.5 shrink-0 text-ink-subtle"
+                  aria-hidden="true"
+                />
                 {{ event.venue }}
               </span>
             </div>
 
             <!-- Plan to attend button -->
             <button
-              class="mt-2 w-full rounded-md border border-blue-500 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50"
+              class="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-primary-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted sm:min-h-10 sm:w-auto"
               @click.stop="planToAttend(event)"
             >
               Plan to attend

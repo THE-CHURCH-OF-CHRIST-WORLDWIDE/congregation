@@ -63,15 +63,15 @@ function fmt(n: number) {
 </script>
 
 <template>
-  <Card>
-    <div class="flex items-center justify-between mb-5">
+  <Card padding="lg">
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h3 class="text-base font-semibold text-gray-900">Average Annual attendance</h3>
-        <p class="text-xs text-gray-500 mt-0.5">Showing annual attendance summaries by activity</p>
+        <h3 class="font-display text-base font-semibold text-ink">Average Annual attendance</h3>
+        <p class="mt-0.5 text-xs text-ink-muted">Showing annual attendance summaries by activity</p>
       </div>
       <select
         v-model="selectedYear"
-        class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        class="num min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
         aria-label="Select year"
       >
         <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
@@ -85,34 +85,33 @@ function fmt(n: number) {
       description="Averages per service appear here once registers have been marked."
     />
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <div
         v-for="svc in stats"
         :key="svc.serviceType"
-        class="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4"
+        class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-5 shadow-xs"
       >
         <!-- Top row: name + icon -->
         <div class="flex items-start justify-between gap-2">
-          <p class="text-sm font-medium text-gray-700 leading-snug">{{ svc.serviceType }}</p>
-          <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50"
-            aria-hidden="true"
-          >
-            <Icon :icon="svc.icon" class="text-lg" style="color: #0ba5ec" />
-          </div>
+          <p class="text-xs leading-snug font-semibold tracking-wide text-ink-muted uppercase">
+            {{ svc.serviceType }}
+          </p>
+          <Icon :icon="svc.icon" class="shrink-0 text-lg text-ink-subtle" aria-hidden="true" />
         </div>
 
         <!-- Big number -->
-        <p class="text-3xl font-bold text-gray-900 leading-none">{{ fmt(svc.count) }}</p>
+        <p class="num font-display text-3xl leading-none font-semibold text-ink">
+          {{ fmt(svc.count) }}
+        </p>
 
         <!-- Bottom row: badge + comparison -->
-        <div class="flex items-center gap-2 text-xs text-gray-500">
+        <div class="flex items-center gap-2 text-xs text-ink-muted">
           <span
             :class="[
-              'inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium',
-              svc.change > 0 && 'bg-green-50 text-green-600',
-              svc.change < 0 && 'bg-red-50 text-red-600',
-              svc.change === 0 && 'bg-gray-50 text-gray-500',
+              'num inline-flex items-center gap-1 rounded-sm px-1.5 py-px text-2xs font-semibold ring-1 ring-inset',
+              svc.change > 0 && 'bg-success-soft text-success ring-success/25',
+              svc.change < 0 && 'bg-error-soft text-error ring-error/25',
+              svc.change === 0 && 'bg-surface-sunken text-ink-muted ring-rule-strong/60',
             ]"
           >
             <Icon
@@ -123,7 +122,7 @@ function fmt(n: number) {
                     ? 'mdi:trending-down'
                     : 'mdi:minus'
               "
-              class="text-[12px]"
+              class="text-xs"
             />
             {{ Math.abs(svc.change) }}%
           </span>

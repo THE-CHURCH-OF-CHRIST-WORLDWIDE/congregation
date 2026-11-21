@@ -28,8 +28,8 @@ withDefaults(defineProps<Props>(), {
     <div
       v-for="i in rows"
       :key="i"
-      class="h-9 animate-pulse rounded-lg bg-gray-100"
-      :style="{ animationDelay: `${i * 60}ms` }"
+      class="skeleton h-10"
+      :style="{ animationDelay: `${i * 80}ms`, opacity: 1 - (i - 1) * (0.5 / rows) }"
     ></div>
     <span class="sr-only">{{ title }}</span>
   </div>
@@ -39,15 +39,16 @@ withDefaults(defineProps<Props>(), {
     v-else
     :class="[
       'flex flex-col items-center justify-center text-center',
-      size === 'sm' ? 'gap-1.5 py-6' : 'gap-2 py-12',
+      size === 'sm' ? 'gap-2 py-6' : 'gap-3 py-14',
     ]"
     role="status"
   >
     <Icon
       icon="mdi:loading"
-      :class="['animate-spin text-gray-300', size === 'sm' ? 'text-xl' : 'text-3xl']"
+      :class="['animate-spin text-primary', size === 'sm' ? 'text-xl' : 'text-3xl']"
+      aria-hidden="true"
     />
-    <p :class="['font-medium text-gray-500', size === 'sm' ? 'text-xs' : 'text-sm']">
+    <p :class="['font-medium text-ink-muted', size === 'sm' ? 'text-xs' : 'text-sm']">
       {{ title }}
     </p>
   </div>

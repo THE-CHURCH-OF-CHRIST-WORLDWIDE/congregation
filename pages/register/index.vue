@@ -142,7 +142,7 @@ function validate(): boolean {
 const firstErrorField = computed(() => Object.keys(errors.value)[0])
 
 const inputError = (key: keyof FieldErrors) =>
-  errors.value[key] ? 'border-red-400 focus:border-red-400' : ''
+  errors.value[key] ? 'border-error focus:border-error' : ''
 
 // ─── Submit ───────────────────────────────────────────────────────────────────
 async function submit() {
@@ -217,37 +217,51 @@ watch(submitted, (v) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 pb-16">
+  <div class="register-form min-h-screen bg-surface-muted pb-20">
     <!-- Page header -->
-    <div class="border-b border-gray-100 bg-white py-8">
-      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-1 flex items-center gap-2 text-xs font-medium text-gray-400">
-          <NuxtLink to="/" class="transition-colors hover:text-blue-600">Home</NuxtLink>
-          <Icon icon="mdi:chevron-right" class="h-3.5 w-3.5" />
-          <span class="text-gray-600">Register</span>
+    <div class="border-b border-rule bg-surface">
+      <div class="mx-auto max-w-3xl px-5 py-8 sm:px-6 md:py-12">
+        <div class="mb-4 flex items-center gap-1.5 text-sm text-ink-subtle">
+          <NuxtLink
+            to="/"
+            class="rounded-sm py-1 transition-colors duration-150 hover:text-primary-ink"
+            >Home</NuxtLink
+          >
+          <Icon icon="mdi:chevron-right" class="size-4" aria-hidden="true" />
+          <span class="text-ink-muted">Register</span>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Member Registration</h1>
-        <p class="mt-1 text-sm text-gray-500">
-          Fill in your details to be added to the church nominal roll. All fields marked
-          <span class="text-red-500">*</span> are required.
-        </p>
+        <div class="margin-rule">
+          <h1
+            class="font-display text-[2rem] leading-[1.15] font-bold text-secondary md:text-[2.5rem]"
+          >
+            Member Registration
+          </h1>
+          <p class="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted md:text-lg">
+            Fill in your details to be added to the church nominal roll. All fields marked
+            <span class="font-bold text-error">*</span> are required.
+          </p>
+        </div>
       </div>
     </div>
 
-    <div class="mx-auto max-w-3xl px-4 pt-6 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-3xl px-4 pt-6 sm:px-6 md:pt-8">
       <!-- ── Success state ──────────────────────────────────────────────────── -->
       <Card v-if="submitted" padding="lg">
         <div class="flex flex-col items-center py-8 text-center">
-          <div class="flex h-14 w-14 items-center justify-center rounded-full bg-green-50">
-            <Icon icon="mdi:check-circle-outline" class="text-3xl text-green-600" />
+          <div class="flex size-14 items-center justify-center rounded-full bg-success-soft">
+            <Icon
+              icon="mdi:check-circle-outline"
+              class="text-3xl text-success"
+              aria-hidden="true"
+            />
           </div>
-          <h2 class="mt-4 text-xl font-bold text-gray-900">Registration received</h2>
-          <p class="mt-1 max-w-md text-sm text-gray-500">
+          <h2 class="mt-4 font-display text-2xl font-bold text-secondary">Registration received</h2>
+          <p class="mt-2 max-w-md text-base leading-relaxed text-ink-muted">
             Thank you{{ registeredName ? `, ${registeredName}` : '' }}. Your details have been
             submitted to the church secretary. You will be contacted once your record is confirmed
             on the nominal roll.
           </p>
-          <div class="mt-6 flex flex-wrap justify-center gap-2">
+          <div class="mt-6 flex flex-wrap justify-center gap-3">
             <Button variant="secondary" @click="registerAnother">
               <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
               Register another member
@@ -260,26 +274,31 @@ watch(submitted, (v) => {
       </Card>
 
       <!-- ── Form ───────────────────────────────────────────────────────────── -->
-      <form v-else class="flex flex-col gap-4" novalidate @submit.prevent="submit">
+      <form v-else class="flex flex-col gap-5" novalidate @submit.prevent="submit">
         <!-- Personal Information -->
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-                <Icon icon="mdi:account-outline" class="text-lg text-accent" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">Personal Information</h2>
-                <p class="text-xs text-gray-500">How the church can identify and reach you.</p>
-              </div>
-            </div>
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
+              >
+                <Icon
+                  icon="mdi:account-outline"
+                  class="size-5 shrink-0 text-primary-ink"
+                  aria-hidden="true"
+                />Personal Information
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
+                How the church can identify and reach you.
+              </p>
+            </header>
 
-            <div class="space-y-4">
+            <div class="space-y-5">
               <div
                 id="field-avatar"
-                class="flex flex-col items-start gap-4 sm:flex-row sm:items-center"
+                class="flex flex-col items-start gap-4 rounded-md border border-rule bg-surface-muted p-4 sm:flex-row sm:items-center"
               >
-                <div :class="errors.avatar ? 'rounded-full ring-2 ring-red-400' : ''">
+                <div :class="errors.avatar ? 'rounded-full ring-2 ring-error' : ''">
                   <ImageUpload
                     v-model="form.avatar"
                     shape="circle"
@@ -288,24 +307,29 @@ watch(submitted, (v) => {
                   />
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500">
-                    Passport photograph <span class="text-red-500">*</span><br />
+                  <p class="text-sm leading-relaxed text-ink-muted">
+                    <span class="font-semibold text-ink">Passport photograph</span>
+                    <span class="font-bold text-error">*</span><br />
                     JPG or PNG. Large photos are compressed automatically.
                   </p>
-                  <p v-if="errors.avatar" class="mt-1 text-xs text-red-500">{{ errors.avatar }}</p>
+                  <p v-if="errors.avatar" class="mt-1.5 text-sm font-medium text-error">
+                    {{ errors.avatar }}
+                  </p>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
                 <EditField id="field-name" label="Full Name *">
                   <input
                     v-model="form.name"
                     type="text"
                     autocomplete="name"
                     placeholder="Enter your full name"
-                    :class="errors.name ? 'border-red-400 focus:border-red-400' : ''"
+                    :class="errors.name ? 'border-error focus:border-error' : ''"
                   />
-                  <p v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name }}</p>
+                  <p v-if="errors.name" class="mt-1.5 text-sm font-medium text-error">
+                    {{ errors.name }}
+                  </p>
                 </EditField>
                 <EditField id="field-email" label="Email Address *">
                   <input
@@ -313,49 +337,57 @@ watch(submitted, (v) => {
                     type="email"
                     autocomplete="email"
                     placeholder="you@example.com"
-                    :class="errors.email ? 'border-red-400 focus:border-red-400' : ''"
+                    :class="errors.email ? 'border-error focus:border-error' : ''"
                   />
-                  <p v-if="errors.email" class="mt-1 text-xs text-red-500">{{ errors.email }}</p>
+                  <p v-if="errors.email" class="mt-1.5 text-sm font-medium text-error">
+                    {{ errors.email }}
+                  </p>
                 </EditField>
               </div>
 
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
+              <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-4">
                 <EditField id="field-phone" label="Phone Number *" class="sm:col-span-2">
                   <input
                     v-model="form.phone"
                     type="tel"
                     autocomplete="tel"
                     placeholder="+234 800 000 0000"
-                    :class="errors.phone ? 'border-red-400 focus:border-red-400' : ''"
+                    :class="errors.phone ? 'border-error focus:border-error' : ''"
                   />
-                  <p v-if="errors.phone" class="mt-1 text-xs text-red-500">{{ errors.phone }}</p>
+                  <p v-if="errors.phone" class="mt-1.5 text-sm font-medium text-error">
+                    {{ errors.phone }}
+                  </p>
                 </EditField>
                 <EditField id="field-gender" label="Gender *">
                   <select v-model="form.gender" :class="inputError('gender')">
                     <option v-for="g in genderOptions" :key="g" :value="g">{{ g }}</option>
                   </select>
-                  <p v-if="errors.gender" class="mt-1 text-xs text-red-500">{{ errors.gender }}</p>
+                  <p v-if="errors.gender" class="mt-1.5 text-sm font-medium text-error">
+                    {{ errors.gender }}
+                  </p>
                 </EditField>
                 <EditField id="field-maritalStatus" label="Marital Status *">
                   <select v-model="form.maritalStatus" :class="inputError('maritalStatus')">
                     <option value="">— Select —</option>
                     <option v-for="m in maritalOptions" :key="m" :value="m">{{ m }}</option>
                   </select>
-                  <p v-if="errors.maritalStatus" class="mt-1 text-xs text-red-500">
+                  <p v-if="errors.maritalStatus" class="mt-1.5 text-sm font-medium text-error">
                     {{ errors.maritalStatus }}
                   </p>
                 </EditField>
               </div>
 
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
                 <EditField id="field-dob" label="Date of Birth *">
                   <input
                     v-model="form.dob"
                     type="date"
                     :max="today"
-                    :class="errors.dob ? 'border-red-400 focus:border-red-400' : ''"
+                    :class="errors.dob ? 'border-error focus:border-error' : ''"
                   />
-                  <p v-if="errors.dob" class="mt-1 text-xs text-red-500">{{ errors.dob }}</p>
+                  <p v-if="errors.dob" class="mt-1.5 text-sm font-medium text-error">
+                    {{ errors.dob }}
+                  </p>
                 </EditField>
                 <EditField id="field-occupation" label="Occupation *">
                   <input
@@ -364,7 +396,7 @@ watch(submitted, (v) => {
                     placeholder="e.g. Teacher"
                     :class="inputError('occupation')"
                   />
-                  <p v-if="errors.occupation" class="mt-1 text-xs text-red-500">
+                  <p v-if="errors.occupation" class="mt-1.5 text-sm font-medium text-error">
                     {{ errors.occupation }}
                   </p>
                 </EditField>
@@ -376,19 +408,22 @@ watch(submitted, (v) => {
         <!-- Church Information -->
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-                <Icon icon="mdi:church" class="text-lg text-accent" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">Church Information</h2>
-                <p class="text-xs text-gray-500">
-                  Leave the baptism date blank if you have not yet been baptised.
-                </p>
-              </div>
-            </div>
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
+              >
+                <Icon
+                  icon="mdi:church"
+                  class="size-5 shrink-0 text-primary-ink"
+                  aria-hidden="true"
+                />Church Information
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
+                Leave the baptism date blank if you have not yet been baptised.
+              </p>
+            </header>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
               <EditField id="field-dateOfBaptism" label="Date of Baptism">
                 <input
                   v-model="form.dateOfBaptism"
@@ -396,7 +431,7 @@ watch(submitted, (v) => {
                   :max="today"
                   :class="inputError('dateOfBaptism')"
                 />
-                <p v-if="errors.dateOfBaptism" class="mt-1 text-xs text-red-500">
+                <p v-if="errors.dateOfBaptism" class="mt-1.5 text-sm font-medium text-error">
                   {{ errors.dateOfBaptism }}
                 </p>
               </EditField>
@@ -407,7 +442,7 @@ watch(submitted, (v) => {
                   :max="today"
                   :class="inputError('dateJoined')"
                 />
-                <p v-if="errors.dateJoined" class="mt-1 text-xs text-red-500">
+                <p v-if="errors.dateJoined" class="mt-1.5 text-sm font-medium text-error">
                   {{ errors.dateJoined }}
                 </p>
               </EditField>
@@ -418,23 +453,25 @@ watch(submitted, (v) => {
         <!-- Previous Congregation -->
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-                <Icon icon="mdi:account-switch-outline" class="text-lg text-accent" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">
-                  Previous Congregation
-                  <span class="text-xs font-normal text-gray-400">(optional)</span>
-                </h2>
-                <p class="text-xs text-gray-500">
-                  If you are transferring from another congregation, tell us where you worshipped
-                  and how we can reach the minister there.
-                </p>
-              </div>
-            </div>
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
+              >
+                <Icon
+                  icon="mdi:account-switch-outline"
+                  class="size-5 shrink-0 text-primary-ink"
+                  aria-hidden="true"
+                />
+                Previous Congregation
+                <span class="font-sans text-sm font-normal text-ink-subtle">(optional)</span>
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
+                If you are transferring from another congregation, tell us where you worshipped and
+                how we can reach the minister there.
+              </p>
+            </header>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
               <EditField id="field-previousCongregation" label="Previous Congregation">
                 <input
                   v-model="form.previousCongregation"
@@ -447,9 +484,12 @@ watch(submitted, (v) => {
                   v-model="form.previousMinisterPhone"
                   type="tel"
                   placeholder="+234 803 333 4444"
-                  :class="errors.previousMinisterPhone ? 'border-red-400 focus:border-red-400' : ''"
+                  :class="errors.previousMinisterPhone ? 'border-error focus:border-error' : ''"
                 />
-                <p v-if="errors.previousMinisterPhone" class="mt-1 text-xs text-red-500">
+                <p
+                  v-if="errors.previousMinisterPhone"
+                  class="mt-1.5 text-sm font-medium text-error"
+                >
                   {{ errors.previousMinisterPhone }}
                 </p>
               </EditField>
@@ -460,17 +500,20 @@ watch(submitted, (v) => {
         <!-- Place of Origin -->
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-                <Icon icon="mdi:map-marker-outline" class="text-lg text-accent" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">Place of Origin</h2>
-                <p class="text-xs text-gray-500">Where you hail from.</p>
-              </div>
-            </div>
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
+              >
+                <Icon
+                  icon="mdi:map-marker-outline"
+                  class="size-5 shrink-0 text-primary-ink"
+                  aria-hidden="true"
+                />Place of Origin
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">Where you hail from.</p>
+            </header>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
               <EditField id="field-country" label="Country *">
                 <input
                   v-model="form.country"
@@ -478,7 +521,9 @@ watch(submitted, (v) => {
                   placeholder="Nigeria"
                   :class="inputError('country')"
                 />
-                <p v-if="errors.country" class="mt-1 text-xs text-red-500">{{ errors.country }}</p>
+                <p v-if="errors.country" class="mt-1.5 text-sm font-medium text-error">
+                  {{ errors.country }}
+                </p>
               </EditField>
               <EditField id="field-state" label="State of Origin *">
                 <input
@@ -487,7 +532,9 @@ watch(submitted, (v) => {
                   placeholder="Akwa Ibom State"
                   :class="inputError('state')"
                 />
-                <p v-if="errors.state" class="mt-1 text-xs text-red-500">{{ errors.state }}</p>
+                <p v-if="errors.state" class="mt-1.5 text-sm font-medium text-error">
+                  {{ errors.state }}
+                </p>
               </EditField>
               <EditField id="field-localGovernment" label="Local Government Area *">
                 <input
@@ -496,7 +543,7 @@ watch(submitted, (v) => {
                   placeholder="Ibiono Ibom"
                   :class="inputError('localGovernment')"
                 />
-                <p v-if="errors.localGovernment" class="mt-1 text-xs text-red-500">
+                <p v-if="errors.localGovernment" class="mt-1.5 text-sm font-medium text-error">
                   {{ errors.localGovernment }}
                 </p>
               </EditField>
@@ -507,7 +554,9 @@ watch(submitted, (v) => {
                   placeholder="Ikot Oku"
                   :class="inputError('village')"
                 />
-                <p v-if="errors.village" class="mt-1 text-xs text-red-500">{{ errors.village }}</p>
+                <p v-if="errors.village" class="mt-1.5 text-sm font-medium text-error">
+                  {{ errors.village }}
+                </p>
               </EditField>
             </div>
           </section>
@@ -516,15 +565,18 @@ watch(submitted, (v) => {
         <!-- Residential Address -->
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-                <Icon icon="mdi:home-outline" class="text-lg text-accent" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">Residential Address</h2>
-                <p class="text-xs text-gray-500">Where you currently live.</p>
-              </div>
-            </div>
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
+              >
+                <Icon
+                  icon="mdi:home-outline"
+                  class="size-5 shrink-0 text-primary-ink"
+                  aria-hidden="true"
+                />Residential Address
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">Where you currently live.</p>
+            </header>
 
             <EditField id="field-address" label="Full Address *">
               <input
@@ -532,9 +584,11 @@ watch(submitted, (v) => {
                 type="text"
                 autocomplete="street-address"
                 placeholder="No. 8 Convent Road, Ikot Ekpene"
-                :class="errors.address ? 'border-red-400 focus:border-red-400' : ''"
+                :class="errors.address ? 'border-error focus:border-error' : ''"
               />
-              <p v-if="errors.address" class="mt-1 text-xs text-red-500">{{ errors.address }}</p>
+              <p v-if="errors.address" class="mt-1.5 text-sm font-medium text-error">
+                {{ errors.address }}
+              </p>
             </EditField>
           </section>
         </Card>
@@ -542,17 +596,22 @@ watch(submitted, (v) => {
         <!-- Emergency Contact -->
         <Card padding="lg">
           <section>
-            <div class="mb-5 flex items-start gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-                <Icon icon="mdi:phone-alert-outline" class="text-lg text-accent" />
-              </div>
-              <div>
-                <h2 class="text-sm font-semibold text-gray-900">Emergency Contact</h2>
-                <p class="text-xs text-gray-500">Someone we can reach on your behalf.</p>
-              </div>
-            </div>
+            <header class="mb-6 border-b border-rule pb-4">
+              <h2
+                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
+              >
+                <Icon
+                  icon="mdi:phone-alert-outline"
+                  class="size-5 shrink-0 text-primary-ink"
+                  aria-hidden="true"
+                />Emergency Contact
+              </h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
+                Someone we can reach on your behalf.
+              </p>
+            </header>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
               <EditField id="field-ecName" label="Name *">
                 <input
                   v-model="form.ecName"
@@ -560,7 +619,9 @@ watch(submitted, (v) => {
                   placeholder="Brother John Adebayo"
                   :class="inputError('ecName')"
                 />
-                <p v-if="errors.ecName" class="mt-1 text-xs text-red-500">{{ errors.ecName }}</p>
+                <p v-if="errors.ecName" class="mt-1.5 text-sm font-medium text-error">
+                  {{ errors.ecName }}
+                </p>
               </EditField>
               <EditField id="field-ecRelationship" label="Relationship *">
                 <input
@@ -569,7 +630,7 @@ watch(submitted, (v) => {
                   placeholder="Brother"
                   :class="inputError('ecRelationship')"
                 />
-                <p v-if="errors.ecRelationship" class="mt-1 text-xs text-red-500">
+                <p v-if="errors.ecRelationship" class="mt-1.5 text-sm font-medium text-error">
                   {{ errors.ecRelationship }}
                 </p>
               </EditField>
@@ -580,7 +641,9 @@ watch(submitted, (v) => {
                   placeholder="+234 803 333 4444"
                   :class="inputError('ecPhone')"
                 />
-                <p v-if="errors.ecPhone" class="mt-1 text-xs text-red-500">{{ errors.ecPhone }}</p>
+                <p v-if="errors.ecPhone" class="mt-1.5 text-sm font-medium text-error">
+                  {{ errors.ecPhone }}
+                </p>
               </EditField>
               <EditField id="field-ecAddress" label="Address *">
                 <input
@@ -589,7 +652,7 @@ watch(submitted, (v) => {
                   placeholder="Full address"
                   :class="inputError('ecAddress')"
                 />
-                <p v-if="errors.ecAddress" class="mt-1 text-xs text-red-500">
+                <p v-if="errors.ecAddress" class="mt-1.5 text-sm font-medium text-error">
                   {{ errors.ecAddress }}
                 </p>
               </EditField>
@@ -599,12 +662,18 @@ watch(submitted, (v) => {
 
         <!-- Submit -->
         <div
-          class="flex flex-col-reverse items-center gap-3 sm:flex-row sm:justify-between sm:gap-4"
+          class="flex flex-col-reverse items-stretch gap-3 border-t border-rule pt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
         >
-          <p class="text-xs text-gray-400">
+          <p class="flex items-start gap-1.5 text-sm text-ink-muted">
+            <Icon icon="mdi:lock-outline" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
             Your details are used only for church records and are never shared publicly.
           </p>
-          <Button type="submit" size="lg" :loading="submitting" class="w-full sm:w-auto">
+          <Button
+            type="submit"
+            size="lg"
+            :loading="submitting"
+            class="min-h-13 w-full text-base sm:min-h-12 sm:w-auto"
+          >
             <template #icon-left><Icon icon="mdi:account-check-outline" /></template>
             Submit Registration
           </Button>
@@ -613,3 +682,33 @@ watch(submitted, (v) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Long form for phones and older readers: 16px fields (no iOS zoom), 44px targets, larger labels. */
+.register-form :deep(.edit-field-slot input),
+.register-form :deep(.edit-field-slot select) {
+  min-height: 2.75rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+.register-form :deep(label > span:first-child) {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+.register-form :deep(.edit-field-slot input.border-error),
+.register-form :deep(.edit-field-slot select.border-error) {
+  border-color: var(--c-error);
+}
+.register-form :deep(.edit-field-slot input.border-error:focus),
+.register-form :deep(.edit-field-slot select.border-error:focus) {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-error) 15%, transparent);
+}
+@media (min-width: 640px) {
+  .register-form :deep(.edit-field-slot input),
+  .register-form :deep(.edit-field-slot select) {
+    min-height: 2.625rem;
+    font-size: 0.9375rem;
+  }
+}
+</style>

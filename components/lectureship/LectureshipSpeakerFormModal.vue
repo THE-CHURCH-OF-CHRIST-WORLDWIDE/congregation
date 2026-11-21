@@ -114,8 +114,8 @@ async function handleSubmit() {
 
 <template>
   <Modal :model-value="modelValue" :title="title" size="lg" @update:model-value="close">
-    <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
-      <div class="flex justify-center">
+    <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
+      <div class="flex justify-center rounded-md border border-rule bg-surface-muted p-4">
         <ImageUpload
           v-model="form.avatar"
           label="Photo"
@@ -124,35 +124,41 @@ async function handleSubmit() {
         />
       </div>
 
-      <Input
-        v-model="form.name"
-        label="Full Name"
-        placeholder="Bro. James Ikpe"
-        :error="errors.name"
-        required
-      />
-
-      <div class="grid grid-cols-2 gap-3">
-        <Select v-model="form.role" label="Role" :options="ROLE_OPTIONS" />
+      <section class="flex flex-col gap-4">
+        <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Profile</h3>
         <Input
-          v-model="form.title"
-          label="Title (optional)"
-          placeholder="e.g. Guest Speaker, Presiding Minister"
+          v-model="form.name"
+          label="Full Name"
+          placeholder="Bro. James Ikpe"
+          :error="errors.name"
+          required
         />
-      </div>
 
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-700">
-          Bio<span class="ml-0.5 text-red-500">*</span>
-        </label>
-        <textarea
-          v-model="form.bio"
-          rows="4"
-          placeholder="A short biography to introduce this person to visitors"
-          class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-        ></textarea>
-        <p v-if="errors.bio" class="mt-1 text-xs text-red-600">{{ errors.bio }}</p>
-      </div>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Select v-model="form.role" label="Role" :options="ROLE_OPTIONS" />
+          <Input
+            v-model="form.title"
+            label="Title (optional)"
+            placeholder="e.g. Guest Speaker, Presiding Minister"
+          />
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-4 border-t border-rule pt-5">
+        <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Biography</h3>
+        <div>
+          <label class="mb-1.5 block text-sm font-medium text-ink">
+            Bio<span class="ml-0.5 text-error" aria-hidden="true">*</span>
+          </label>
+          <textarea
+            v-model="form.bio"
+            rows="4"
+            placeholder="A short biography to introduce this person to visitors"
+            class="w-full resize-none px-3 py-2 text-sm rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          ></textarea>
+          <p v-if="errors.bio" class="mt-1.5 text-xs font-medium text-error">{{ errors.bio }}</p>
+        </div>
+      </section>
     </form>
 
     <template #footer>

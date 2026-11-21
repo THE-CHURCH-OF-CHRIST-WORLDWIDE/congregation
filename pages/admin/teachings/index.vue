@@ -32,35 +32,39 @@ const {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="space-y-6">
     <!-- Header row -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="flex gap-1 overflow-x-auto pb-1">
+    <div
+      class="flex flex-col justify-between gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center"
+    >
+      <div class="no-scrollbar flex gap-1 overflow-x-auto" role="group" aria-label="Filter by type">
         <button
           v-for="opt in filterOptions"
           :key="opt.value"
           :class="[
-            'px-3 py-1.5 text-sm font-medium rounded-lg flex-shrink-0 transition-all',
+            'inline-flex min-h-9 shrink-0 items-center rounded-md border px-3 text-sm font-medium transition-colors duration-150',
             teachingsStore.filterType === opt.value
-              ? 'bg-blue-600 text-white'
-              : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50',
+              ? 'border-primary bg-primary text-on-primary'
+              : 'border-rule-strong bg-surface text-ink-muted hover:bg-surface-muted hover:text-ink',
           ]"
+          :aria-pressed="teachingsStore.filterType === opt.value"
           @click="teachingsStore.filterType = opt.value"
         >
           {{ opt.label }}
         </button>
       </div>
-      <div class="flex gap-2 flex-shrink-0">
-        <div class="relative">
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <div class="relative min-w-0 flex-1">
           <Icon
             icon="mdi:magnify"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-ink-subtle"
+            aria-hidden="true"
           />
           <input
             v-model="teachingsStore.searchQuery"
             type="search"
             placeholder="Search teachings..."
-            class="w-56 pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="min-h-10 w-full py-2 pr-3 pl-9 text-sm sm:w-56 rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
             aria-label="Search teachings"
           />
         </div>
@@ -77,7 +81,7 @@ const {
          loading state to show here — only empty or populated. -->
     <div
       v-if="pagedSermons.length"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+      class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
     >
       <SermonCard v-for="sermon in pagedSermons" :key="sermon.id" :sermon="sermon" />
     </div>

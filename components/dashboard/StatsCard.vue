@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { chartPalette } from '~/utils/chartTheme'
+
 interface Props {
   title: string
   value: string | number
@@ -14,35 +16,23 @@ interface Props {
 }
 // No default for `change`: defaulting it to 0 made the badge render on every card, which is
 // what put a "+10%" on figures nothing was actually tracking.
-const props = withDefaults(defineProps<Props>(), { sparkColor: '#93c5fd' })
+const props = withDefaults(defineProps<Props>(), { sparkColor: chartPalette.bookcloth })
 
 const changeIsPositive = computed(() => (props.change ?? 0) >= 0)
 </script>
 
 <template>
-  <Card>
-    <div class="flex items-start justify-between gap-2">
+  <div class="flex h-full flex-col bg-surface px-5 py-4">
+    <div class="flex items-start justify-between gap-3">
       <div class="min-w-0 flex-1">
-        <p class="text-xs text-gray-500 font-medium mb-1 truncate">{{ title }}</p>
-        <p class="text-2xl font-bold text-gray-900 leading-tight">{{ value }}</p>
-        <div class="flex items-center gap-1.5 mt-1.5">
-          <Badge
-            v-if="change !== undefined"
-            :variant="changeIsPositive ? 'success' : 'danger'"
-            size="sm"
-          >
-            <template #icon>
-              <Icon
-                :icon="changeIsPositive ? 'mdi:trending-up' : 'mdi:trending-down'"
-                class="text-[10px]"
-              />
-            </template>
-            {{ Math.abs(change) }}%
-          </Badge>
-          <p v-if="subtitle" class="text-xs text-gray-400 truncate">{{ subtitle }}</p>
-        </div>
+        <p class="truncate text-sm font-medium text-ink-muted">
+          {{ title }}
+        </p>
+        <p class="num mt-1.5 font-display text-[1.75rem] leading-none font-semibold text-ink">
+          {{ value }}
+        </p>
       </div>
-      <div v-if="sparkValues?.length" class="flex-shrink-0 pt-1">
+      <div v-if="sparkValues?.length" class="shrink-0 pt-1 opacity-70">
         <SparkLine
           v-if="sparkValues && sparkValues.length"
           :values="sparkValues"
@@ -52,5 +42,23 @@ const changeIsPositive = computed(() => (props.change ?? 0) >= 0)
         />
       </div>
     </div>
-  </Card>
+    <div class="mt-3 flex min-w-0 items-center gap-2">
+      <Badge
+        v-if="change !== undefined"
+        :variant="changeIsPositive ? 'success' : 'danger'"
+        size="sm"
+        class="num"
+      >
+        <template #icon>
+          <Icon
+            :icon="changeIsPositive ? 'mdi:trending-up' : 'mdi:trending-down'"
+            class="text-[10px]"
+            aria-hidden="true"
+          />
+        </template>
+        {{ Math.abs(change) }}%
+      </Badge>
+      <p v-if="subtitle" class="num truncate text-xs text-ink-subtle">{{ subtitle }}</p>
+    </div>
+  </div>
 </template>

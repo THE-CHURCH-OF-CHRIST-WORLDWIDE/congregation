@@ -98,7 +98,7 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-6">
     <!-- Add New Member CTA lives in the admin topbar via teleport, alongside
          the page title rendered by the layout. -->
     <!-- `defer`: the admin layout is a separately async-loaded chunk, so its header (and this
@@ -112,19 +112,21 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
     </Teleport>
 
     <!-- Stats row + Donut chart -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <div class="xl:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Card v-for="card in statCards" :key="card.label">
-          <div class="flex flex-col gap-2">
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:col-span-2">
+        <Card v-for="card in statCards" :key="card.label" padding="none" class="p-5">
+          <div class="flex h-full flex-col gap-3">
             <!-- Top: title + trend badge -->
             <div class="flex items-start justify-between gap-2">
-              <p class="text-sm text-gray-600">{{ card.label }}</p>
+              <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+                {{ card.label }}
+              </p>
               <span
                 :class="[
-                  'inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium',
-                  card.change > 0 && 'bg-green-50 text-green-600',
-                  card.change < 0 && 'bg-red-50 text-red-600',
-                  card.change === 0 && 'bg-gray-50 text-gray-500',
+                  'num inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-2xs font-semibold ring-1 ring-inset',
+                  card.change > 0 && 'bg-success-soft text-success ring-success/25',
+                  card.change < 0 && 'bg-error-soft text-error ring-error/25',
+                  card.change === 0 && 'bg-surface-sunken text-ink-muted ring-rule-strong/60',
                 ]"
               >
                 <Icon
@@ -135,23 +137,28 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
                         ? 'mdi:trending-down'
                         : 'mdi:minus'
                   "
-                  class="text-[12px]"
+                  class="text-xs"
                 />
                 {{ Math.abs(card.change) }}%
               </span>
             </div>
 
             <!-- Big number -->
-            <p class="text-3xl font-bold text-gray-900">{{ card.value }}</p>
+            <p class="num font-display text-3xl leading-none font-semibold text-ink">
+              {{ card.value }}
+            </p>
 
             <!-- Footer: last year + view list -->
-            <div class="flex items-center justify-between text-xs">
-              <span class="text-gray-400">{{ card.priorValue }} last year</span>
+            <div
+              class="mt-auto flex items-center justify-between border-t border-rule pt-3 text-xs"
+            >
+              <span class="num text-ink-subtle">{{ card.priorValue }} last year</span>
               <button
-                class="font-medium text-gray-700 hover:text-blue-600 cursor-pointer"
+                class="inline-flex min-h-7 cursor-pointer items-center gap-1 rounded-sm font-semibold text-primary-ink transition-colors duration-150 hover:text-primary-hover"
                 @click="viewList(card.tab)"
               >
                 View List
+                <Icon icon="mdi:arrow-right" class="text-sm" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -161,7 +168,7 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
     </div>
 
     <!-- Filters -->
-    <div ref="tableRef">
+    <div ref="tableRef" class="scroll-mt-20">
       <MemberFilters />
     </div>
 

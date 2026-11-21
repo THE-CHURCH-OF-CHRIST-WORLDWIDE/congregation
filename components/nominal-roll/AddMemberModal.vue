@@ -228,35 +228,41 @@ watch(
 
 <template>
   <Modal :model-value="modelValue" :title="title" size="xl" @update:model-value="close">
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-7">
       <!-- ── Personal Information ──────────────────────────────────────────── -->
       <section>
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">Personal Information</h3>
+        <h3 class="mb-4 font-display text-base font-semibold text-ink">Personal Information</h3>
         <div class="space-y-4">
           <!-- Name | Email -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <EditField label="Full Name *">
               <input
                 v-model="form.name"
                 type="text"
                 placeholder="Enter full name"
-                :class="errors.name ? 'border-red-400 focus:border-red-400' : ''"
+                :class="errors.name ? 'border-error! focus:border-error! focus:ring-error/15!' : ''"
               />
-              <p v-if="errors.name" class="text-xs text-red-500 mt-1">{{ errors.name }}</p>
+              <p v-if="errors.name" class="mt-1 text-xs font-medium text-error" role="alert">
+                {{ errors.name }}
+              </p>
             </EditField>
             <EditField label="Email Address *">
               <input
                 v-model="form.email"
                 type="email"
                 placeholder="member@example.com"
-                :class="errors.email ? 'border-red-400 focus:border-red-400' : ''"
+                :class="
+                  errors.email ? 'border-error! focus:border-error! focus:ring-error/15!' : ''
+                "
               />
-              <p v-if="errors.email" class="text-xs text-red-500 mt-1">{{ errors.email }}</p>
+              <p v-if="errors.email" class="mt-1 text-xs font-medium text-error" role="alert">
+                {{ errors.email }}
+              </p>
             </EditField>
           </div>
 
           <!-- Church Number | Date of Baptism -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <EditField
               label="Church Number"
               :error="churchNumberError"
@@ -275,22 +281,26 @@ watch(
           </div>
 
           <!-- Date of Registration -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <EditField label="Date of Registration">
               <input v-model="form.dateJoined" type="date" />
             </EditField>
           </div>
 
           <!-- Phone (wide) | Gender | Marital Status -->
-          <div class="grid grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <EditField label="Phone Number *" class="col-span-2">
               <input
                 v-model="form.phone"
                 type="tel"
                 placeholder="+234 800 000 0000"
-                :class="errors.phone ? 'border-red-400 focus:border-red-400' : ''"
+                :class="
+                  errors.phone ? 'border-error! focus:border-error! focus:ring-error/15!' : ''
+                "
               />
-              <p v-if="errors.phone" class="text-xs text-red-500 mt-1">{{ errors.phone }}</p>
+              <p v-if="errors.phone" class="mt-1 text-xs font-medium text-error" role="alert">
+                {{ errors.phone }}
+              </p>
             </EditField>
             <EditField label="Gender" class="col-span-1">
               <select v-model="form.gender">
@@ -310,10 +320,10 @@ watch(
           </div>
 
           <!-- Date of Birth | Status | Occupation -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <EditField label="Date of Birth">
               <input v-model="form.dob" type="date" />
-              <p v-if="youthMode" class="text-xs text-gray-400 mt-1">
+              <p v-if="youthMode" class="mt-1 text-xs text-ink-subtle">
                 Must be 13–35 yrs to appear in Youth
               </p>
             </EditField>
@@ -331,12 +341,12 @@ watch(
         </div>
       </section>
 
-      <hr class="border-gray-100" />
+      <hr class="border-rule" />
 
       <!-- ── Place of Origin ───────────────────────────────────────────────── -->
       <section>
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">Place of Origin</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <h3 class="mb-4 font-display text-base font-semibold text-ink">Place of Origin</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EditField label="Country">
             <input v-model="form.country" type="text" placeholder="Nigeria" />
           </EditField>
@@ -352,12 +362,12 @@ watch(
         </div>
       </section>
 
-      <hr class="border-gray-100" />
+      <hr class="border-rule" />
 
       <!-- ── Residential Address ───────────────────────────────────────────── -->
       <section>
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">Residential Address</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <h3 class="mb-4 font-display text-base font-semibold text-ink">Residential Address</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EditField label="Country">
             <input v-model="form.country" type="text" placeholder="Nigeria" />
           </EditField>
@@ -376,14 +386,14 @@ watch(
 
       <!-- ── School / Education (youth only) ───────────────────────────────── -->
       <template v-if="youthMode">
-        <hr class="border-gray-100" />
+        <hr class="border-rule" />
 
         <section>
-          <h3 class="text-sm font-semibold text-gray-800 mb-4">
+          <h3 class="mb-4 font-display text-base font-semibold text-ink">
             School &amp; Education
-            <span class="text-gray-400 font-normal text-xs">(optional)</span>
+            <span class="font-sans text-xs font-normal text-ink-subtle">(optional)</span>
           </h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <EditField label="School / Institution">
               <input v-model="form.school" type="text" placeholder="e.g. University of Uyo" />
             </EditField>
@@ -451,14 +461,15 @@ watch(
         </section>
       </template>
 
-      <hr class="border-gray-100" />
+      <hr class="border-rule" />
 
       <!-- ── Previous Congregation ─────────────────────────────────────────── -->
       <section>
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">
-          Previous Congregation <span class="text-gray-400 font-normal text-xs">(optional)</span>
+        <h3 class="mb-4 font-display text-base font-semibold text-ink">
+          Previous Congregation
+          <span class="font-sans text-xs font-normal text-ink-subtle">(optional)</span>
         </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EditField label="Congregation">
             <input
               v-model="form.previousCongregation"
@@ -476,14 +487,15 @@ watch(
         </div>
       </section>
 
-      <hr class="border-gray-100" />
+      <hr class="border-rule" />
 
       <!-- ── Emergency Contact ─────────────────────────────────────────────── -->
       <section>
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">
-          Emergency Contact <span class="text-gray-400 font-normal text-xs">(optional)</span>
+        <h3 class="mb-4 font-display text-base font-semibold text-ink">
+          Emergency Contact
+          <span class="font-sans text-xs font-normal text-ink-subtle">(optional)</span>
         </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EditField label="Name">
             <input v-model="form.ecName" type="text" placeholder="Brother John Adebayo" />
           </EditField>
@@ -501,7 +513,7 @@ watch(
     </div>
 
     <template #footer>
-      <div class="flex gap-2 justify-end">
+      <div class="flex flex-wrap justify-end gap-2">
         <Button variant="secondary" @click="close">Cancel</Button>
         <Button
           :loading="membersStore.saving"

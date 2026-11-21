@@ -5,23 +5,23 @@ const store = useToastStore()
 
 const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconName: string }> = {
   success: {
-    wrapper: 'border-green-200 bg-green-50 text-green-800',
-    icon: 'text-green-500',
+    wrapper: 'before:bg-success',
+    icon: 'text-success',
     iconName: 'mdi:check-circle-outline',
   },
   error: {
-    wrapper: 'border-red-200 bg-red-50 text-red-800',
-    icon: 'text-red-500',
+    wrapper: 'before:bg-error',
+    icon: 'text-error',
     iconName: 'mdi:alert-circle-outline',
   },
   info: {
-    wrapper: 'border-blue-200 bg-blue-50 text-blue-800',
-    icon: 'text-blue-500',
+    wrapper: 'before:bg-info',
+    icon: 'text-info',
     iconName: 'mdi:information-outline',
   },
   warning: {
-    wrapper: 'border-amber-200 bg-amber-50 text-amber-800',
-    icon: 'text-amber-500',
+    wrapper: 'before:bg-warning',
+    icon: 'text-warning',
     iconName: 'mdi:alert-outline',
   },
 }
@@ -30,7 +30,7 @@ const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconN
 <template>
   <Teleport to="body">
     <div
-      class="pointer-events-none fixed top-4 right-4 z-[200] flex w-full max-w-sm flex-col gap-2"
+      class="pointer-events-none fixed inset-x-3 top-3 z-[200] flex flex-col gap-2 sm:inset-x-auto sm:right-4 sm:top-4 sm:w-full sm:max-w-sm"
       role="region"
       aria-live="polite"
       aria-label="Notifications"
@@ -40,7 +40,7 @@ const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconN
           v-for="t in store.toasts"
           :key="t.id"
           :class="[
-            'pointer-events-auto flex items-start gap-3 rounded-lg border px-4 py-3 text-sm shadow-md',
+            'pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-lg border border-rule bg-surface py-3 pl-4 pr-2 text-sm text-ink shadow-lg before:absolute before:inset-y-0 before:left-0 before:w-1',
             variantStyles[t.variant].wrapper,
           ]"
           role="alert"
@@ -49,9 +49,9 @@ const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconN
             :icon="variantStyles[t.variant].iconName"
             :class="['mt-0.5 shrink-0 text-base', variantStyles[t.variant].icon]"
           />
-          <p class="flex-1 leading-snug">{{ t.message }}</p>
+          <p class="flex-1 pt-px leading-snug">{{ t.message }}</p>
           <button
-            class="shrink-0 rounded p-0.5 opacity-60 transition hover:opacity-100"
+            class="-my-1 inline-flex size-8 shrink-0 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
             :aria-label="`Dismiss ${t.variant} notification`"
             @click="store.dismiss(t.id)"
           >
@@ -67,8 +67,8 @@ const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconN
 .toast-enter-active,
 .toast-leave-active {
   transition:
-    opacity 0.2s ease,
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity var(--duration-base) ease,
+    transform var(--duration-slow) var(--ease-out-expo);
 }
 .toast-enter-from {
   opacity: 0;

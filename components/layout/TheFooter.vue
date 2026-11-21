@@ -60,43 +60,49 @@ const resourceLinks = computed(() => keep(allResourceLinks))
 </script>
 
 <template>
-  <footer ref="footerRef" class="relative overflow-hidden bg-[#0F172A] text-white">
-    <!-- Watermark -->
-    <span class="footer-watermark" aria-hidden="true">worship with</span>
-
+  <footer ref="footerRef" class="bookcloth relative overflow-hidden text-white">
     <!-- Main content -->
-    <div class="relative z-10 mx-auto max-w-7xl px-6 py-14 lg:px-8">
+    <div class="relative z-10 mx-auto max-w-7xl px-5 pt-14 pb-10 sm:px-6 lg:px-8 lg:pt-16">
       <!-- 4-column grid -->
-      <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] lg:gap-12">
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr] lg:gap-12">
         <!-- Col 1: Brand -->
         <div :class="['reveal-left', isVisible && 'is-visible']">
           <!-- Logo + name -->
-          <div class="mb-2 flex items-center gap-3">
+          <div class="mb-3 flex items-center gap-3">
             <div
-              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-800 text-[11px] font-bold text-white"
+              class="flex size-12 shrink-0 items-center justify-center rounded-full border border-[#f2d593]/50 bg-white/5 font-display text-xs font-bold tracking-wide text-[#f2d593]"
             >
               CoC
             </div>
-            <p class="text-[18px] font-bold leading-tight text-white">
+            <p class="font-display text-xl leading-tight font-semibold text-white">
               {{ settingsStore.settings.name }}
             </p>
           </div>
 
           <!-- Address -->
-          <p class="mb-5 text-[13px] text-slate-400">{{ settingsStore.settings.address }}</p>
-
-          <!-- Scripture -->
-          <p class="mb-6 max-w-[280px] text-[13px] leading-[1.6] text-slate-400">
-            Rom 16:16 - "Greet one another with a Holy kiss, the Churches of Christ greet you"
+          <p class="mb-6 flex items-start gap-2 text-[15px] leading-relaxed text-white/75">
+            <Icon
+              icon="mdi:map-marker-outline"
+              class="mt-1 shrink-0 text-[#f2d593]"
+              aria-hidden="true"
+            />
+            {{ settingsStore.settings.address }}
           </p>
 
+          <!-- Scripture -->
+          <blockquote
+            class="mb-7 max-w-[320px] border-l border-[#f2d593]/40 pl-4 text-[15px] leading-relaxed text-white/75 italic"
+          >
+            Rom 16:16 - "Greet one another with a Holy kiss, the Churches of Christ greet you"
+          </blockquote>
+
           <!-- Social icons -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <!-- Facebook -->
             <a
               href="#"
               aria-label="Facebook"
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#1877F2] text-white transition-opacity hover:opacity-85"
+              class="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/85 transition-colors hover:border-white/50 hover:bg-white/10 hover:text-white"
             >
               <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
@@ -107,7 +113,7 @@ const resourceLinks = computed(() => keep(allResourceLinks))
             <a
               href="#"
               aria-label="YouTube"
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#FF0000] text-white transition-opacity hover:opacity-85"
+              class="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/85 transition-colors hover:border-white/50 hover:bg-white/10 hover:text-white"
             >
               <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -120,7 +126,7 @@ const resourceLinks = computed(() => keep(allResourceLinks))
             <a
               href="#"
               aria-label="Instagram"
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-[#E1306C] text-white transition-opacity hover:opacity-85"
+              class="flex size-11 items-center justify-center rounded-full border border-white/20 text-white/85 transition-colors hover:border-white/50 hover:bg-white/10 hover:text-white"
             >
               <svg
                 class="h-4 w-4"
@@ -140,12 +146,14 @@ const resourceLinks = computed(() => keep(allResourceLinks))
 
         <!-- Col 2: Quick Links -->
         <div v-if="quickLinks.length" :class="['reveal', 'delay-100', isVisible && 'is-visible']">
-          <h4 class="mb-5 text-[15px] font-semibold text-white">Quick Links</h4>
-          <ul>
+          <h4 class="mb-3 text-xs font-semibold tracking-[0.08em] text-[#f2d593] uppercase">
+            Quick Links
+          </h4>
+          <ul class="border-t border-white/10">
             <li v-for="link in quickLinks" :key="link.href">
               <NuxtLink
                 :to="link.href"
-                class="block text-[14px] leading-[2] text-slate-400 transition-colors duration-150 hover:text-white"
+                class="flex min-h-11 items-center border-b border-white/10 text-[15px] text-white/80 transition-colors duration-150 hover:text-white hover:underline"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -158,12 +166,14 @@ const resourceLinks = computed(() => keep(allResourceLinks))
           v-if="salvationLinks.length"
           :class="['reveal', 'delay-200', isVisible && 'is-visible']"
         >
-          <h4 class="mb-5 text-[15px] font-semibold text-white">God's Plan for Salvation</h4>
-          <ul>
+          <h4 class="mb-3 text-xs font-semibold tracking-[0.08em] text-[#f2d593] uppercase">
+            God's Plan for Salvation
+          </h4>
+          <ul class="border-t border-white/10">
             <li v-for="link in salvationLinks" :key="link.href">
               <NuxtLink
                 :to="link.href"
-                class="block text-[14px] leading-[2] text-slate-400 transition-colors duration-150 hover:text-white"
+                class="flex min-h-11 items-center border-b border-white/10 text-[15px] text-white/80 transition-colors duration-150 hover:text-white hover:underline"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -176,15 +186,17 @@ const resourceLinks = computed(() => keep(allResourceLinks))
           v-if="resourceLinks.length"
           :class="['reveal', 'delay-300', isVisible && 'is-visible']"
         >
-          <h4 class="mb-5 text-[15px] font-semibold text-white">Resources</h4>
-          <ul>
+          <h4 class="mb-3 text-xs font-semibold tracking-[0.08em] text-[#f2d593] uppercase">
+            Resources
+          </h4>
+          <ul class="border-t border-white/10">
             <li v-for="link in resourceLinks" :key="link.href">
               <a
                 v-if="link.external"
                 :href="link.href"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 text-[14px] leading-[2] text-slate-400 transition-colors duration-150 hover:text-white"
+                class="flex min-h-11 items-center gap-2 border-b border-white/10 text-[15px] text-white/80 transition-colors duration-150 hover:text-white hover:underline"
               >
                 <!-- GitHub icon -->
                 <svg
@@ -203,7 +215,7 @@ const resourceLinks = computed(() => keep(allResourceLinks))
               <NuxtLink
                 v-else
                 :to="link.href"
-                class="block text-[14px] leading-[2] text-slate-400 transition-colors duration-150 hover:text-white"
+                class="flex min-h-11 items-center border-b border-white/10 text-[15px] text-white/80 transition-colors duration-150 hover:text-white hover:underline"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -213,41 +225,31 @@ const resourceLinks = computed(() => keep(allResourceLinks))
       </div>
 
       <!-- Divider -->
-      <div class="mt-12 border-t border-white/10"></div>
+      <div class="mt-12 border-t border-white/15"></div>
 
       <!-- Bottom bar -->
-      <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div class="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p class="text-[13px] text-white">© 2025 Church of Christ, Worldwide</p>
-          <p class="mt-1 max-w-[520px] text-[12px] text-slate-500">
+          <p class="text-sm font-medium text-white">© 2025 Church of Christ, Worldwide</p>
+          <p class="mt-1 max-w-[520px] text-[13px] leading-relaxed text-white/65">
             This website template is open-source and available for all Church of Christ
             congregations worldwide.
           </p>
         </div>
-        <div class="flex items-center gap-1 text-[13px] text-slate-400">
-          <a href="#" class="transition-colors hover:text-white">Privacy Policy</a>
-          <span class="mx-1 text-slate-600">&bull;</span>
-          <a href="#" class="transition-colors hover:text-white">Terms of Use</a>
+        <div class="flex items-center gap-1 text-sm text-white/75">
+          <a
+            href="#"
+            class="inline-flex min-h-11 items-center transition-colors hover:text-white hover:underline"
+            >Privacy Policy</a
+          >
+          <span class="mx-2 text-white/35" aria-hidden="true">&bull;</span>
+          <a
+            href="#"
+            class="inline-flex min-h-11 items-center transition-colors hover:text-white hover:underline"
+            >Terms of Use</a
+          >
         </div>
       </div>
     </div>
   </footer>
 </template>
-
-<style scoped>
-.footer-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: clamp(80px, 15vw, 180px);
-  font-weight: 900;
-  color: white;
-  opacity: 0.05;
-  white-space: nowrap;
-  user-select: none;
-  pointer-events: none;
-  z-index: 0;
-  letter-spacing: 0.1em;
-}
-</style>

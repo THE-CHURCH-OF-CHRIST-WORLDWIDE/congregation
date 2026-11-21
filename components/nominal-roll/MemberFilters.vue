@@ -56,10 +56,10 @@ function doExport() {
 </script>
 
 <template>
-  <div>
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+  <div class="flex flex-col gap-3">
+    <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
       <Tabs v-model="activeTab" :tabs="tabs" />
-      <div class="flex gap-2 shrink-0">
+      <div class="flex shrink-0 gap-2">
         <Button variant="secondary" size="sm" @click="doExport">
           <template #icon-left><Icon icon="mdi:upload-outline" class="text-base" /></template>
           Export CSV
@@ -71,22 +71,24 @@ function doExport() {
       </div>
     </div>
 
-    <div class="flex gap-2 mt-3">
-      <div class="relative flex-1">
+    <div
+      class="flex flex-wrap items-end gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs"
+    >
+      <div class="relative min-w-48 flex-1">
         <Icon
           icon="mdi:magnify"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+          class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-base text-ink-subtle"
         />
         <input
           :value="membersStore.filters.search"
           type="search"
           placeholder="Search here..."
-          class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search members"
           @input="membersStore.setFilter({ search: ($event.target as any).value })"
         />
       </div>
-      <Button variant="secondary" size="sm">
+      <Button variant="secondary" size="sm" class="min-h-10">
         <template #icon-left><Icon icon="mdi:filter-outline" class="text-base" /></template>
         Filter
       </Button>

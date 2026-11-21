@@ -9,25 +9,27 @@ withDefaults(defineProps<Props>(), { variant: 'default' })
 </script>
 
 <template>
-  <div class="flex items-start gap-2 min-w-0">
+  <div class="flex min-w-0 items-start gap-2.5">
     <div
-      class="w-6 h-6 rounded-md flex items-center justify-center shrink-0 mt-0.5"
-      :style="variant === 'warning' ? { backgroundColor: '#FFFCF5' } : undefined"
-      :class="variant === 'default' ? 'bg-blue-50' : ''"
+      class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md"
+      :class="variant === 'warning' ? 'bg-warning-soft' : 'bg-primary-soft'"
     >
       <Icon
         v-if="icon"
         :icon="icon"
-        class="text-xs"
-        :style="variant === 'warning' ? { color: '#F3A218' } : undefined"
-        :class="variant === 'default' ? 'text-blue-500' : ''"
+        class="text-sm"
+        :class="variant === 'warning' ? 'text-warning' : 'text-primary-ink'"
       />
     </div>
     <div class="min-w-0">
-      <p class="text-[10px] text-gray-400 leading-tight mb-0.5">{{ label }}</p>
+      <p
+        class="mb-0.5 text-2xs leading-tight font-semibold tracking-wide text-ink-subtle uppercase"
+      >
+        {{ label }}
+      </p>
       <!-- `whitespace-pre-line` so a multi-line value (a member's comment) keeps its line
            breaks. No effect on the single-line values every other field holds. -->
-      <p class="text-xs font-medium leading-snug wrap-break-word whitespace-pre-line text-gray-800">
+      <p class="text-sm leading-snug font-medium wrap-break-word whitespace-pre-line text-ink">
         {{ value }}
       </p>
     </div>

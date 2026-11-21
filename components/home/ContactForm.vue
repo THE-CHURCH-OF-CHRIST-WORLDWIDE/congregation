@@ -38,42 +38,40 @@ onMounted(() => settingsStore.load())
 </script>
 
 <template>
-  <section id="contact" ref="sectionRef" class="py-20">
-    <div class="mx-auto max-w-[900px] px-4 sm:px-6">
-      <!-- Single split card -->
+  <section id="contact" ref="sectionRef" class="scroll-mt-20 bg-surface py-16 md:py-24">
+    <div class="mx-auto max-w-5xl px-5 sm:px-6 lg:px-8">
+      <!-- Single split panel: bookcloth details beside the ledger-page form -->
       <div
-        class="overflow-hidden rounded-2xl bg-white"
-        style="
-          box-shadow:
-            0 4px 6px rgba(0, 0, 0, 0.05),
-            0 10px 30px rgba(0, 0, 0, 0.08);
-          display: grid;
-          grid-template-columns: 300px 1fr;
-        "
+        class="grid overflow-hidden rounded-lg border border-rule bg-surface shadow-sm md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
       >
-        <!-- ── Left panel: blue info ─────────────────────────────────── -->
+        <!-- ── Left panel: details on bookcloth ──────────────────────── -->
         <div
-          :class="['flex flex-col gap-5 p-7', 'reveal-left', isVisible && 'is-visible']"
-          style="background-color: #026aa2"
+          :class="[
+            'bookcloth flex flex-col gap-6 p-6 sm:p-8',
+            'reveal-left',
+            isVisible && 'is-visible',
+          ]"
         >
           <!-- Map — MapEmbed defaults to the address held in Settings -->
-          <MapEmbed height="160px" />
+          <div class="overflow-hidden rounded-md ring-1 ring-white/20">
+            <MapEmbed height="180px" />
+          </div>
 
           <!-- Worship with us label -->
           <div>
-            <p class="text-[13px] text-blue-200">Worship with us at</p>
-            <p class="mt-1 text-[18px] font-bold leading-snug text-white">
+            <p class="text-base text-white/80">Worship with us at</p>
+            <p class="mt-1 font-display text-xl leading-snug font-semibold text-white">
               {{ settingsStore.settings.name }}
             </p>
           </div>
 
           <!-- Contact details -->
-          <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-5 border-t border-white/20 pt-5">
             <!-- Address -->
-            <div class="flex items-start gap-2.5">
-              <div class="mt-0.5 shrink-0 text-blue-200">
+            <div class="flex items-start gap-3">
+              <div class="mt-0.5 shrink-0 text-white/75">
                 <svg
-                  class="h-4 w-4"
+                  class="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   stroke-width="2"
@@ -92,19 +90,19 @@ onMounted(() => settingsStore.load())
                   />
                 </svg>
               </div>
-              <div>
-                <p class="text-[12px] font-semibold text-white">Address</p>
-                <p class="text-[12px] leading-snug text-blue-200">
+              <div class="min-w-0">
+                <p class="text-sm font-semibold tracking-wide text-white">Address</p>
+                <p class="mt-0.5 text-base leading-snug text-white/85">
                   {{ settingsStore.settings.address }}
                 </p>
               </div>
             </div>
 
             <!-- Phone -->
-            <div class="flex items-start gap-2.5">
-              <div class="mt-0.5 shrink-0 text-blue-200">
+            <div class="flex items-start gap-3">
+              <div class="mt-0.5 shrink-0 text-white/75">
                 <svg
-                  class="h-4 w-4"
+                  class="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   stroke-width="2"
@@ -118,17 +116,19 @@ onMounted(() => settingsStore.load())
                   />
                 </svg>
               </div>
-              <div>
-                <p class="text-[12px] font-semibold text-white">Phone Number</p>
-                <p class="text-[12px] text-blue-200">{{ settingsStore.settings.phone }}</p>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold tracking-wide text-white">Phone Number</p>
+                <p class="mt-0.5 text-base leading-snug text-white/85 num">
+                  {{ settingsStore.settings.phone }}
+                </p>
               </div>
             </div>
 
             <!-- Email -->
-            <div class="flex items-start gap-2.5">
-              <div class="mt-0.5 shrink-0 text-blue-200">
+            <div class="flex items-start gap-3">
+              <div class="mt-0.5 shrink-0 text-white/75">
                 <svg
-                  class="h-4 w-4"
+                  class="h-5 w-5"
                   fill="none"
                   stroke="currentColor"
                   stroke-width="2"
@@ -142,9 +142,9 @@ onMounted(() => settingsStore.load())
                   />
                 </svg>
               </div>
-              <div>
-                <p class="text-[12px] font-semibold text-white">Email</p>
-                <p class="text-[12px] break-all text-blue-200">
+              <div class="min-w-0">
+                <p class="text-sm font-semibold tracking-wide text-white">Email</p>
+                <p class="mt-0.5 text-base leading-snug text-white/85 break-all">
                   {{ settingsStore.settings.email }}
                 </p>
               </div>
@@ -153,13 +153,15 @@ onMounted(() => settingsStore.load())
         </div>
 
         <!-- ── Right panel: form ─────────────────────────────────────── -->
-        <div :class="['p-8', 'reveal-right', 'delay-150', isVisible && 'is-visible']">
+        <div
+          :class="['p-6 sm:p-8 lg:p-10', 'reveal-right', 'delay-150', isVisible && 'is-visible']"
+        >
           <!-- Success state -->
           <Transition
             mode="out-in"
-            enter-active-class="transition duration-500 ease-out"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
+            enter-active-class="transition duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            enter-from-class="opacity-0 translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
             leave-active-class="transition duration-200 ease-in"
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
@@ -169,31 +171,40 @@ onMounted(() => settingsStore.load())
               class="flex h-full flex-col items-center justify-center py-12 text-center"
             >
               <div
-                class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-100"
+                class="mb-5 flex size-14 items-center justify-center rounded-full bg-success-soft"
               >
-                <Icon icon="heroicons:check-circle" class="h-7 w-7 text-green-600" />
+                <Icon icon="mdi:check-circle-outline" class="h-8 w-8 text-success" />
               </div>
-              <h3 class="mb-2 text-lg font-bold text-gray-900">Message Sent!</h3>
-              <p class="text-sm text-gray-500">
+              <h3 class="mb-2 font-display text-2xl font-bold text-ink">Message Sent!</h3>
+              <p class="max-w-sm text-base leading-relaxed text-ink-muted">
                 Thank you for reaching out. We'll be in touch soon.
               </p>
-              <button class="mt-5 text-sm text-accent hover:underline" @click="submitted = false">
+              <button
+                class="mt-6 inline-flex min-h-11 items-center text-base font-semibold text-accent underline underline-offset-3 hover:text-primary-ink"
+                @click="submitted = false"
+              >
                 Send another message
               </button>
             </div>
 
             <!-- Form -->
             <form v-else @submit.prevent="handleSubmit">
-              <h2 class="mb-1 text-[22px] font-bold text-gray-900">Send Us A Message</h2>
-              <p class="mb-6 text-[13px] leading-snug text-gray-500">
-                Have questions? Need counselling? Want to learn more about God's word? We'd love to
-                hear from you.
-              </p>
+              <div class="mb-8">
+                <h2
+                  class="font-display text-[1.75rem] leading-[1.15] font-bold text-secondary md:text-[2rem]"
+                >
+                  Send Us A Message
+                </h2>
+                <p class="mt-3 text-base leading-relaxed text-ink-muted">
+                  Have questions? Need counselling? Want to learn more about God's word? We'd love
+                  to hear from you.
+                </p>
+              </div>
 
-              <div class="flex flex-col gap-4">
+              <div class="flex flex-col gap-5">
                 <!-- Name -->
                 <div>
-                  <label class="mb-1.5 block text-[13px] font-medium text-gray-700" for="cf-name"
+                  <label class="mb-1.5 block text-base font-medium text-ink" for="cf-name"
                     >Name</label
                   >
                   <input
@@ -202,13 +213,13 @@ onMounted(() => settingsStore.load())
                     type="text"
                     required
                     placeholder="Your full name"
-                    class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    class="w-full min-h-12 rounded-md border border-rule-strong bg-surface px-3.5 py-2.5 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                   />
                 </div>
 
                 <!-- Email -->
                 <div>
-                  <label class="mb-1.5 block text-[13px] font-medium text-gray-700" for="cf-email"
+                  <label class="mb-1.5 block text-base font-medium text-ink" for="cf-email"
                     >Email</label
                   >
                   <input
@@ -217,13 +228,13 @@ onMounted(() => settingsStore.load())
                     type="email"
                     required
                     placeholder="example@email.com"
-                    class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    class="w-full min-h-12 rounded-md border border-rule-strong bg-surface px-3.5 py-2.5 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                   />
                 </div>
 
                 <!-- Phone -->
                 <div>
-                  <label class="mb-1.5 block text-[13px] font-medium text-gray-700" for="cf-phone"
+                  <label class="mb-1.5 block text-base font-medium text-ink" for="cf-phone"
                     >Phone Number</label
                   >
                   <input
@@ -233,32 +244,39 @@ onMounted(() => settingsStore.load())
                     autocomplete="tel"
                     required
                     placeholder="+234 800 000 0000"
-                    class="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    class="w-full min-h-12 rounded-md border border-rule-strong bg-surface px-3.5 py-2.5 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                   />
                 </div>
 
                 <!-- Message -->
                 <div>
-                  <label class="mb-1.5 block text-[13px] font-medium text-gray-700" for="cf-message"
+                  <label class="mb-1.5 block text-base font-medium text-ink" for="cf-message"
                     >Your Message</label
                   >
                   <textarea
                     id="cf-message"
                     v-model="form.message"
-                    rows="4"
+                    rows="5"
                     required
                     placeholder="How can we help you?"
-                    class="w-full resize-none rounded-lg border border-gray-200 px-4 py-2.5 text-[14px] text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    class="w-full min-h-12 rounded-md border border-rule-strong bg-surface px-3.5 py-2.5 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 resize-y leading-relaxed"
                   ></textarea>
-                  <p class="mt-1 text-[12px] text-gray-400">Keep this simple of 500 words max.</p>
+                  <p class="mt-1.5 text-sm text-ink-subtle">Please keep it under 500 words.</p>
                 </div>
 
-                <p v-if="error" role="alert" class="text-[13px] text-red-600">{{ error }}</p>
+                <p
+                  v-if="error"
+                  role="alert"
+                  class="flex items-start gap-2 rounded-md border border-error/25 bg-error-soft px-4 py-3 text-base text-error"
+                >
+                  <Icon icon="mdi:alert-circle-outline" class="mt-0.5 h-5 w-5 shrink-0" />
+                  <span>{{ error }}</span>
+                </p>
 
                 <button
                   type="submit"
                   :disabled="messagesStore.submitting"
-                  class="mt-1 w-full rounded-full bg-[#026AA2] py-2.5 text-[14px] font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
+                  class="mt-1 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-base font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active disabled:cursor-not-allowed disabled:opacity-55"
                 >
                   {{ messagesStore.submitting ? 'Sending…' : 'Send message' }}
                 </button>

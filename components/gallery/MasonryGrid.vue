@@ -20,7 +20,13 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
       @click="emit('image-click', index)"
       @keydown.enter="emit('image-click', index)"
     >
-      <img :src="displayableImageUrl(img.src)" :alt="img.alt" loading="lazy" class="masonry-img" />
+      <img
+        :src="displayableImageUrl(img.src)"
+        :alt="img.alt"
+        loading="lazy"
+        decoding="async"
+        class="masonry-img"
+      />
     </div>
   </div>
 </template>
@@ -28,17 +34,18 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
 <style scoped>
 .masonry-grid {
   column-count: 4;
-  column-gap: 8px;
+  column-gap: 12px;
 }
 
 .masonry-item {
   display: inline-block;
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   break-inside: avoid;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   cursor: pointer;
+  background: var(--c-surface-sunken);
 }
 
 .masonry-img {
@@ -47,13 +54,14 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
   display: block;
   object-fit: cover;
   transition:
-    transform 0.2s ease,
+    transform 0.4s var(--ease-out-expo),
     filter 0.2s ease;
 }
 
-.masonry-item:hover .masonry-img {
+.masonry-item:hover .masonry-img,
+.masonry-item:focus-visible .masonry-img {
   transform: scale(1.02);
-  filter: brightness(0.9);
+  filter: brightness(0.92);
 }
 
 @media (max-width: 1023px) {
@@ -65,6 +73,11 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
 @media (max-width: 639px) {
   .masonry-grid {
     column-count: 2;
+    column-gap: 8px;
+  }
+
+  .masonry-item {
+    margin-bottom: 8px;
   }
 }
 </style>

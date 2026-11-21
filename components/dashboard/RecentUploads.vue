@@ -5,41 +5,38 @@ const sermons = computed(() => teachingsStore.recentSermons)
 </script>
 
 <template>
-  <Card class="h-full">
-    <h3 class="text-base font-semibold text-gray-900 mb-4">Recent Sermon Uploads</h3>
+  <Card padding="none" class="flex h-full flex-col overflow-hidden p-5">
+    <h3 class="font-display text-base font-semibold text-ink">Recent Sermon Uploads</h3>
 
-    <div v-if="sermons.length" class="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-1">
+    <div
+      v-if="sermons.length"
+      class="-mx-5 mt-3 -mb-5 flex max-h-[420px] flex-col divide-y divide-rule overflow-y-auto border-t border-rule"
+    >
       <article
         v-for="sermon in sermons"
         :key="sermon.id"
-        class="rounded-xl border border-gray-100 bg-white p-4 hover:border-blue-100 transition-colors"
+        class="px-5 py-3.5 transition-colors duration-150 hover:bg-surface-muted/70"
       >
         <!-- Category chips -->
-        <div v-if="sermon.categories.length" class="flex flex-wrap gap-1.5 mb-2">
-          <span
-            v-for="cat in sermon.categories.slice(0, 3)"
-            :key="cat"
-            class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium"
-            style="color: #0ba5ec"
-          >
+        <div v-if="sermon.categories.length" class="mb-1.5 flex flex-wrap gap-x-3 gap-y-1">
+          <span v-for="cat in sermon.categories.slice(0, 3)" :key="cat" class="stamp">
             {{ cat }}
           </span>
         </div>
 
         <!-- Title -->
-        <p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">
+        <p class="line-clamp-2 text-sm leading-snug font-semibold text-ink">
           {{ sermon.topic }}
         </p>
 
         <!-- Read more link -->
         <NuxtLink
           to="/admin/teachings"
-          class="mt-2 inline-flex items-center gap-1 text-sm font-medium"
-          style="color: #0ba5ec"
+          class="mt-1.5 inline-flex items-center gap-1 text-[13px] font-medium text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline"
           :aria-label="`Read ${sermon.topic}`"
         >
           Read more
-          <Icon icon="mdi:arrow-right" class="text-sm" />
+          <Icon icon="mdi:arrow-right" class="text-sm" aria-hidden="true" />
         </NuxtLink>
       </article>
     </div>

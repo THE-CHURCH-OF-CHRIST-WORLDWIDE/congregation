@@ -13,7 +13,7 @@ function play() {
 </script>
 
 <template>
-  <div class="relative w-full overflow-hidden rounded-xl bg-black" style="padding-bottom: 56.25%">
+  <div class="relative w-full overflow-hidden rounded-lg bg-black" style="padding-bottom: 56.25%">
     <!-- Thumbnail + play button -->
     <template v-if="!playing">
       <img
@@ -22,17 +22,22 @@ function play() {
         loading="lazy"
         class="absolute inset-0 h-full w-full object-cover"
       />
-      <div class="absolute inset-0 bg-black/40"></div>
+      <div class="absolute inset-0 bg-black/30 transition-colors duration-200"></div>
       <button
         :aria-label="`Play ${props.title}`"
-        class="absolute inset-0 flex items-center justify-center group"
+        class="group absolute inset-0 flex items-center justify-center"
         @click="play"
       >
         <span
-          class="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-xl transition-transform group-hover:scale-110"
+          class="flex size-16 items-center justify-center rounded-full bg-white/95 shadow-lg transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
         >
           <!-- Play triangle -->
-          <svg class="ml-1 h-7 w-7 text-[#2563EB]" fill="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="ml-1 size-7 text-primary"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>

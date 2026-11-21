@@ -253,49 +253,54 @@ function doExport() {
 <template>
   <div class="flex flex-col gap-0">
     <!-- Controls -->
-    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+    <div
+      class="mb-4 flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center"
+    >
       <div class="relative flex-1">
         <Icon
           icon="mdi:magnify"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+          class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-base text-ink-subtle"
         />
         <input
           v-model="searchQuery"
           type="search"
           placeholder="Search members..."
-          class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search attendance"
         />
       </div>
       <div class="flex gap-2">
         <Button variant="secondary" size="sm" @click="doExport">
-          <template #icon-left><Icon icon="mdi:upload-outline" /></template>
+          <template #icon-left><Icon icon="mdi:upload-outline" class="text-base" /></template>
           Export CSV
         </Button>
         <Button variant="secondary" size="sm">
-          <template #icon-left><Icon icon="mdi:download-outline" /></template>
+          <template #icon-left><Icon icon="mdi:download-outline" class="text-base" /></template>
           Import CSV
         </Button>
       </div>
     </div>
 
-    <Card padding="none">
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm" role="table">
-          <thead>
-            <tr class="bg-gray-50 border-b border-gray-100">
-              <th scope="col" class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 w-10">
+    <Card padding="none" class="overflow-hidden">
+      <div class="max-h-[70vh] overflow-auto">
+        <table class="w-full border-separate border-spacing-0 text-sm" role="table">
+          <thead class="sticky top-0 z-[2] bg-surface-muted">
+            <tr>
+              <th
+                scope="col"
+                class="w-12 border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
                 S/N
               </th>
               <th
                 scope="col"
-                class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 min-w-[140px]"
+                class="sticky left-0 z-[1] min-w-[180px] border-r border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
               >
                 Name
               </th>
               <th
                 scope="col"
-                class="text-left px-3 py-2.5 text-xs font-medium text-gray-500 min-w-[140px]"
+                class="min-w-[150px] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
               >
                 Member Monthly Summary
               </th>
@@ -303,48 +308,66 @@ function doExport() {
                 v-for="date in sundaysInMonth"
                 :key="date"
                 scope="col"
-                class="text-center px-2 py-2.5 text-xs font-medium text-gray-500 w-16"
+                class="num w-16 border-b border-l border-rule bg-surface-muted px-2 py-2.5 text-center text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
               >
                 {{ formatDate(date, 'dayMonth') }}
               </th>
-              <th scope="col" class="w-8 px-2 py-2.5"></th>
+              <th
+                scope="col"
+                class="w-12 border-b border-l border-rule bg-surface-muted px-2 py-2.5"
+              >
+                <span class="sr-only">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="(member, idx) in pagedMembers"
               :key="member.id"
-              :class="['border-b border-gray-50', idx % 2 === 0 ? '' : 'bg-gray-50/30']"
+              class="group transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-3 py-2.5 text-gray-500">{{ attFrom + idx }}</td>
-              <td class="px-3 py-2.5">
-                <div class="flex items-center gap-2">
+              <td class="num border-b border-rule px-4 py-1.5 text-ink-subtle">
+                {{ attFrom + idx }}
+              </td>
+              <td
+                class="sticky left-0 z-[1] border-r border-b border-rule bg-surface px-4 py-1.5 transition-colors group-hover:bg-surface-muted"
+              >
+                <div class="flex items-center gap-2.5">
                   <Avatar :src="member.avatar" :name="member.name" size="sm" />
-                  <span class="font-medium text-gray-900 text-xs">{{ member.name }}</span>
+                  <span class="text-sm font-medium whitespace-nowrap text-ink">{{
+                    member.name
+                  }}</span>
                 </div>
               </td>
-              <td class="px-3 py-2.5 min-w-[140px]">
+              <td class="min-w-[150px] border-b border-rule px-4 py-1.5">
                 <div>
-                  <div class="flex items-center gap-2 mb-0.5">
+                  <div class="mb-0.5 flex items-center gap-2">
                     <div class="progress-bar flex-1">
                       <div
                         class="progress-bar-fill"
                         :style="{ width: `${getMonthlySummary(member.id).percentage}%` }"
                       ></div>
                     </div>
-                    <span class="text-[11px] font-medium text-gray-700 w-7 text-right">
+                    <span class="num w-9 text-right text-xs font-semibold text-ink">
                       {{ getMonthlySummary(member.id).percentage }}%
                     </span>
                   </div>
-                  <p class="text-[10px] text-gray-400">
+                  <p class="num text-2xs text-ink-subtle">
                     {{ getMonthlySummary(member.id).sessionsPresent }}/{{
                       getMonthlySummary(member.id).sessionsTotal
                     }}
                   </p>
                 </div>
               </td>
-              <td v-for="date in sundaysInMonth" :key="date" class="px-2 py-2.5 text-center">
-                <span class="inline-flex items-center gap-1">
+              <td
+                v-for="date in sundaysInMonth"
+                :key="date"
+                class="border-b border-l border-rule p-0 text-center transition-colors"
+                :class="isPresent(member.id, date) && 'bg-success-soft'"
+              >
+                <label
+                  class="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1 px-2"
+                >
                   <input
                     type="checkbox"
                     class="attendance-check"
@@ -357,39 +380,39 @@ function doExport() {
                   <Icon
                     v-if="worshippedElsewhere(member.id, date)"
                     icon="mdi:certificate-outline"
-                    class="text-xs text-amber-500"
+                    class="text-sm text-accent"
                     :class="!recordFor(member.id, date)?.certificate && 'opacity-50'"
                     :title="elsewhereTitle(member.id, date)"
                     :aria-label="elsewhereTitle(member.id, date)"
                   />
-                </span>
+                </label>
               </td>
-              <td class="px-2 py-2.5 relative">
+              <td class="relative border-b border-l border-rule px-1 py-1 text-center">
                 <button
-                  class="text-gray-400 hover:text-gray-600 p-0.5"
+                  class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
                   :aria-label="`More actions for ${member.name}`"
                   :aria-expanded="openRowMenu === member.id"
                   @click.stop="openRowMenu = openRowMenu === member.id ? null : member.id"
                 >
-                  <Icon icon="mdi:dots-vertical" />
+                  <Icon icon="mdi:dots-vertical" class="text-lg" />
                 </button>
                 <div
                   v-if="openRowMenu === member.id"
-                  class="absolute right-2 top-8 z-10 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                  class="absolute top-10 right-2 z-10 w-48 rounded-md border border-rule bg-surface py-1 text-left shadow-md"
                   @click.stop
                 >
                   <button
-                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+                    class="flex min-h-10 w-full items-center gap-2 px-3 text-left text-sm text-ink transition-colors hover:bg-surface-muted"
                     @click="markMonth(member.id, true)"
                   >
-                    <Icon icon="mdi:check-all" class="text-green-600" />
+                    <Icon icon="mdi:check-all" class="text-base text-success" />
                     Mark all present
                   </button>
                   <button
-                    class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50"
+                    class="flex min-h-10 w-full items-center gap-2 px-3 text-left text-sm text-ink transition-colors hover:bg-surface-muted"
                     @click="markMonth(member.id, false)"
                   >
-                    <Icon icon="mdi:close-box-multiple-outline" class="text-red-500" />
+                    <Icon icon="mdi:close-box-multiple-outline" class="text-base text-error" />
                     Mark all absent
                   </button>
                 </div>
@@ -426,7 +449,7 @@ function doExport() {
     <Transition name="fade">
       <div
         v-if="hasChanged"
-        class="sticky bottom-4 flex justify-end gap-2 mt-4 bg-white rounded-xl shadow-lg border border-gray-200 p-3"
+        class="sticky bottom-4 z-[3] mt-4 flex justify-end gap-2 rounded-lg border border-rule-strong bg-surface p-3 shadow-lg"
       >
         <Button :loading="attendanceStore.saving" @click="save">Save Changes</Button>
         <Button variant="secondary" @click="cancel">Cancel</Button>
@@ -442,3 +465,12 @@ function doExport() {
     />
   </div>
 </template>
+
+<style scoped>
+/* A present mark reads as success: the tick plus the tinted cell, not colour alone. */
+input[type='checkbox'].attendance-check {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--c-success);
+}
+</style>

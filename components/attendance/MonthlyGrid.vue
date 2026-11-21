@@ -65,20 +65,22 @@ const headerText = computed(
 </script>
 
 <template>
-  <Card>
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-      <p class="text-sm font-medium text-gray-700">{{ headerText }}</p>
+  <Card padding="none" class="overflow-hidden">
+    <div
+      class="flex flex-col justify-between gap-3 border-b border-rule px-5 py-4 sm:flex-row sm:items-center"
+    >
+      <p class="font-display text-base font-semibold text-ink">{{ headerText }}</p>
       <div class="flex gap-2">
         <select
           v-model="selectedService"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          class="min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Select service"
         >
           <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
         </select>
         <select
           v-model="selectedYear"
-          class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          class="num min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Select year"
         >
           <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
@@ -88,71 +90,96 @@ const headerText = computed(
 
     <p
       v-if="!hasRecordsForSelection"
-      class="mb-4 flex items-start gap-2 rounded-lg bg-blue-50 px-3 py-2.5 text-sm text-blue-900"
+      class="mx-5 mt-4 flex items-start gap-2 rounded-md border border-info/25 bg-info-soft px-4 py-3 text-sm text-info"
     >
-      <Icon icon="mdi:information-outline" class="mt-0.5 shrink-0" />
+      <Icon icon="mdi:information-outline" class="mt-0.5 shrink-0 text-base" />
       <span>
         Nothing recorded for {{ selectedService }} in {{ selectedYear }} yet. Open any month below
         to mark its register — the summaries here fill in as you do.
       </span>
     </p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div
-        v-for="month in monthlyData"
-        :key="month.month"
-        class="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 hover:border-blue-200 transition-colors"
-      >
-        <!-- Header: Month Year + menu -->
-        <!-- The card's only action is "View Details" at the foot of it, so no
-             overflow menu here — an empty one is worse than none. -->
-        <div class="mb-4">
-          <h4 class="text-sm font-semibold text-gray-900">{{ month.label }} {{ selectedYear }}</h4>
-        </div>
-
-        <!-- Service + percentage + progress -->
-        <div class="mb-4">
-          <div class="flex items-center justify-between text-sm mb-1.5">
-            <span class="text-gray-700">{{ selectedService }}</span>
-            <span class="font-semibold" style="color: #0ba5ec">{{ month.rate }}%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-bar-fill" :style="{ width: `${month.rate}%` }"></div>
-          </div>
-        </div>
-
-        <!-- Stat boxes -->
-        <div class="grid grid-cols-2 gap-3 mb-4">
-          <div class="rounded-xl bg-blue-50/60 p-3">
-            <p class="text-xs text-gray-500">Sessions</p>
-            <p class="mt-1 text-lg font-bold text-gray-900">{{ month.sessions }}</p>
-          </div>
-          <div class="rounded-xl bg-blue-50/60 p-3">
-            <p class="text-xs text-gray-500">Present</p>
-            <p class="mt-1 text-lg font-bold text-gray-900">{{ month.present }}</p>
-          </div>
-        </div>
-
-        <!-- View Details CTA -->
-        <NuxtLink
-          :to="`/admin/attendance/${serviceSlug}?month=${month.month}`"
-          class="view-details-btn mt-auto inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors"
-          :aria-label="`${month.sessions ? 'View' : 'Mark'} ${selectedService} attendance for ${month.label} ${selectedYear}`"
-        >
-          {{ month.sessions ? 'View details' : 'Mark register' }}
-          <Icon icon="mdi:arrow-right" class="text-base" />
-        </NuxtLink>
-      </div>
+    <!-- The year as a ledger: one ruled line per month, month pinned on the left. -->
+    <div class="max-h-[70vh] overflow-auto" :class="!hasRecordsForSelection && 'mt-4'">
+      <table class="w-full border-separate border-spacing-0 text-[13px]">
+        <thead class="sticky top-0 z-[2]">
+          <tr>
+            <th
+              scope="col"
+              class="sticky left-0 z-[1] min-w-[150px] border-r border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
+              Month
+            </th>
+            <th
+              scope="col"
+              class="min-w-[220px] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
+              Rate
+            </th>
+            <th
+              scope="col"
+              class="border-b border-l border-rule bg-surface-muted px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
+              Sessions
+            </th>
+            <th
+              scope="col"
+              class="border-b border-l border-rule bg-surface-muted px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
+              Present
+            </th>
+            <th scope="col" class="border-b border-l border-rule bg-surface-muted px-4 py-2.5">
+              <span class="sr-only">Register</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- The row's only action is the register link at the end of it, so no
+               overflow menu here — an empty one is worse than none. -->
+          <tr
+            v-for="month in monthlyData"
+            :key="month.month"
+            class="group transition-colors hover:bg-surface-muted/70"
+          >
+            <th
+              scope="row"
+              class="sticky left-0 z-[1] border-r border-b border-rule bg-surface px-4 py-2 text-left font-display text-sm font-semibold whitespace-nowrap text-ink transition-colors group-hover:bg-surface-muted"
+            >
+              {{ month.label }} <span class="num">{{ selectedYear }}</span>
+            </th>
+            <td class="border-b border-rule px-4 py-2">
+              <div class="mb-1 flex items-center justify-between gap-3">
+                <span class="truncate text-ink-muted">{{ selectedService }}</span>
+                <span class="num font-semibold text-ink">{{ month.rate }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill" :style="{ width: `${month.rate}%` }"></div>
+              </div>
+            </td>
+            <td class="num border-b border-l border-rule px-4 py-2 text-right text-ink">
+              {{ month.sessions }}
+            </td>
+            <td class="num border-b border-l border-rule px-4 py-2 text-right text-ink">
+              {{ month.present }}
+            </td>
+            <td class="border-b border-l border-rule px-3 py-1.5 text-right">
+              <NuxtLink
+                :to="`/admin/attendance/${serviceSlug}?month=${month.month}`"
+                :class="[
+                  'inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md px-3 text-[13px] font-semibold whitespace-nowrap transition-colors duration-150',
+                  month.sessions
+                    ? 'border border-rule-strong bg-surface text-ink hover:border-ink-subtle hover:bg-surface-muted'
+                    : 'bg-primary text-on-primary shadow-xs hover:bg-primary-hover',
+                ]"
+                :aria-label="`${month.sessions ? 'View' : 'Mark'} ${selectedService} attendance for ${month.label} ${selectedYear}`"
+              >
+                {{ month.sessions ? 'View details' : 'Mark register' }}
+                <Icon icon="mdi:arrow-right" class="text-base" />
+              </NuxtLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </Card>
 </template>
-
-<style scoped>
-.view-details-btn {
-  border-color: #0ba5ec;
-  color: #0ba5ec;
-}
-.view-details-btn:hover {
-  background-color: rgba(11, 165, 236, 0.08);
-}
-</style>

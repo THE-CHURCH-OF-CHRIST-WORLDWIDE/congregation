@@ -6,56 +6,70 @@ defineProps<{
 </script>
 
 <template>
-  <div class="relative overflow-hidden bg-[#111827]" style="min-height: 120px">
-    <!-- Decorative thumbnail stack — top right -->
-    <div class="absolute right-8 top-2 z-10 flex items-end" aria-hidden="true">
-      <div class="relative" style="width: 220px; height: 90px">
-        <img
-          v-if="previewImages?.[0]"
-          :src="displayableImageUrl(previewImages[0])"
-          alt=""
-          class="absolute left-0 top-3 h-[70px] w-[100px] rounded-md border-2 border-white object-cover"
-          style="transform: rotate(-3deg); z-index: 1"
-          loading="lazy"
-        />
-        <img
-          v-if="previewImages?.[1]"
-          :src="displayableImageUrl(previewImages[1])"
-          alt=""
-          class="absolute left-[60px] top-1 h-[70px] w-[100px] rounded-md border-2 border-white object-cover"
-          style="transform: rotate(2deg); z-index: 2"
-          loading="lazy"
-        />
+  <div class="bookcloth relative overflow-hidden">
+    <div class="relative mx-auto max-w-7xl px-5 py-10 sm:px-6 md:py-12 lg:px-8">
+      <!-- Decorative thumbnail stack — top right -->
+      <div
+        class="absolute top-1/2 right-5 z-10 hidden -translate-y-1/2 items-end sm:flex lg:right-8"
+        aria-hidden="true"
+      >
+        <div class="relative h-[90px] w-[220px]">
+          <img
+            v-if="previewImages?.[0]"
+            :src="displayableImageUrl(previewImages[0])"
+            alt=""
+            class="absolute top-3 left-0 z-[1] h-[70px] w-[100px] -rotate-3 rounded-md border-2 border-white object-cover shadow-md"
+            loading="lazy"
+            decoding="async"
+          />
+          <img
+            v-if="previewImages?.[1]"
+            :src="displayableImageUrl(previewImages[1])"
+            alt=""
+            class="absolute top-1 left-[60px] z-[2] h-[70px] w-[100px] rotate-2 rounded-md border-2 border-white object-cover shadow-md"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </div>
+
+      <!-- Breadcrumb -->
+      <nav class="relative z-20" aria-label="Breadcrumb">
+        <ol class="flex flex-wrap items-center gap-1.5 text-sm text-white/70">
+          <li>
+            <NuxtLink
+              to="/"
+              class="rounded-sm transition-colors duration-150 hover:text-white hover:underline"
+              >Home</NuxtLink
+            >
+          </li>
+          <li class="select-none" aria-hidden="true">/</li>
+          <li>
+            <NuxtLink
+              to="/events"
+              class="rounded-sm transition-colors duration-150 hover:text-white hover:underline"
+              >Past Events</NuxtLink
+            >
+          </li>
+          <li class="select-none" aria-hidden="true">/</li>
+          <li>
+            <NuxtLink
+              to="/gallery/sunday-service"
+              class="rounded-sm transition-colors duration-150 hover:text-white hover:underline"
+              >Photo Gallery</NuxtLink
+            >
+          </li>
+          <li class="select-none" aria-hidden="true">/</li>
+          <li class="font-medium text-white" aria-current="page">{{ categoryTitle }}</li>
+        </ol>
+      </nav>
+
+      <!-- Page title -->
+      <h1
+        class="relative z-20 mt-3 font-display text-[1.875rem] leading-[1.15] font-bold text-white sm:pr-[240px] md:text-[2.5rem]"
+      >
+        Photo Gallery
+      </h1>
     </div>
-
-    <!-- Breadcrumb -->
-    <nav class="relative z-20 px-8 pt-4" aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-1 text-[13px] text-white/60">
-        <li><NuxtLink to="/" class="hover:text-white/90 transition-colors">Home</NuxtLink></li>
-        <li class="select-none">/</li>
-        <li>
-          <NuxtLink to="/events" class="hover:text-white/90 transition-colors"
-            >Past Events</NuxtLink
-          >
-        </li>
-        <li class="select-none">/</li>
-        <li>
-          <NuxtLink to="/gallery/sunday-service" class="hover:text-white/90 transition-colors"
-            >Photo Gallery</NuxtLink
-          >
-        </li>
-        <li class="select-none">/</li>
-        <li class="font-medium text-white">{{ categoryTitle }}</li>
-      </ol>
-    </nav>
-
-    <!-- Page title -->
-    <h1
-      class="relative z-20 px-8 pb-5 pt-3 text-[32px] font-bold text-white"
-      style="font-family: 'Playfair Display', Georgia, serif"
-    >
-      Photo Gallery
-    </h1>
   </div>
 </template>

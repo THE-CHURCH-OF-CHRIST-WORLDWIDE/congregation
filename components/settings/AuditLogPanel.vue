@@ -34,16 +34,16 @@ function actorLabel(entry: { actorEmail?: string; actorUid: string }) {
 <template>
   <div class="flex flex-col gap-6">
     <div>
-      <h2 class="text-base font-semibold text-gray-900">Audit log</h2>
-      <p class="mt-0.5 text-sm text-gray-500">
+      <h2 class="font-display text-lg font-semibold text-ink">Audit log</h2>
+      <p class="mt-0.5 text-sm text-ink-muted">
         Every change made through the dashboard, newest first. Visible to Super Admins only.
       </p>
     </div>
 
     <!-- Not a Super Admin: say so plainly rather than showing an empty table. -->
     <Card v-if="authStore.roleLoaded && !authStore.isSuperAdmin">
-      <div class="flex items-start gap-2.5 text-sm text-gray-600">
-        <Icon icon="mdi:shield-lock-outline" class="mt-0.5 shrink-0 text-gray-400" />
+      <div class="flex items-start gap-2.5 text-sm text-ink-muted">
+        <Icon icon="mdi:shield-lock-outline" class="mt-0.5 shrink-0 text-ink-subtle" />
         <p>Only a Super Admin can view the audit log.</p>
       </div>
     </Card>
@@ -53,29 +53,45 @@ function actorLabel(entry: { actorEmail?: string; actorUid: string }) {
         <div class="overflow-x-auto">
           <table class="w-full text-sm" role="table">
             <thead>
-              <tr class="border-b border-gray-100 bg-gray-50">
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">When</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Who</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Action</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500">Target</th>
+              <tr>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  When
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Who
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Action
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Target
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-rule">
               <tr
                 v-for="entry in paginated"
                 :key="entry.id"
-                class="border-b border-gray-50 transition-colors hover:bg-gray-50"
+                class="transition-colors hover:bg-surface-muted/70"
               >
-                <td class="whitespace-nowrap px-4 py-3 text-gray-500">
+                <td class="num whitespace-nowrap px-4 py-3 text-ink-muted">
                   <span :title="entry.at ? formatDate(entry.at, 'long') : ''">
                     {{ entry.at ? formatRelative(entry.at) : '—' }}
                   </span>
                 </td>
                 <td class="px-4 py-3">
-                  <span class="text-gray-900">{{ actorLabel(entry) }}</span>
+                  <span class="font-medium text-ink">{{ actorLabel(entry) }}</span>
                 </td>
-                <td class="px-4 py-3 text-gray-700">{{ auditActionLabel(entry.action) }}</td>
-                <td class="max-w-[16rem] truncate px-4 py-3 text-gray-500">
+                <td class="px-4 py-3 text-ink">{{ auditActionLabel(entry.action) }}</td>
+                <td class="max-w-[16rem] truncate px-4 py-3 text-ink-muted">
                   {{ entry.targetLabel ?? entry.targetId ?? '—' }}
                 </td>
               </tr>
@@ -101,7 +117,7 @@ function actorLabel(entry: { actorEmail?: string; actorUid: string }) {
         />
       </Card>
 
-      <p class="text-xs leading-relaxed text-gray-400">
+      <p class="max-w-[70ch] text-xs leading-relaxed text-ink-subtle">
         Entries are append-only — they cannot be edited or deleted, by anyone. They are written by
         the app as each change succeeds, so the log evidences what the dashboard did rather than
         everything that could have happened in the database.

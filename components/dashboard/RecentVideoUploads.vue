@@ -5,24 +5,29 @@ const sermons = computed(() => teachingsStore.recentSermons)
 </script>
 
 <template>
-  <Card class="h-full">
-    <h3 class="text-base font-semibold text-gray-900 mb-4">Recent Video Uploads</h3>
+  <Card padding="none" class="flex h-full flex-col overflow-hidden p-5">
+    <h3 class="font-display text-base font-semibold text-ink">Recent Video Uploads</h3>
 
-    <div v-if="sermons.length" class="flex flex-col gap-3 max-h-[280px] overflow-y-auto pr-1">
-      <div v-for="sermon in sermons" :key="sermon.id" class="flex items-start gap-3">
+    <div
+      v-if="sermons.length"
+      class="-mx-5 mt-3 -mb-5 flex max-h-[280px] flex-col divide-y divide-rule overflow-y-auto border-t border-rule"
+    >
+      <div v-for="sermon in sermons" :key="sermon.id" class="flex items-start gap-3 px-5 py-3">
         <div
-          class="flex-shrink-0 bg-pink-500 text-white text-xs font-bold rounded-lg px-2 py-2 text-center min-w-[64px]"
+          class="flex min-w-[64px] shrink-0 flex-col items-center rounded-md border border-rule bg-surface-muted px-2 py-1.5 text-center"
         >
-          <p class="text-base leading-tight">{{ sermon.videoAttendees ?? 0 }}</p>
-          <p class="text-[10px] font-medium">attendees</p>
+          <p class="num font-display text-base leading-tight font-semibold text-ink">
+            {{ sermon.videoAttendees ?? 0 }}
+          </p>
+          <p class="text-2xs font-medium text-ink-subtle">attendees</p>
         </div>
         <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium text-gray-800 leading-tight line-clamp-2">
+          <p class="line-clamp-2 text-sm leading-snug font-medium text-ink">
             {{ sermon.topic }}
           </p>
-          <div class="flex items-center gap-1 mt-1 text-gray-400">
-            <Icon icon="mdi:calendar-outline" class="text-xs flex-shrink-0" />
-            <span class="text-xs">{{ formatDate(sermon.date, 'numeric') }}</span>
+          <div class="mt-1 flex items-center gap-1 text-ink-subtle">
+            <Icon icon="mdi:calendar-outline" class="shrink-0 text-xs" aria-hidden="true" />
+            <span class="num text-xs">{{ formatDate(sermon.date, 'numeric') }}</span>
           </div>
         </div>
       </div>

@@ -114,60 +114,89 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Card padding="none">
+  <Card padding="none" class="overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-sm" role="table">
-        <thead>
-          <tr class="bg-gray-50 border-b border-gray-100">
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800 w-10">
+        <thead class="sticky top-0 z-[1] bg-surface-muted">
+          <tr>
+            <th
+              scope="col"
+              class="w-12 border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
               S/N
             </th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
               Name
             </th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
               Gender
             </th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
               Phone Number
             </th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
               Email Address
             </th>
-            <th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-800">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+            >
               Attendance Status
             </th>
-            <th scope="col" class="w-10 px-4 py-3"></th>
+            <th scope="col" class="w-12 border-b border-rule px-4 py-2.5">
+              <span class="sr-only">Actions</span>
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-rule">
           <tr
             v-for="(member, idx) in paginated"
             :key="member.id"
-            class="border-b border-gray-50 hover:bg-blue-50/30 cursor-pointer transition-colors"
+            :class="[
+              'group cursor-pointer transition-colors duration-150 hover:bg-surface-muted/70',
+              openMenuId === member.id && 'bg-primary-soft/60 hover:bg-primary-soft/60',
+            ]"
             @click="emit('select', member)"
           >
-            <td class="px-4 py-3 text-gray-500">{{ rangeStart + idx }}</td>
+            <td class="num px-4 py-3 text-right text-xs text-ink-subtle">{{ rangeStart + idx }}</td>
             <td class="px-4 py-3">
-              <div class="flex items-center gap-2.5">
+              <div class="flex min-w-0 items-center gap-3">
                 <Avatar :src="member.avatar" :name="member.name" size="sm" />
-                <span class="font-medium text-gray-900">{{ member.name }}</span>
+                <span
+                  class="font-medium whitespace-nowrap text-ink transition-colors group-hover:text-primary-ink"
+                  >{{ member.name }}</span
+                >
               </div>
             </td>
-            <td class="px-4 py-3 text-gray-600">{{ member.gender }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ member.phone }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ member.email }}</td>
+            <td class="px-4 py-3 text-ink-muted">{{ member.gender }}</td>
+            <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">{{ member.phone }}</td>
+            <td class="px-4 py-3 text-ink-muted">{{ member.email }}</td>
             <td class="px-4 py-3">
               <Badge :variant="statusBadge[member.status] ?? 'neutral'">{{ member.status }}</Badge>
             </td>
-            <td class="px-4 py-3 relative">
+            <td class="relative px-4 py-2 text-right">
               <button
                 :ref="(el) => setMenuButtonRef(member.id, el)"
-                class="p-1 rounded hover:bg-gray-100 text-gray-400"
+                :class="[
+                  'inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink',
+                  openMenuId === member.id && 'bg-surface-sunken text-ink',
+                ]"
                 :aria-label="`Actions for ${member.name}`"
                 @click.stop="toggleMenu(member.id)"
               >
-                <Icon icon="mdi:dots-vertical" />
+                <Icon icon="mdi:dots-vertical" class="text-lg" />
               </button>
             </td>
           </tr>
@@ -209,19 +238,19 @@ onUnmounted(() => {
   <Teleport to="body">
     <div
       v-if="openMenuMember && menuPos"
-      class="fixed z-50 w-32 rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+      class="fixed z-50 w-32 overflow-hidden rounded-md border border-rule bg-surface py-1 text-ink shadow-md"
       :style="{ top: `${menuPos.top}px`, left: `${menuPos.left}px` }"
       @click.stop
     >
       <button
-        class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+        class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-surface-muted"
         @click="startEdit(openMenuMember)"
       >
-        <Icon icon="mdi:pencil-outline" />
+        <Icon icon="mdi:pencil-outline" class="text-ink-subtle" />
         Edit
       </button>
       <button
-        class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
+        class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-error transition-colors hover:bg-error-soft disabled:opacity-55"
         :disabled="isPending(openMenuMember.id)"
         @click="deleteMember(openMenuMember.id)"
       >

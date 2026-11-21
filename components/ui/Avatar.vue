@@ -36,12 +36,12 @@ const sizeClasses = {
 }
 
 const colors = [
-  'bg-blue-500',
-  'bg-purple-500',
-  'bg-green-500',
-  'bg-amber-500',
-  'bg-pink-500',
-  'bg-teal-500',
+  'bg-[#2f6b52]',
+  'bg-[#3d5f8f]',
+  'bg-[#8a5d0f]',
+  'bg-[#7a4d8c]',
+  'bg-[#a3452f]',
+  'bg-[#2c7279]',
 ]
 const colorClass = computed(() => {
   if (!props.name) return colors[0]
@@ -53,7 +53,7 @@ const colorClass = computed(() => {
 <template>
   <div
     :class="[
-      'rounded-full flex items-center justify-center overflow-hidden flex-shrink-0',
+      'flex shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-rule',
       sizeClasses[size],
     ]"
     :aria-label="name"
@@ -67,7 +67,7 @@ const colorClass = computed(() => {
     />
     <span
       v-else
-      :class="['text-white font-semibold', colorClass]"
+      :class="['font-semibold tracking-wide text-white', colorClass]"
       class="w-full h-full flex items-center justify-center"
     >
       {{ initials }}

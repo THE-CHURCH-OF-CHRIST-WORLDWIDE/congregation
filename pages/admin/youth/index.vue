@@ -3,6 +3,7 @@ import type { Member } from '~/types'
 import type { ChartData } from 'chart.js'
 
 import { MEMBER_STATUSES } from '~/constants'
+import { chartAlpha, chartPalette } from '~/utils/chartTheme'
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Youth', description: 'Youth members management.' })
 
@@ -96,15 +97,15 @@ function viewList(tab: 'all' | 'boys' | 'girls' | 'active' | 'inactive') {
  * and rounding each slice to a whole percent no longer makes them fail to add up to 100.
  */
 const STATUS_COLORS: Record<string, string> = {
-  Active: '#3b82f6',
-  Inactive: '#94a3b8',
-  Backslider: '#f59e0b',
-  Weak: '#22c55e',
-  Distant: '#6366f1',
-  Withdrawal: '#ef4444',
-  Disfellowshipped: '#dc2626',
-  Transfer: '#0ea5e9',
-  Late: '#a855f7',
+  Active: chartPalette.bookcloth,
+  Inactive: chartPalette.slate,
+  Backslider: chartPalette.gilt,
+  Weak: chartPalette.clay,
+  Distant: chartPalette.ink,
+  Withdrawal: chartPalette.plum,
+  Disfellowshipped: chartPalette.margin,
+  Transfer: chartPalette.teal,
+  Late: chartAlpha(chartPalette.slate, 0.5),
 }
 
 /**
@@ -133,7 +134,7 @@ const donutData = computed<ChartData<'doughnut'>>(() => {
     datasets: [
       {
         data: entries.map((e) => e.count),
-        backgroundColor: entries.map((e) => STATUS_COLORS[e.status] ?? '#94a3b8'),
+        backgroundColor: entries.map((e) => STATUS_COLORS[e.status] ?? chartPalette.slate),
         borderWidth: 0,
       },
     ],
@@ -200,7 +201,7 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div></div>
@@ -211,49 +212,60 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     </div>
 
     <!-- Stats + Chart row -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
       <!-- Stats 2×2 grid -->
-      <div class="xl:col-span-2 grid grid-cols-2 gap-4">
-        <Card v-for="card in statCards" :key="card.label">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-xs text-gray-500 font-medium">{{ card.label }}</p>
-              <p class="text-3xl font-bold text-gray-900 mt-1">{{ card.value }}</p>
-              <p class="text-xs text-gray-400 mt-1">{{ card.subtitle }}</p>
-            </div>
-            <Badge :variant="card.change >= 0 ? 'success' : 'danger'" size="sm">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:col-span-2">
+        <Card v-for="card in statCards" :key="card.label" padding="none" class="flex flex-col p-5">
+          <div class="flex items-start justify-between gap-3">
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+              {{ card.label }}
+            </p>
+            <Badge :variant="card.change >= 0 ? 'success' : 'danger'" size="sm" class="num">
               <template #icon>
                 <Icon
                   :icon="card.change >= 0 ? 'mdi:trending-up' : 'mdi:trending-down'"
                   class="text-[10px]"
+                  aria-hidden="true"
                 />
               </template>
               {{ Math.abs(card.change) }}%
             </Badge>
           </div>
-          <button
-            class="mt-3 text-xs text-blue-600 hover:underline cursor-pointer"
-            @click="viewList(card.tab)"
-          >
-            View List
-          </button>
+          <p class="num mt-2 font-display text-3xl leading-none font-semibold text-ink">
+            {{ card.value }}
+          </p>
+          <div class="mt-3 flex items-center justify-between gap-3">
+            <p class="num text-xs text-ink-subtle">{{ card.subtitle }}</p>
+            <button
+              class="inline-flex shrink-0 cursor-pointer items-center gap-0.5 text-xs font-medium text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline"
+              @click="viewList(card.tab)"
+            >
+              View List
+              <Icon icon="mdi:chevron-right" class="text-sm" aria-hidden="true" />
+            </button>
+          </div>
         </Card>
       </div>
 
       <!-- Donut chart -->
-      <div class="bg-slate-800 rounded-xl p-4 flex flex-col">
-        <h3 class="text-sm font-semibold text-white mb-3">Youth Summary</h3>
-        <DonutChart v-if="youthByStatus.length" :data="donutData" :height="180" />
-        <p v-else class="py-10 text-center text-xs leading-relaxed text-slate-400">
-          {{ emptyYouthReason }}
-        </p>
-      </div>
+      <Card padding="none" class="flex flex-col p-5">
+        <h3 class="font-display text-base font-semibold text-ink">Youth Summary</h3>
+        <div class="mt-4">
+          <DonutChart v-if="youthByStatus.length" :data="donutData" :height="180" />
+          <p v-else class="py-10 text-center text-xs leading-relaxed text-ink-muted">
+            {{ emptyYouthReason }}
+          </p>
+        </div>
+      </Card>
     </div>
 
     <!-- Filter bar -->
-    <div ref="tableRef" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div
+      ref="tableRef"
+      class="flex scroll-mt-4 flex-col justify-between gap-3 sm:flex-row sm:items-center"
+    >
       <Tabs v-model="activeTab" :tabs="tabs" />
-      <div class="flex gap-2 shrink-0">
+      <div class="flex shrink-0 gap-2">
         <Button variant="secondary" size="sm" @click="doExport">
           <template #icon-left><Icon icon="mdi:upload-outline" /></template>
           Export CSV
@@ -266,17 +278,18 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     </div>
 
     <!-- Search -->
-    <div class="flex gap-2">
+    <div class="flex gap-2 rounded-lg border border-rule bg-surface p-3 shadow-xs">
       <div class="relative flex-1">
         <Icon
           icon="mdi:magnify"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+          class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-base text-ink-subtle"
+          aria-hidden="true"
         />
         <input
           v-model="search"
           type="search"
           placeholder="Search youth members..."
-          class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search youth"
         />
       </div>

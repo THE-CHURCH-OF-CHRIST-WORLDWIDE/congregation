@@ -379,10 +379,10 @@ function permCount(perms: RolePermissions) {
 <template>
   <div class="flex flex-col gap-6">
     <!-- ── Section header ───────────────────────────────────────────────────── -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-base font-semibold text-gray-900">Roles & Permissions</h2>
-        <p class="text-sm text-gray-500 mt-0.5">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h2 class="font-display text-lg font-semibold text-ink">Roles & Permissions</h2>
+        <p class="mt-0.5 text-sm text-ink-muted">
           Define what each role can access and assign roles to members.
         </p>
       </div>
@@ -394,20 +394,17 @@ function permCount(perms: RolePermissions) {
 
     <!-- ── Role definitions grid ─────────────────────────────────────────────── -->
     <div>
-      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
-        Role Definitions
-      </p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+      <h3 class="mb-3 font-display text-lg font-semibold text-ink">Role Definitions</h3>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <button
           v-for="role in rolesStore.roles"
           :key="role.id"
-          class="text-left bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-400 hover:shadow-sm transition-all group"
+          class="group flex flex-col rounded-lg border border-rule bg-surface p-4 text-left shadow-xs transition-[border-color,box-shadow] duration-150 hover:border-rule-strong hover:shadow-md"
           @click="openRole(role)"
         >
           <div class="flex items-start justify-between mb-3">
             <div
-              class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              :style="{ backgroundColor: role.color + '20' }"
+              class="flex size-9 shrink-0 items-center justify-center rounded-md bg-surface-sunken"
             >
               <Icon
                 icon="mdi:shield-account-outline"
@@ -415,11 +412,19 @@ function permCount(perms: RolePermissions) {
                 :style="{ color: role.color }"
               />
             </div>
-            <Badge variant="neutral" size="sm">{{ permCount(role.permissions) }} perms</Badge>
+            <Badge variant="neutral" size="sm"
+              ><span class="num">{{ permCount(role.permissions) }}</span> perms</Badge
+            >
           </div>
-          <p class="text-sm font-bold text-gray-900 leading-tight">{{ role.name }}</p>
-          <p class="text-xs text-gray-400 mt-1 line-clamp-2">{{ role.description }}</p>
-          <p class="text-xs text-blue-500 mt-3 font-medium group-hover:underline">
+          <p class="font-display text-[15px] leading-tight font-semibold text-ink">
+            {{ role.name }}
+          </p>
+          <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">
+            {{ role.description }}
+          </p>
+          <p
+            class="mt-auto pt-3 text-xs font-semibold text-primary-ink underline-offset-3 group-hover:underline"
+          >
             Edit permissions →
           </p>
         </button>
@@ -428,26 +433,40 @@ function permCount(perms: RolePermissions) {
 
     <!-- ── Member assignments table ──────────────────────────────────────────── -->
     <div>
-      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
-        Member Assignments
-      </p>
+      <h3 class="mb-3 font-display text-lg font-semibold text-ink">Member Assignments</h3>
       <Card padding="none">
         <div class="overflow-x-auto">
           <table class="w-full text-sm" role="table">
             <thead>
-              <tr class="bg-gray-50 border-b border-gray-100">
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Member</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Role</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Assigned</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Custom Perms</th>
-                <th class="w-24 px-4 py-3"></th>
+              <tr>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Member
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Role
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Assigned
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Custom Perms
+                </th>
+                <th class="w-24 border-b border-rule bg-surface-muted px-4 py-2.5"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-rule">
               <tr
                 v-for="a in pagedAssignments"
                 :key="a.id"
-                class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                class="transition-colors hover:bg-surface-muted/70"
               >
                 <td class="px-4 py-3">
                   <div class="flex items-center gap-2.5">
@@ -456,20 +475,25 @@ function permCount(perms: RolePermissions) {
                       :name="memberName(a.memberId)"
                       size="sm"
                     />
-                    <span class="font-medium text-gray-900">{{ memberName(a.memberId) }}</span>
+                    <span class="font-medium text-ink">{{ memberName(a.memberId) }}</span>
                   </div>
                 </td>
                 <td class="px-4 py-3">
                   <span
                     v-if="a.role"
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-                    :style="{ backgroundColor: a.role.color + '18', color: a.role.color }"
+                    class="inline-flex items-center gap-1.5 rounded-sm bg-surface-sunken px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-ink ring-1 ring-rule-strong/60 ring-inset"
                   >
-                    <Icon icon="mdi:shield-account-outline" class="text-[11px]" />
+                    <span
+                      class="size-2 shrink-0 rounded-full"
+                      :style="{ backgroundColor: a.role.color }"
+                      aria-hidden="true"
+                    ></span>
                     {{ a.role.name }}
                   </span>
                 </td>
-                <td class="px-4 py-3 text-gray-500 text-xs">{{ a.assignedAt }}</td>
+                <td class="num px-4 py-3 text-xs whitespace-nowrap text-ink-muted">
+                  {{ a.assignedAt }}
+                </td>
                 <td class="px-4 py-3">
                   <Badge
                     v-if="a.customPermissions && Object.keys(a.customPermissions).length"
@@ -479,12 +503,12 @@ function permCount(perms: RolePermissions) {
                     <template #icon><Icon icon="mdi:tune-variant" class="text-[10px]" /></template>
                     Custom
                   </Badge>
-                  <span v-else class="text-xs text-gray-400">Role defaults</span>
+                  <span v-else class="text-xs text-ink-subtle">Role defaults</span>
                 </td>
                 <td class="px-4 py-3">
-                  <div class="flex items-center gap-1 justify-end">
+                  <div class="flex items-center justify-end gap-1">
                     <button
-                      class="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
+                      class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-primary-ink"
                       aria-label="Customize permissions"
                       title="Customize permissions"
                       @click="openCustom(a.id)"
@@ -492,7 +516,7 @@ function permCount(perms: RolePermissions) {
                       <Icon icon="mdi:tune-variant" class="text-base" />
                     </button>
                     <button
-                      class="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
+                      class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error disabled:opacity-55"
                       aria-label="Revoke role"
                       title="Revoke role"
                       :disabled="isPending(a.id)"
@@ -536,13 +560,13 @@ function permCount(perms: RolePermissions) {
 
     <!-- ── Account access ────────────────────────────────────────────────────── -->
     <div>
-      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
-        Dashboard Access
-      </p>
+      <h3 class="mb-3 font-display text-lg font-semibold text-ink">Dashboard Access</h3>
 
       <Card>
-        <div class="flex items-start gap-2.5 rounded-lg bg-blue-50 p-3 text-xs text-blue-900">
-          <Icon icon="mdi:information-outline" class="mt-0.5 shrink-0 text-sm" />
+        <div
+          class="flex items-start gap-2.5 rounded-md border border-info/20 bg-info-soft px-3.5 py-3 text-xs leading-relaxed text-ink"
+        >
+          <Icon icon="mdi:information-outline" class="mt-px shrink-0 text-sm text-info" />
           <p>
             This is what actually grants access: an account can only read or change church data once
             it appears here. It is separate from the member assignments above — most people on the
@@ -552,8 +576,10 @@ function permCount(perms: RolePermissions) {
         </div>
 
         <!-- Create login with password -->
-        <div v-if="authStore.isSuperAdmin" class="mt-4">
-          <p class="mb-2 text-xs font-semibold text-gray-500">Create login with password</p>
+        <div v-if="authStore.isSuperAdmin" class="mt-5 border-t border-rule pt-5">
+          <p class="mb-3 font-display text-[15px] font-semibold text-ink">
+            Create login with password
+          </p>
           <div class="grid gap-3 sm:grid-cols-2">
             <Input
               v-model="createForm.email"
@@ -573,7 +599,7 @@ function permCount(perms: RolePermissions) {
                 <button
                   type="button"
                   :aria-label="showCreatePassword ? 'Hide password' : 'Show password'"
-                  class="pointer-events-auto"
+                  class="pointer-events-auto inline-flex rounded-sm text-ink-subtle transition-colors hover:text-ink"
                   @click="showCreatePassword = !showCreatePassword"
                 >
                   <Icon :icon="showCreatePassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
@@ -594,7 +620,7 @@ function permCount(perms: RolePermissions) {
               :options="memberOptions"
             />
           </div>
-          <div class="mt-3 flex items-center justify-between gap-3">
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
             <Button variant="secondary" size="sm" @click="createForm.password = generatePassword()">
               <template #icon-left><Icon icon="mdi:dice-5-outline" /></template>
               Generate a password
@@ -604,15 +630,21 @@ function permCount(perms: RolePermissions) {
               Create Account
             </Button>
           </div>
-          <p class="mt-2 text-xs text-gray-500">
+          <p class="mt-2 text-xs text-ink-subtle">
             Creates their account immediately with this password and grants the role above — share
             the password with them directly.
           </p>
         </div>
 
         <!-- Grant by UID — fallback for an account that already exists -->
-        <details v-if="authStore.isSuperAdmin" class="mt-4">
-          <summary class="cursor-pointer text-xs font-semibold text-gray-500">
+        <details v-if="authStore.isSuperAdmin" class="group mt-5 border-t border-rule pt-4">
+          <summary
+            class="flex min-h-9 cursor-pointer list-none items-center gap-1.5 text-sm font-semibold text-ink-muted hover:text-ink [&::-webkit-details-marker]:hidden"
+          >
+            <Icon
+              icon="mdi:chevron-right"
+              class="text-base transition-transform duration-150 group-open:rotate-90"
+            />
             Or grant an existing account by UID
           </summary>
           <div class="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
@@ -636,7 +668,7 @@ function permCount(perms: RolePermissions) {
                 :error="grantErrors.roleId"
               />
             </div>
-            <div class="sm:col-span-3 flex justify-end">
+            <div class="flex justify-end sm:col-span-3">
               <Button :loading="accountsStore.saving" @click="doGrant">
                 <template #icon-left><Icon icon="mdi:shield-key-outline" /></template>
                 Grant Access
@@ -645,7 +677,7 @@ function permCount(perms: RolePermissions) {
           </div>
         </details>
 
-        <p v-if="!authStore.isSuperAdmin" class="mt-4 text-xs text-gray-500">
+        <p v-if="!authStore.isSuperAdmin" class="mt-4 text-xs text-ink-subtle">
           Only a Super Admin can invite people or change who has access.
         </p>
       </Card>
@@ -654,33 +686,49 @@ function permCount(perms: RolePermissions) {
         <div class="overflow-x-auto">
           <table class="w-full text-sm" role="table">
             <thead>
-              <tr class="bg-gray-50 border-b border-gray-100">
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Account</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">UID</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Member</th>
-                <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Role</th>
-                <th class="w-20 px-4 py-3"></th>
+              <tr>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Account
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  UID
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Member
+                </th>
+                <th
+                  class="sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+                >
+                  Role
+                </th>
+                <th class="w-20 border-b border-rule bg-surface-muted px-4 py-2.5"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-rule">
               <tr
                 v-for="account in accountsStore.records"
                 :key="account.uid"
-                class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                class="transition-colors hover:bg-surface-muted/70"
               >
                 <td class="px-4 py-3">
-                  <span class="text-gray-900">{{ account.email ?? '—' }}</span>
+                  <span class="font-medium text-ink">{{ account.email ?? '—' }}</span>
                   <span
                     v-if="account.uid === authStore.user?.uid"
-                    class="ml-2 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500"
+                    class="ml-2 rounded-sm bg-surface-sunken px-1.5 py-px text-2xs font-semibold text-ink-muted ring-1 ring-rule-strong/60 ring-inset"
                   >
                     you
                   </span>
                 </td>
                 <td class="px-4 py-3">
-                  <code class="text-xs text-gray-500">{{ account.uid }}</code>
+                  <code class="font-mono text-xs text-ink-subtle">{{ account.uid }}</code>
                 </td>
-                <td class="px-4 py-3 text-xs text-gray-600">
+                <td class="px-4 py-3 text-xs text-ink-muted">
                   {{ account.memberId ? memberName(account.memberId) : '—' }}
                 </td>
                 <td class="px-4 py-3">
@@ -688,7 +736,7 @@ function permCount(perms: RolePermissions) {
                     v-if="authStore.isSuperAdmin"
                     :value="account.roleId"
                     :aria-label="`Role for ${account.email ?? account.uid}`"
-                    class="rounded-lg border border-gray-300 bg-white px-2 py-1 text-xs"
+                    class="min-h-8 rounded-md border border-rule-strong bg-surface px-2 py-1 text-xs text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                     @change="
                       changeAccountRole(
                         account.uid,
@@ -701,14 +749,17 @@ function permCount(perms: RolePermissions) {
                       {{ role.name }}
                     </option>
                   </select>
-                  <span v-else class="text-xs text-gray-600">
+                  <span
+                    v-else
+                    class="inline-flex items-center rounded-sm bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary-ink ring-1 ring-primary/20 ring-inset"
+                  >
                     {{ rolesStore.roleById(account.roleId)?.name ?? account.roleId }}
                   </span>
                 </td>
                 <td class="px-4 py-3 text-right">
                   <button
                     v-if="authStore.isSuperAdmin && account.uid !== authStore.user?.uid"
-                    class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error disabled:opacity-55"
                     :aria-label="`Revoke access for ${account.email ?? account.uid}`"
                     :disabled="isPending(account.uid)"
                     @click="doRevokeAccess(account.uid)"
@@ -726,7 +777,7 @@ function permCount(perms: RolePermissions) {
           <LoadingState v-if="accountsStore.loading" />
           <p
             v-else-if="!accountsStore.records.length"
-            class="px-4 py-6 text-center text-sm text-gray-400"
+            class="px-4 py-6 text-center text-sm text-ink-subtle"
           >
             No accounts have been granted access yet.
           </p>
@@ -743,54 +794,62 @@ function permCount(perms: RolePermissions) {
     @update:model-value="closeRole"
   >
     <div v-if="selectedRole" class="flex flex-col gap-4">
-      <p class="text-sm text-gray-500">{{ selectedRole.description }}</p>
+      <p class="text-sm text-ink-muted">{{ selectedRole.description }}</p>
 
       <!-- Permission matrix -->
-      <div class="overflow-x-auto rounded-xl border border-gray-200">
+      <div class="overflow-x-auto rounded-lg border border-rule bg-surface">
         <table class="w-full text-sm">
           <thead>
-            <tr class="bg-gray-50 border-b border-gray-200">
-              <th class="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-36">Page</th>
-              <th v-for="action in ALL_ACTIONS" :key="action" class="px-3 py-2.5 text-center">
+            <tr>
+              <th
+                class="w-36 sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Page
+              </th>
+              <th
+                v-for="action in ALL_ACTIONS"
+                :key="action"
+                class="border-b border-rule bg-surface-muted px-3 py-2.5 text-center"
+              >
                 <button
-                  class="text-xs font-semibold text-gray-600 hover:text-blue-600 capitalize transition-colors"
+                  class="rounded-sm text-xs font-semibold tracking-wide text-ink-muted uppercase underline-offset-3 transition-colors hover:text-primary-ink hover:underline"
                   :title="`Toggle all ${action}`"
                   @click="toggleAllForAction(action)"
                 >
                   {{ actionLabels[action] }}
                 </button>
               </th>
-              <th class="px-3 py-2.5 text-center text-xs font-medium text-gray-400">All</th>
+              <th
+                class="border-b border-rule bg-surface-muted px-3 py-2.5 text-center text-xs font-semibold tracking-wide text-ink-subtle uppercase"
+              >
+                All
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="page in ALL_PAGES"
               :key="page"
-              class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+              class="transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-4 py-2.5 font-medium text-gray-700 text-xs">{{ page }}</td>
-              <td v-for="action in ALL_ACTIONS" :key="action" class="px-3 py-2.5 text-center">
+              <td class="px-4 py-2 text-sm font-medium whitespace-nowrap text-ink">{{ page }}</td>
+              <td v-for="action in ALL_ACTIONS" :key="action" class="px-3 py-2 text-center">
                 <button
                   :class="[
-                    'w-6 h-6 rounded-md border-2 flex items-center justify-center mx-auto transition-all',
+                    'mx-auto flex size-8 items-center justify-center rounded-md border transition-colors duration-150',
                     editPerms[page]?.[action]
-                      ? 'bg-blue-600 border-blue-600'
-                      : 'border-gray-300 hover:border-blue-400',
+                      ? 'border-primary bg-primary text-on-primary hover:bg-primary-hover'
+                      : 'border-rule-strong bg-surface-sunken hover:border-primary',
                   ]"
                   :aria-label="`${editPerms[page]?.[action] ? 'Revoke' : 'Grant'} ${action} on ${page}`"
                   @click="togglePerm(page, action)"
                 >
-                  <Icon
-                    v-if="editPerms[page]?.[action]"
-                    icon="mdi:check"
-                    class="text-white text-xs"
-                  />
+                  <Icon v-if="editPerms[page]?.[action]" icon="mdi:check" class="text-base" />
                 </button>
               </td>
               <td class="px-3 py-2.5 text-center">
                 <button
-                  class="text-xs text-gray-400 hover:text-blue-600 font-medium transition-colors"
+                  class="inline-flex min-h-8 items-center rounded-md px-2 text-xs font-semibold text-ink-muted transition-colors hover:bg-surface-sunken hover:text-primary-ink"
                   @click="toggleAllForPage(page)"
                 >
                   {{ ALL_ACTIONS.every((a) => editPerms[page]?.[a]) ? 'None' : 'All' }}
@@ -801,7 +860,7 @@ function permCount(perms: RolePermissions) {
         </table>
       </div>
 
-      <p class="text-xs text-gray-400">
+      <p class="text-xs leading-relaxed text-ink-subtle">
         Click column headers to toggle all pages for that action. Click "All/None" on a row to
         toggle all actions for that page. Enabling any action auto-enables View. Disabling View
         clears all.
@@ -809,7 +868,7 @@ function permCount(perms: RolePermissions) {
     </div>
 
     <template #footer>
-      <div class="flex gap-2 justify-end">
+      <div class="flex justify-end gap-2">
         <Button variant="secondary" @click="closeRole">Cancel</Button>
         <Button :loading="rolesStore.saving" @click="saveRolePerms">
           <template #icon-left><Icon icon="mdi:content-save-outline" /></template>
@@ -824,108 +883,96 @@ function permCount(perms: RolePermissions) {
     <div class="flex flex-col gap-4">
       <!-- Member search -->
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-gray-700"
-          >Member<span class="text-red-500 ml-0.5">*</span></label
+        <label class="text-sm font-medium text-ink"
+          >Member<span class="ml-0.5 text-error">*</span></label
         >
         <div class="relative">
           <Icon
             icon="mdi:magnify"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-ink-subtle"
           />
           <input
             v-model="memberSearch"
             type="text"
             placeholder="Search by name or phone..."
-            class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
         </div>
         <div
           v-if="memberSearch || filteredMembers.length"
-          class="mt-1 border border-gray-200 rounded-lg overflow-hidden max-h-40 overflow-y-auto"
+          class="mt-1 max-h-40 divide-y divide-rule overflow-hidden overflow-y-auto rounded-md border border-rule bg-surface"
         >
           <button
             v-for="m in filteredMembers"
             :key="m.id"
             :class="[
-              'w-full text-left flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-blue-50 transition-colors',
+              'flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-surface-muted',
               assignForm.memberId === m.id
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-700',
+                ? 'bg-primary-soft font-medium text-primary-ink'
+                : 'text-ink',
             ]"
             @click="selectMember(m)"
           >
-            <Avatar :src="m.avatar" :name="m.name" size="sm" class="flex-shrink-0" />
+            <Avatar :src="m.avatar" :name="m.name" size="sm" class="shrink-0" />
             <div>
               <p class="font-medium">{{ m.name }}</p>
-              <p class="text-xs text-gray-400">{{ m.phone }}</p>
+              <p class="num text-xs text-ink-subtle">{{ m.phone }}</p>
             </div>
             <Icon
               v-if="assignForm.memberId === m.id"
               icon="mdi:check-circle"
-              class="ml-auto text-blue-600"
+              class="ml-auto text-primary-ink"
             />
           </button>
-          <p v-if="!filteredMembers.length" class="text-center py-4 text-xs text-gray-400">
+          <p v-if="!filteredMembers.length" class="py-4 text-center text-xs text-ink-subtle">
             No members found
           </p>
         </div>
-        <p v-if="assignErrors.memberId" class="text-xs text-red-500">{{ assignErrors.memberId }}</p>
+        <p v-if="assignErrors.memberId" class="text-xs font-medium text-error">
+          {{ assignErrors.memberId }}
+        </p>
       </div>
 
       <!-- Role picker -->
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium text-gray-700"
-          >Role<span class="text-red-500 ml-0.5">*</span></label
+        <label class="text-sm font-medium text-ink"
+          >Role<span class="ml-0.5 text-error">*</span></label
         >
         <div class="grid grid-cols-2 gap-2">
           <button
             v-for="role in rolesStore.roles"
             :key="role.id"
             :class="[
-              'text-left px-3 py-2.5 rounded-xl border-2 transition-all flex items-center gap-2',
+              'flex min-h-11 items-center gap-2 rounded-md border px-3 py-2 text-left transition-colors duration-150',
               assignForm.roleId === role.id
-                ? 'border-current'
-                : 'border-gray-200 hover:border-gray-300',
+                ? 'border-primary bg-primary-soft ring-1 ring-primary ring-inset'
+                : 'border-rule-strong bg-surface hover:border-ink-subtle hover:bg-surface-muted',
             ]"
-            :style="
-              assignForm.roleId === role.id
-                ? { borderColor: role.color, backgroundColor: role.color + '10' }
-                : {}
-            "
             @click="assignForm.roleId = role.id"
           >
             <div
-              class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-              :style="{ backgroundColor: role.color + '22' }"
+              class="flex size-7 shrink-0 items-center justify-center rounded-sm bg-primary-soft text-primary-ink"
             >
-              <Icon
-                icon="mdi:shield-account-outline"
-                class="text-sm"
-                :style="{ color: role.color }"
-              />
+              <Icon icon="mdi:shield-account-outline" class="text-sm" />
             </div>
-            <span class="text-xs font-semibold text-gray-800">{{ role.name }}</span>
+            <span class="text-xs font-semibold text-ink">{{ role.name }}</span>
           </button>
         </div>
-        <p v-if="assignErrors.roleId" class="text-xs text-red-500">{{ assignErrors.roleId }}</p>
+        <p v-if="assignErrors.roleId" class="text-xs font-medium text-error">
+          {{ assignErrors.roleId }}
+        </p>
       </div>
 
       <!-- Role description preview -->
       <div
         v-if="assignForm.roleId"
-        class="rounded-xl p-3 text-xs text-gray-600"
-        :style="{
-          backgroundColor: (rolesStore.roleById(assignForm.roleId)?.color ?? '#6366f1') + '12',
-        }"
+        class="rounded-md border border-rule bg-surface-muted p-3 text-xs leading-relaxed text-ink-muted"
       >
-        <p
-          class="font-semibold mb-0.5"
-          :style="{ color: rolesStore.roleById(assignForm.roleId)?.color }"
-        >
+        <p class="mb-0.5 font-display text-sm font-semibold text-primary-ink">
           {{ rolesStore.roleById(assignForm.roleId)?.name }}
         </p>
         <p>{{ rolesStore.roleById(assignForm.roleId)?.description }}</p>
-        <p class="mt-1 text-gray-400">
+        <p class="num mt-1 text-ink-subtle">
           {{ permCount(rolesStore.roleById(assignForm.roleId)?.permissions ?? {}) }} permissions
           across
           {{ Object.keys(rolesStore.roleById(assignForm.roleId)?.permissions ?? {}).length }} pages
@@ -935,23 +982,23 @@ function permCount(perms: RolePermissions) {
       <!-- Dashboard login — creates the same users/{uid} record as Dashboard Access below -->
       <div
         v-if="authStore.isSuperAdmin && assignForm.memberId"
-        class="flex flex-col gap-3 border-t border-gray-100 pt-4"
+        class="flex flex-col gap-3 border-t border-rule pt-4"
       >
         <label
           for="assign-send-invite"
-          class="flex items-center gap-2 text-sm font-medium text-gray-700"
+          class="flex min-h-9 items-center gap-2.5 text-sm font-medium text-ink"
         >
           <input
             id="assign-send-invite"
             v-model="assignForm.sendInvite"
             type="checkbox"
             :disabled="!!existingAccountForMember"
-            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500/20"
+            class="size-4 rounded-xs border-rule-strong disabled:opacity-55"
           />
           Also give them a login to the dashboard
         </label>
 
-        <p v-if="existingAccountForMember" class="text-xs text-gray-500">
+        <p v-if="existingAccountForMember" class="text-xs text-ink-subtle">
           Already has dashboard access ({{
             existingAccountForMember.email ?? existingAccountForMember.uid
           }}).
@@ -980,7 +1027,7 @@ function permCount(perms: RolePermissions) {
                   <button
                     type="button"
                     :aria-label="showAssignPassword ? 'Hide password' : 'Show password'"
-                    class="pointer-events-auto"
+                    class="pointer-events-auto inline-flex rounded-sm text-ink-subtle transition-colors hover:text-ink"
                     @click="showAssignPassword = !showAssignPassword"
                   >
                     <Icon :icon="showAssignPassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
@@ -996,7 +1043,7 @@ function permCount(perms: RolePermissions) {
                 Generate
               </Button>
             </div>
-            <p class="text-xs text-gray-400">
+            <p class="text-xs text-ink-subtle">
               Share this password with them directly — there is no way to look it up again once you
               close this window.
             </p>
@@ -1006,7 +1053,7 @@ function permCount(perms: RolePermissions) {
     </div>
 
     <template #footer>
-      <div class="flex gap-2 justify-end">
+      <div class="flex justify-end gap-2">
         <Button variant="secondary" @click="showAssign = false">Cancel</Button>
         <Button :loading="rolesStore.saving || accountsStore.saving" @click="doAssign">
           <template #icon-left><Icon icon="mdi:shield-check-outline" /></template>
@@ -1019,47 +1066,47 @@ function permCount(perms: RolePermissions) {
   <!-- ── Custom permissions modal ──────────────────────────────────────────── -->
   <Modal v-model="showCustom" title="Customize Member Permissions" size="xl">
     <div class="flex flex-col gap-4">
-      <p class="text-sm text-gray-500">
+      <p class="text-sm text-ink-muted">
         These permissions override the role defaults for this specific member only.
       </p>
 
-      <div class="overflow-x-auto rounded-xl border border-gray-200">
+      <div class="overflow-x-auto rounded-lg border border-rule bg-surface">
         <table class="w-full text-sm">
           <thead>
-            <tr class="bg-gray-50 border-b border-gray-200">
-              <th class="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-36">Page</th>
+            <tr>
+              <th
+                class="w-36 sticky top-0 z-[1] border-b border-rule bg-surface-muted px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Page
+              </th>
               <th
                 v-for="action in ALL_ACTIONS"
                 :key="action"
-                class="px-3 py-2.5 text-center text-xs font-semibold text-gray-600 capitalize"
+                class="border-b border-rule bg-surface-muted px-3 py-2.5 text-center text-xs font-semibold tracking-wide text-ink-muted uppercase"
               >
                 {{ actionLabels[action] }}
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="page in ALL_PAGES"
               :key="page"
-              class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+              class="transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-4 py-2.5 font-medium text-gray-700 text-xs">{{ page }}</td>
-              <td v-for="action in ALL_ACTIONS" :key="action" class="px-3 py-2.5 text-center">
+              <td class="px-4 py-2 text-sm font-medium whitespace-nowrap text-ink">{{ page }}</td>
+              <td v-for="action in ALL_ACTIONS" :key="action" class="px-3 py-2 text-center">
                 <button
                   :class="[
-                    'w-6 h-6 rounded-md border-2 flex items-center justify-center mx-auto transition-all',
+                    'mx-auto flex size-8 items-center justify-center rounded-md border transition-colors duration-150',
                     customPerms[page]?.[action]
-                      ? 'bg-blue-600 border-blue-600'
-                      : 'border-gray-300 hover:border-blue-400',
+                      ? 'border-primary bg-primary text-on-primary hover:bg-primary-hover'
+                      : 'border-rule-strong bg-surface-sunken hover:border-primary',
                   ]"
                   :aria-label="`${customPerms[page]?.[action] ? 'Revoke' : 'Grant'} ${action} on ${page}`"
                   @click="toggleCustomPerm(page, action)"
                 >
-                  <Icon
-                    v-if="customPerms[page]?.[action]"
-                    icon="mdi:check"
-                    class="text-white text-xs"
-                  />
+                  <Icon v-if="customPerms[page]?.[action]" icon="mdi:check" class="text-base" />
                 </button>
               </td>
             </tr>
@@ -1069,7 +1116,7 @@ function permCount(perms: RolePermissions) {
     </div>
 
     <template #footer>
-      <div class="flex gap-2 justify-end">
+      <div class="flex justify-end gap-2">
         <Button variant="secondary" @click="showCustom = false">Cancel</Button>
         <Button :loading="rolesStore.saving" @click="saveCustomPerms">
           <template #icon-left><Icon icon="mdi:content-save-outline" /></template>

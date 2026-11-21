@@ -25,10 +25,10 @@ if (props.density) provideFieldDensity(props.density)
 
 <template>
   <Card padding="none">
-    <header class="flex items-start justify-between gap-4 border-b border-gray-100 px-5 py-4">
+    <header class="flex items-start justify-between gap-4 border-b border-rule px-5 py-4">
       <div class="min-w-0">
-        <h3 class="text-sm font-semibold text-gray-900">{{ title }}</h3>
-        <p v-if="description" class="mt-1 text-xs leading-relaxed text-gray-500">
+        <h3 class="font-display text-base leading-snug font-semibold text-ink">{{ title }}</h3>
+        <p v-if="description" class="mt-1 max-w-[70ch] text-[13px] leading-relaxed text-ink-muted">
           {{ description }}
         </p>
       </div>

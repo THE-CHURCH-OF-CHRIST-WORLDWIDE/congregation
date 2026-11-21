@@ -29,17 +29,17 @@ defineEmits<{ remove: [index: number] }>()
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="flex flex-col">
     <!-- Headings track the row grid, with an empty cell over the remove column. -->
     <div
       v-if="columns?.length"
-      :class="['hidden gap-3 px-3 sm:grid', gridClass]"
+      :class="['hidden gap-3 border-b border-rule-strong px-3 pb-2 sm:grid', gridClass]"
       aria-hidden="true"
     >
       <span
         v-for="column in columns"
         :key="column"
-        class="text-[11px] font-medium uppercase tracking-wide text-gray-400"
+        class="text-2xs font-semibold tracking-[0.06em] text-ink-muted uppercase"
       >
         {{ column }}
       </span>
@@ -49,20 +49,26 @@ defineEmits<{ remove: [index: number] }>()
     <div
       v-for="(item, index) in items"
       :key="index"
-      :class="['items-start gap-3 rounded-lg border border-gray-200 p-3 grid', gridClass]"
+      :class="[
+        'grid items-start gap-3 border-b border-rule px-3 py-3 transition-colors duration-150 first:border-t first:border-t-rule hover:bg-surface-muted/60',
+        gridClass,
+      ]"
     >
       <slot :item="item" :index="index"></slot>
       <button
         type="button"
-        class="mt-0.5 rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+        class="inline-flex size-9 items-center justify-center justify-self-end rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
         :aria-label="`Remove ${noun ?? 'row'} ${index + 1}`"
         @click="$emit('remove', index)"
       >
-        <Icon icon="mdi:close" class="text-sm" />
+        <Icon icon="mdi:close" class="text-base" />
       </button>
     </div>
 
-    <p v-if="!items.length" class="rounded-lg bg-gray-50 py-6 text-center text-sm text-gray-400">
+    <p
+      v-if="!items.length"
+      class="rounded-md border border-dashed border-rule-strong bg-surface-muted py-6 text-center text-sm text-ink-subtle"
+    >
       {{ empty ?? 'Nothing added yet.' }}
     </p>
   </div>

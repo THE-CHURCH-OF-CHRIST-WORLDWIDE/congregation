@@ -34,7 +34,7 @@ watch(
     size="sm"
     @update:model-value="confirmStore.settle(false)"
   >
-    <p v-if="confirmStore.request?.message" class="text-sm text-gray-600">
+    <p v-if="confirmStore.request?.message" class="text-[15px] leading-relaxed text-ink-muted">
       {{ confirmStore.request.message }}
     </p>
 
@@ -43,7 +43,7 @@ watch(
         <button
           ref="cancelButton"
           type="button"
-          class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none"
+          class="inline-flex min-h-10 items-center rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink shadow-xs transition-colors hover:bg-surface-muted"
           @click="confirmStore.settle(false)"
         >
           {{ confirmStore.request?.cancelLabel }}
@@ -51,10 +51,10 @@ watch(
         <button
           type="button"
           :class="[
-            'rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors focus:ring-2 focus:ring-offset-1 focus:outline-none',
+            'inline-flex min-h-10 items-center rounded-md px-4 text-sm font-semibold text-on-primary shadow-xs transition-[background-color,filter]',
             confirmStore.request?.variant === 'danger'
-              ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-              : 'bg-[#0BA5EC] hover:bg-[#0992D2] focus:ring-[#0BA5EC]',
+              ? 'bg-error hover:brightness-95'
+              : 'bg-primary hover:bg-primary-hover',
           ]"
           @click="confirmStore.settle(true)"
         >

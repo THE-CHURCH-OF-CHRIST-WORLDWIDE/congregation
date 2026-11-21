@@ -84,14 +84,14 @@ onMounted(() => {
     <Transition name="fade">
       <div
         v-if="modelValue"
-        class="fixed inset-0 bg-black/25 z-40"
+        class="fixed inset-0 z-40 bg-overlay"
         aria-hidden="true"
         @click="close"
       ></div>
     </Transition>
 
     <Transition
-      enter-active-class="transition-transform duration-300 ease-out"
+      enter-active-class="transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       enter-from-class="translate-x-full"
       enter-to-class="translate-x-0"
       leave-active-class="transition-transform duration-200 ease-in"
@@ -100,48 +100,50 @@ onMounted(() => {
     >
       <aside
         v-if="modelValue && visitor"
-        class="fixed top-0 right-0 h-full w-full sm:w-[520px] bg-white z-50 flex flex-col shadow-2xl overflow-hidden"
+        class="fixed top-0 right-0 z-50 flex h-full w-full flex-col overflow-hidden border-l border-rule bg-surface text-ink shadow-xl sm:w-[520px]"
         :aria-label="`${visitor.name} — visitor record`"
       >
         <!-- Top bar -->
-        <div class="flex items-center justify-between px-4 py-3 bg-gray-100 shrink-0">
+        <div
+          class="flex shrink-0 items-center justify-between border-b border-rule bg-surface-muted px-3 py-2"
+        >
           <button
-            class="p-1.5 rounded-lg hover:bg-gray-200 text-gray-500 transition-colors"
+            class="inline-flex size-10 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
             aria-label="Close panel"
             @click="close"
           >
-            <Icon icon="mdi:close" class="text-lg" />
+            <Icon icon="mdi:close" class="text-xl" />
           </button>
-          <span class="text-xs font-medium text-gray-500">Visitor</span>
+          <span class="stamp pr-2">Visitor</span>
         </div>
 
-        <div class="flex-1 overflow-y-auto px-4 pb-6 pt-4 space-y-3 sidebar-scroll bg-white">
-          <!-- Hero -->
-          <div class="bg-[#F0F9FF] rounded-2xl px-4 py-4 flex items-center gap-4">
+        <div class="sidebar-scroll flex-1 space-y-5 overflow-y-auto px-5 pt-5 pb-6">
+          <!-- Hero: the visitors' book entry -->
+          <div class="margin-rule flex items-center gap-4">
             <div
-              class="w-20 h-20 flex shrink-0 items-center justify-center rounded-2xl bg-[#0BA5EC]/10 text-2xl font-bold text-[#0BA5EC] shadow-lg"
+              class="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary-soft font-display text-xl font-semibold text-primary-ink"
               aria-hidden="true"
             >
               {{ initials }}
             </div>
-            <div class="space-y-1 min-w-0">
-              <h2 class="font-montserrat text-base font-bold leading-6 wrap-break-word">
+            <div class="min-w-0 space-y-1">
+              <h2 class="font-display text-xl leading-snug font-semibold wrap-break-word text-ink">
                 {{ visitor.name }}
               </h2>
-              <p class="text-[#717680] text-sm">
+              <p class="text-sm text-ink-muted">
                 {{ visitor.serviceType }}
               </p>
-              <Badge variant="info" size="sm">
-                <template #icon><Icon icon="mdi:calendar" class="text-[10px]" /></template>
+              <Badge variant="info" size="sm" class="num">
+                <template #icon><Icon icon="mdi:calendar-outline" class="text-xs" /></template>
                 {{ formatDate(visitor.date, 'full') }}
               </Badge>
             </div>
           </div>
 
           <!-- Contact -->
-          <div class="bg-white rounded-2xl p-4 border-[#7CD4FD] border">
-            <h3 class="text-xs font-bold text-gray-700 mb-3">Contact Details</h3>
-            <div class="grid grid-cols-2 gap-x-3 gap-y-3">
+          <section class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+            <h3 class="panel-heading">Contact Details</h3>
+            <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
               <InfoField icon="mdi:account-outline" label="Name" :value="visitor.name" />
               <InfoField
                 icon="mdi:phone-outline"
@@ -158,10 +160,10 @@ onMounted(() => {
                 icon="mdi:map-marker-radius-outline"
                 label="Address"
                 :value="visitor.address || 'Not given'"
-                class="col-span-2"
+                class="sm:col-span-2"
               />
             </div>
-          </div>
+          </section>
 
           <!-- Reach out. Only rendered for details that were actually given, so there is never a
                dead button that opens an empty mail client. -->
@@ -169,7 +171,7 @@ onMounted(() => {
             <a
               v-if="visitor.phone"
               :href="`tel:${visitor.phone}`"
-              class="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-xl transition-colors"
+              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover"
               :aria-label="`Call ${visitor.name}`"
             >
               <Icon icon="mdi:phone-outline" class="text-base" />
@@ -178,7 +180,7 @@ onMounted(() => {
             <a
               v-if="visitor.email"
               :href="`mailto:${visitor.email}`"
-              class="flex-1 flex items-center justify-center gap-2 border border-blue-600 text-blue-600 hover:bg-blue-50 text-sm font-medium py-2.5 rounded-xl transition-colors"
+              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink shadow-xs transition-colors hover:border-ink-subtle hover:bg-surface-muted"
               :aria-label="`Email ${visitor.name}`"
             >
               <Icon icon="mdi:email-outline" class="text-base" />
@@ -187,46 +189,46 @@ onMounted(() => {
           </div>
 
           <!-- Previous visits under the same name -->
-          <div class="bg-white rounded-2xl p-4 border-[#7CD4FD] border">
-            <h3 class="text-xs font-bold text-gray-700 mb-3">Other Visits</h3>
-            <p v-if="!otherVisits.length" class="text-xs text-gray-400">
+          <section class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+            <h3 class="panel-heading">Other Visits</h3>
+            <p v-if="!otherVisits.length" class="text-sm text-ink-subtle">
               No other services recorded under this name.
             </p>
             <template v-else>
-              <p class="text-xs text-gray-500 mb-2">
-                {{ otherVisits.length }} other
+              <p class="mb-2 text-sm text-ink-muted">
+                <span class="num">{{ otherVisits.length }}</span> other
                 {{ otherVisits.length === 1 ? 'service' : 'services' }} recorded under the same
                 name.
               </p>
-              <ul class="space-y-1.5">
+              <ul class="divide-y divide-rule border-y border-rule">
                 <li
                   v-for="date in otherVisits"
                   :key="date"
-                  class="flex items-center gap-2 text-xs text-gray-700"
+                  class="num flex items-center gap-2 py-2 text-sm text-ink"
                 >
-                  <Icon icon="mdi:calendar-check-outline" class="text-blue-500" />
+                  <Icon icon="mdi:calendar-check-outline" class="text-base text-ink-subtle" />
                   {{ formatDate(date, 'full') }}
                 </li>
               </ul>
             </template>
-          </div>
+          </section>
 
           <!-- Recorded-at, when the write has been acknowledged by the server -->
-          <p v-if="visitor.createdAt" class="px-1 text-[11px] text-gray-400">
+          <p v-if="visitor.createdAt" class="px-1 text-xs text-ink-subtle">
             Recorded {{ formatRelative(visitor.createdAt) }}
           </p>
 
           <!-- Actions -->
           <div class="flex gap-2 pt-1">
             <button
-              class="flex-1 flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium py-2.5 rounded-xl transition-colors"
+              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover"
               @click="onEdit"
             >
               <Icon icon="mdi:pencil-outline" class="text-base" />
               Edit Details
             </button>
             <button
-              class="flex items-center justify-center gap-1.5 border border-red-500 text-red-500 hover:bg-red-50 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors disabled:opacity-60"
+              class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-md border border-error/40 bg-surface px-4 text-sm font-semibold text-error transition-colors hover:bg-error-soft disabled:cursor-not-allowed disabled:opacity-55"
               :disabled="visitorsStore.saving"
               @click="onDelete"
             >
@@ -239,3 +241,18 @@ onMounted(() => {
     </Transition>
   </Teleport>
 </template>
+
+<style scoped>
+/* Section label: small caps in muted ink. Kept as a class so the heading stays on one line and
+   its text gains no stray leading space. */
+.panel-heading {
+  margin-bottom: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  color: var(--c-ink-muted);
+}
+</style>

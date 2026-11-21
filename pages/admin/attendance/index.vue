@@ -44,8 +44,8 @@ const lineChartData = computed<ChartData<'line'>>(() => {
       {
         label: 'Members listed per session',
         data: perSession((m) => m.total),
-        borderColor: '#2563eb',
-        backgroundColor: 'rgba(37,99,235,0.08)',
+        borderColor: '#7a8aa0',
+        backgroundColor: 'rgba(122,138,160,0.08)',
         fill: true,
         tension: 0.4,
         pointRadius: 4,
@@ -54,8 +54,8 @@ const lineChartData = computed<ChartData<'line'>>(() => {
       {
         label: 'Present per session',
         data: perSession((m) => m.present),
-        borderColor: '#ef4444',
-        backgroundColor: 'rgba(239,68,68,0.08)',
+        borderColor: '#2f7a5c',
+        backgroundColor: 'rgba(47,122,92,0.1)',
         fill: true,
         tension: 0.4,
         pointRadius: 4,
@@ -94,15 +94,15 @@ function doImport() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="space-y-6">
     <!-- Action buttons -->
-    <div class="flex justify-end gap-2">
+    <div class="flex flex-wrap justify-end gap-2">
       <Button variant="secondary" size="sm" @click="doExport">
-        <template #icon-left><Icon icon="mdi:upload-outline" /></template>
+        <template #icon-left><Icon icon="mdi:upload-outline" class="text-base" /></template>
         Export CSV
       </Button>
       <Button variant="secondary" size="sm" @click="doImport">
-        <template #icon-left><Icon icon="mdi:download-outline" /></template>
+        <template #icon-left><Icon icon="mdi:download-outline" class="text-base" /></template>
         Import CSV
       </Button>
     </div>
@@ -111,32 +111,38 @@ function doImport() {
     <AttendanceSummary />
 
     <!-- Chart + Performance -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <Card class="xl:col-span-2">
-        <h3 class="text-sm font-semibold text-gray-900 mb-1">Monthly Attendance Trend</h3>
-        <p class="mb-4 text-xs text-gray-500">
-          {{ TREND_SERVICE }} · average per recorded session, last 12 months
-        </p>
-        <LineChart v-if="hasAttendanceData" :data="lineChartData" :height="260" />
-        <EmptyState
-          v-else
-          icon="mdi:chart-line"
-          title="No attendance in the last 12 months"
-          description="Record a service and the monthly trend will appear here."
-        />
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+      <Card class="xl:col-span-2" padding="lg">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <h3 class="font-display text-base font-semibold text-ink">Monthly Attendance Trend</h3>
+            <p class="mt-0.5 text-xs text-ink-muted">
+              {{ TREND_SERVICE }} · average per recorded session, last 12 months
+            </p>
+          </div>
+        </div>
+        <div class="mt-4">
+          <LineChart v-if="hasAttendanceData" :data="lineChartData" :height="260" />
+          <EmptyState
+            v-else
+            icon="mdi:chart-line"
+            title="No attendance in the last 12 months"
+            description="Record a service and the monthly trend will appear here."
+          />
+        </div>
       </Card>
 
       <AttendancePerformance :year="currentYear" />
     </div>
 
     <!-- Check-in buttons -->
-    <div class="flex gap-3">
+    <div class="flex flex-wrap gap-3">
       <Button variant="secondary">
-        <template #icon-left><Icon icon="mdi:qrcode-scan" /></template>
+        <template #icon-left><Icon icon="mdi:qrcode-scan" class="text-base" /></template>
         QR Check-In
       </Button>
       <Button variant="secondary">
-        <template #icon-left><Icon icon="mdi:fingerprint" /></template>
+        <template #icon-left><Icon icon="mdi:fingerprint" class="text-base" /></template>
         Fingerprint Sync
       </Button>
     </div>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { chartPalette } from '~/utils/chartTheme'
+
 interface Props {
   values: number[]
   color?: string
@@ -6,7 +8,7 @@ interface Props {
   width?: number
 }
 const props = withDefaults(defineProps<Props>(), {
-  color: '#93c5fd',
+  color: chartPalette.bookcloth,
   height: 36,
   width: 80,
 })

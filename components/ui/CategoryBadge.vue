@@ -4,7 +4,7 @@ defineProps<{ label: string }>()
 
 <template>
   <span
-    class="inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700 tracking-wide"
+    class="stamp inline-block rounded-sm bg-accent-soft px-2 py-1 ring-1 ring-accent/20 ring-inset"
   >
     {{ label }}
   </span>

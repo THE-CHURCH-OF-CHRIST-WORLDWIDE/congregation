@@ -10,15 +10,16 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+  <div class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
     <button
       v-for="tag in props.tags"
       :key="tag"
+      :aria-pressed="props.active === tag"
       :class="[
-        'shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+        'inline-flex min-h-11 shrink-0 items-center rounded-md border px-4 text-base font-medium whitespace-nowrap transition-colors duration-150 sm:min-h-10 sm:text-sm',
         props.active === tag
-          ? 'bg-[#2563EB] text-white'
-          : 'bg-gray-100 text-gray-600 hover:bg-gray-200',
+          ? 'border-primary bg-primary text-on-primary shadow-xs'
+          : 'border-rule-strong bg-surface text-ink-muted hover:border-ink-subtle hover:bg-surface-muted hover:text-ink',
       ]"
       @click="emit('update:active', tag)"
     >

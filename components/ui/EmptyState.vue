@@ -26,27 +26,28 @@ withDefaults(defineProps<Props>(), {
   <div
     :class="[
       'flex flex-col items-center justify-center text-center',
-      size === 'sm' ? 'gap-1.5 py-6' : 'gap-2 py-12',
+      size === 'sm' ? 'gap-1.5 px-4 py-6' : 'gap-2 px-6 py-14',
     ]"
   >
     <div
       :class="[
-        'flex items-center justify-center rounded-full bg-gray-50 text-gray-300',
-        size === 'sm' ? 'h-9 w-9' : 'h-12 w-12',
+        'flex items-center justify-center rounded-md border border-dashed border-rule-strong bg-surface-muted text-ink-subtle',
+        size === 'sm' ? 'mb-1 size-10' : 'mb-2 size-14',
       ]"
+      aria-hidden="true"
     >
-      <Icon :icon="icon" :class="size === 'sm' ? 'text-lg' : 'text-2xl'" />
+      <Icon :icon="icon" :class="size === 'sm' ? 'text-xl' : 'text-[28px]'" />
     </div>
-    <p :class="['font-medium text-gray-600', size === 'sm' ? 'text-xs' : 'text-sm']">
+    <p :class="['font-display font-semibold text-ink', size === 'sm' ? 'text-sm' : 'text-base']">
       {{ title }}
     </p>
     <p
       v-if="description"
-      :class="['max-w-sm text-gray-400', size === 'sm' ? 'text-[11px]' : 'text-xs']"
+      :class="['max-w-sm leading-relaxed text-ink-muted', size === 'sm' ? 'text-xs' : 'text-base']"
     >
       {{ description }}
     </p>
-    <div v-if="$slots.action" :class="size === 'sm' ? 'mt-1' : 'mt-2'">
+    <div v-if="$slots.action" :class="size === 'sm' ? 'mt-2' : 'mt-4'">
       <slot name="action"></slot>
     </div>
   </div>
