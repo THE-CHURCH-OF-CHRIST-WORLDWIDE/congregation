@@ -35,14 +35,7 @@ const sizeClasses = {
   lg: 'w-11 h-11 text-base',
 }
 
-const colors = [
-  'bg-[#2f6b52]',
-  'bg-[#3d5f8f]',
-  'bg-[#8a5d0f]',
-  'bg-[#7a4d8c]',
-  'bg-[#a3452f]',
-  'bg-[#2c7279]',
-]
+const colors = ['bg-primary', 'bg-info', 'bg-accent', 'bg-ink-muted', 'bg-success', 'bg-warning']
 const colorClass = computed(() => {
   if (!props.name) return colors[0]
   const idx = props.name.charCodeAt(0) % colors.length
@@ -67,7 +60,7 @@ const colorClass = computed(() => {
     />
     <span
       v-else
-      :class="['font-semibold tracking-wide text-white', colorClass]"
+      :class="['font-semibold tracking-wide text-on-primary', colorClass]"
       class="w-full h-full flex items-center justify-center"
     >
       {{ initials }}

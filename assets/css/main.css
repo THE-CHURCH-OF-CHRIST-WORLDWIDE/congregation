@@ -1,159 +1,110 @@
 @import 'tailwindcss';
 
-/* `dark:` fires only for the admin dashboard, and only when the OS prefers dark. */
-@custom-variant dark {
-  @media (prefers-color-scheme: dark) {
-    :root:has(.theme-admin) & {
-      @slot;
-    }
-  }
-}
-
 /*
  * ─────────────────────────────────────────────────────────────────────────────
- *  Congregation design system: "The Register"
+ *  Congregation design system: "The Nave"
  *
- *  The church's record books made legible: white ledger pages, feint blue rules,
- *  a red double margin, deep bookcloth green, blue-black ink, and gilt for stamped
- *  labels. Every colour is a CSS variable so the admin dashboard can follow the
- *  OS dark-mode preference with no JavaScript and no stored state.
+ *  The church as a cultural institution in print. Warm ivory pages with stone
+ *  alternates, charcoal night fields for the cover and the close, deep forest as
+ *  the committed colour field, and champagne/bronze only for hairline marks.
+ *  Instrument Serif sets the headlines; Manrope carries everything that is read
+ *  or operated. Light mode only, on both the public site and the admin dashboard.
  *
  *  Use the semantic utilities (bg-surface, text-ink, border-rule, bg-primary…)
  *  rather than raw palette classes. The gray scale below is remapped to the
- *  same tinted neutrals so anything not yet migrated still sits in the system.
+ *  same warm neutrals so anything not yet migrated still sits in the system.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-/* ── Tokens: light (both surfaces) ─────────────────────────────────────────── */
+/* ── Tokens (both surfaces, light only) ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
 
   /* Grounds */
-  --c-canvas: #eef2f7; /* rule-blue ground behind pages */
-  --c-surface: #ffffff; /* the ledger page */
-  --c-surface-muted: #f5f7fa; /* alternate rows, quiet panels */
-  --c-surface-sunken: #ebeff5; /* wells, inputs on muted ground */
-  --c-overlay: rgb(14 20 28 / 0.55); /* modal scrim */
+  --c-canvas: #f3efe6; /* stone: alternate sections, admin ground */
+  --c-surface: #faf8f3; /* the ivory page */
+  --c-surface-muted: #f3efe6; /* quiet panels, alternate rows */
+  --c-surface-sunken: #eae5da; /* wells, inputs on muted ground */
+  --c-overlay: rgb(17 16 14 / 0.6); /* modal scrim */
+
+  /* Night fields (cover, live worship, the close) */
+  --c-night: #1a1916;
+  --c-night-raised: #24231f;
+  --c-on-night: #f3efe6;
+  --c-on-night-muted: #bdb6a8; /* 8.9:1 on night */
+  --c-champagne: #d4bc8e; /* accent on night: 9.4:1 */
 
   /* Rules */
-  --c-rule: #d5deea; /* feint ledger rule: default border */
-  --c-rule-strong: #b4c3d6; /* inputs, emphasised dividers */
-  --c-margin: #c0392b; /* the red double margin; structural only */
+  --c-rule: #e2dccf; /* warm stone hairline: default border */
+  --c-rule-strong: #c8bfad; /* inputs, emphasised dividers */
+  --c-margin: #a88456; /* bronze hairline signature */
 
   /* Ink */
-  --c-ink: #172131; /* text-primary: 15.6:1 on white */
-  --c-ink-muted: #4b5768; /* text-muted: 7.4:1 on white */
-  --c-ink-subtle: #5f6b7c; /* captions, placeholders: 5.4:1 on white */
+  --c-ink: #1b1a17; /* 16.4:1 on ivory */
+  --c-ink-muted: #4f4b43; /* 8.3:1 on ivory */
+  --c-ink-subtle: #6b665c; /* 5.3:1 on ivory */
 
-  /* Bookcloth (primary) */
-  --c-primary: #1e4d3b; /* 9.6:1 with white */
-  --c-primary-hover: #163b2d;
-  --c-primary-active: #10301f;
-  --c-primary-soft: #e6efea;
-  --c-primary-ink: #1e4d3b; /* primary used as text */
-  --c-on-primary: #ffffff;
+  /* Forest (primary) */
+  --c-primary: #2f3d2c; /* 11.2:1 with ivory */
+  --c-primary-hover: #263223;
+  --c-primary-active: #1d271b;
+  --c-primary-soft: #e6e8dc;
+  --c-primary-ink: #2f3d2c; /* primary used as text */
+  --c-on-primary: #faf8f3;
 
-  /* Ink-blue (secondary): headings on light sections, links */
-  --c-secondary: #24364f;
-  --c-secondary-soft: #e8edf4;
+  /* Charcoal (secondary): headings, strong text */
+  --c-secondary: #22211d;
+  --c-secondary-soft: #edeae2;
 
-  /* Gilt (accent): stamped labels, small marks */
-  --c-accent: #8a5d0f; /* 5.6:1 on white */
-  --c-accent-soft: #f6eedd;
+  /* Bronze (accent): dates, marks, active hairlines */
+  --c-accent: #8a6a3b; /* 4.6:1 on ivory */
+  --c-accent-soft: #f2eadb;
 
   /* Status */
-  --c-success: #1f7a45;
-  --c-success-soft: #e5f3ea;
-  --c-warning: #94570a;
-  --c-warning-soft: #fdf1dc;
-  --c-error: #b42318;
-  --c-error-soft: #fdecea;
-  --c-info: #1f5fa8;
-  --c-info-soft: #e7f0fa;
-  --c-live: #c62828;
+  --c-success: #2f6b43;
+  --c-success-soft: #e6efe5;
+  --c-warning: #8f5a12;
+  --c-warning-soft: #f7ecd9;
+  --c-error: #a3321f;
+  --c-error-soft: #f8e6e1;
+  --c-info: #2f5577;
+  --c-info-soft: #e5ecf2;
+  --c-live: #b3261e;
 
   /* Focus */
-  --c-focus: #1f5fa8;
+  --c-focus: #2f3d2c;
 
-  /* Gray scale, remapped to the ledger's cool tinted neutrals */
-  --g-50: #f5f7fa;
-  --g-100: #ebeff5;
-  --g-200: #d5deea;
-  --g-300: #b4c3d6;
-  --g-400: #8693a5;
-  --g-500: #5f6b7c;
-  --g-600: #4b5768;
-  --g-700: #364152;
-  --g-800: #232e3e;
-  --g-900: #172131;
-  --g-950: #0e141c;
+  /* Gray scale, remapped to warm stone neutrals */
+  --g-50: #faf8f3;
+  --g-100: #f3efe6;
+  --g-200: #e2dccf;
+  --g-300: #c8bfad;
+  --g-400: #9c9484;
+  --g-500: #6b665c;
+  --g-600: #4f4b43;
+  --g-700: #3a3731;
+  --g-800: #26241f;
+  --g-900: #1b1a17;
+  --g-950: #11100e;
 
-  /* Elevation: soft, offset, ink-tinted */
-  --shadow-color: 23 33 49;
+  /* Elevation: rare, soft, warm */
+  --shadow-color: 27 25 20;
+
+  /* Layout */
+  --site-max: 88rem;
+  --site-gutter: 1.25rem;
+  --nav-h: 4.5rem;
 }
 
-/*
- * ── Tokens: admin dark mode ──────────────────────────────────────────────────
- * Follows the OS. Scoped to documents that contain the admin shell, so the
- * public site is always light, and teleported modals/toasts (mounted on
- * <body>, outside the shell) still pick the dark values up.
- */
-@media (prefers-color-scheme: dark) {
-  :root:has(.theme-admin) {
-    color-scheme: dark;
-
-    --c-canvas: #0e141c;
-    --c-surface: #151d28;
-    --c-surface-muted: #1b2532;
-    --c-surface-sunken: #111821;
-    --c-overlay: rgb(4 7 11 / 0.7);
-
-    --c-rule: #273445;
-    --c-rule-strong: #3a4a5f;
-    --c-margin: #e0675a;
-
-    --c-ink: #e7ecf3; /* 13.9:1 on surface */
-    --c-ink-muted: #a9b4c3; /* 8.1:1 */
-    --c-ink-subtle: #8a97a9; /* 5.5:1 */
-
-    --c-primary: #6cbf98; /* bookcloth, lifted for dark ground */
-    --c-primary-hover: #86cfab;
-    --c-primary-active: #9fdabb;
-    --c-primary-soft: #18332a;
-    --c-primary-ink: #86cfab;
-    --c-on-primary: #08160f;
-
-    --c-secondary: #c9d6e8;
-    --c-secondary-soft: #1d2a3b;
-
-    --c-accent: #e0b562;
-    --c-accent-soft: #2c2415;
-
-    --c-success: #5fcf95;
-    --c-success-soft: #14301f;
-    --c-warning: #f0b450;
-    --c-warning-soft: #33260f;
-    --c-error: #f2867a;
-    --c-error-soft: #3a1714;
-    --c-info: #7fb2f2;
-    --c-info-soft: #142a44;
-    --c-live: #ff6b6b;
-
-    --c-focus: #7fb2f2;
-
-    --g-50: #1b2532;
-    --g-100: #212c3a;
-    --g-200: #273445;
-    --g-300: #3a4a5f;
-    --g-400: #6e7b8e;
-    --g-500: #8a97a9;
-    --g-600: #a9b4c3;
-    --g-700: #c5ced9;
-    --g-800: #dce2ea;
-    --g-900: #e7ecf3;
-    --g-950: #f3f6f9;
-
-    --shadow-color: 0 0 0;
+@media (min-width: 640px) {
+  :root {
+    --site-gutter: 2rem;
+  }
+}
+@media (min-width: 1024px) {
+  :root {
+    --site-gutter: 3rem;
+    --nav-h: 5rem;
   }
 }
 
@@ -165,6 +116,11 @@
   --color-surface-muted: var(--c-surface-muted);
   --color-surface-sunken: var(--c-surface-sunken);
   --color-overlay: var(--c-overlay);
+  --color-night: var(--c-night);
+  --color-night-raised: var(--c-night-raised);
+  --color-on-night: var(--c-on-night);
+  --color-on-night-muted: var(--c-on-night-muted);
+  --color-champagne: var(--c-champagne);
   --color-rule: var(--c-rule);
   --color-rule-strong: var(--c-rule-strong);
   --color-margin: var(--c-margin);
@@ -210,44 +166,43 @@
   --color-gray-950: var(--g-950);
 
   /* Elevation */
-  --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / 0.06);
-  --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.06), 0 1px 3px rgb(var(--shadow-color) / 0.08);
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-color) / 0.05);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-color) / 0.05), 0 1px 3px rgb(var(--shadow-color) / 0.06);
   --shadow-md:
-    0 2px 4px rgb(var(--shadow-color) / 0.05), 0 6px 16px rgb(var(--shadow-color) / 0.08);
+    0 2px 4px rgb(var(--shadow-color) / 0.04), 0 8px 20px rgb(var(--shadow-color) / 0.07);
   --shadow-lg:
-    0 4px 8px rgb(var(--shadow-color) / 0.06), 0 16px 40px rgb(var(--shadow-color) / 0.14);
+    0 4px 8px rgb(var(--shadow-color) / 0.05), 0 18px 44px rgb(var(--shadow-color) / 0.12);
   --shadow-xl:
-    0 8px 16px rgb(var(--shadow-color) / 0.08), 0 28px 64px rgb(var(--shadow-color) / 0.2);
+    0 8px 16px rgb(var(--shadow-color) / 0.07), 0 30px 70px rgb(var(--shadow-color) / 0.18);
 }
 
 @theme {
-  /* Typography: Bitter (record-book label slab) for headings, Public Sans for text */
-  --font-sans:
-    'Public Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Bitter', 'Roboto Slab', Rockwell, Georgia, serif;
-  --font-serif: 'Bitter', 'Roboto Slab', Rockwell, Georgia, serif;
+  /* Typography: Instrument Serif for headlines, Manrope for everything read or operated */
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-serif: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
 
-  /* Type scale: 1.2 minor third on a 16px base; public body is text-base/text-lg */
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
 
-  /* Radii: squared like a bound book; nothing pill-shaped except badges/avatars */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
-  --radius-2xl: 14px;
+  /* Radii: square, printed. Nothing pill-shaped except dots, avatars, round icon buttons */
+  --radius-xs: 1px;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
 
   /* Motion */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 120ms;
-  --duration-base: 180ms;
-  --duration-slow: 280ms;
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
 
   --animate-shimmer: shimmer 1.6s linear infinite;
-  --animate-rise: rise 0.5s var(--ease-out-expo) both;
+  --animate-rise: rise 0.7s var(--ease-out-expo) both;
 }
 
 @keyframes shimmer {
@@ -262,7 +217,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -280,6 +235,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     -webkit-tap-highlight-color: transparent;
+    font-feature-settings: 'ss01' 0;
   }
 
   h1,
@@ -287,8 +243,16 @@
   h3,
   h4 {
     font-family: var(--font-display);
+    font-weight: 400;
+    font-synthesis: none;
     text-wrap: balance;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.012em;
+  }
+
+  /* Instrument Serif ships one weight; never let the browser fake a bold */
+  .font-display,
+  .font-serif {
+    font-synthesis: none;
   }
 
   p {
@@ -296,20 +260,20 @@
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--c-primary) 22%, transparent);
-    color: inherit;
+    background: color-mix(in srgb, var(--c-champagne) 55%, transparent);
+    color: var(--c-ink);
   }
 
   :focus-visible {
     outline: 2px solid var(--c-focus);
-    outline-offset: 2px;
+    outline-offset: 3px;
     border-radius: var(--radius-sm);
   }
 
   input,
   textarea,
   select {
-    caret-color: var(--c-primary);
+    caret-color: var(--c-accent);
   }
 
   ::placeholder {
@@ -326,7 +290,7 @@
   }
 
   a {
-    text-underline-offset: 3px;
+    text-underline-offset: 4px;
     text-decoration-thickness: 1px;
   }
 
@@ -335,7 +299,7 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Native checkboxes and radios take the bookcloth colour */
+  /* Native checkboxes and radios take the forest colour */
   input[type='checkbox'],
   input[type='radio'] {
     accent-color: var(--c-primary);
@@ -347,293 +311,662 @@
   }
 }
 
-/* ── Utilities that belong to the world ───────────────────────────────────── */
+/* World classes live in the components layer so Tailwind utilities can still override them. */
+@layer components {
+  /* ── Utilities that belong to the world ───────────────────────────────────── */
 
-/* Tabular figures for money, counts, dates in columns */
-.num {
-  font-variant-numeric: tabular-nums lining-nums;
-}
+  /* Tabular figures for money, counts, dates in columns */
+  .num {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
 
-/*
- * The red double margin: the ledger's one structural signature. Put it on the
- * left of a page header or an entry panel. Never on cards in a grid.
+  /* Site container: one measure for every public section */
+  .site-container {
+    width: 100%;
+    max-width: var(--site-max);
+    margin-inline: auto;
+    padding-inline: var(--site-gutter);
+  }
+
+  /* Section rhythm: generous, more space above a heading than below it */
+  .section {
+    padding-block: clamp(4.5rem, 10vw, 9rem);
+  }
+  .section-tight {
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+  }
+
+  /* ── Type: editorial scale ── */
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3rem, 8.4vw, 6rem);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    font-synthesis: none;
+  }
+  .t-h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.625rem, 5.6vw, 4.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.022em;
+    font-synthesis: none;
+  }
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.125rem, 3.9vw, 3.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.018em;
+    font-synthesis: none;
+  }
+  .t-h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 2.1vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-synthesis: none;
+  }
+  .t-lede {
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+    line-height: 1.65;
+    color: var(--c-ink-muted);
+  }
+  /* Small tracked capitals: marginalia and metadata. Never above a heading. */
+  .t-label {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  /* The italic turn inside a serif headline */
+  .t-turn {
+    font-style: italic;
+    font-family: var(--font-display);
+  }
+
+  /*
+ * Bronze hairline signature (formerly the ledger's red double margin). Put it on
+ * the left of a page header or an entry panel. Never on cards in a grid.
  */
-.margin-rule {
-  position: relative;
-  padding-left: 1.25rem;
-}
-.margin-rule::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 5px;
-  border-left: 1px solid var(--c-margin);
-  border-right: 1px solid var(--c-margin);
-  opacity: 0.85;
-}
+  .margin-rule {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+  .margin-rule::before {
+    content: '';
+    position: absolute;
+    top: 0.35em;
+    bottom: 0.35em;
+    left: 0;
+    width: 1px;
+    background: var(--c-margin);
+  }
 
-/* Feint ledger ruling: a list whose rows are separated by blue rules */
-.ruled > * + * {
-  border-top: 1px solid var(--c-rule);
-}
+  /* Ruled list: rows separated by stone hairlines */
+  .ruled > * + * {
+    border-top: 1px solid var(--c-rule);
+  }
 
-/* Ruled-paper background for quiet sections (32px line pitch, 1px rule) */
-.ledger-paper {
-  background-color: var(--c-surface);
-  background-image: linear-gradient(
-    to bottom,
-    transparent 31px,
-    var(--c-rule) 31px,
-    var(--c-rule) 32px
-  );
-  background-size: 100% 32px;
-}
+  /* Quiet stone section (kept for markup that still uses the old name) */
+  .ledger-paper {
+    background-color: var(--c-surface-muted);
+  }
 
-/* Stamped label: small caps set in gilt, used for meta (dates, categories) */
-.stamp {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--c-accent);
-}
+  /* Stamped label: small tracked capitals in bronze, used for meta (dates, categories) */
+  .stamp {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
 
-/* Citation: a sentence-case meta line under a heading (scripture refs, labels from Settings) */
-.citation {
-  font-size: 0.9375rem;
-  line-height: 1.5rem;
-  font-weight: 500;
-  color: var(--c-ink-muted);
-}
+  /* Citation: a sentence-case meta line under a heading (scripture refs, labels from Settings) */
+  .citation {
+    font-size: 0.9375rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+    color: var(--c-ink-muted);
+  }
 
-/* Bookcloth band: the deep green committed field */
-.bookcloth {
-  --c-focus: #f2c14e;
-  background-color: var(--c-primary);
-  color: #fff;
-}
-/* In admin dark mode the bookcloth goes deep rather than bright */
-@media (prefers-color-scheme: dark) {
-  :root:has(.theme-admin) .bookcloth {
-    background-color: #102a20;
+  /* ── Fields: whole regions in one committed colour ── */
+
+  /* Forest field (kept as .bookcloth so existing markup resolves) */
+  .bookcloth,
+  .field-forest {
+    --c-focus: var(--c-champagne);
+    background-color: var(--c-primary);
+    color: var(--c-on-night);
+  }
+  .bookcloth ::selection,
+  .field-forest ::selection,
+  .field-night ::selection {
+    background: color-mix(in srgb, var(--c-champagne) 45%, transparent);
+    color: #fff;
+  }
+
+  /* Charcoal night field: the cover, live worship, the close */
+  .field-night {
+    --c-focus: var(--c-champagne);
+    background-color: var(--c-night);
+    color: var(--c-on-night);
+  }
+
+  /* Stone field */
+  .field-stone {
+    background-color: var(--c-surface-muted);
+  }
+
+  /* Skeleton: a shimmer across a sunken stone block */
+  .skeleton {
+    border-radius: var(--radius-sm);
+    background: linear-gradient(
+      90deg,
+      var(--c-surface-sunken) 0%,
+      var(--c-surface-muted) 50%,
+      var(--c-surface-sunken) 100%
+    );
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  /* Public site typography */
+  .font-serif {
+    font-family: var(--font-display);
+  }
+
+  /* Readable prose for teachings and long-form copy */
+  .prose-register {
+    font-size: 1.0625rem;
+    line-height: 1.8;
     color: var(--c-ink);
+    max-width: 68ch;
   }
-}
-
-/* Skeleton: a shimmer across a sunken rule-coloured block */
-.skeleton {
-  border-radius: var(--radius-md);
-  background: linear-gradient(
-    90deg,
-    var(--c-surface-sunken) 0%,
-    var(--c-surface-muted) 50%,
-    var(--c-surface-sunken) 100%
-  );
-  background-size: 200% 100%;
-  animation: var(--animate-shimmer);
-}
-
-/* Public site typography */
-.font-serif {
-  font-family: var(--font-display);
-}
-
-/* Readable prose for teachings and long-form copy */
-.prose-register {
-  font-size: 1.0625rem;
-  line-height: 1.75;
-  color: var(--c-ink);
-  max-width: 68ch;
-}
-.prose-register p + p {
-  margin-top: 1.1em;
-}
-
-/* Live badge pulse */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
+  .prose-register p + p {
+    margin-top: 1.15em;
   }
-  100% {
-    transform: scale(2.2);
+
+  /* ── Buttons & links (public site vocabulary) ── */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 3rem;
+    padding-inline: 1.5rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      color var(--duration-base) var(--ease-out-quart),
+      border-color var(--duration-base) var(--ease-out-quart),
+      background-color var(--duration-base) var(--ease-out-quart);
+  }
+  /* A fill that wipes up from the baseline on hover */
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .btn:hover::before {
+    transform: scaleY(1);
+  }
+  .btn .btn-arrow {
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .btn:hover .btn-arrow {
+    transform: translateX(4px);
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+  .btn:disabled::before {
+    transform: scaleY(0);
+  }
+
+  .btn-primary {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+  }
+  .btn-primary::before {
+    background: var(--c-primary-active);
+  }
+
+  .btn-dark {
+    background: var(--c-night);
+    color: var(--c-on-night);
+  }
+  .btn-dark::before {
+    background: var(--c-primary);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--c-rule-strong);
+    color: var(--c-ink);
+    background: transparent;
+  }
+  .btn-outline::before {
+    background: var(--c-ink);
+  }
+  .btn-outline:hover {
+    color: var(--c-surface);
+    border-color: var(--c-ink);
+  }
+
+  /* On night/forest fields */
+  .btn-light {
+    background: var(--c-on-night);
+    color: var(--c-night);
+  }
+  .btn-light::before {
+    background: var(--c-champagne);
+  }
+  .btn-ghost-light {
+    border: 1px solid rgb(243 239 230 / 0.42);
+    color: var(--c-on-night);
+    background: transparent;
+  }
+  .btn-ghost-light::before {
+    background: var(--c-on-night);
+  }
+  .btn-ghost-light:hover {
+    color: var(--c-night);
+    border-color: var(--c-on-night);
+  }
+
+  /* Inline editorial link: hairline that draws in from the left */
+  .link-line {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .link-line > .link-text {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 0.5s var(--ease-out-expo);
+  }
+  .link-line:hover > .link-text {
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+  }
+  .link-line .link-arrow {
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .link-line:hover .link-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Public form fields: underlined, editorial */
+  .field-input {
+    width: 100%;
+    min-height: 3rem;
+    border: 0;
+    border-bottom: 1px solid var(--c-rule-strong);
+    border-radius: 0;
+    background: transparent;
+    padding: 0.75rem 0;
+    font-size: 1.0625rem;
+    color: var(--c-ink);
+    outline: none;
+    transition:
+      border-color var(--duration-base) var(--ease-out-quart),
+      box-shadow var(--duration-base) var(--ease-out-quart);
+  }
+  .field-input:hover {
+    border-bottom-color: var(--c-ink-subtle);
+  }
+  .field-input:focus,
+  .field-input:focus-visible {
+    outline: none;
+    border-bottom-color: var(--c-primary);
+    box-shadow: 0 1px 0 0 var(--c-primary);
+  }
+  .field-label {
+    display: block;
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-ink-muted);
+  }
+
+  /* Image frame: crisp edges, slow zoom on hover */
+  .img-zoom {
+    overflow: hidden;
+  }
+  .img-zoom img {
+    transition: transform 1.2s var(--ease-out-expo);
+  }
+  .group:hover .img-zoom img,
+  .img-zoom:hover img {
+    transform: scale(1.045);
+  }
+
+  /* Live badge pulse */
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.8);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+  .pulse-ring::before,
+  .pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: var(--c-live);
+    animation: pulse-ring 1.6s var(--ease-out-quart) infinite;
+  }
+  .pulse-ring::after {
+    animation-delay: 0.55s;
+  }
+
+  /* Hide scrollbar for filter bar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Page transitions: the new page rises in; the old one simply fades */
+  .fade-enter-active {
+    transition:
+      opacity 0.55s var(--ease-out-expo),
+      transform 0.55s var(--ease-out-expo);
+  }
+  .fade-leave-active {
+    transition: opacity 0.18s ease;
+  }
+  .fade-enter-from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .fade-leave-to {
     opacity: 0;
   }
-}
-.pulse-ring::before,
-.pulse-ring::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: var(--c-live);
-  animation: pulse-ring 1.6s var(--ease-out-quart) infinite;
-}
-.pulse-ring::after {
-  animation-delay: 0.55s;
-}
-
-/* Hide scrollbar for filter bar */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Page transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity var(--duration-base) ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-/* No transition `mode`, so the leaving and entering pages briefly coexist in the DOM (see
+  /* No transition `mode`, so the leaving and entering pages briefly coexist in the DOM (see
    nuxt.config.ts for why `out-in` isn't used). Taking the leaving one out of flow stops it from
    pushing the entering page's layout down for that instant. */
-.fade-leave-active {
-  position: absolute;
-  width: 100%;
-}
+  .fade-leave-active {
+    position: absolute;
+    width: 100%;
+  }
 
-/* Scrollbar styling */
-.sidebar-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-.sidebar-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.sidebar-scroll::-webkit-scrollbar-thumb {
-  background: var(--c-rule-strong);
-  border-radius: 3px;
-}
+  /* Scrollbar styling */
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: var(--c-rule-strong);
+    border-radius: 3px;
+  }
 
-/* Chart container */
-.chart-container {
-  position: relative;
-  width: 100%;
-}
+  /* Chart container */
+  .chart-container {
+    position: relative;
+    width: 100%;
+  }
 
-/* Attendance checkboxes */
-input[type='checkbox'].attendance-check {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--c-primary);
-  cursor: pointer;
-}
+  /* Attendance checkboxes */
+  input[type='checkbox'].attendance-check {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--c-primary);
+    cursor: pointer;
+  }
 
-/* Progress bar */
-.progress-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--c-surface-sunken);
-  overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 3px;
-  background: var(--c-primary);
-  transition: width var(--duration-slow) var(--ease-out-quart);
-}
+  /* Progress bar */
+  .progress-bar {
+    height: 4px;
+    border-radius: 1px;
+    background: var(--c-surface-sunken);
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    background: var(--c-primary);
+    transition: width var(--duration-slow) var(--ease-out-quart);
+  }
 
-/* ── Scroll Reveal ────────────────────────────────────────────────────────── */
-/* Subtle by design: content is near its resting place, so a slow connection
+  /* ── Scroll Reveal (class-based, used by useScrollReveal) ─────────────────── */
+  /* Subtle by design: content is near its resting place, so a slow connection
    or a missed observer never leaves a page looking empty. */
-.reveal {
-  opacity: 0;
-  transform: translateY(16px);
-}
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-20px);
-}
-.reveal-right {
-  opacity: 0;
-  transform: translateX(20px);
-}
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.97);
-}
-
-.reveal,
-.reveal-left,
-.reveal-right,
-.reveal-scale {
-  transition:
-    opacity 0.6s var(--ease-out-expo),
-    transform 0.6s var(--ease-out-expo);
-}
-
-.reveal.is-visible,
-.reveal-left.is-visible,
-.reveal-right.is-visible,
-.reveal-scale.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* Stagger delay utilities (applied alongside reveal classes) */
-.delay-75 {
-  transition-delay: 75ms;
-}
-.delay-100 {
-  transition-delay: 100ms;
-}
-.delay-150 {
-  transition-delay: 150ms;
-}
-.delay-200 {
-  transition-delay: 200ms;
-}
-.delay-300 {
-  transition-delay: 300ms;
-}
-.delay-400 {
-  transition-delay: 400ms;
-}
-
-/* ── Hero entrance animation ─────────────────────────────────────────────── */
-@keyframes hero-fade-up {
-  from {
+  .reveal {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(22px);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-24px);
   }
-}
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  .reveal-scale {
+    opacity: 0;
+    transform: scale(0.97);
+  }
 
-.hero-animate {
-  animation: hero-fade-up 0.7s var(--ease-out-expo) both;
-}
-
-/* ── Respect user's motion preference ───────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
   .reveal,
   .reveal-left,
   .reveal-right,
   .reveal-scale {
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 0.9s var(--ease-out-expo);
+  }
+
+  .reveal.is-visible,
+  .reveal-left.is-visible,
+  .reveal-right.is-visible,
+  .reveal-scale.is-visible {
     opacity: 1;
     transform: none;
   }
+
+  /* Stagger delay utilities (applied alongside reveal classes) */
+  .delay-75 {
+    transition-delay: 75ms;
+  }
+  .delay-100 {
+    transition-delay: 100ms;
+  }
+  .delay-150 {
+    transition-delay: 150ms;
+  }
+  .delay-200 {
+    transition-delay: 200ms;
+  }
+  .delay-300 {
+    transition-delay: 300ms;
+  }
+  .delay-400 {
+    transition-delay: 400ms;
+  }
+
+  /* ── Directive-based motion (v-reveal, see plugins/motion.client.ts) ────────── */
+  /* rise: content lifts into place */
+  [data-reveal='rise'] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 1s var(--ease-out-expo),
+      transform 1s var(--ease-out-expo);
+    transition-delay: var(--rv-delay, 0ms);
+  }
+  /* fade: content simply arrives */
+  [data-reveal='fade'] {
+    opacity: 0;
+    transition: opacity 1.1s var(--ease-out-quart);
+    transition-delay: var(--rv-delay, 0ms);
+  }
+  /* unveil: an image frame opens from the bottom edge while its photo settles.
+     The clip sits on the frame's children, not the frame: Chrome's IntersectionObserver
+     never reports a fully clipped target as intersecting. */
+  [data-reveal='unveil'] {
+    transition: background-color 0.6s var(--ease-out-quart);
+    transition-delay: var(--rv-delay, 0ms);
+  }
+  [data-reveal='unveil']:not(.is-in) {
+    background-color: transparent !important;
+  }
+  [data-reveal='unveil'] > * {
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 1.25s var(--ease-in-out-quint);
+    transition-delay: var(--rv-delay, 0ms);
+  }
+  [data-reveal='unveil'].is-in > * {
+    clip-path: inset(0 0 0 0);
+  }
+  [data-reveal='unveil'] img {
+    transform: scale(1.14);
+    transition:
+      transform 1.8s var(--ease-out-expo),
+      clip-path 1.25s var(--ease-in-out-quint);
+    transition-delay: var(--rv-delay, 0ms);
+  }
+  /* rule: a hairline draws across */
+  [data-reveal='rule'] {
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.2s var(--ease-out-expo);
+    transition-delay: var(--rv-delay, 0ms);
+  }
+  [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+  [data-reveal='unveil'].is-in img {
+    transform: none;
+  }
+
+  /* Masked line reveal (SplitReveal component): each word rises from behind its own mask */
+  .split-line {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+  .split-word {
+    display: inline-block;
+    transform: translateY(105%);
+    transition: transform 1.1s var(--ease-out-expo);
+    transition-delay: var(--sw-delay, 0ms);
+    will-change: transform;
+  }
+  .is-in .split-word,
+  .split-word.is-in {
+    transform: none;
+  }
+
+  /* ── Hero entrance animation ─────────────────────────────────────────────── */
+  @keyframes hero-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .hero-animate {
-    animation: none;
+    animation: hero-fade-up 0.9s var(--ease-out-expo) both;
+  }
+
+  @keyframes cover-settle {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes scroll-line {
+    0% {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    45% {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+    55% {
+      transform: scaleY(1);
+      transform-origin: bottom;
+    }
+    100% {
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+  }
+
+  /* ── Respect user's motion preference ───────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale,
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      clip-path: none;
+    }
+    [data-reveal] img,
+    .split-word {
+      transform: none;
+    }
+    .hero-animate {
+      animation: none;
+    }
   }
 }

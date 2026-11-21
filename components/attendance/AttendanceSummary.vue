@@ -66,12 +66,12 @@ function fmt(n: number) {
   <Card padding="lg">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h3 class="font-display text-base font-semibold text-ink">Average Annual attendance</h3>
+        <h3 class="font-sans text-base font-semibold text-ink">Average Annual attendance</h3>
         <p class="mt-0.5 text-xs text-ink-muted">Showing annual attendance summaries by activity</p>
       </div>
       <select
         v-model="selectedYear"
-        class="num min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+        class="num min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
         aria-label="Select year"
       >
         <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
@@ -89,7 +89,7 @@ function fmt(n: number) {
       <div
         v-for="svc in stats"
         :key="svc.serviceType"
-        class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-5 shadow-xs"
+        class="flex flex-col gap-3 rounded-sm border border-rule bg-surface p-5"
       >
         <!-- Top row: name + icon -->
         <div class="flex items-start justify-between gap-2">
@@ -100,7 +100,7 @@ function fmt(n: number) {
         </div>
 
         <!-- Big number -->
-        <p class="num font-display text-3xl leading-none font-semibold text-ink">
+        <p class="num font-display text-3xl leading-none text-ink">
           {{ fmt(svc.count) }}
         </p>
 

@@ -7,17 +7,11 @@ defineProps<{
 </script>
 
 <template>
-  <div :class="['mb-10 md:mb-12', centered ? 'text-center' : '']">
-    <h2
-      class="font-display text-[1.875rem] font-bold leading-[1.15] text-secondary md:text-[2.5rem]"
-    >
-      {{ title }}
+  <div :class="['mb-12 md:mb-16', centered ? 'text-center' : '']">
+    <h2 class="t-h2 max-w-[18ch] text-secondary" :class="centered ? 'mx-auto' : ''">
+      <SplitReveal :text="title" />
     </h2>
-    <p
-      v-if="subtitle"
-      class="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted"
-      :class="centered ? 'mx-auto' : ''"
-    >
+    <p v-if="subtitle" v-reveal.150 class="t-lede mt-5 max-w-xl" :class="centered ? 'mx-auto' : ''">
       {{ subtitle }}
     </p>
   </div>

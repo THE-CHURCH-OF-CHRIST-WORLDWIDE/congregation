@@ -6,6 +6,8 @@ export interface LiveStream {
   viewerCount: number
   thumbnailSrc: string
   startedAt: string
+  /** Where viewers watch the broadcast. */
+  url?: string
 }
 
 export interface RecordedStream {

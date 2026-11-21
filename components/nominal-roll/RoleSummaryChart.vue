@@ -15,22 +15,22 @@ const currentYear = new Date().getFullYear()
  * from the chart *and* from the total beneath it.
  */
 const STATUS_COLORS: Record<string, string> = {
-  Active: '#2f7a5c',
-  Inactive: '#7a8aa0',
-  Backslider: '#a8683f',
-  Weak: '#c08a2e',
-  Distant: '#2e8a92',
-  Withdrawal: '#8a5a9e',
-  Disfellowshipped: '#c2493b',
-  Transfer: '#3d5f8f',
-  Late: '#5e6f3a',
+  Active: chartPalette.bookcloth,
+  Inactive: chartPalette.slate,
+  Backslider: chartPalette.gilt,
+  Weak: chartPalette.clay,
+  Distant: chartPalette.teal,
+  Withdrawal: chartPalette.plum,
+  Disfellowshipped: chartPalette.margin,
+  Transfer: chartPalette.ink,
+  Late: '#5c574c',
 }
 
 const slices = computed<Slice[]>(() =>
   MEMBER_STATUSES.map((status) => ({
     label: status,
     value: membersStore.members.filter((m) => m.status === status).length,
-    color: STATUS_COLORS[status] ?? '#7a8aa0',
+    color: STATUS_COLORS[status] ?? chartPalette.slate,
   }))
 )
 
@@ -76,9 +76,9 @@ const arcs = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col rounded-lg border border-rule bg-surface p-5 shadow-xs">
+  <div class="flex flex-col rounded-sm border border-rule bg-surface p-5">
     <div class="flex items-center justify-between gap-3">
-      <h3 class="font-display text-base font-semibold text-ink">
+      <h3 class="font-sans text-base font-semibold text-ink">
         <span class="num">{{ currentYear }}</span> Nominal Roll Summary
       </h3>
     </div>
@@ -123,7 +123,7 @@ const arcs = computed(() => {
               class="pie-label num"
               stroke="none"
               :style="{
-                fill: a.color === '#c08a2e' ? '#172131' : '#ffffff',
+                fill: 'var(--c-surface)',
                 fontSize: a.pct >= 5 ? '11px' : '9px',
               }"
             >
@@ -135,8 +135,8 @@ const arcs = computed(() => {
               cx="100"
               cy="100"
               r="90"
-              fill="#1e293b"
-              stroke="#334155"
+              fill="#eae5da"
+              stroke="#c8bfad"
               stroke-width="1"
               class="fill-surface-sunken stroke-rule-strong"
               stroke-dasharray="4 4"
@@ -146,7 +146,7 @@ const arcs = computed(() => {
               y="100"
               text-anchor="middle"
               dominant-baseline="central"
-              fill="#94a3b8"
+              fill="#6b665c"
               class="fill-ink-subtle text-xs"
             >
               No data

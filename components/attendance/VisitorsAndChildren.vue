@@ -189,7 +189,7 @@ function doExport() {
     <div class="border-b border-rule p-4 lg:p-5">
       <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h3 class="font-display text-lg font-semibold text-ink">Visitors &amp; Children</h3>
+          <h3 class="font-sans text-lg font-semibold text-ink">Visitors &amp; Children</h3>
           <p class="mt-0.5 text-xs text-ink-muted">
             Recorded per {{ serviceType }} — visitors by name, children by number
           </p>
@@ -238,11 +238,11 @@ function doExport() {
       class="grid grid-cols-1 gap-3 border-b border-rule bg-surface-muted p-4 sm:grid-cols-2 lg:p-5"
     >
       <!-- Visitors -->
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="rounded-sm border border-rule bg-surface p-5">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Visitors</p>
-            <p class="num mt-1 font-display text-3xl font-semibold text-ink">
+            <p class="num mt-1 font-display text-3xl text-ink">
               {{ visitorsForDate.length }}
             </p>
             <p class="mt-1 text-xs text-ink-muted">
@@ -262,12 +262,12 @@ function doExport() {
       </div>
 
       <!-- Children -->
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="rounded-sm border border-rule bg-surface p-5">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Children</p>
             <!-- An em dash, not 0: nothing has been counted, which is not the same as none came. -->
-            <p class="num mt-1 font-display text-3xl font-semibold text-ink">
+            <p class="num mt-1 font-display text-3xl text-ink">
               {{ recordedChildren === null ? '—' : recordedChildren }}
             </p>
             <p class="mt-1 flex items-center gap-1 text-xs">
@@ -297,7 +297,7 @@ function doExport() {
             :max="MAX_CHILDREN"
             inputmode="numeric"
             placeholder="0"
-            class="num h-10 w-24 rounded-md border bg-surface px-3 text-center text-sm font-semibold text-ink shadow-xs transition-[border-color,box-shadow] outline-none placeholder:text-ink-subtle hover:border-ink-subtle focus:ring-3"
+            class="num h-10 w-24 rounded-md border bg-surface px-3 text-center text-sm font-semibold text-ink transition-[border-color,box-shadow] outline-none placeholder:text-ink-subtle hover:border-ink-subtle focus:ring-3"
             :class="
               childrenError
                 ? 'border-error focus:border-error focus:ring-error/15'

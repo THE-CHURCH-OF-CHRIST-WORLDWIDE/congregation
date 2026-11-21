@@ -9,17 +9,16 @@ const emit = defineEmits<{
 </script>
 
 <template>
+  <!-- Two quiet text tabs; a bronze hairline slides beneath the active one -->
   <div
-    class="inline-flex gap-1 rounded-md border border-rule-strong bg-surface-muted p-1"
+    class="relative grid w-full max-w-[30rem] grid-cols-2 border-b border-rule-strong"
     role="group"
     aria-label="Event timeframe"
   >
     <button
       :class="[
-        'inline-flex min-h-11 items-center justify-center rounded-[5px] px-5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-150',
-        modelValue === 'upcoming'
-          ? 'bg-primary text-on-primary shadow-xs'
-          : 'text-ink-muted hover:bg-surface hover:text-ink',
+        'flex min-h-14 items-end pb-4 text-left font-display text-[1.625rem] leading-none transition-colors duration-500 sm:text-[2rem]',
+        modelValue === 'upcoming' ? 'text-ink' : 'text-ink-subtle hover:text-ink-muted',
       ]"
       :aria-pressed="modelValue === 'upcoming'"
       @click="emit('update:modelValue', 'upcoming')"
@@ -28,15 +27,20 @@ const emit = defineEmits<{
     </button>
     <button
       :class="[
-        'inline-flex min-h-11 items-center justify-center rounded-[5px] px-5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-150',
-        modelValue === 'past'
-          ? 'bg-primary text-on-primary shadow-xs'
-          : 'text-ink-muted hover:bg-surface hover:text-ink',
+        'flex min-h-14 items-end pb-4 pl-6 text-left font-display text-[1.625rem] leading-none transition-colors duration-500 sm:text-[2rem]',
+        modelValue === 'past' ? 'text-ink' : 'text-ink-subtle hover:text-ink-muted',
       ]"
       :aria-pressed="modelValue === 'past'"
       @click="emit('update:modelValue', 'past')"
     >
       Past Events
     </button>
+    <span
+      aria-hidden="true"
+      :class="[
+        'pointer-events-none absolute -bottom-px left-0 h-[2px] w-1/2 bg-accent transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]',
+        modelValue === 'past' ? 'translate-x-full' : 'translate-x-0',
+      ]"
+    ></span>
   </div>
 </template>

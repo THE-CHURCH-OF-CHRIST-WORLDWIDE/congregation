@@ -5,22 +5,22 @@ const store = useToastStore()
 
 const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconName: string }> = {
   success: {
-    wrapper: 'before:bg-success',
+    wrapper: 'border-success/35 bg-success-soft',
     icon: 'text-success',
     iconName: 'mdi:check-circle-outline',
   },
   error: {
-    wrapper: 'before:bg-error',
+    wrapper: 'border-error/35 bg-error-soft',
     icon: 'text-error',
     iconName: 'mdi:alert-circle-outline',
   },
   info: {
-    wrapper: 'before:bg-info',
+    wrapper: 'border-info/35 bg-info-soft',
     icon: 'text-info',
     iconName: 'mdi:information-outline',
   },
   warning: {
-    wrapper: 'before:bg-warning',
+    wrapper: 'border-warning/35 bg-warning-soft',
     icon: 'text-warning',
     iconName: 'mdi:alert-outline',
   },
@@ -40,7 +40,7 @@ const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconN
           v-for="t in store.toasts"
           :key="t.id"
           :class="[
-            'pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-lg border border-rule bg-surface py-3 pl-4 pr-2 text-sm text-ink shadow-lg before:absolute before:inset-y-0 before:left-0 before:w-1',
+            'pointer-events-auto relative flex items-start gap-3 overflow-hidden rounded-sm border py-3 pl-4 pr-2 text-sm text-ink shadow-md',
             variantStyles[t.variant].wrapper,
           ]"
           role="alert"
@@ -51,7 +51,7 @@ const variantStyles: Record<ToastVariant, { wrapper: string; icon: string; iconN
           />
           <p class="flex-1 pt-px leading-snug">{{ t.message }}</p>
           <button
-            class="-my-1 inline-flex size-8 shrink-0 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
+            class="-my-1 inline-flex size-8 shrink-0 items-center justify-center rounded-sm text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
             :aria-label="`Dismiss ${t.variant} notification`"
             @click="store.dismiss(t.id)"
           >

@@ -43,7 +43,7 @@ watch(
         <button
           ref="cancelButton"
           type="button"
-          class="inline-flex min-h-10 items-center rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink shadow-xs transition-colors hover:bg-surface-muted"
+          class="inline-flex min-h-10 items-center rounded-sm border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-muted hover:border-ink-subtle"
           @click="confirmStore.settle(false)"
         >
           {{ confirmStore.request?.cancelLabel }}
@@ -51,7 +51,7 @@ watch(
         <button
           type="button"
           :class="[
-            'inline-flex min-h-10 items-center rounded-md px-4 text-sm font-semibold text-on-primary shadow-xs transition-[background-color,filter]',
+            'inline-flex min-h-10 items-center rounded-sm px-4 text-sm font-semibold text-on-primary transition-[background-color,filter]',
             confirmStore.request?.variant === 'danger'
               ? 'bg-error hover:brightness-95'
               : 'bg-primary hover:bg-primary-hover',

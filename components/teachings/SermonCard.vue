@@ -69,7 +69,7 @@ async function deleteSermon(id: string) {
 
     <!-- Content -->
     <div class="flex-1">
-      <h4 class="line-clamp-2 font-display text-[15px] leading-snug font-semibold text-ink">
+      <h4 class="line-clamp-2 font-display text-lg leading-snug text-ink">
         {{ sermon.topic }}
       </h4>
       <p class="mt-1 text-xs text-ink-muted">

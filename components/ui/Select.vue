@@ -48,7 +48,7 @@ const messageId = computed(() => (props.error ? `${selectId}-message` : undefine
         :aria-invalid="error ? 'true' : undefined"
         :aria-describedby="messageId"
         :class="[
-          'w-full cursor-pointer appearance-none rounded-md border bg-surface shadow-xs outline-none transition-[border-color,box-shadow] duration-150',
+          'w-full cursor-pointer appearance-none rounded-sm border bg-surface outline-none transition-[border-color,box-shadow] duration-150',
           sizeClasses[size],
           'hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15',
           error ? 'border-error focus:border-error focus:ring-error/15' : 'border-rule-strong',

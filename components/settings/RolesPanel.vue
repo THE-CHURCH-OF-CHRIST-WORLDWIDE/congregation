@@ -381,7 +381,7 @@ function permCount(perms: RolePermissions) {
     <!-- ── Section header ───────────────────────────────────────────────────── -->
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div class="min-w-0">
-        <h2 class="font-display text-lg font-semibold text-ink">Roles & Permissions</h2>
+        <h2 class="font-sans text-lg font-semibold text-ink">Roles & Permissions</h2>
         <p class="mt-0.5 text-sm text-ink-muted">
           Define what each role can access and assign roles to members.
         </p>
@@ -394,12 +394,12 @@ function permCount(perms: RolePermissions) {
 
     <!-- ── Role definitions grid ─────────────────────────────────────────────── -->
     <div>
-      <h3 class="mb-3 font-display text-lg font-semibold text-ink">Role Definitions</h3>
+      <h3 class="mb-3 font-sans text-lg font-semibold text-ink">Role Definitions</h3>
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <button
           v-for="role in rolesStore.roles"
           :key="role.id"
-          class="group flex flex-col rounded-lg border border-rule bg-surface p-4 text-left shadow-xs transition-[border-color,box-shadow] duration-150 hover:border-rule-strong hover:shadow-md"
+          class="group flex flex-col rounded-sm border border-rule bg-surface p-4 text-left transition-[border-color,box-shadow] duration-150 hover:border-rule-strong hover:shadow-md"
           @click="openRole(role)"
         >
           <div class="flex items-start justify-between mb-3">
@@ -416,7 +416,7 @@ function permCount(perms: RolePermissions) {
               ><span class="num">{{ permCount(role.permissions) }}</span> perms</Badge
             >
           </div>
-          <p class="font-display text-[15px] leading-tight font-semibold text-ink">
+          <p class="font-sans text-[15px] leading-tight font-semibold text-ink">
             {{ role.name }}
           </p>
           <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-ink-muted">
@@ -433,7 +433,7 @@ function permCount(perms: RolePermissions) {
 
     <!-- ── Member assignments table ──────────────────────────────────────────── -->
     <div>
-      <h3 class="mb-3 font-display text-lg font-semibold text-ink">Member Assignments</h3>
+      <h3 class="mb-3 font-sans text-lg font-semibold text-ink">Member Assignments</h3>
       <Card padding="none">
         <div class="overflow-x-auto">
           <table class="w-full text-sm" role="table">
@@ -560,7 +560,7 @@ function permCount(perms: RolePermissions) {
 
     <!-- ── Account access ────────────────────────────────────────────────────── -->
     <div>
-      <h3 class="mb-3 font-display text-lg font-semibold text-ink">Dashboard Access</h3>
+      <h3 class="mb-3 font-sans text-lg font-semibold text-ink">Dashboard Access</h3>
 
       <Card>
         <div
@@ -577,7 +577,7 @@ function permCount(perms: RolePermissions) {
 
         <!-- Create login with password -->
         <div v-if="authStore.isSuperAdmin" class="mt-5 border-t border-rule pt-5">
-          <p class="mb-3 font-display text-[15px] font-semibold text-ink">
+          <p class="mb-3 font-sans text-[15px] font-semibold text-ink">
             Create login with password
           </p>
           <div class="grid gap-3 sm:grid-cols-2">
@@ -736,7 +736,7 @@ function permCount(perms: RolePermissions) {
                     v-if="authStore.isSuperAdmin"
                     :value="account.roleId"
                     :aria-label="`Role for ${account.email ?? account.uid}`"
-                    class="min-h-8 rounded-md border border-rule-strong bg-surface px-2 py-1 text-xs text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                    class="min-h-8 rounded-md border border-rule-strong bg-surface px-2 py-1 text-xs text-ink outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                     @change="
                       changeAccountRole(
                         account.uid,
@@ -797,7 +797,7 @@ function permCount(perms: RolePermissions) {
       <p class="text-sm text-ink-muted">{{ selectedRole.description }}</p>
 
       <!-- Permission matrix -->
-      <div class="overflow-x-auto rounded-lg border border-rule bg-surface">
+      <div class="overflow-x-auto rounded-sm border border-rule bg-surface">
         <table class="w-full text-sm">
           <thead>
             <tr>
@@ -895,7 +895,7 @@ function permCount(perms: RolePermissions) {
             v-model="memberSearch"
             type="text"
             placeholder="Search by name or phone..."
-            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
         </div>
         <div
@@ -968,7 +968,7 @@ function permCount(perms: RolePermissions) {
         v-if="assignForm.roleId"
         class="rounded-md border border-rule bg-surface-muted p-3 text-xs leading-relaxed text-ink-muted"
       >
-        <p class="mb-0.5 font-display text-sm font-semibold text-primary-ink">
+        <p class="mb-0.5 font-sans text-sm font-semibold text-primary-ink">
           {{ rolesStore.roleById(assignForm.roleId)?.name }}
         </p>
         <p>{{ rolesStore.roleById(assignForm.roleId)?.description }}</p>
@@ -1070,7 +1070,7 @@ function permCount(perms: RolePermissions) {
         These permissions override the role defaults for this specific member only.
       </p>
 
-      <div class="overflow-x-auto rounded-lg border border-rule bg-surface">
+      <div class="overflow-x-auto rounded-sm border border-rule bg-surface">
         <table class="w-full text-sm">
           <thead>
             <tr>

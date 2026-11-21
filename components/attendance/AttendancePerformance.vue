@@ -26,7 +26,7 @@ const rows = computed(() => {
 
 <template>
   <Card padding="lg">
-    <h3 class="mb-5 font-display text-base font-semibold text-ink">
+    <h3 class="mb-5 font-sans text-base font-semibold text-ink">
       Attendance Performance per Activity for <span class="num">{{ year }}</span>
     </h3>
 

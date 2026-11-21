@@ -1,3 +1,6 @@
+import { GALLERY_CATEGORIES } from '~/constants'
+import type { GalleryPhoto } from '~/repositories/churchSettingsRepository'
+
 export interface GalleryImage {
   id: string
   src: string
@@ -11,21 +14,42 @@ export interface Gallery {
   images: GalleryImage[]
 }
 
-/**
- * Gallery categories shown under /gallery/<slug>.
- *
- * The category list is structural — the photos in each are church content and
- * are managed from the admin Settings page, so they start empty rather than
- * shipping placeholder images.
- */
-const GALLERIES: Record<string, Gallery> = {
-  'sunday-service': { title: 'Sunday Service', images: [] },
-  'gospel-meeting': { title: 'Gospel Meeting', images: [] },
-  'bible-class': { title: 'Bible Class', images: [] },
-  evangelism: { title: 'Evangelism', images: [] },
+/** The category a stored photo belongs to; untagged photos fall under the first category. */
+export function photoCategory(photo: GalleryPhoto): string {
+  return photo.category || GALLERY_CATEGORIES[0].slug
 }
 
-export function useGalleryData(slug: string) {
-  const gallery = GALLERIES[slug] ?? null
-  return { gallery, galleries: GALLERIES }
+/**
+ * Builds every gallery from the photos staff add in Settings → Gallery, grouped by category.
+ * Pure, so it can be tested without a store.
+ */
+export function buildGalleries(photos: GalleryPhoto[]): Record<string, Gallery> {
+  const out: Record<string, Gallery> = {}
+  for (const cat of GALLERY_CATEGORIES) out[cat.slug] = { title: cat.title, images: [] }
+  for (const p of photos) {
+    if (!p.src) continue
+    const gallery = out[photoCategory(p)]
+    if (!gallery) continue
+    // Dimensions aren't stored with the photo; the masonry lays images out at their natural size.
+    gallery.images.push({ id: p.id, src: p.src, alt: p.alt || gallery.title, width: 0, height: 0 })
+  }
+  return out
+}
+
+/**
+ * Gallery categories shown under /gallery/<slug>, filled from Settings → Gallery.
+ *
+ * `slug` may be a getter so the page follows client-side navigation between categories.
+ */
+export function useGalleryData(slug: string | (() => string)) {
+  const settingsStore = useChurchSettingsStore()
+  onMounted(() => settingsStore.load())
+
+  const galleries = computed(() => buildGalleries(settingsStore.settings.galleryPhotos ?? []))
+  const gallery = computed<Gallery | null>(
+    () => galleries.value[typeof slug === 'function' ? slug() : slug] ?? null
+  )
+  const loading = computed(() => settingsStore.loading)
+
+  return { gallery, galleries, loading }
 }

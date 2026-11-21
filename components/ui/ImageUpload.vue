@@ -81,8 +81,8 @@ const containerHeight = computed(() => {
 
     <div
       :class="[
-        'group relative overflow-hidden border-2 border-dashed transition-colors duration-150',
-        shape === 'circle' ? 'rounded-full' : 'rounded-md',
+        'group relative overflow-hidden border border-dashed transition-colors duration-150',
+        shape === 'circle' ? 'rounded-full' : 'rounded-sm',
         containerHeight,
         dragging
           ? 'border-primary bg-primary-soft'
@@ -148,15 +148,15 @@ const containerHeight = computed(() => {
       <!-- Hover overlay on existing image -->
       <div
         v-if="modelValue && !uploading"
-        class="absolute inset-0 hidden items-center justify-center gap-2 bg-black/50 text-white group-hover:flex"
+        class="absolute inset-0 hidden items-center justify-center gap-2 bg-night/55 text-on-night group-hover:flex"
       >
-        <span class="rounded-md bg-black/45 px-2 py-1 text-xs font-medium ring-1 ring-white/25">
+        <span class="rounded-sm bg-night/50 px-2 py-1 text-xs font-medium ring-1 ring-on-night/25">
           <Icon icon="mdi:image-edit-outline" class="mr-1 inline-block align-text-bottom" />
           Replace
         </span>
         <button
           type="button"
-          class="rounded-md bg-black/45 px-2 py-1 text-xs font-medium ring-1 ring-white/25 transition-colors duration-150 hover:bg-[#b42318] hover:ring-[#b42318]"
+          class="rounded-sm bg-night/50 px-2 py-1 text-xs font-medium ring-1 ring-on-night/25 transition-colors duration-150 hover:bg-error hover:ring-error"
           aria-label="Remove image"
           @click.stop="clear"
         >

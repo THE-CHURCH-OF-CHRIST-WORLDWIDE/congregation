@@ -156,7 +156,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
       <!-- Drop zone -->
       <div
         :class="[
-          'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-10 transition-colors duration-150',
+          'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-sm border-2 border-dashed p-10 transition-colors duration-150',
           isDragging
             ? 'border-primary bg-primary-soft'
             : 'border-rule-strong bg-surface-muted/50 hover:border-primary hover:bg-surface-muted',
@@ -177,7 +177,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
           <Icon icon="mdi:file-upload-outline" class="text-3xl" />
         </div>
         <div class="text-center">
-          <p class="font-display text-base font-semibold text-ink">Drop your CSV file here</p>
+          <p class="font-sans text-base font-semibold text-ink">Drop your CSV file here</p>
           <p class="mt-1 text-xs text-ink-subtle">or click to browse — .csv files only</p>
         </div>
         <input ref="fileInputRef" type="file" accept=".csv" class="hidden" @change="onFileInput" />
@@ -240,20 +240,20 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
       >
         <div class="bg-surface p-3">
           <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Total rows</p>
-          <p class="num mt-1 font-display text-2xl leading-none font-semibold text-ink">
+          <p class="num mt-1 font-display text-2xl leading-none text-ink">
             {{ parsedRows.length }}
           </p>
         </div>
         <div class="bg-success-soft p-3">
           <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Valid</p>
-          <p class="num mt-1 font-display text-2xl leading-none font-semibold text-success">
+          <p class="num mt-1 font-display text-2xl leading-none text-success">
             {{ validRows.length }}
           </p>
         </div>
         <div class="p-3" :class="invalidRows.length ? 'bg-error-soft' : 'bg-surface'">
           <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Invalid</p>
           <p
-            class="num mt-1 font-display text-2xl leading-none font-semibold"
+            class="num mt-1 font-display text-2xl leading-none"
             :class="invalidRows.length ? 'text-error' : 'text-ink-subtle'"
           >
             {{ invalidRows.length }}
@@ -262,7 +262,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
         <div class="p-3" :class="duplicateCount ? 'bg-warning-soft' : 'bg-surface'">
           <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Duplicates</p>
           <p
-            class="num mt-1 font-display text-2xl leading-none font-semibold"
+            class="num mt-1 font-display text-2xl leading-none"
             :class="duplicateCount ? 'text-warning' : 'text-ink-subtle'"
           >
             {{ duplicateCount }}
@@ -285,7 +285,7 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
               class="absolute inset-0 rounded-full bg-rule-strong transition-colors peer-checked:bg-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
             ></span>
             <span
-              class="absolute top-0.5 left-0.5 size-4 rounded-full bg-surface shadow-xs transition-transform peer-checked:translate-x-4"
+              class="absolute top-0.5 left-0.5 size-4 rounded-full bg-surface transition-transform peer-checked:translate-x-4"
             ></span>
           </span>
           Skip invalid rows (<span class="num">{{ invalidRows.length }}</span

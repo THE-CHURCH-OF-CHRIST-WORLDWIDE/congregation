@@ -5,18 +5,27 @@ const emit = defineEmits<{
 </script>
 
 <template>
+  <!-- An off-air screen: the frame stays, the picture is dark -->
   <div
-    class="flex flex-col items-center justify-center rounded-lg border border-rule bg-surface-muted px-6 py-16 text-center md:py-20"
+    class="relative flex w-full flex-col items-center justify-center overflow-hidden border border-on-night/15 bg-night-raised px-6 pt-20 pb-14 text-center sm:aspect-video sm:py-12"
   >
+    <div
+      class="t-label absolute top-5 left-5 inline-flex items-center gap-2 text-on-night-muted sm:top-7 sm:left-7"
+    >
+      <span class="size-1.5 rounded-full bg-on-night-muted" aria-hidden="true"></span>
+      Off air
+    </div>
+
     <!-- Play icon (outlined) -->
     <div
-      class="mb-6 flex size-20 items-center justify-center rounded-full border border-dashed border-rule-strong bg-surface"
+      class="mb-8 flex size-20 items-center justify-center rounded-full border border-on-night/30 text-on-night-muted sm:size-24"
+      aria-hidden="true"
     >
       <svg
-        class="ml-1.5 size-9 text-ink-subtle"
+        class="ml-1.5 size-8"
         fill="none"
         stroke="currentColor"
-        stroke-width="1.5"
+        stroke-width="1.25"
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
@@ -28,17 +37,17 @@ const emit = defineEmits<{
       </svg>
     </div>
 
-    <h3 class="mb-3 font-display text-2xl font-bold text-secondary">
-      The last live stream has ended
+    <h3 class="t-h2 max-w-xl text-on-night">
+      The last live stream <span class="t-turn text-champagne">has ended</span>
     </h3>
-    <p class="mb-8 max-w-md text-base leading-relaxed text-ink-muted">
+    <p class="mt-5 max-w-md text-base leading-relaxed text-on-night-muted sm:text-lg">
       Our live worship service has concluded. Join us next Sunday for our next service or browse our
       recorded streams and sermons below.
     </p>
 
-    <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+    <div class="mt-10 flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row sm:gap-8">
       <button
-        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover"
+        class="btn btn-light min-h-14 w-full px-7 sm:w-auto"
         aria-label="Watch recorded videos"
         @click="emit('watch-recorded')"
       >
@@ -47,11 +56,11 @@ const emit = defineEmits<{
       </button>
       <NuxtLink
         to="/teachings/sermons"
-        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-5 text-sm font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
+        class="link-line text-base text-on-night"
         aria-label="Browse sermons"
       >
-        <Icon icon="mdi:book-open-page-variant-outline" class="size-5" aria-hidden="true" />
-        Browse Sermons Instead
+        <span class="link-text">Browse Sermons Instead</span>
+        <Icon icon="mdi:arrow-right" class="link-arrow size-4" aria-hidden="true" />
       </NuxtLink>
     </div>
   </div>

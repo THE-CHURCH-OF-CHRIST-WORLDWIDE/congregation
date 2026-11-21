@@ -216,7 +216,7 @@ function handleSubmit() {
           :class="[
             'inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors duration-150',
             kind === 'upcoming'
-              ? 'bg-surface font-semibold text-primary-ink shadow-xs ring-1 ring-rule'
+              ? 'bg-surface font-semibold text-primary-ink ring-1 ring-rule'
               : 'text-ink-muted hover:text-ink',
           ]"
           @click="kind = 'upcoming'"
@@ -230,7 +230,7 @@ function handleSubmit() {
           :class="[
             'inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors duration-150',
             kind === 'past'
-              ? 'bg-surface font-semibold text-primary-ink shadow-xs ring-1 ring-rule'
+              ? 'bg-surface font-semibold text-primary-ink ring-1 ring-rule'
               : 'text-ink-muted hover:text-ink',
           ]"
           @click="kind = 'past'"
@@ -242,7 +242,7 @@ function handleSubmit() {
 
       <!-- Shared fields -->
       <section class="flex flex-col gap-4">
-        <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Event details</h3>
+        <h3 class="t-label text-ink-muted">Event details</h3>
         <Input
           v-if="kind === 'upcoming'"
           v-model="upcomingForm.title"
@@ -264,7 +264,7 @@ function handleSubmit() {
             <input
               v-model="upcomingForm.date"
               type="date"
-              class="num min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[15px] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
+              class="num min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[15px] text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
             />
             <p v-if="errors.date" class="mt-1.5 text-xs font-medium text-error">
               {{ errors.date }}
@@ -275,7 +275,7 @@ function handleSubmit() {
             <input
               v-model="pastForm.date"
               type="date"
-              class="num min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[15px] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
+              class="num min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[15px] text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
             />
             <p v-if="errors.date" class="mt-1.5 text-xs font-medium text-error">
               {{ errors.date }}
@@ -326,9 +326,7 @@ function handleSubmit() {
       <!-- Past-only -->
       <template v-if="kind === 'past'">
         <section class="flex flex-col gap-4 border-t border-rule pt-5">
-          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">
-            Classification
-          </h3>
+          <h3 class="t-label text-ink-muted">Classification</h3>
           <Input
             v-model="pastForm.category"
             label="Category"
@@ -337,7 +335,7 @@ function handleSubmit() {
           />
         </section>
         <section class="flex flex-col gap-4 border-t border-rule pt-5">
-          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Images</h3>
+          <h3 class="t-label text-ink-muted">Images</h3>
           <ImageUpload
             v-model="pastForm.thumbnail"
             label="Thumbnail"
@@ -351,7 +349,7 @@ function handleSubmit() {
           />
         </section>
         <section class="flex flex-col gap-4 border-t border-rule pt-5">
-          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">People</h3>
+          <h3 class="t-label text-ink-muted">People</h3>
 
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
@@ -379,7 +377,7 @@ function handleSubmit() {
               v-model="pastForm.speakers"
               rows="3"
               placeholder="Bro. Samuel Eze | https://..."
-              class="w-full resize-none rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+              class="w-full resize-none rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
             ></textarea>
           </div>
         </section>

@@ -21,26 +21,31 @@ function onImgError(e: Event) {
 </script>
 
 <template>
-  <section class="bg-surface py-16 md:py-24">
-    <div class="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
+  <section class="section bg-surface">
+    <div class="site-container">
       <SectionHeader title="Our Church Leaders" />
 
       <LoadingState v-if="s.loading" title="Loading leaders…" />
-      <EmptyState
-        v-else-if="!leaders.length"
-        icon="mdi:account-tie-outline"
-        title="No leaders listed yet"
-        description="Our elders, deacons and ministers will be introduced here soon."
-      />
+      <div v-else-if="!leaders.length">
+        <EditorialNote
+          title="No leaders listed yet"
+          description="Our elders, deacons and ministers will be introduced here soon."
+        />
+      </div>
 
-      <!-- Profile entries: photograph, name, office -->
-      <div
+      <!-- A portrait gallery: photograph, name, office -->
+      <ul
         v-else
-        class="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-8"
+        class="grid grid-cols-2 gap-x-4 gap-y-12 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-16"
       >
-        <div v-for="leader in leaders" :key="leader.id" class="flex flex-col">
+        <li
+          v-for="(leader, i) in leaders"
+          :key="leader.id"
+          :class="['group flex flex-col', i % 4 === 1 || i % 4 === 3 ? 'lg:translate-y-10' : '']"
+        >
           <div
-            class="relative aspect-[4/5] w-full shrink-0 overflow-hidden rounded-md border border-rule bg-surface-sunken"
+            v-reveal="{ type: 'unveil', delay: Math.min(i, 7) * 90 }"
+            class="img-zoom relative aspect-[4/5] w-full overflow-hidden bg-surface-sunken"
           >
             <img
               :src="displayableImageUrl(leader.avatar)"
@@ -50,20 +55,20 @@ function onImgError(e: Event) {
               class="h-full w-full object-cover"
               @error="onImgError"
             />
-            <div class="absolute inset-0 hidden bg-primary-soft">
+            <div class="absolute inset-0 hidden bg-primary">
               <span
-                class="flex h-full w-full items-center justify-center font-display text-4xl font-semibold text-primary-ink"
+                class="flex h-full w-full items-end p-5 font-display text-[clamp(3.5rem,8vw,6rem)] leading-none text-on-night/30 italic"
               >
                 {{ initials(leader.name) }}
               </span>
             </div>
           </div>
-          <p class="mt-4 font-display text-lg leading-snug font-semibold text-ink">
+          <p class="mt-5 font-display text-[1.5rem] leading-[1.1] text-ink md:text-[1.75rem]">
             {{ leader.name }}
           </p>
-          <p class="stamp mt-1.5">{{ leader.role }}</p>
-        </div>
-      </div>
+          <p class="t-label mt-2.5 text-ink-subtle">{{ leader.role }}</p>
+        </li>
+      </ul>
     </div>
   </section>
 </template>

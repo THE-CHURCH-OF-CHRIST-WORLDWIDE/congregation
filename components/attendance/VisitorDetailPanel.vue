@@ -121,13 +121,13 @@ onMounted(() => {
           <!-- Hero: the visitors' book entry -->
           <div class="margin-rule flex items-center gap-4">
             <div
-              class="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary-soft font-display text-xl font-semibold text-primary-ink"
+              class="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary-soft font-display text-xl text-primary-ink"
               aria-hidden="true"
             >
               {{ initials }}
             </div>
             <div class="min-w-0 space-y-1">
-              <h2 class="font-display text-xl leading-snug font-semibold wrap-break-word text-ink">
+              <h2 class="font-display text-[1.75rem] leading-tight wrap-break-word text-ink">
                 {{ visitor.name }}
               </h2>
               <p class="text-sm text-ink-muted">
@@ -141,7 +141,7 @@ onMounted(() => {
           </div>
 
           <!-- Contact -->
-          <section class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+          <section class="rounded-sm border border-rule bg-surface p-4">
             <h3 class="panel-heading">Contact Details</h3>
             <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
               <InfoField icon="mdi:account-outline" label="Name" :value="visitor.name" />
@@ -171,7 +171,7 @@ onMounted(() => {
             <a
               v-if="visitor.phone"
               :href="`tel:${visitor.phone}`"
-              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover"
+              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
               :aria-label="`Call ${visitor.name}`"
             >
               <Icon icon="mdi:phone-outline" class="text-base" />
@@ -180,7 +180,7 @@ onMounted(() => {
             <a
               v-if="visitor.email"
               :href="`mailto:${visitor.email}`"
-              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink shadow-xs transition-colors hover:border-ink-subtle hover:bg-surface-muted"
+              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:border-ink-subtle hover:bg-surface-muted"
               :aria-label="`Email ${visitor.name}`"
             >
               <Icon icon="mdi:email-outline" class="text-base" />
@@ -189,7 +189,7 @@ onMounted(() => {
           </div>
 
           <!-- Previous visits under the same name -->
-          <section class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+          <section class="rounded-sm border border-rule bg-surface p-4">
             <h3 class="panel-heading">Other Visits</h3>
             <p v-if="!otherVisits.length" class="text-sm text-ink-subtle">
               No other services recorded under this name.
@@ -221,7 +221,7 @@ onMounted(() => {
           <!-- Actions -->
           <div class="flex gap-2 pt-1">
             <button
-              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover"
+              class="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
               @click="onEdit"
             >
               <Icon icon="mdi:pencil-outline" class="text-base" />

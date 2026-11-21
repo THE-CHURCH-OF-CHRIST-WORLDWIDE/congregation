@@ -151,23 +151,23 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
     <template v-if="activeTab === 'registrations'">
       <!-- Summary -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:max-w-3xl">
-        <div class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+        <div class="rounded-sm border border-rule bg-surface p-4">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Registered</p>
-          <p class="num mt-2 font-display text-3xl font-semibold text-ink">{{ totalCount }}</p>
+          <p class="num mt-2 font-display text-3xl text-ink">{{ totalCount }}</p>
         </div>
-        <div class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+        <div class="rounded-sm border border-rule bg-surface p-4">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Attended Sat</p>
-          <p class="num mt-2 font-display text-3xl font-semibold text-ink">{{ satCount }}</p>
+          <p class="num mt-2 font-display text-3xl text-ink">{{ satCount }}</p>
         </div>
-        <div class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+        <div class="rounded-sm border border-rule bg-surface p-4">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Attended Sun</p>
-          <p class="num mt-2 font-display text-3xl font-semibold text-ink">{{ sunCount }}</p>
+          <p class="num mt-2 font-display text-3xl text-ink">{{ sunCount }}</p>
         </div>
       </div>
 
       <!-- Search + export -->
       <div
-        class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center sm:justify-between"
+        class="flex flex-col gap-3 rounded-sm border border-rule bg-surface p-3 sm:flex-row sm:items-center sm:justify-between"
       >
         <div class="relative sm:w-72">
           <Icon
@@ -180,7 +180,7 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
             type="search"
             placeholder="Search name, email, congregation or phone"
             aria-label="Search registrations"
-            class="min-h-10 w-full py-2 pr-3 pl-9 text-sm rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="min-h-10 w-full py-2 pr-3 pl-9 text-sm rounded-md border border-rule-strong bg-surface text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
         </div>
         <Button
@@ -216,7 +216,7 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
       />
 
       <!-- List -->
-      <div v-else class="overflow-x-auto rounded-lg border border-rule bg-surface shadow-xs">
+      <div v-else class="overflow-x-auto rounded-sm border border-rule bg-surface">
         <div>
           <table class="w-full text-sm" role="table">
             <thead class="sticky top-0 z-[1] bg-surface-muted">

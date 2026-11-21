@@ -125,7 +125,7 @@ async function handleSubmit() {
       </div>
 
       <section class="flex flex-col gap-4">
-        <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Profile</h3>
+        <h3 class="t-label text-ink-muted">Profile</h3>
         <Input
           v-model="form.name"
           label="Full Name"
@@ -145,7 +145,7 @@ async function handleSubmit() {
       </section>
 
       <section class="flex flex-col gap-4 border-t border-rule pt-5">
-        <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Biography</h3>
+        <h3 class="t-label text-ink-muted">Biography</h3>
         <div>
           <label class="mb-1.5 block text-sm font-medium text-ink">
             Bio<span class="ml-0.5 text-error" aria-hidden="true">*</span>
@@ -154,7 +154,7 @@ async function handleSubmit() {
             v-model="form.bio"
             rows="4"
             placeholder="A short biography to introduce this person to visitors"
-            class="w-full resize-none px-3 py-2 text-sm rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="w-full resize-none px-3 py-2 text-sm rounded-md border border-rule-strong bg-surface text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           ></textarea>
           <p v-if="errors.bio" class="mt-1.5 text-xs font-medium text-error">{{ errors.bio }}</p>
         </div>

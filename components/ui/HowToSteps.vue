@@ -17,13 +17,10 @@ defineProps<{ steps: Step[] }>()
       :key="step.number"
       class="flex flex-col py-7 md:px-8 md:py-8 md:first:pl-0 md:last:pr-0"
     >
-      <span
-        class="num font-display text-3xl leading-none font-semibold text-primary-ink"
-        aria-hidden="true"
-      >
+      <span class="num font-display text-4xl leading-none text-accent" aria-hidden="true">
         {{ step.number }}
       </span>
-      <h3 class="mt-4 font-display text-lg font-semibold text-ink">{{ step.title }}</h3>
+      <h3 class="mt-4 font-sans text-base font-semibold text-ink">{{ step.title }}</h3>
       <p class="mt-2 text-base leading-relaxed text-ink-muted">{{ step.description }}</p>
     </li>
   </ol>

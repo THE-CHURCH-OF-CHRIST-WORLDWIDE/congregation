@@ -4,7 +4,6 @@ import { LECTURESHIP_ROLE_ORDER, LECTURESHIP_ROLES } from '~/constants'
 
 definePageMeta({
   layout: 'default',
-  pageTransition: { name: 'fade', mode: 'out-in' },
 })
 
 useSeoMeta({
@@ -103,145 +102,164 @@ function registerAnother() {
 </script>
 
 <template>
-  <div class="lectureship-form min-h-screen bg-surface-muted pb-20">
-    <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
-    <section class="bookcloth relative pt-6 pb-14 sm:pt-8 sm:pb-20">
-      <div class="relative mx-auto max-w-3xl px-5 sm:px-6 lg:px-8">
-        <div class="mb-8 flex items-center gap-1.5 text-sm text-white/65">
-          <NuxtLink to="/" class="rounded-sm py-1 transition-colors duration-150 hover:text-white"
-            >Home</NuxtLink
-          >
-          <Icon icon="mdi:chevron-right" class="size-4" aria-hidden="true" />
-          <span class="text-white/85">Lectureship</span>
-        </div>
-
-        <div class="flex flex-col items-center text-center">
-          <div
-            class="hero-animate flex size-14 items-center justify-center rounded-full border border-white/20"
-            style="animation-delay: 0ms"
-          >
-            <Icon
-              icon="mdi:book-open-page-variant-outline"
-              class="size-6 text-[#e8c372]"
-              aria-hidden="true"
-            />
-          </div>
-          <p
-            class="hero-animate mt-3 text-xs font-semibold tracking-[0.2em] text-white/70 uppercase"
-            style="animation-delay: 60ms"
-          >
+  <div class="lectureship-form min-h-screen bg-surface">
+    <!-- ── Hero: a forest title page for the programme ───────────────────────── -->
+    <section class="field-forest relative isolate overflow-hidden pt-10 pb-16 sm:pt-14 sm:pb-24">
+      <div class="site-container">
+        <!-- Breadcrumb and host, set as a running head -->
+        <div
+          class="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-b border-on-night/20 pb-5"
+        >
+          <nav aria-label="Breadcrumb" class="t-label flex items-center gap-2 text-on-night-muted">
+            <NuxtLink
+              to="/"
+              class="rounded-sm py-1 transition-colors duration-300 hover:text-on-night"
+              >Home</NuxtLink
+            >
+            <Icon icon="mdi:chevron-right" class="size-3.5" aria-hidden="true" />
+            <span class="text-on-night">Lectureship</span>
+          </nav>
+          <p class="hero-animate t-label text-on-night-muted" style="animation-delay: 60ms">
             Church of Christ &middot; University of Ibadan
           </p>
+        </div>
 
+        <!-- Theme -->
+        <div class="mt-14 grid gap-6 lg:mt-20 lg:grid-cols-12 lg:gap-8">
           <p
-            class="hero-animate mt-6 max-w-lg font-display text-lg leading-relaxed text-white/90 italic sm:text-xl"
-            style="animation-delay: 120ms"
-          >
-            &ldquo;Be not conformed to this world&hellip; but be transformed by the renewing of your
-            mind.&rdquo;
-          </p>
-          <p
-            class="hero-animate mt-2 text-sm font-semibold tracking-wide text-[#e8c372]"
-            style="animation-delay: 180ms"
-          >
-            &mdash; Romans 12:2
-          </p>
-
-          <div class="hero-animate mt-8 h-px w-16 bg-white/25" style="animation-delay: 220ms"></div>
-
-          <p
-            class="hero-animate mt-8 text-xs font-semibold tracking-[0.2em] text-white/65 uppercase"
-            style="animation-delay: 260ms"
+            class="hero-animate t-label hidden pt-5 text-champagne lg:col-span-2 lg:block"
+            style="animation-delay: 200ms"
+            aria-hidden="true"
           >
             Theme
           </p>
-          <h1
-            class="hero-animate mt-3 font-display text-[2rem] leading-[1.12] font-bold text-white sm:text-4xl md:text-5xl"
-            style="animation-delay: 320ms"
-          >
-            Navigating Faith<br class="hidden sm:block" />
-            in a Changing World
-          </h1>
-          <p
-            class="hero-animate mt-4 text-sm font-semibold tracking-[0.14em] text-[#e8c372] uppercase sm:text-base"
-            style="animation-delay: 380ms"
-          >
-            1st Annual Bible Lectureship 2026
-          </p>
+          <div class="lg:col-span-10">
+            <h1 class="t-display text-on-night">
+              <span class="sr-only">Theme: </span>
+              <SplitReveal
+                text="Navigating Faith"
+                immediate
+                :delay="200"
+                :stagger="70"
+                class="block"
+              />
+              <SplitReveal
+                text="in a Changing World"
+                immediate
+                :delay="340"
+                :stagger="70"
+                class="t-turn block text-champagne"
+              />
+            </h1>
+            <p
+              class="hero-animate mt-6 font-display text-[clamp(1.375rem,2.2vw,1.875rem)] leading-tight text-on-night-muted"
+              style="animation-delay: 600ms"
+            >
+              1st Annual Bible Lectureship 2026
+            </p>
+          </div>
+        </div>
 
-          <div
-            class="hero-animate mt-8 flex w-full max-w-md flex-col items-stretch divide-y divide-white/15 border-y border-white/15 text-left text-base text-white/90 sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center sm:divide-y-0 sm:border-y-0 sm:text-center sm:text-sm"
-            style="animation-delay: 440ms"
+        <!-- Scripture and particulars -->
+        <div
+          class="mt-14 grid gap-10 border-t border-on-night/20 pt-8 lg:mt-20 lg:grid-cols-12 lg:gap-8"
+        >
+          <figure class="hero-animate lg:col-span-5" style="animation-delay: 700ms">
+            <blockquote
+              class="font-display text-[1.5rem] leading-snug text-on-night italic sm:text-[1.75rem]"
+            >
+              &ldquo;Be not conformed to this world&hellip; but be transformed by the renewing of
+              your mind.&rdquo;
+            </blockquote>
+            <figcaption class="stamp mt-4 text-champagne">&mdash; Romans 12:2</figcaption>
+          </figure>
+
+          <ul
+            class="hero-animate border-t border-on-night/20 text-on-night lg:col-span-6 lg:col-start-7 lg:border-t-0"
+            style="animation-delay: 820ms"
           >
-            <span class="flex items-center gap-2 py-2.5 sm:px-3 sm:py-1">
+            <li class="flex items-start gap-4 border-b border-on-night/15 py-4 lg:pt-0">
               <Icon
                 icon="mdi:calendar-outline"
-                class="size-4 shrink-0 text-[#e8c372]"
+                class="mt-0.5 size-5 shrink-0 text-champagne"
                 aria-hidden="true"
               />
-              Sat. 3rd &amp; Sun. 4th October, 2026
-            </span>
-            <span class="hidden h-1 w-1 self-center rounded-full bg-white/35 sm:block"></span>
-            <span class="flex items-center gap-2 py-2.5 sm:px-3 sm:py-1">
+              <span class="num text-base sm:text-[1.0625rem]"
+                >Sat. 3rd &amp; Sun. 4th October, 2026</span
+              >
+            </li>
+            <li class="flex items-start gap-4 border-b border-on-night/15 py-4">
               <Icon
                 icon="mdi:clock-outline"
-                class="size-4 shrink-0 text-[#e8c372]"
+                class="mt-0.5 size-5 shrink-0 text-champagne"
                 aria-hidden="true"
               />
-              Sat. 9:00am prompt &middot; Sun. 9:00am&ndash;12pm (with worship service)
-            </span>
-            <span class="hidden h-1 w-1 self-center rounded-full bg-white/35 sm:block"></span>
-            <span class="flex items-center gap-2 py-2.5 sm:px-3 sm:py-1">
+              <span class="num text-base sm:text-[1.0625rem]"
+                >Sat. 9:00am prompt &middot; Sun. 9:00am&ndash;12pm (with worship service)</span
+              >
+            </li>
+            <li class="flex items-start gap-4 border-b border-on-night/15 py-4">
               <Icon
                 icon="mdi:map-marker-outline"
-                class="size-4 shrink-0 text-[#e8c372]"
+                class="mt-0.5 size-5 shrink-0 text-champagne"
                 aria-hidden="true"
               />
-              15 Alafia Estate, Ajibode, Ibadan
-            </span>
-          </div>
+              <span class="text-base sm:text-[1.0625rem]">15 Alafia Estate, Ajibode, Ibadan</span>
+            </li>
+          </ul>
+        </div>
 
-          <!-- Registered-so-far nudge -->
-          <div
-            v-if="lectureshipStore.registeredCount > 0"
-            class="hero-animate mt-6 inline-flex items-center gap-2 rounded-md border border-white/20 bg-black/10 px-3 py-1.5 text-sm font-medium text-white/90"
-            style="animation-delay: 480ms"
-          >
-            <Icon
-              icon="mdi:account-group-outline"
-              class="size-4 text-[#e8c372]"
-              aria-hidden="true"
-            />
-            <span class="num">{{ lectureshipStore.registeredCount }}</span>
-            {{ lectureshipStore.registeredCount === 1 ? 'person has' : 'people have' }} already
-            registered
-          </div>
-
-          <!-- Countdown -->
+        <!-- Countdown: the figures set large in serif -->
+        <div class="mt-16 lg:mt-24">
           <div
             v-if="!countdown.isPast.value"
-            class="hero-animate mt-8 grid grid-cols-4 gap-2 sm:gap-3"
-            style="animation-delay: 520ms"
+            class="hero-animate grid grid-cols-4 border-t border-on-night/40"
+            style="animation-delay: 950ms"
           >
             <div
-              v-for="unit in countdownUnits"
+              v-for="(unit, i) in countdownUnits"
               :key="unit.label"
-              class="flex min-w-16 flex-col items-center rounded-md border border-white/20 bg-black/15 px-3 py-2.5 sm:min-w-20 sm:px-5 sm:py-3"
+              :class="[
+                'flex flex-col pt-5 sm:pt-7',
+                i > 0 ? 'border-l border-on-night/15 pl-3 sm:pl-6 lg:pl-8' : '',
+              ]"
             >
-              <span class="num font-display text-2xl leading-none font-bold text-white sm:text-3xl">
+              <span
+                class="num font-display text-[clamp(2.75rem,9.5vw,8.5rem)] leading-[0.85] text-on-night"
+              >
                 {{ String(unit.value).padStart(2, '0') }}
               </span>
-              <span class="mt-1.5 text-[11px] tracking-wide text-white/70 uppercase sm:text-xs">
+              <span class="t-label mt-3 text-on-night-muted sm:mt-4">
                 {{ unit.label }}
               </span>
             </div>
           </div>
           <p
             v-else
-            class="hero-animate mt-8 text-sm font-semibold tracking-[0.2em] text-[#e8c372] uppercase"
-            style="animation-delay: 520ms"
+            class="hero-animate t-turn border-t border-on-night/40 pt-6 text-[clamp(2.5rem,6vw,4.5rem)] leading-none text-champagne"
+            style="animation-delay: 950ms"
           >
             Happening now
+          </p>
+
+          <!-- Registered-so-far nudge -->
+          <p
+            v-if="lectureshipStore.registeredCount > 0"
+            class="hero-animate mt-8 flex items-center gap-2.5 text-[0.9375rem] text-on-night-muted"
+            style="animation-delay: 1050ms"
+          >
+            <Icon
+              icon="mdi:account-group-outline"
+              class="size-5 text-champagne"
+              aria-hidden="true"
+            />
+            <span
+              ><span class="num font-semibold text-on-night">{{
+                lectureshipStore.registeredCount
+              }}</span>
+              {{ lectureshipStore.registeredCount === 1 ? 'person has' : 'people have' }} already
+              registered</span
+            >
           </p>
         </div>
       </div>
@@ -249,20 +267,19 @@ function registerAnother() {
 
     <!-- ── Speakers, Officiating Ministers, Song Leaders & Moderators ──────── -->
     <template v-for="role in LECTURESHIP_ROLE_ORDER" :key="role">
-      <section
-        v-if="speakersByRole(role).length"
-        class="mx-auto max-w-5xl px-4 pt-14 sm:px-6 md:pt-16 lg:px-8"
-      >
-        <div class="mb-6 flex items-end justify-between gap-4 border-b border-rule pb-4">
-          <div class="margin-rule">
-            <h2 class="font-display text-2xl leading-tight font-bold text-secondary sm:text-3xl">
-              Meet the {{ LECTURESHIP_ROLES[role].plural }}
+      <section v-if="speakersByRole(role).length" class="site-container pt-20 md:pt-28">
+        <div
+          class="mb-10 grid gap-4 border-b border-ink/80 pb-6 md:mb-14 md:grid-cols-12 md:items-end"
+        >
+          <div class="md:col-span-9">
+            <h2 class="t-h2 text-secondary">
+              <SplitReveal :text="`Meet the ${LECTURESHIP_ROLES[role].plural}`" />
             </h2>
-            <p class="citation mt-2">
+            <p class="t-label mt-4 text-ink-subtle">
               {{ LECTURESHIP_ROLES[role].publicEyebrow }}
             </p>
           </div>
-          <p class="num hidden text-sm text-ink-muted sm:block">
+          <p class="num hidden text-sm text-ink-muted sm:block md:col-span-3 md:text-right">
             {{ speakersByRole(role).length }}
             {{
               speakersByRole(role).length === 1
@@ -271,29 +288,36 @@ function registerAnother() {
             }}
           </p>
         </div>
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div
+          class="grid grid-cols-2 gap-x-4 gap-y-12 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8"
+        >
           <LectureshipSpeakerCard v-for="s in speakersByRole(role)" :key="s.id" :speaker="s" />
         </div>
       </section>
     </template>
 
-    <div class="mx-auto max-w-2xl px-4 pt-14 sm:px-6 md:pt-16">
-      <!-- ── Success state ──────────────────────────────────────────────────── -->
-      <Card v-if="submitted" padding="lg">
-        <div class="flex flex-col items-center py-8 text-center">
-          <div class="flex size-14 items-center justify-center rounded-full bg-success-soft">
-            <Icon
-              icon="mdi:check-circle-outline"
-              class="text-3xl text-success"
-              aria-hidden="true"
-            />
+    <!-- ── Registration ───────────────────────────────────────────────────── -->
+    <!-- Breathing room after the speaker index, only when it is shown -->
+    <div v-if="lectureshipStore.speakers.length" class="h-20 md:h-28" aria-hidden="true"></div>
+
+    <section class="section field-stone">
+      <div class="site-container">
+        <!-- ── Success state ──────────────────────────────────────────────── -->
+        <div
+          v-if="submitted"
+          class="mx-auto flex max-w-2xl flex-col items-center border-y border-rule-strong py-16 text-center"
+        >
+          <div
+            class="flex size-14 items-center justify-center rounded-full border border-success/40 text-success"
+          >
+            <Icon icon="mdi:check" class="text-2xl" aria-hidden="true" />
           </div>
-          <h2 class="mt-4 font-display text-2xl font-bold text-secondary">Registration received</h2>
-          <p class="mt-2 max-w-md text-base leading-relaxed text-ink-muted">
+          <h2 class="t-h2 mt-6 text-secondary">Registration received</h2>
+          <p class="t-lede mt-4 max-w-md">
             Thank you for registering for the 1st Annual Bible Lectureship 2026. We look forward to
             seeing you there.
           </p>
-          <div class="mt-6 flex flex-wrap justify-center gap-3">
+          <div class="mt-8 flex flex-wrap justify-center gap-3">
             <Button variant="secondary" @click="registerAnother">
               <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
               Register another person
@@ -303,29 +327,25 @@ function registerAnother() {
             </NuxtLink>
           </div>
         </div>
-      </Card>
 
-      <!-- ── Form ───────────────────────────────────────────────────────────── -->
-      <form v-else class="flex flex-col gap-5" novalidate @submit.prevent="submit">
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex items-center gap-2 font-display text-xl font-semibold text-ink sm:text-2xl"
-              >
-                <Icon
-                  icon="mdi:book-open-page-variant-outline"
-                  class="size-5 shrink-0 text-primary-ink sm:size-6"
-                  aria-hidden="true"
-                />
-                Lectureship Registration
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
-                Fields marked <span class="font-bold text-error">*</span> are required.
-              </p>
-            </header>
+        <!-- ── Form ───────────────────────────────────────────────────────── -->
+        <div v-else class="grid gap-12 lg:grid-cols-12 lg:gap-8">
+          <header class="lg:col-span-5">
+            <h2 class="t-h1 max-w-[12ch] text-secondary">
+              <SplitReveal text="Lectureship Registration" />
+            </h2>
+            <p v-reveal.150 class="mt-6 text-sm leading-relaxed text-ink-muted">
+              Fields marked <span class="font-bold text-error">*</span> are required.
+            </p>
+          </header>
 
-            <div class="flex flex-col gap-5">
+          <form
+            v-reveal.150
+            class="flex flex-col gap-10 lg:col-span-6 lg:col-start-7"
+            novalidate
+            @submit.prevent="submit"
+          >
+            <section class="flex flex-col gap-8">
               <EditField id="field-fullName" label="Full Name *" :error="errors.fullName">
                 <input
                   v-model="form.fullName"
@@ -368,49 +388,64 @@ function registerAnother() {
                   placeholder="+234 800 000 0000"
                 />
               </EditField>
-            </div>
-          </section>
-        </Card>
+            </section>
 
-        <!-- Submit -->
-        <div
-          class="flex flex-col-reverse items-stretch gap-3 border-t border-rule pt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
-        >
-          <p class="flex items-start gap-1.5 text-sm text-ink-muted">
-            <Icon icon="mdi:lock-outline" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            Your details are used only to plan for the lectureship only.
-          </p>
-          <Button
-            type="submit"
-            size="lg"
-            :loading="lectureshipStore.submitting"
-            class="min-h-13 w-full text-base sm:min-h-12 sm:w-auto"
-          >
-            <template #icon-left><Icon icon="mdi:book-check-outline" /></template>
-            Submit Registration
-          </Button>
+            <!-- Submit -->
+            <div
+              class="flex flex-col-reverse items-stretch gap-5 border-t border-rule-strong pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+            >
+              <p class="flex items-start gap-1.5 text-sm text-ink-muted">
+                <Icon icon="mdi:lock-outline" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                Your details are used only to plan for the lectureship only.
+              </p>
+              <Button
+                type="submit"
+                size="lg"
+                :loading="lectureshipStore.submitting"
+                class="min-h-14 w-full shrink-0 px-7 text-base sm:w-auto"
+              >
+                <template #icon-left><Icon icon="mdi:book-check-outline" /></template>
+                Submit Registration
+              </Button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-/* Phones first: 16px fields (no iOS zoom), 44px targets, clearer labels. */
+/* Public registration fields take the editorial underline (EditField stays the shared control). */
 .lectureship-form :deep(.edit-field-slot input) {
-  min-height: 2.75rem;
-  font-size: 1rem;
+  min-height: 3rem;
+  border: 0;
+  border-bottom: 1px solid var(--c-rule-strong);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0.75rem 0;
+  font-size: 1.0625rem;
   line-height: 1.5rem;
 }
-.lectureship-form :deep(label > span:first-child) {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--c-ink);
+.lectureship-form :deep(.edit-field-slot input:hover) {
+  border-bottom-color: var(--c-ink-subtle);
 }
-@media (min-width: 640px) {
-  .lectureship-form :deep(.edit-field-slot input) {
-    min-height: 2.625rem;
-    font-size: 0.9375rem;
-  }
+.lectureship-form :deep(.edit-field-slot input:focus) {
+  border-bottom-color: var(--c-primary);
+  box-shadow: 0 1px 0 0 var(--c-primary);
+}
+.lectureship-form :deep(.edit-field-invalid .edit-field-slot input),
+.lectureship-form :deep(.edit-field-invalid .edit-field-slot input:focus) {
+  border-bottom-color: var(--c-error);
+  box-shadow: 0 1px 0 0 var(--c-error);
+}
+.lectureship-form :deep(label > span:first-child) {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-ink-muted);
 }
 </style>

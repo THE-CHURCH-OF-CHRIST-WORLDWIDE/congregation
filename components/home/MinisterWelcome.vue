@@ -3,84 +3,92 @@ const s = useChurchSettingsStore()
 onMounted(() => s.load())
 const cfg = computed(() => s.settings)
 
-const { el: sectionRef, isVisible } = useScrollReveal()
+// Presentation only: the typographic portrait drops a leading honorific ("Min.", "Bro.") so it
+// sets the name itself, and only photographs that exist get a frame.
+const portraitName = computed(() =>
+  (cfg.value.ministerName || '').replace(/^(\S+\.\s+)+/, '').trim()
+)
+const photos = computed(() => (cfg.value.congregationPhotos || []).slice(0, 2).filter(Boolean))
+const p1 = computed(() => cfg.value.ministerLetterP1 || '')
 </script>
 
 <template>
   <section
     id="welcome"
-    ref="sectionRef"
-    class="scroll-mt-20 bg-canvas py-16 md:py-24"
+    class="section scroll-mt-20 bg-surface"
     aria-label="Welcome letter from our minister"
   >
-    <div
-      class="mx-auto grid max-w-6xl items-start gap-12 px-5 sm:px-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:px-8"
-    >
-      <!-- ── Left: minister's portrait above two congregation photographs ── -->
-      <div aria-hidden="true" :class="['reveal-left', isVisible && 'is-visible']">
-        <div class="mx-auto grid max-w-sm grid-cols-2 gap-3 md:max-w-none">
-          <div
-            class="col-span-2 aspect-[4/5] overflow-hidden rounded-lg border border-rule bg-surface-sunken shadow-xs"
-          >
+    <div class="site-container grid gap-14 lg:grid-cols-12 lg:gap-8">
+      <!-- ── Left: portrait, with two congregation photographs set off its edge ── -->
+      <div aria-hidden="true" class="relative lg:col-span-5">
+        <div class="lg:sticky lg:top-[calc(var(--nav-h)+2rem)]">
+          <div v-reveal="'unveil'" class="aspect-[4/5] overflow-hidden bg-primary">
             <img
+              v-if="cfg.ministerPhoto"
               :src="displayableImageUrl(cfg.ministerPhoto)"
               alt="Minister headshot"
               loading="eager"
               class="h-full w-full object-cover"
             />
+            <!-- No portrait uploaded: the name itself becomes the portrait -->
+            <div v-else class="flex h-full w-full flex-col justify-end p-8 sm:p-10">
+              <p
+                class="font-display text-[clamp(3rem,6vw,5.5rem)] leading-[0.92] tracking-[-0.02em] text-on-night italic"
+              >
+                {{ portraitName }}
+              </p>
+            </div>
           </div>
-          <div class="aspect-[4/3] overflow-hidden rounded-lg border border-rule bg-surface-sunken">
-            <img
-              :src="displayableImageUrl(cfg.congregationPhotos[0])"
-              alt="Congregation gathering 1"
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover"
-            />
-          </div>
-          <div class="aspect-[4/3] overflow-hidden rounded-lg border border-rule bg-surface-sunken">
-            <img
-              :src="displayableImageUrl(cfg.congregationPhotos[1])"
-              alt="Congregation gathering 2"
-              loading="lazy"
-              decoding="async"
-              class="h-full w-full object-cover"
-            />
+          <div v-if="photos.length" class="mt-3 grid grid-cols-2 gap-3">
+            <div
+              v-for="(photo, i) in photos"
+              :key="photo"
+              v-reveal="{ type: 'unveil', delay: 150 + i * 150 }"
+              class="aspect-[4/3] overflow-hidden bg-surface-sunken"
+              :class="i === 1 ? 'translate-y-8' : ''"
+            >
+              <img
+                :src="displayableImageUrl(photo)"
+                :alt="`Congregation gathering ${i + 1}`"
+                loading="lazy"
+                decoding="async"
+                class="h-full w-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ── Right: letter ─────────────────────────────────────────── -->
-      <div
-        :class="[
-          'reveal-right delay-200 rounded-lg border border-rule bg-surface px-5 py-8 shadow-xs sm:px-10 sm:py-10',
-          isVisible && 'is-visible',
-        ]"
-      >
-        <div>
-          <h2
-            class="font-display text-[1.875rem] leading-[1.15] font-bold text-secondary md:text-[2.5rem]"
-          >
-            {{ cfg.ministerLetterHeading }}
-          </h2>
-        </div>
+      <!-- ── Right: the letter ───────────────────────────────────────── -->
+      <div class="lg:col-span-6 lg:col-start-7 lg:pt-6">
+        <h2 class="t-h1 text-secondary">
+          <SplitReveal :text="cfg.ministerLetterHeading" />
+        </h2>
 
-        <div class="mt-8 max-w-[65ch] space-y-5 text-lg leading-relaxed text-ink">
+        <div v-reveal.150 class="mt-12 max-w-[60ch] space-y-6 text-lg leading-[1.8] text-ink">
+          <p class="font-display text-[1.75rem] leading-tight text-ink italic">
+            {{ cfg.ministerLetterGreeting || 'Dear Friend,' }}
+          </p>
           <p class="first-paragraph">
-            <span aria-hidden="true" class="drop-cap">{{
-              (cfg.ministerLetterGreeting || 'D').charAt(0)
-            }}</span
-            >{{ (cfg.ministerLetterGreeting || 'Dear Friend,').slice(1) }}<br /><br />
-            {{ cfg.ministerLetterP1 }}
+            <span class="sr-only">{{ p1 }}</span>
+            <span aria-hidden="true"
+              ><span class="drop-cap">{{ p1.charAt(0) }}</span
+              >{{ p1.slice(1) }}</span
+            >
           </p>
           <p>{{ cfg.ministerLetterP2 }}</p>
           <p>{{ cfg.ministerLetterP3 }}</p>
           <p>{{ cfg.ministerLetterP4 }}</p>
         </div>
 
-        <div class="mt-10 border-t border-rule pt-5">
-          <p class="font-display text-xl font-semibold text-ink">{{ cfg.ministerName }}</p>
-          <p class="mt-1 text-base text-ink-muted italic">{{ cfg.ministerTitle }}</p>
+        <div v-reveal.250 class="mt-14 flex items-end gap-6">
+          <span class="mb-3 h-px w-16 bg-accent" aria-hidden="true"></span>
+          <div>
+            <p class="font-display text-[2.25rem] leading-none text-ink italic">
+              {{ cfg.ministerName }}
+            </p>
+            <p class="t-label mt-3 text-ink-subtle">{{ cfg.ministerTitle }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -91,12 +99,11 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 .drop-cap {
   float: left;
   font-family: var(--font-display);
-  font-size: 4rem;
-  font-weight: 700;
-  line-height: 0.8;
-  margin-right: 0.5rem;
-  margin-top: 0.35rem;
-  color: var(--c-primary);
+  font-size: 5.25rem;
+  line-height: 0.78;
+  margin-right: 0.625rem;
+  margin-top: 0.45rem;
+  color: var(--c-accent);
 }
 .first-paragraph {
   overflow: hidden;

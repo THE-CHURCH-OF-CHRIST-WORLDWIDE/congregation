@@ -3,99 +3,102 @@ const settingsStore = useChurchSettingsStore()
 onMounted(() => settingsStore.load())
 
 const events = computed(() => settingsStore.settings.homepageEvents)
-
-const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section id="events" ref="sectionRef" class="scroll-mt-20 bg-canvas py-16 md:py-24">
-    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-      <div
-        :class="[
-          'mb-10 flex items-end justify-between gap-6 md:mb-12',
-          'reveal',
-          isVisible && 'is-visible',
-        ]"
-      >
+  <section id="events" class="section field-stone scroll-mt-20">
+    <div class="site-container">
+      <div class="grid gap-6 md:grid-cols-12 md:items-end">
         <SectionHeader
-          class="mb-0! md:mb-0!"
+          class="mb-0! md:col-span-8 md:mb-0!"
           title="Upcoming Events"
           subtitle="Stay connected with what's happening in the congregation."
         />
-        <NuxtLink
-          to="/events"
-          class="hidden min-h-11 shrink-0 items-center gap-1.5 text-base font-semibold text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline sm:flex"
-          aria-label="View all events"
-        >
-          View All Events
-          <Icon icon="mdi:arrow-right" class="h-5 w-5" />
-        </NuxtLink>
+        <div class="md:col-span-4 md:text-right">
+          <NuxtLink
+            v-reveal.200
+            to="/events"
+            class="link-line text-base text-ink"
+            aria-label="View all events"
+          >
+            <span class="link-text">View All Events</span>
+            <Icon icon="mdi:arrow-right" class="link-arrow h-5 w-5" />
+          </NuxtLink>
+        </div>
       </div>
 
-      <LoadingState v-if="settingsStore.loading" title="Loading events…" />
-      <EmptyState
-        v-else-if="!events.length"
-        icon="mdi:calendar-blank-outline"
-        title="No upcoming events"
-        description="New gatherings are announced here. Please check back soon."
-      />
+      <div class="mt-14 md:mt-20">
+        <LoadingState v-if="settingsStore.loading" title="Loading events…" />
+        <EditorialNote
+          v-else-if="!events.length"
+          title="No upcoming events"
+          description="New gatherings are announced here. Please check back soon."
+        />
 
-      <!-- The visitors' book: one ruled entry per event, date in the left column -->
-      <div v-else class="divide-y divide-rule border-y border-rule-strong">
-        <div
-          v-for="(event, i) in events"
-          :key="event.id"
-          :class="['reveal', isVisible && 'is-visible']"
-          :style="{ transitionDelay: `${100 + i * 90}ms` }"
-        >
-          <div
-            class="grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-x-6 gap-y-4 py-6 sm:flex"
+        <!-- A programme: one ruled entry per event, the date set large in the margin -->
+        <ol v-else class="border-t border-ink/80">
+          <li
+            v-for="(event, i) in events"
+            :key="event.id"
+            v-reveal="{ delay: 80 + i * 90 }"
+            class="border-b border-rule-strong"
           >
-            <!-- Date column, with the event's colour as a small key mark -->
-            <div class="flex w-16 shrink-0 flex-col items-start sm:w-20">
-              <span class="num font-display text-4xl leading-none font-bold text-secondary">{{
-                event.day
-              }}</span>
-              <span class="stamp mt-1.5 flex items-center gap-1.5">
-                <span
-                  :class="['inline-block size-2 shrink-0 rounded-full', event.colorClass]"
-                  aria-hidden="true"
-                ></span>
-                {{ event.month }}
-              </span>
-            </div>
-
-            <!-- Event info -->
-            <div class="min-w-0 flex-1">
-              <h3 class="font-display text-lg leading-snug font-semibold text-ink md:text-xl">
-                {{ event.title }}
-              </h3>
-              <div
-                class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-base text-ink-muted"
-              >
-                <span class="flex items-center gap-1.5">
-                  <Icon icon="mdi:map-marker-outline" class="h-5 w-5 shrink-0 text-ink-subtle" />
-                  {{ event.location }}
-                </span>
-                <span class="num flex items-center gap-1.5">
-                  <Icon icon="mdi:clock-outline" class="h-5 w-5 shrink-0 text-ink-subtle" />
-                  {{ event.time }}
-                </span>
-              </div>
-            </div>
-
-            <!-- CTA — homepage events have no detail page of their own, so this
+            <!-- Homepage events have no detail page of their own, so each entry
                  goes to the full events listing. -->
             <NuxtLink
               to="/events"
-              class="col-start-2 inline-flex min-h-11 justify-self-start shrink-0 items-center justify-center gap-1.5 rounded-md border border-rule-strong bg-surface px-4 text-base font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
+              class="event-row group grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-x-5 gap-y-3 py-7 sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:gap-x-8 md:py-9"
               :aria-label="`View details for ${event.title}`"
             >
-              Details
-              <Icon icon="mdi:chevron-right" class="h-5 w-5 text-ink-subtle" />
+              <!-- Date: numeral and month, with the event's colour as a small key mark -->
+              <div class="flex flex-col">
+                <span
+                  class="num font-display text-[3.5rem] leading-[0.85] text-ink sm:text-[5rem]"
+                  >{{ event.day }}</span
+                >
+                <span class="stamp mt-2 flex items-center gap-1.5">
+                  <span
+                    :class="['inline-block size-1.5 shrink-0 rounded-full', event.colorClass]"
+                    aria-hidden="true"
+                  ></span>
+                  {{ event.month }}
+                </span>
+              </div>
+
+              <div class="min-w-0">
+                <h3
+                  class="font-display text-[1.75rem] leading-[1.1] text-ink transition-[color,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1.5 group-hover:text-primary-ink md:text-[2.25rem]"
+                >
+                  {{ event.title }}
+                </h3>
+                <div
+                  class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-[0.9375rem] text-ink-muted"
+                >
+                  <span class="flex items-center gap-1.5">
+                    <Icon icon="mdi:map-marker-outline" class="h-4 w-4 shrink-0 text-accent" />
+                    {{ event.location }}
+                  </span>
+                  <span class="num flex items-center gap-1.5">
+                    <Icon icon="mdi:clock-outline" class="h-4 w-4 shrink-0 text-accent" />
+                    {{ event.time }}
+                  </span>
+                </div>
+              </div>
+
+              <span
+                class="col-start-2 inline-flex items-center gap-2 text-sm font-semibold text-ink sm:col-start-3"
+              >
+                Details
+                <span
+                  class="flex size-11 items-center justify-center rounded-full border border-rule-strong transition-[background-color,border-color,color] duration-500 group-hover:border-primary group-hover:bg-primary group-hover:text-on-primary"
+                  aria-hidden="true"
+                >
+                  <Icon icon="mdi:arrow-right" class="h-4 w-4" />
+                </span>
+              </span>
             </NuxtLink>
-          </div>
-        </div>
+          </li>
+        </ol>
       </div>
     </div>
   </section>

@@ -183,10 +183,11 @@ service cloud.firestore {
     }
 
     // ── Teachings ──────────────────────────────────────────────────────────
-    // Sermons and Sunday School lessons. Staff-read for now: the public teachings pages still
-    // read their own store, so nothing outside the dashboard needs this yet.
+    // Sermons and Sunday School lessons. Published content: the public sermons, Sunday School and
+    // recorded-streams pages read it, so reads are open like events and settings. Writes stay with
+    // content editors.
     match /teachings/{sermonId} {
-      allow read: if isStaff();
+      allow read: if true;
       allow write: if canEditPublishedContent();
     }
 

@@ -115,7 +115,7 @@ function removeAt(index: number) {
         />
         <button
           type="button"
-          class="absolute top-1 right-1 inline-flex size-7 items-center justify-center rounded-md bg-black/55 text-white opacity-0 ring-1 ring-white/25 transition-[opacity,background-color] duration-150 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-[#b42318]"
+          class="absolute top-1 right-1 inline-flex size-7 items-center justify-center rounded-md bg-night/60 text-on-night opacity-0 ring-1 ring-on-night/25 transition-[opacity,background-color] duration-150 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-error"
           :aria-label="`Remove image ${i + 1}`"
           @click="removeAt(i)"
         >

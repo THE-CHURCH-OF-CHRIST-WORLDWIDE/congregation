@@ -8,7 +8,7 @@ const padClasses = { none: '', sm: 'p-3', md: 'p-4 lg:p-5', lg: 'p-5 lg:p-6' }
 </script>
 
 <template>
-  <div :class="['rounded-lg border border-rule bg-surface shadow-xs', padClasses[padding]]">
+  <div :class="['rounded-sm border border-rule bg-surface', padClasses[padding]]">
     <slot></slot>
   </div>
 </template>

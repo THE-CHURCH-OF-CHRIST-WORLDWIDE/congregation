@@ -34,7 +34,7 @@ Free, self-hostable, and deployed by many different churches. The public site an
 ## Brand Commitments
 
 - Brand-neutral by design: no single church's logo, name, or colours may be baked into the product. Each deploying church's identity arrives through its own name, photos and content.
-- Admin dark mode follows the OS `prefers-color-scheme` setting. There is no in-app toggle.
+- Light mode only, on both the public site and the admin dashboard. No dark mode.
 
 ## Evidence on Hand
 

@@ -20,7 +20,7 @@ defineEmits<{ save: []; discard: [] }>()
   <Transition name="save-bar">
     <div
       v-if="dirty"
-      class="sticky bottom-3 z-20 mt-6 rounded-lg border border-rule-strong bg-surface/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:bottom-4"
+      class="sticky bottom-3 z-20 mt-6 rounded-sm border border-rule-strong bg-surface/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:bottom-4"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <!-- Announced politely: the bar appearing is information, not an interruption. -->

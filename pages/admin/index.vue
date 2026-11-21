@@ -171,7 +171,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
   <div class="flex flex-col gap-6">
     <!-- Stats row -->
     <div
-      class="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-rule bg-rule shadow-xs sm:grid-cols-2 xl:grid-cols-4"
+      class="grid grid-cols-1 gap-px overflow-hidden rounded-sm border border-rule bg-rule sm:grid-cols-2 xl:grid-cols-4"
     >
       <StatsCard v-for="card in statsCards" :key="card.title" v-bind="card" />
     </div>
@@ -180,7 +180,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
     <NuxtLink
       v-if="noAttendanceYet"
       to="/admin/attendance"
-      class="group flex items-start gap-3 rounded-lg border border-dashed border-rule-strong bg-surface px-4 py-3 text-sm leading-relaxed text-ink-muted transition-colors duration-150 hover:border-primary hover:bg-primary-soft/40 hover:text-ink"
+      class="group flex items-start gap-3 rounded-sm border border-dashed border-rule-strong bg-surface px-4 py-3 text-sm leading-relaxed text-ink-muted transition-colors duration-150 hover:border-primary hover:bg-primary-soft/40 hover:text-ink"
     >
       <Icon
         icon="mdi:calendar-plus-outline"
@@ -201,7 +201,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
       <Card padding="none" class="p-5 xl:col-span-2">
         <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <h3 class="font-display text-base font-semibold text-ink">{{ chartTitle }}</h3>
+          <h3 class="font-sans text-base font-semibold text-ink">{{ chartTitle }}</h3>
           <div class="flex flex-wrap items-center gap-3">
             <div
               class="inline-flex items-center gap-0.5 rounded-md border border-rule bg-surface-muted p-0.5"
@@ -211,9 +211,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
               <label
                 :class="[
                   'flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm px-2.5 text-xs font-medium transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-focus',
-                  chartMode === 'weekly'
-                    ? 'bg-surface text-ink shadow-xs'
-                    : 'text-ink-muted hover:text-ink',
+                  chartMode === 'weekly' ? 'bg-surface text-ink ' : 'text-ink-muted hover:text-ink',
                 ]"
               >
                 <input v-model="chartMode" type="radio" value="weekly" class="sr-only" />
@@ -223,7 +221,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
                 :class="[
                   'flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm px-2.5 text-xs font-medium transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-focus',
                   chartMode === 'monthly'
-                    ? 'bg-surface text-ink shadow-xs'
+                    ? 'bg-surface text-ink '
                     : 'text-ink-muted hover:text-ink',
                 ]"
               >
@@ -233,7 +231,7 @@ const barOptions = computed<ChartOptions<'bar'>>(() => ({
             </div>
             <select
               v-model="chartService"
-              class="min-h-9 shrink-0 rounded-md border border-rule-strong bg-surface px-3 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+              class="min-h-9 shrink-0 rounded-md border border-rule-strong bg-surface px-3 text-sm text-ink outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
               aria-label="Select service type"
             >
               <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>

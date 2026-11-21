@@ -21,7 +21,7 @@ const meta = computed(() => LECTURESHIP_ROLES[props.role])
 <template>
   <div class="flex flex-col gap-3">
     <div class="flex items-center justify-between gap-3 border-b border-rule pb-2">
-      <h3 class="font-display text-lg font-semibold text-ink">{{ meta.plural }}</h3>
+      <h3 class="font-display text-xl text-ink">{{ meta.plural }}</h3>
       <Button size="sm" variant="secondary" @click="emit('add')">
         <template #icon-left><Icon icon="mdi:plus" /></template>
         Add {{ meta.label }}

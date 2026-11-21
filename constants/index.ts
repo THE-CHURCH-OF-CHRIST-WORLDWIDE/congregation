@@ -272,12 +272,6 @@ export interface LectureshipRoleMeta {
   badgeText: string
   /** Short tag shown as the public section's eyebrow, above the heading. */
   publicEyebrow: string
-  /** Badge pill background/text classes. */
-  accentClass: string
-  /** Fallback-avatar gradient classes, shown when a profile has no photo. */
-  gradientClass: string
-  /** Eyebrow text colour class, matched to `accentClass`. */
-  eyebrowClass: string
   emptyIcon: string
   emptyTitle: string
   emptyDescription: string
@@ -296,9 +290,6 @@ export const LECTURESHIP_ROLES: Record<LectureshipSpeakerRole, LectureshipRoleMe
     plural: 'Speakers',
     badgeText: 'Speaker',
     publicEyebrow: 'Guest Speakers',
-    accentClass: 'bg-amber-400 text-amber-950',
-    gradientClass: 'from-amber-600 to-orange-900',
-    eyebrowClass: 'text-amber-600',
     emptyIcon: 'mdi:account-voice',
     emptyTitle: 'No speakers yet',
     emptyDescription: 'Guest speakers you add will appear here and on the public Lectureship page.',
@@ -308,9 +299,6 @@ export const LECTURESHIP_ROLES: Record<LectureshipSpeakerRole, LectureshipRoleMe
     plural: 'Officiating Ministers',
     badgeText: 'Officiating',
     publicEyebrow: 'Officiating',
-    accentClass: 'bg-blue-500 text-white',
-    gradientClass: 'from-blue-700 to-blue-950',
-    eyebrowClass: 'text-blue-600',
     emptyIcon: 'mdi:account-tie-outline',
     emptyTitle: 'No officiating ministers yet',
     emptyDescription: 'Ministers you add will appear here and on the public Lectureship page.',
@@ -320,9 +308,6 @@ export const LECTURESHIP_ROLES: Record<LectureshipSpeakerRole, LectureshipRoleMe
     plural: 'Song Leaders',
     badgeText: 'Song Leader',
     publicEyebrow: 'Song Ministry',
-    accentClass: 'bg-emerald-500 text-white',
-    gradientClass: 'from-emerald-600 to-emerald-950',
-    eyebrowClass: 'text-emerald-600',
     emptyIcon: 'mdi:music-note-outline',
     emptyTitle: 'No song leaders yet',
     emptyDescription: 'Song leaders you add will appear here and on the public Lectureship page.',
@@ -332,11 +317,22 @@ export const LECTURESHIP_ROLES: Record<LectureshipSpeakerRole, LectureshipRoleMe
     plural: 'Moderators',
     badgeText: 'Moderator',
     publicEyebrow: 'Moderator',
-    accentClass: 'bg-purple-500 text-white',
-    gradientClass: 'from-purple-700 to-purple-950',
-    eyebrowClass: 'text-purple-600',
     emptyIcon: 'mdi:account-star-outline',
     emptyTitle: 'No moderator added yet',
     emptyDescription: 'The moderator you add will appear here and on the public Lectureship page.',
   },
 }
+
+/**
+ * Gallery categories, each served at /gallery/<slug>. Photos are added in Settings → Gallery and
+ * tagged with one of these slugs; untagged photos (saved before categories existed) fall under
+ * the first.
+ */
+export const GALLERY_CATEGORIES = [
+  { slug: 'sunday-service', title: 'Sunday Service' },
+  { slug: 'gospel-meeting', title: 'Gospel Meeting' },
+  { slug: 'bible-class', title: 'Bible Class' },
+  { slug: 'evangelism', title: 'Evangelism' },
+] as const
+
+export type GalleryCategorySlug = (typeof GALLERY_CATEGORIES)[number]['slug']

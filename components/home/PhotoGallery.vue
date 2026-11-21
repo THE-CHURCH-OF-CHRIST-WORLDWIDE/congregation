@@ -5,7 +5,13 @@ const photos = computed(() => s.settings.galleryPhotos)
 
 const selectedPhoto = ref<{ id: string; src: string; alt: string } | null>(null)
 
-const { el: sectionRef, isVisible } = useScrollReveal({ threshold: 0.05 })
+// The strip scrolls sideways; the arrow buttons move it by most of a screen.
+const strip = ref<HTMLElement | null>(null)
+function nudge(dir: 1 | -1) {
+  const el = strip.value
+  if (!el) return
+  el.scrollBy({ left: dir * el.clientWidth * 0.75, behavior: 'smooth' })
+}
 
 function openLightbox(photo: { id: string; src: string; alt: string }) {
   selectedPhoto.value = photo
@@ -25,48 +31,71 @@ onMounted(() => {
 </script>
 
 <template>
-  <section ref="sectionRef" class="bg-canvas py-16 md:py-24">
-    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-      <div
-        :class="[
-          'mb-10 flex items-end justify-between gap-6 md:mb-12',
-          'reveal',
-          isVisible && 'is-visible',
-        ]"
-      >
+  <section class="section overflow-hidden bg-surface">
+    <div class="site-container">
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <SectionHeader
           class="mb-0! md:mb-0!"
           title="Photo Gallery"
           subtitle="Moments from our worship, fellowship, and community life."
         />
-        <NuxtLink
-          to="/gallery/sunday-service"
-          class="hidden min-h-11 shrink-0 items-center gap-1.5 text-base font-semibold text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline sm:flex"
-          aria-label="View full gallery"
-        >
-          View Full Gallery
-          <Icon icon="mdi:arrow-right" class="h-5 w-5" />
-        </NuxtLink>
+        <div v-reveal.200 class="flex items-center gap-6">
+          <NuxtLink
+            to="/gallery/sunday-service"
+            class="link-line text-base text-ink"
+            aria-label="View full gallery"
+          >
+            <span class="link-text">View Full Gallery</span>
+            <Icon icon="mdi:arrow-right" class="link-arrow h-5 w-5" />
+          </NuxtLink>
+          <div v-if="photos.length > 1" class="hidden gap-2 md:flex">
+            <button
+              class="flex size-12 items-center justify-center rounded-full border border-rule-strong text-ink transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-surface"
+              aria-label="Scroll gallery back"
+              @click="nudge(-1)"
+            >
+              <Icon icon="mdi:arrow-left" class="h-5 w-5" />
+            </button>
+            <button
+              class="flex size-12 items-center justify-center rounded-full border border-rule-strong text-ink transition-colors duration-300 hover:border-ink hover:bg-ink hover:text-surface"
+              aria-label="Scroll gallery forward"
+              @click="nudge(1)"
+            >
+              <Icon icon="mdi:arrow-right" class="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-14 md:mt-20">
+      <div class="site-container">
+        <LoadingState v-if="s.loading" title="Loading photos…" />
+        <EditorialNote
+          v-else-if="!photos.length"
+          title="No photos yet"
+          description="Photographs from our services and gatherings will appear here soon."
+        />
       </div>
 
-      <LoadingState v-if="s.loading" title="Loading photos…" />
-      <EmptyState
-        v-else-if="!photos.length"
-        icon="mdi:image-multiple-outline"
-        title="No photos yet"
-        description="Photographs from our services and gatherings will appear here soon."
-      />
-
-      <div v-else class="columns-1 gap-4 sm:columns-2 lg:columns-4">
+      <!-- A horizontal contact sheet: frames of varied height, snapping as it scrolls -->
+      <div
+        v-if="!s.loading && photos.length"
+        ref="strip"
+        class="no-scrollbar flex snap-x snap-mandatory items-end gap-4 overflow-x-auto scroll-px-[var(--site-gutter)] px-[var(--site-gutter)] pb-2 md:gap-6"
+      >
         <div
           v-for="(photo, i) in photos"
           :key="photo.id"
-          :class="[
-            'group relative mb-4 cursor-pointer break-inside-avoid overflow-hidden rounded-lg border border-rule bg-surface-sunken',
-            'reveal-scale',
-            isVisible && 'is-visible',
-          ]"
-          :style="{ transitionDelay: `${100 + Math.min(i, 7) * 60}ms` }"
+          v-reveal="{ type: 'unveil', delay: Math.min(i, 5) * 90 }"
+          class="group relative shrink-0 cursor-pointer snap-start overflow-hidden bg-surface-sunken"
+          :class="
+            i % 3 === 0
+              ? 'h-[22rem] sm:h-[30rem]'
+              : i % 3 === 1
+                ? 'h-[17rem] sm:h-[23rem]'
+                : 'h-[19.5rem] sm:h-[26rem]'
+          "
           :aria-label="`View image: ${photo.alt}`"
           role="button"
           tabindex="0"
@@ -78,11 +107,14 @@ onMounted(() => {
             :alt="photo.alt"
             loading="lazy"
             decoding="async"
-            class="w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+            class="h-full w-auto max-w-[85vw] min-w-[14rem] object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
           />
-          <div
-            class="absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/15"
-          ></div>
+          <p
+            class="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-night/75 to-transparent px-5 pt-10 pb-4 text-sm text-on-night transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-focus-visible:translate-y-0"
+            aria-hidden="true"
+          >
+            {{ photo.alt }}
+          </p>
         </div>
       </div>
     </div>
@@ -91,25 +123,25 @@ onMounted(() => {
       <Transition name="fade">
         <div
           v-if="selectedPhoto"
-          class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
+          class="fixed inset-0 z-[100] flex items-center justify-center bg-night/95 p-4 sm:p-10"
           aria-modal="true"
           :aria-label="selectedPhoto.alt"
           @click.self="closeLightbox"
         >
           <button
-            class="absolute top-4 right-4 inline-flex size-11 items-center justify-center rounded-md text-white/80 transition-colors duration-150 hover:bg-white/10 hover:text-white"
+            class="absolute top-4 right-4 inline-flex size-12 items-center justify-center rounded-full border border-on-night/25 text-on-night transition-colors duration-300 hover:border-champagne hover:text-champagne"
             aria-label="Close lightbox"
             @click="closeLightbox"
           >
-            <Icon icon="mdi:close" class="h-7 w-7" />
+            <Icon icon="mdi:close" class="h-6 w-6" />
           </button>
           <img
             :src="displayableImageUrl(selectedPhoto.src)"
             :alt="selectedPhoto.alt"
-            class="max-h-[85vh] max-w-full rounded-md object-contain shadow-xl"
+            class="max-h-[82vh] max-w-full object-contain"
           />
           <p
-            class="absolute bottom-6 left-1/2 max-w-[90vw] -translate-x-1/2 text-center text-base text-white/80"
+            class="absolute bottom-6 left-1/2 max-w-[90vw] -translate-x-1/2 text-center font-display text-lg text-on-night-muted italic"
           >
             {{ selectedPhoto.alt }}
           </p>

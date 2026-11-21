@@ -6,7 +6,7 @@ const sermons = computed(() => teachingsStore.recentSermons)
 
 <template>
   <Card padding="none" class="flex h-full flex-col overflow-hidden p-5">
-    <h3 class="font-display text-base font-semibold text-ink">Recent Sermon Uploads</h3>
+    <h3 class="font-sans text-base font-semibold text-ink">Recent Sermon Uploads</h3>
 
     <div
       v-if="sermons.length"

@@ -35,7 +35,7 @@ function doExport() {
       class="flex flex-col justify-between gap-3 border-b border-rule px-5 py-4 sm:flex-row sm:items-center"
     >
       <div class="min-w-0">
-        <h3 class="font-display text-base font-semibold text-ink">
+        <h3 class="font-sans text-base font-semibold text-ink">
           Backslider Summary - Members Needing Follow-up
         </h3>
         <p class="mt-0.5 text-xs text-ink-muted">
@@ -44,7 +44,7 @@ function doExport() {
         </p>
       </div>
       <button
-        class="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border border-rule-strong bg-surface px-3 text-[13px] font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
+        class="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border border-rule-strong bg-surface px-3 text-[13px] font-semibold text-ink transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
         :aria-label="`Export ${filtered.length} backsliders to CSV`"
         @click="doExport"
       >
@@ -64,7 +64,7 @@ function doExport() {
           v-model="search"
           type="search"
           placeholder="Search here..."
-          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search backsliders"
         />
       </div>

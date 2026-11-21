@@ -44,8 +44,8 @@ const lineChartData = computed<ChartData<'line'>>(() => {
       {
         label: 'Members listed per session',
         data: perSession((m) => m.total),
-        borderColor: '#7a8aa0',
-        backgroundColor: 'rgba(122,138,160,0.08)',
+        borderColor: chartPalette.slate,
+        backgroundColor: chartAlpha(chartPalette.slate, 0.08),
         fill: true,
         tension: 0.4,
         pointRadius: 4,
@@ -54,8 +54,8 @@ const lineChartData = computed<ChartData<'line'>>(() => {
       {
         label: 'Present per session',
         data: perSession((m) => m.present),
-        borderColor: '#2f7a5c',
-        backgroundColor: 'rgba(47,122,92,0.1)',
+        borderColor: chartPalette.bookcloth,
+        backgroundColor: chartAlpha(chartPalette.bookcloth, 0.1),
         fill: true,
         tension: 0.4,
         pointRadius: 4,
@@ -115,7 +115,7 @@ function doImport() {
       <Card class="xl:col-span-2" padding="lg">
         <div class="flex items-center justify-between gap-4">
           <div>
-            <h3 class="font-display text-base font-semibold text-ink">Monthly Attendance Trend</h3>
+            <h3 class="font-sans text-base font-semibold text-ink">Monthly Attendance Trend</h3>
             <p class="mt-0.5 text-xs text-ink-muted">
               {{ TREND_SERVICE }} · average per recorded session, last 12 months
             </p>

@@ -231,7 +231,7 @@ watch(
     <div class="flex flex-col gap-7">
       <!-- ── Personal Information ──────────────────────────────────────────── -->
       <section>
-        <h3 class="mb-4 font-display text-base font-semibold text-ink">Personal Information</h3>
+        <h3 class="mb-4 font-sans text-base font-semibold text-ink">Personal Information</h3>
         <div class="space-y-4">
           <!-- Name | Email -->
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -345,7 +345,7 @@ watch(
 
       <!-- ── Place of Origin ───────────────────────────────────────────────── -->
       <section>
-        <h3 class="mb-4 font-display text-base font-semibold text-ink">Place of Origin</h3>
+        <h3 class="mb-4 font-sans text-base font-semibold text-ink">Place of Origin</h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EditField label="Country">
             <input v-model="form.country" type="text" placeholder="Nigeria" />
@@ -366,7 +366,7 @@ watch(
 
       <!-- ── Residential Address ───────────────────────────────────────────── -->
       <section>
-        <h3 class="mb-4 font-display text-base font-semibold text-ink">Residential Address</h3>
+        <h3 class="mb-4 font-sans text-base font-semibold text-ink">Residential Address</h3>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <EditField label="Country">
             <input v-model="form.country" type="text" placeholder="Nigeria" />
@@ -389,7 +389,7 @@ watch(
         <hr class="border-rule" />
 
         <section>
-          <h3 class="mb-4 font-display text-base font-semibold text-ink">
+          <h3 class="mb-4 font-sans text-base font-semibold text-ink">
             School &amp; Education
             <span class="font-sans text-xs font-normal text-ink-subtle">(optional)</span>
           </h3>
@@ -465,7 +465,7 @@ watch(
 
       <!-- ── Previous Congregation ─────────────────────────────────────────── -->
       <section>
-        <h3 class="mb-4 font-display text-base font-semibold text-ink">
+        <h3 class="mb-4 font-sans text-base font-semibold text-ink">
           Previous Congregation
           <span class="font-sans text-xs font-normal text-ink-subtle">(optional)</span>
         </h3>
@@ -491,7 +491,7 @@ watch(
 
       <!-- ── Emergency Contact ─────────────────────────────────────────────── -->
       <section>
-        <h3 class="mb-4 font-display text-base font-semibold text-ink">
+        <h3 class="mb-4 font-sans text-base font-semibold text-ink">
           Emergency Contact
           <span class="font-sans text-xs font-normal text-ink-subtle">(optional)</span>
         </h3>

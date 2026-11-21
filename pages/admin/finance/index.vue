@@ -80,14 +80,14 @@ const chartData = computed<ChartData<'bar'>>(() => {
       {
         label: 'Income',
         data: labels.map((l) => incMap[l] ?? 0),
-        backgroundColor: '#2f8a57',
-        borderRadius: 6,
+        backgroundColor: chartStatus.positive,
+        borderRadius: 2,
       },
       {
         label: 'Expenses',
         data: labels.map((l) => expMap[l] ?? 0),
-        backgroundColor: '#c2493b',
-        borderRadius: 6,
+        backgroundColor: chartStatus.negative,
+        borderRadius: 2,
       },
     ],
   }
@@ -95,15 +95,15 @@ const chartData = computed<ChartData<'bar'>>(() => {
 
 // ─── Donut chart (expenses by category this month) ───────────────────────────
 const categoryColors: Record<ExpenseCategory, string> = {
-  Building: '#2f7a5c',
-  Evangelism: '#8a5a9e',
-  Welfare: '#2e8a92',
-  Technical: '#3d5f8f',
-  Youth: '#c2493b',
-  Preacher: '#c08a2e',
-  Edification: '#a8683f',
-  Media: '#6b7f2e',
-  Others: '#7a8aa0',
+  Building: chartPalette.bookcloth,
+  Evangelism: chartPalette.plum,
+  Welfare: chartPalette.teal,
+  Technical: chartPalette.ink,
+  Youth: chartPalette.margin,
+  Preacher: chartPalette.gilt,
+  Edification: chartPalette.clay,
+  Media: '#5c574c',
+  Others: chartPalette.slate,
 }
 
 const donutData = computed<ChartData<'doughnut'>>(() => {
@@ -471,29 +471,29 @@ async function saveExpense() {
 
     <!-- Top stat cards -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="rounded-sm border border-rule bg-surface p-5">
         <div class="flex items-start justify-between gap-2">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Total Income</p>
           <Icon icon="mdi:trending-up" class="shrink-0 text-lg text-success" aria-hidden="true" />
         </div>
-        <p class="num mt-3 font-display text-3xl font-semibold text-ink">
+        <p class="num mt-3 font-display text-3xl text-ink">
           {{ fmt(financeStore.totalIncome) }}
         </p>
         <p class="mt-1 text-xs text-ink-subtle">All time</p>
       </div>
 
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="rounded-sm border border-rule bg-surface p-5">
         <div class="flex items-start justify-between gap-2">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Total Expenses</p>
           <Icon icon="mdi:trending-down" class="shrink-0 text-lg text-error" aria-hidden="true" />
         </div>
-        <p class="num mt-3 font-display text-3xl font-semibold text-ink">
+        <p class="num mt-3 font-display text-3xl text-ink">
           {{ fmt(financeStore.totalExpenses) }}
         </p>
         <p class="mt-1 text-xs text-ink-subtle">All time</p>
       </div>
 
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="rounded-sm border border-rule bg-surface p-5">
         <div class="flex items-start justify-between gap-2">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Net Balance</p>
           <Icon
@@ -506,7 +506,7 @@ async function saveExpense() {
           />
         </div>
         <p
-          class="num mt-3 font-display text-3xl font-semibold"
+          class="num mt-3 font-display text-3xl"
           :class="financeStore.netBalance >= 0 ? 'text-success' : 'text-error'"
         >
           {{ fmt(financeStore.netBalance) }}
@@ -514,7 +514,7 @@ async function saveExpense() {
         <p class="mt-1 text-xs text-ink-subtle">All time</p>
       </div>
 
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="rounded-sm border border-rule bg-surface p-5">
         <div class="flex items-start justify-between gap-2">
           <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">This Month Net</p>
           <Icon
@@ -524,7 +524,7 @@ async function saveExpense() {
           />
         </div>
         <p
-          class="num mt-3 font-display text-3xl font-semibold"
+          class="num mt-3 font-display text-3xl"
           :class="financeStore.thisMonthNet >= 0 ? 'text-success' : 'text-error'"
         >
           {{ fmt(financeStore.thisMonthNet) }}
@@ -539,10 +539,10 @@ async function saveExpense() {
     <!-- Chart + Donut row -->
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
       <!-- Income vs Expenses bar chart -->
-      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs xl:col-span-2">
+      <div class="rounded-sm border border-rule bg-surface p-5 xl:col-span-2">
         <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h3 class="font-display text-base font-semibold text-ink">Income vs Expenses</h3>
+            <h3 class="font-sans text-base font-semibold text-ink">Income vs Expenses</h3>
             <p class="mt-0.5 text-xs text-ink-muted">Collections against spending, by period</p>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -561,9 +561,9 @@ async function saveExpense() {
       </div>
 
       <!-- Expense category donut -->
-      <div class="flex flex-col rounded-lg border border-rule bg-surface p-5 shadow-xs">
+      <div class="flex flex-col rounded-sm border border-rule bg-surface p-5">
         <div>
-          <h3 class="font-display text-base font-semibold text-ink">Expenses This Month</h3>
+          <h3 class="font-sans text-base font-semibold text-ink">Expenses This Month</h3>
           <p class="mt-0.5 text-xs text-ink-muted">By category</p>
         </div>
         <div class="mt-4">
@@ -605,9 +605,9 @@ async function saveExpense() {
     </div>
 
     <!-- Report table -->
-    <section class="overflow-hidden rounded-lg border border-rule bg-surface shadow-xs">
+    <section class="overflow-hidden rounded-sm border border-rule bg-surface">
       <div class="flex items-center justify-between gap-3 border-b border-rule px-4 py-3">
-        <h3 class="font-display text-base font-semibold text-ink capitalize">
+        <h3 class="font-sans text-base font-semibold text-ink capitalize">
           {{ activePeriod }} Report
         </h3>
         <!-- Nothing to export while the ledger is empty. -->
@@ -696,9 +696,9 @@ async function saveExpense() {
     </section>
 
     <!-- Recent activity -->
-    <section class="overflow-hidden rounded-lg border border-rule bg-surface shadow-xs">
+    <section class="overflow-hidden rounded-sm border border-rule bg-surface">
       <div class="border-b border-rule px-4 py-3">
-        <h3 class="font-display text-base font-semibold text-ink">Recent Transactions</h3>
+        <h3 class="font-sans text-base font-semibold text-ink">Recent Transactions</h3>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm" role="table">
@@ -800,7 +800,7 @@ async function saveExpense() {
           <input
             v-model="newCollection.date"
             type="date"
-            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
           <p v-if="collectionErrors.date" class="text-xs font-medium text-error">
             {{ collectionErrors.date }}
@@ -815,7 +815,7 @@ async function saveExpense() {
             type="number"
             min="0"
             placeholder="e.g. 75000"
-            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-right text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-right text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
           <p v-if="collectionErrors.amount" class="text-xs font-medium text-error">
             {{ collectionErrors.amount }}
@@ -827,7 +827,7 @@ async function saveExpense() {
             v-model="newCollection.description"
             type="text"
             placeholder="e.g. Sunday Collection, Special offering..."
-            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
         </div>
       </div>
@@ -852,7 +852,7 @@ async function saveExpense() {
           <input
             v-model="newExpense.date"
             type="date"
-            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
           <p v-if="expenseErrors.date" class="text-xs font-medium text-error">
             {{ expenseErrors.date }}
@@ -867,7 +867,7 @@ async function saveExpense() {
             type="number"
             min="0"
             placeholder="e.g. 15000"
-            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-right text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-right text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
           <p v-if="expenseErrors.amount" class="text-xs font-medium text-error">
             {{ expenseErrors.amount }}
@@ -879,7 +879,7 @@ async function saveExpense() {
           >
           <select
             v-model="newExpense.category"
-            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           >
             <option v-for="opt in expenseCategoryOptions" :key="opt.value" :value="opt.value">
               {{ opt.label }}
@@ -894,7 +894,7 @@ async function saveExpense() {
             v-model="newExpense.description"
             type="text"
             placeholder="Brief description"
-            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
           <p v-if="expenseErrors.description" class="text-xs font-medium text-error">
             {{ expenseErrors.description }}
@@ -917,14 +917,14 @@ async function saveExpense() {
       <div class="flex flex-col gap-5">
         <!-- Date range -->
         <section>
-          <h3 class="font-display text-sm font-semibold text-ink">Select Date Range</h3>
+          <h3 class="font-sans text-sm font-semibold text-ink">Select Date Range</h3>
           <div class="mt-3 grid grid-cols-2 gap-3">
             <div class="flex flex-col gap-1.5">
               <label class="text-sm font-medium text-ink">From</label>
               <input
                 v-model="exportRange.from"
                 type="date"
-                class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
               />
               <p v-if="exportRangeErrors.from" class="text-xs font-medium text-error">
                 {{ exportRangeErrors.from }}
@@ -935,7 +935,7 @@ async function saveExpense() {
               <input
                 v-model="exportRange.to"
                 type="date"
-                class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
               />
               <p v-if="exportRangeErrors.to" class="text-xs font-medium text-error">
                 {{ exportRangeErrors.to }}
@@ -946,7 +946,7 @@ async function saveExpense() {
 
         <!-- Quick range shortcuts -->
         <section>
-          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Quick Select</h3>
+          <h3 class="t-label text-ink-muted">Quick Select</h3>
           <div class="mt-2 flex flex-wrap gap-2">
             <button
               v-for="preset in [
@@ -968,24 +968,22 @@ async function saveExpense() {
 
         <!-- Preview -->
         <section class="rounded-md border border-rule bg-surface-muted p-4">
-          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">
-            Export Preview
-          </h3>
+          <h3 class="t-label text-ink-muted">Export Preview</h3>
           <div class="mt-3 grid grid-cols-3 divide-x divide-rule text-center">
             <div class="px-2">
-              <p class="num font-display text-xl font-semibold text-success">
+              <p class="num font-sans text-xl font-semibold text-success">
                 {{ exportPreviewIncome }}
               </p>
               <p class="mt-0.5 text-xs text-ink-muted">Income entries</p>
             </div>
             <div class="px-2">
-              <p class="num font-display text-xl font-semibold text-error">
+              <p class="num font-sans text-xl font-semibold text-error">
                 {{ exportPreviewExpenses }}
               </p>
               <p class="mt-0.5 text-xs text-ink-muted">Expense entries</p>
             </div>
             <div class="px-2">
-              <p class="num font-display text-xl font-semibold text-ink">
+              <p class="num font-sans text-xl font-semibold text-ink">
                 {{ exportPreviewCount }}
               </p>
               <p class="mt-0.5 text-xs text-ink-muted">Total rows</p>
