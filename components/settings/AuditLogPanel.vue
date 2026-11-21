@@ -34,7 +34,7 @@ function actorLabel(entry: { actorEmail?: string; actorUid: string }) {
 <template>
   <div class="flex flex-col gap-6">
     <div>
-      <h2 class="font-display text-lg font-semibold text-ink">Audit log</h2>
+      <h2 class="font-sans text-lg font-semibold text-ink">Audit log</h2>
       <p class="mt-0.5 text-sm text-ink-muted">
         Every change made through the dashboard, newest first. Visible to Super Admins only.
       </p>

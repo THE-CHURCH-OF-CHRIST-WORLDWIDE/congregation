@@ -3,9 +3,8 @@ defineProps<{ label: string }>()
 </script>
 
 <template>
-  <span
-    class="stamp inline-block rounded-sm bg-accent-soft px-2 py-1 ring-1 ring-accent/20 ring-inset"
-  >
+  <span class="stamp inline-flex items-center gap-2">
+    <span class="h-px w-3 bg-current opacity-60" aria-hidden="true"></span>
     {{ label }}
   </span>
 </template>

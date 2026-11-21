@@ -28,7 +28,7 @@ const changeIsPositive = computed(() => (props.change ?? 0) >= 0)
         <p class="truncate text-sm font-medium text-ink-muted">
           {{ title }}
         </p>
-        <p class="num mt-1.5 font-display text-[1.75rem] leading-none font-semibold text-ink">
+        <p class="num mt-2 font-display text-[2.25rem] leading-none text-ink">
           {{ value }}
         </p>
       </div>

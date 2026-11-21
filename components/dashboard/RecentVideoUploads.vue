@@ -6,7 +6,7 @@ const sermons = computed(() => teachingsStore.recentSermons)
 
 <template>
   <Card padding="none" class="flex h-full flex-col overflow-hidden p-5">
-    <h3 class="font-display text-base font-semibold text-ink">Recent Video Uploads</h3>
+    <h3 class="font-sans text-base font-semibold text-ink">Recent Video Uploads</h3>
 
     <div
       v-if="sermons.length"
@@ -16,7 +16,7 @@ const sermons = computed(() => teachingsStore.recentSermons)
         <div
           class="flex min-w-[64px] shrink-0 flex-col items-center rounded-md border border-rule bg-surface-muted px-2 py-1.5 text-center"
         >
-          <p class="num font-display text-base leading-tight font-semibold text-ink">
+          <p class="num font-sans text-base leading-tight font-semibold text-ink">
             {{ sermon.videoAttendees ?? 0 }}
           </p>
           <p class="text-2xs font-medium text-ink-subtle">attendees</p>

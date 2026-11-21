@@ -19,76 +19,54 @@ const categories = computed(() =>
 </script>
 
 <template>
-  <div class="border-t border-rule bg-surface-muted">
-    <div class="mx-auto max-w-7xl px-5 py-12 sm:px-6 md:py-16 lg:px-8">
-      <h2 class="mb-6 font-display text-2xl leading-tight font-bold text-secondary md:text-3xl">
-        Explore More Images
+  <section class="section border-t border-rule bg-surface-muted">
+    <div class="site-container">
+      <h2 class="t-h1 max-w-3xl text-secondary">
+        <SplitReveal text="Explore More Images" />
       </h2>
 
-      <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+      <div class="mt-12 grid gap-x-6 gap-y-10 sm:grid-cols-3 md:mt-16 lg:gap-x-8">
         <NuxtLink
-          v-for="cat in categories"
+          v-for="(cat, i) in categories"
           :key="cat.slug"
           :to="`/gallery/${cat.slug}`"
-          class="explore-card group"
+          class="group block"
           :aria-label="`${cat.label} gallery`"
         >
-          <img
-            v-if="cat.src"
-            :src="displayableImageUrl(cat.src)"
-            :alt="cat.label"
-            class="explore-img absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
-            decoding="async"
-          />
-          <div v-else class="absolute inset-0 bg-surface-sunken"></div>
-          <div class="explore-overlay group-hover:bg-black/15"></div>
-          <span class="explore-label">{{ cat.label }}</span>
+          <div
+            v-reveal="{ type: 'unveil', delay: Math.min(i, 4) * 90 }"
+            class="img-zoom relative aspect-[16/10] bg-surface-sunken sm:aspect-[4/5]"
+          >
+            <img
+              v-if="cat.src"
+              :src="displayableImageUrl(cat.src)"
+              :alt="cat.label"
+              class="absolute inset-0 h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+            <!-- No photograph yet: a forest panel carrying the category's initial -->
+            <div
+              v-else
+              class="field-forest absolute inset-0 flex items-end p-6 transition-colors duration-500 group-hover:bg-primary-hover"
+              aria-hidden="true"
+            >
+              <span
+                class="font-display text-[clamp(5rem,12vw,9rem)] leading-[0.8] text-on-night/30 italic"
+                >{{ cat.label.charAt(0) }}</span
+              >
+            </div>
+          </div>
+          <div class="mt-5 flex items-baseline justify-between gap-4 border-t border-rule pt-4">
+            <span class="t-h3 text-ink">{{ cat.label }}</span>
+            <Icon
+              icon="mdi:arrow-right"
+              class="h-5 w-5 shrink-0 text-ink-subtle transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 group-hover:text-accent"
+              aria-hidden="true"
+            />
+          </div>
         </NuxtLink>
       </div>
     </div>
-  </div>
+  </section>
 </template>
-
-<style scoped>
-.explore-card {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  cursor: pointer;
-  display: block;
-  text-decoration: none;
-  background: var(--c-surface-sunken);
-}
-
-.explore-img {
-  transition: transform 0.4s var(--ease-out-expo);
-}
-
-.explore-card:hover .explore-img,
-.explore-card:focus-visible .explore-img {
-  transform: scale(1.03);
-}
-
-.explore-overlay {
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(to top, rgb(14 20 28 / 0.75), rgb(14 20 28 / 0.1) 60%);
-  z-index: 1;
-  transition: background-color 0.2s ease;
-}
-
-.explore-label {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 2;
-  padding: 12px 14px;
-  color: white;
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-  text-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
-}
-</style>

@@ -8,8 +8,7 @@ const env = String(config.public.appEnv || 'development')
 const projectId = String(config.public.firebaseProjectId || 'unknown project')
 
 const isProduction = env === 'production'
-const barClass =
-  env === 'development' ? 'bg-[#232e3e] text-[#dce2ea]' : 'bg-[#f0b450] text-[#2b1c02]'
+const barClass = env === 'development' ? 'bg-night text-on-night-muted' : 'bg-champagne text-night'
 </script>
 
 <template>

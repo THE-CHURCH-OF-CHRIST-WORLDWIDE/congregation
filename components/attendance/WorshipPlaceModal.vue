@@ -178,7 +178,7 @@ function cancel() {
       <div class="flex justify-end gap-2">
         <button
           type="button"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink shadow-xs transition-colors hover:border-ink-subtle hover:bg-surface-muted sm:min-h-10"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:border-ink-subtle hover:bg-surface-muted sm:min-h-10"
           @click="cancel"
         >
           Cancel
@@ -186,7 +186,7 @@ function cancel() {
         <button
           ref="confirmButton"
           type="button"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover sm:min-h-10"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover sm:min-h-10"
           @click="submit"
         >
           <Icon icon="mdi:check" class="text-base" />

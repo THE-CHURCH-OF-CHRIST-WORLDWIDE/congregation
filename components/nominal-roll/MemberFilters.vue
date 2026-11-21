@@ -71,9 +71,7 @@ function doExport() {
       </div>
     </div>
 
-    <div
-      class="flex flex-wrap items-end gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs"
-    >
+    <div class="flex flex-wrap items-end gap-3 rounded-sm border border-rule bg-surface p-3">
       <div class="relative min-w-48 flex-1">
         <Icon
           icon="mdi:magnify"
@@ -83,7 +81,7 @@ function doExport() {
           :value="membersStore.filters.search"
           type="search"
           placeholder="Search here..."
-          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search members"
           @input="membersStore.setFilter({ search: ($event.target as any).value })"
         />

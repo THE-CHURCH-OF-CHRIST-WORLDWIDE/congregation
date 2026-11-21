@@ -57,7 +57,7 @@ const messageId = computed(() => (props.error || props.helper ? `${inputId}-mess
         :aria-invalid="error ? 'true' : undefined"
         :aria-describedby="messageId"
         :class="[
-          'w-full rounded-md border bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150',
+          'w-full rounded-sm border bg-surface text-ink outline-none transition-[border-color,box-shadow] duration-150',
           sizeClasses[size],
           'hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15',
           'disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-ink-subtle disabled:hover:border-rule-strong',

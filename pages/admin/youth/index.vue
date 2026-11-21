@@ -231,7 +231,7 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
               {{ Math.abs(card.change) }}%
             </Badge>
           </div>
-          <p class="num mt-2 font-display text-3xl leading-none font-semibold text-ink">
+          <p class="num mt-2 font-display text-3xl leading-none text-ink">
             {{ card.value }}
           </p>
           <div class="mt-3 flex items-center justify-between gap-3">
@@ -249,7 +249,7 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
 
       <!-- Donut chart -->
       <Card padding="none" class="flex flex-col p-5">
-        <h3 class="font-display text-base font-semibold text-ink">Youth Summary</h3>
+        <h3 class="font-sans text-base font-semibold text-ink">Youth Summary</h3>
         <div class="mt-4">
           <DonutChart v-if="youthByStatus.length" :data="donutData" :height="180" />
           <p v-else class="py-10 text-center text-xs leading-relaxed text-ink-muted">
@@ -278,7 +278,7 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
     </div>
 
     <!-- Search -->
-    <div class="flex gap-2 rounded-lg border border-rule bg-surface p-3 shadow-xs">
+    <div class="flex gap-2 rounded-sm border border-rule bg-surface p-3">
       <div class="relative flex-1">
         <Icon
           icon="mdi:magnify"
@@ -289,7 +289,7 @@ async function onImport(members: Omit<Member, 'id' | 'absenceCount'>[]) {
           v-model="search"
           type="search"
           placeholder="Search youth members..."
-          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search youth"
         />
       </div>

@@ -24,60 +24,68 @@ function onImgError(e: Event) {
 </script>
 
 <template>
-  <div class="flex gap-6">
+  <div class="flex gap-6 sm:gap-8">
     <!-- Moderator group -->
     <div>
-      <p class="mb-2 text-xs font-semibold tracking-wide text-white/70 uppercase">Moderator</p>
-      <div class="flex flex-col items-center gap-1">
-        <div class="relative size-10">
+      <p class="t-label mb-3 text-on-night-muted">Moderator</p>
+      <div class="flex flex-col items-center gap-1.5">
+        <div class="relative size-11">
           <img
+            v-if="moderator.avatar"
             :src="displayableImageUrl(moderator.avatar)"
             :alt="moderator.name"
-            class="size-10 rounded-full object-cover ring-2 ring-white/40"
+            class="size-11 rounded-full object-cover ring-1 ring-on-night/30"
             loading="lazy"
             decoding="async"
             @error="onImgError"
           />
           <div
-            class="absolute inset-0 hidden size-10 rounded-full bg-primary text-center text-xs leading-10 font-bold text-white ring-2 ring-white/40"
+            :class="[
+              'absolute inset-0 size-11 rounded-full bg-primary text-center font-display text-base leading-11 text-on-night italic ring-1 ring-on-night/30',
+              moderator.avatar ? 'hidden' : '',
+            ]"
           >
             {{ initials(moderator.name) }}
           </div>
         </div>
-        <span class="w-14 truncate text-center text-xs leading-tight text-white">
+        <span class="w-14 truncate text-center text-xs leading-tight text-on-night">
           {{ moderator.name.split(' ')[0] }}
         </span>
       </div>
     </div>
 
     <!-- Divider -->
-    <div class="w-px self-stretch bg-white/20"></div>
+    <div class="w-px self-stretch bg-on-night/20"></div>
 
     <!-- Speakers group -->
-    <div>
-      <p class="mb-2 text-xs font-semibold tracking-wide text-white/70 uppercase">Speakers</p>
-      <div class="flex gap-2">
+    <div class="min-w-0">
+      <p class="t-label mb-3 text-on-night-muted">Speakers</p>
+      <div class="flex gap-2.5">
         <div
           v-for="speaker in speakers.slice(0, 4)"
           :key="speaker.name"
-          class="flex flex-col items-center gap-1"
+          class="flex flex-col items-center gap-1.5"
         >
-          <div class="relative size-10">
+          <div class="relative size-11">
             <img
+              v-if="speaker.avatar"
               :src="displayableImageUrl(speaker.avatar)"
               :alt="speaker.name"
-              class="size-10 rounded-full object-cover ring-2 ring-white/40"
+              class="size-11 rounded-full object-cover ring-1 ring-on-night/30"
               loading="lazy"
               decoding="async"
               @error="onImgError"
             />
             <div
-              class="absolute inset-0 hidden size-10 rounded-full bg-secondary text-center text-xs leading-10 font-bold text-white ring-2 ring-white/40"
+              :class="[
+                'absolute inset-0 size-11 rounded-full bg-night-raised text-center font-display text-base leading-11 text-champagne italic ring-1 ring-on-night/30',
+                speaker.avatar ? 'hidden' : '',
+              ]"
             >
               {{ initials(speaker.name) }}
             </div>
           </div>
-          <span class="w-14 truncate text-center text-xs leading-tight text-white">
+          <span class="w-14 truncate text-center text-xs leading-tight text-on-night">
             {{ speaker.name.split(' ')[0] }}
           </span>
         </div>

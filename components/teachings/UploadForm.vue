@@ -101,7 +101,7 @@ async function submit() {
       </div>
     </Transition>
 
-    <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Sermon details</h3>
+    <h3 class="t-label text-ink-muted">Sermon details</h3>
 
     <!-- Upload Type -->
     <Select
@@ -119,7 +119,7 @@ async function submit() {
       <input
         v-model="form.date"
         type="date"
-        class="num min-h-11 w-full px-3 py-2 text-[15px] sm:min-h-10 sm:text-sm rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+        class="num min-h-11 w-full px-3 py-2 text-[15px] sm:min-h-10 sm:text-sm rounded-md border border-rule-strong bg-surface text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
         aria-label="Sermon date"
       />
     </div>
@@ -149,7 +149,7 @@ async function submit() {
         rows="3"
         placeholder="Enter a brief description of the topic you are uploading..."
         :class="[
-          'w-full resize-none rounded-md border bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15',
+          'w-full resize-none rounded-md border bg-surface px-3 py-2 text-sm text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15',
           errors.description
             ? 'border-error hover:border-error focus:border-error focus:ring-error/15'
             : 'border-rule-strong',
@@ -162,11 +162,7 @@ async function submit() {
     </div>
 
     <!-- Thumbnail -->
-    <h3
-      class="border-t border-rule pt-5 text-xs font-semibold tracking-wide text-ink-muted uppercase"
-    >
-      Media
-    </h3>
+    <h3 class="t-label border-t border-rule pt-5 text-ink-muted">Media</h3>
     <ImageUpload
       v-model="thumbnailUrl"
       label="Thumbnail Image"

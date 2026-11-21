@@ -401,18 +401,18 @@ const initials = computed(() =>
                 v-if="member.avatar"
                 :src="displayableImageUrl(member.avatar)"
                 :alt="member.name"
-                class="size-24 shrink-0 rounded-lg object-cover object-center shadow-xs ring-1 ring-rule sm:size-28"
+                class="size-24 shrink-0 rounded-sm object-cover object-center ring-1 ring-rule sm:size-28"
               />
               <div
                 v-else
-                class="flex size-24 shrink-0 items-center justify-center rounded-lg bg-primary-soft font-display text-3xl font-semibold text-primary-ink ring-1 ring-primary/20 sm:size-28"
+                class="flex size-24 shrink-0 items-center justify-center rounded-sm bg-primary-soft font-display text-3xl text-primary-ink ring-1 ring-primary/20 sm:size-28"
                 :aria-label="`${member.name} has no photograph`"
               >
                 {{ initials }}
               </div>
               <div class="margin-rule min-w-0 space-y-2">
                 <div class="flex items-center gap-2">
-                  <h2 class="font-display text-xl leading-tight font-semibold text-ink">
+                  <h2 class="font-display text-[1.75rem] leading-tight text-ink">
                     {{ member.name }}
                   </h2>
                   <button
@@ -448,9 +448,7 @@ const initials = computed(() =>
 
             <!-- Members Information -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
-                Members Information
-              </h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Members Information</h3>
               <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 <InfoField icon="mdi:account-outline" label="Name" :value="member.name" />
                 <InfoField icon="mdi:email-outline" label="Email Address" :value="member.email" />
@@ -482,7 +480,7 @@ const initials = computed(() =>
 
             <!-- Place of Origin -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">Place of Origin</h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Place of Origin</h3>
               <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 <InfoField icon="mdi:earth" label="Country" :value="member.country ?? '—'" />
                 <InfoField
@@ -501,7 +499,7 @@ const initials = computed(() =>
 
             <!-- Place of Residence -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">Place of Residence</h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Place of Residence</h3>
               <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 <InfoField icon="mdi:earth" label="Country" :value="member.country ?? '—'" />
                 <InfoField
@@ -525,7 +523,7 @@ const initials = computed(() =>
 
             <!-- School & Education — youth, or anyone with details already on file -->
             <section v-if="showSchooling" class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">
                 School &amp; Education
               </h3>
               <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
@@ -576,9 +574,7 @@ const initials = computed(() =>
               v-if="member.previousCongregation || member.previousMinisterPhone"
               class="px-5 py-5 sm:px-6"
             >
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
-                Previous Congregation
-              </h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Previous Congregation</h3>
               <div class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 <InfoField
                   icon="mdi:church"
@@ -595,9 +591,7 @@ const initials = computed(() =>
 
             <!-- Emergency Contact -->
             <section v-if="member.emergencyContact" class="bg-warning-soft/40 px-5 py-5 sm:px-6">
-              <h3
-                class="mb-4 flex items-center gap-2 font-display text-base font-semibold text-ink"
-              >
+              <h3 class="mb-4 flex items-center gap-2 font-sans text-base font-semibold text-ink">
                 <Icon icon="mdi:lifebuoy" class="text-base text-warning" aria-hidden="true" />
                 Emergency Contact
               </h3>
@@ -633,14 +627,14 @@ const initials = computed(() =>
             <!-- Actions -->
             <div class="flex gap-2 px-5 py-5 sm:px-6">
               <button
-                class="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover"
+                class="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover"
                 @click="startEdit"
               >
                 <Icon icon="mdi:pencil-outline" class="text-base" />
                 Edit Details
               </button>
               <button
-                class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md border border-error/40 bg-surface px-4 text-sm font-semibold text-error shadow-xs transition-colors hover:bg-error-soft disabled:opacity-55"
+                class="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md border border-error/40 bg-surface px-4 text-sm font-semibold text-error transition-colors hover:bg-error-soft disabled:opacity-55"
                 :disabled="membersStore.saving"
                 @click="onDelete"
               >
@@ -668,7 +662,7 @@ const initials = computed(() =>
                 <Icon icon="mdi:arrow-top-left" class="text-lg" />
               </button>
               <div>
-                <h2 class="font-display text-lg leading-tight font-semibold text-ink">
+                <h2 class="font-sans text-lg leading-tight font-semibold text-ink">
                   Edit Members Information
                 </h2>
                 <p class="mt-0.5 text-xs text-ink-subtle">Update the member information below.</p>
@@ -687,9 +681,7 @@ const initials = computed(() =>
           <div class="sidebar-scroll flex-1 divide-y divide-rule overflow-y-auto">
             <!-- ── Personal Information ─────────────────────── -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
-                Personal Information
-              </h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Personal Information</h3>
               <div class="space-y-4">
                 <!-- Name | Email -->
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -762,7 +754,7 @@ const initials = computed(() =>
 
             <!-- ── Place of Origin ─────────────────────────── -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">Place of Origin</h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Place of Origin</h3>
               <div class="space-y-4">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <EditField label="Country">
@@ -785,9 +777,7 @@ const initials = computed(() =>
 
             <!-- ── Residential Address ─────────────────────── -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
-                Residential Address
-              </h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Residential Address</h3>
               <div class="space-y-4">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <EditField label="Country">
@@ -809,7 +799,7 @@ const initials = computed(() =>
 
             <!-- ── School & Education ──────────────────────── -->
             <section v-if="showSchooling" class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">
                 School &amp; Education
               </h3>
               <div class="space-y-4">
@@ -889,9 +879,7 @@ const initials = computed(() =>
 
             <!-- ── Previous Congregation ───────────────────── -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">
-                Previous Congregation
-              </h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Previous Congregation</h3>
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <EditField label="Congregation">
                   <input
@@ -912,7 +900,7 @@ const initials = computed(() =>
 
             <!-- ── Emergency Contact ───────────────────────── -->
             <section class="px-5 py-5 sm:px-6">
-              <h3 class="mb-4 font-display text-base font-semibold text-ink">Emergency Contact</h3>
+              <h3 class="mb-4 font-sans text-base font-semibold text-ink">Emergency Contact</h3>
               <div class="space-y-4">
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <EditField label="Name">
@@ -940,7 +928,7 @@ const initials = computed(() =>
             class="flex shrink-0 gap-2 border-t border-rule bg-surface-muted px-5 py-3.5 sm:px-6"
           >
             <button
-              class="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors hover:bg-primary-hover disabled:opacity-55"
+              class="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors hover:bg-primary-hover disabled:opacity-55"
               :disabled="membersStore.saving || Boolean(churchNumberError || yearRangeError)"
               @click="saveEdit"
             >
@@ -948,7 +936,7 @@ const initials = computed(() =>
               {{ membersStore.saving ? 'Saving…' : 'Save Changes' }}
             </button>
             <button
-              class="inline-flex min-h-10 items-center justify-center rounded-md border border-rule-strong bg-surface px-5 text-sm font-semibold text-ink shadow-xs transition-colors hover:bg-surface-muted"
+              class="inline-flex min-h-10 items-center justify-center rounded-md border border-rule-strong bg-surface px-5 text-sm font-semibold text-ink transition-colors hover:bg-surface-muted"
               @click="cancelEdit"
             >
               Cancel

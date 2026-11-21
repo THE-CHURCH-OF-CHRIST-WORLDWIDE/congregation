@@ -9,11 +9,13 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
 </script>
 
 <template>
-  <div class="masonry-grid">
+  <!-- A curated wall: frames hung in columns, each opening as it comes into view -->
+  <div class="columns-2 gap-3 sm:gap-5 lg:columns-3 lg:gap-6 xl:columns-4">
     <div
       v-for="(img, index) in images"
       :key="img.id"
-      class="masonry-item group"
+      v-reveal="{ type: 'unveil', delay: (index % 4) * 90 }"
+      class="group relative mb-3 inline-block w-full cursor-pointer break-inside-avoid overflow-hidden bg-surface-sunken sm:mb-5 lg:mb-6"
       role="button"
       tabindex="0"
       :aria-label="img.alt"
@@ -25,59 +27,14 @@ const emit = defineEmits<{ 'image-click': [index: number] }>()
         :alt="img.alt"
         loading="lazy"
         decoding="async"
-        class="masonry-img"
+        class="block h-auto w-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.045] group-focus-visible:scale-[1.045]"
       />
+      <p
+        class="pointer-events-none absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-night/75 to-transparent px-4 pt-10 pb-3 font-display text-base leading-snug text-on-night italic transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0 group-focus-visible:translate-y-0 sm:text-lg"
+        aria-hidden="true"
+      >
+        {{ img.alt }}
+      </p>
     </div>
   </div>
 </template>
-
-<style scoped>
-.masonry-grid {
-  column-count: 4;
-  column-gap: 12px;
-}
-
-.masonry-item {
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 12px;
-  break-inside: avoid;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--c-surface-sunken);
-}
-
-.masonry-img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-  transition:
-    transform 0.4s var(--ease-out-expo),
-    filter 0.2s ease;
-}
-
-.masonry-item:hover .masonry-img,
-.masonry-item:focus-visible .masonry-img {
-  transform: scale(1.02);
-  filter: brightness(0.92);
-}
-
-@media (max-width: 1023px) {
-  .masonry-grid {
-    column-count: 3;
-  }
-}
-
-@media (max-width: 639px) {
-  .masonry-grid {
-    column-count: 2;
-    column-gap: 8px;
-  }
-
-  .masonry-item {
-    margin-bottom: 8px;
-  }
-}
-</style>

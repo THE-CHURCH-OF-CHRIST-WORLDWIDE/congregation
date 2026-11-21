@@ -69,18 +69,18 @@ const headerText = computed(
     <div
       class="flex flex-col justify-between gap-3 border-b border-rule px-5 py-4 sm:flex-row sm:items-center"
     >
-      <p class="font-display text-base font-semibold text-ink">{{ headerText }}</p>
+      <p class="font-sans text-base font-semibold text-ink">{{ headerText }}</p>
       <div class="flex gap-2">
         <select
           v-model="selectedService"
-          class="min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Select service"
         >
           <option v-for="s in serviceOptions" :key="s" :value="s">{{ s }}</option>
         </select>
         <select
           v-model="selectedYear"
-          class="num min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="num min-h-9 cursor-pointer rounded-md border border-rule-strong bg-surface px-3 py-1.5 text-sm text-ink outline-none transition-[border-color,box-shadow] hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Select year"
         >
           <option v-for="y in yearOptions" :key="y" :value="y">{{ y }}</option>
@@ -143,7 +143,7 @@ const headerText = computed(
           >
             <th
               scope="row"
-              class="sticky left-0 z-[1] border-r border-b border-rule bg-surface px-4 py-2 text-left font-display text-sm font-semibold whitespace-nowrap text-ink transition-colors group-hover:bg-surface-muted"
+              class="sticky left-0 z-[1] border-r border-b border-rule bg-surface px-4 py-2 text-left font-sans text-sm font-semibold whitespace-nowrap text-ink transition-colors group-hover:bg-surface-muted"
             >
               {{ month.label }} <span class="num">{{ selectedYear }}</span>
             </th>
@@ -169,7 +169,7 @@ const headerText = computed(
                   'inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md px-3 text-[13px] font-semibold whitespace-nowrap transition-colors duration-150',
                   month.sessions
                     ? 'border border-rule-strong bg-surface text-ink hover:border-ink-subtle hover:bg-surface-muted'
-                    : 'bg-primary text-on-primary shadow-xs hover:bg-primary-hover',
+                    : 'bg-primary text-on-primary hover:bg-primary-hover',
                 ]"
                 :aria-label="`${month.sessions ? 'View' : 'Mark'} ${selectedService} attendance for ${month.label} ${selectedYear}`"
               >

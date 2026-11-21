@@ -427,7 +427,7 @@ function removeSundayDetail(i: number) {
                   id="hero-tagline"
                   v-model="draft.heroTagline"
                   rows="2"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -574,7 +574,7 @@ function removeSundayDetail(i: number) {
                   id="letter-p1"
                   v-model="draft.ministerLetterP1"
                   rows="3"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
@@ -585,7 +585,7 @@ function removeSundayDetail(i: number) {
                   id="letter-p2"
                   v-model="draft.ministerLetterP2"
                   rows="4"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
@@ -596,7 +596,7 @@ function removeSundayDetail(i: number) {
                   id="letter-p3"
                   v-model="draft.ministerLetterP3"
                   rows="3"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
@@ -607,7 +607,7 @@ function removeSundayDetail(i: number) {
                   id="letter-p4"
                   v-model="draft.ministerLetterP4"
                   rows="2"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -634,7 +634,7 @@ function removeSundayDetail(i: number) {
                   id="lw-sub"
                   v-model="draft.liveWorship.subheading"
                   rows="2"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -721,7 +721,7 @@ function removeSundayDetail(i: number) {
                   id="hist-heading"
                   v-model="draft.aboutHistory.heading"
                   rows="2"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -740,7 +740,7 @@ function removeSundayDetail(i: number) {
                   id="hist-p1"
                   v-model="draft.aboutHistory.openingParagraph"
                   rows="5"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
@@ -751,7 +751,7 @@ function removeSundayDetail(i: number) {
                   id="hist-p2"
                   v-model="draft.aboutHistory.growthParagraph"
                   rows="4"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
@@ -762,7 +762,7 @@ function removeSundayDetail(i: number) {
                   id="hist-p3"
                   v-model="draft.aboutHistory.closingParagraph"
                   rows="4"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -931,7 +931,7 @@ function removeSundayDetail(i: number) {
                   id="wa-sub"
                   v-model="draft.worshipActivities.subtitle"
                   rows="2"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -1009,7 +1009,7 @@ function removeSundayDetail(i: number) {
                   id="ac-sub"
                   v-model="draft.activityCalendar.subtitle"
                   rows="2"
-                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -1184,7 +1184,7 @@ function removeSundayDetail(i: number) {
                   <select
                     :id="`role-${leader.id}`"
                     v-model="leader.role"
-                    class="min-h-9 w-full rounded-md border border-rule-strong bg-surface px-2.5 py-1.5 text-[13px] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                    class="min-h-9 w-full rounded-md border border-rule-strong bg-surface px-2.5 py-1.5 text-[13px] text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                   >
                     <option>Elder</option>
                     <option>Deacon</option>

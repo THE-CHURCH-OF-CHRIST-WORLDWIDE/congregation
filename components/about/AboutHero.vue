@@ -2,33 +2,78 @@
 const s = useChurchSettingsStore()
 onMounted(() => s.load())
 const cfg = computed(() => s.settings.aboutHero)
+
+// Presentational only: if the photograph is missing or fails to load, the cover closes
+// on the night field instead of showing a broken frame.
+const imgFailed = ref(false)
+watch(
+  () => cfg.value.backgroundImage,
+  () => (imgFailed.value = false)
+)
+const showImage = computed(() => !!cfg.value.backgroundImage && !imgFailed.value)
 </script>
 
 <template>
-  <section class="bookcloth relative overflow-hidden">
+  <section class="relative" aria-labelledby="about-title">
+    <!-- ── The cover: title set like a masthead on the night field ── -->
     <div
-      class="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 sm:px-6 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-12 md:py-16 lg:px-8 lg:py-20"
+      :class="[
+        'field-night relative isolate overflow-hidden pt-[calc(var(--nav-h)+4rem)] sm:pt-[calc(var(--nav-h)+6rem)]',
+        showImage ? 'pb-16 sm:pb-24' : 'pb-20 sm:pb-28',
+      ]"
     >
-      <!-- Page title -->
-      <div class="hero-animate">
-        <h1 class="font-display text-4xl leading-[1.1] font-bold text-white md:text-5xl">
-          {{ cfg.title }}
-        </h1>
-        <p v-if="cfg.scriptureRef" class="mt-3 text-[15px] font-medium text-white/80">
-          {{ cfg.scriptureRef }}
-        </p>
-        <p v-if="cfg.subtitle" class="mt-5 max-w-xl text-lg leading-relaxed text-white/80">
-          {{ cfg.subtitle }}
-        </p>
-      </div>
+      <!-- A quiet initial behind the masthead -->
+      <span
+        aria-hidden="true"
+        class="pointer-events-none absolute -top-[0.12em] right-[var(--site-gutter)] -z-10 font-display text-[clamp(16rem,38vw,34rem)] leading-none text-on-night/[0.04] italic select-none"
+        >{{ (cfg.title || 'A').charAt(0) }}</span
+      >
 
-      <!-- The congregation's own photograph, framed rather than full-bleed -->
-      <div class="overflow-hidden rounded-lg border border-white/15 bg-white/5 shadow-md">
-        <img
-          :src="displayableImageUrl(cfg.backgroundImage)"
-          alt="Congregation gathering"
-          class="aspect-[16/9] w-full object-cover object-center md:aspect-[4/3]"
-        />
+      <div class="site-container">
+        <h1 id="about-title" class="t-display max-w-[14ch] text-on-night">
+          <SplitReveal :text="cfg.title" immediate :delay="200" :stagger="70" />
+        </h1>
+
+        <div
+          class="mt-12 grid gap-6 border-t border-on-night/20 pt-7 md:grid-cols-12 md:gap-8 lg:mt-16"
+        >
+          <p
+            v-if="cfg.scriptureRef"
+            class="hero-animate t-turn num text-2xl leading-tight text-champagne md:col-span-4"
+            style="animation-delay: 650ms"
+          >
+            {{ cfg.scriptureRef }}
+          </p>
+          <p
+            v-if="cfg.subtitle"
+            class="hero-animate t-lede max-w-[46ch] text-on-night-muted md:col-span-7 md:col-start-6"
+            style="animation-delay: 800ms"
+          >
+            {{ cfg.subtitle }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── The congregation's photograph, set across the seam between night and page ── -->
+    <div
+      v-if="showImage"
+      class="bg-[linear-gradient(to_bottom,var(--c-night)_0,var(--c-night)_45%,var(--c-surface)_45%)]"
+    >
+      <div class="site-container">
+        <div
+          v-reveal="{ type: 'unveil', delay: 300 }"
+          class="relative aspect-[4/3] overflow-hidden bg-night-raised sm:aspect-[16/9] lg:aspect-[21/9]"
+        >
+          <div v-parallax="0.12" class="absolute inset-x-0 -inset-y-[8%]">
+            <img
+              :src="displayableImageUrl(cfg.backgroundImage)"
+              alt="Congregation gathering"
+              class="h-full w-full object-cover object-center"
+              @error="imgFailed = true"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </section>

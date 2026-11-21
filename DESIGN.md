@@ -1,559 +1,398 @@
 ---
 name: Congregation
-description: The church's record books made legible; a visitors' book at the door and the registers behind it.
+description: The church as a cultural institution in print; one editorial world for the public site and the admin dashboard.
 colors:
-  canvas: '#eef2f7'
-  surface: '#ffffff'
-  surface-muted: '#f5f7fa'
-  surface-sunken: '#ebeff5'
-  overlay: 'rgb(14 20 28 / 0.55)'
-  rule: '#d5deea'
-  rule-strong: '#b4c3d6'
-  margin: '#c0392b'
-  ink: '#172131'
-  ink-muted: '#4b5768'
-  ink-subtle: '#5f6b7c'
-  primary: '#1e4d3b'
-  primary-hover: '#163b2d'
-  primary-active: '#10301f'
-  primary-soft: '#e6efea'
-  primary-ink: '#1e4d3b'
-  on-primary: '#ffffff'
-  secondary: '#24364f'
-  secondary-soft: '#e8edf4'
-  accent: '#8a5d0f'
-  accent-soft: '#f6eedd'
-  gilt-on-bookcloth: '#f2d593'
-  focus-on-bookcloth: '#f2c14e'
-  success: '#1f7a45'
-  success-soft: '#e5f3ea'
-  warning: '#94570a'
-  warning-soft: '#fdf1dc'
-  error: '#b42318'
-  error-soft: '#fdecea'
-  info: '#1f5fa8'
-  info-soft: '#e7f0fa'
-  live: '#c62828'
-  focus: '#1f5fa8'
-  chart-bookcloth: '#2f7a5c'
-  chart-ink: '#3d5f8f'
-  chart-gilt: '#c08a2e'
-  chart-margin: '#c2493b'
-  chart-slate: '#7a8aa0'
-  chart-plum: '#8a5a9e'
-  chart-teal: '#2e8a92'
-  chart-clay: '#a8683f'
-  chart-positive: '#2f8a57'
+  surface: '#faf8f3'
+  canvas: '#f3efe6'
+  surface-muted: '#f3efe6'
+  surface-sunken: '#eae5da'
+  overlay: 'rgb(17 16 14 / 0.6)'
+  night: '#1a1916'
+  night-raised: '#24231f'
+  on-night: '#f3efe6'
+  on-night-muted: '#bdb6a8'
+  champagne: '#d4bc8e'
+  rule: '#e2dccf'
+  rule-strong: '#c8bfad'
+  margin: '#a88456'
+  ink: '#1b1a17'
+  ink-muted: '#4f4b43'
+  ink-subtle: '#6b665c'
+  primary: '#2f3d2c'
+  primary-hover: '#263223'
+  primary-active: '#1d271b'
+  primary-soft: '#e6e8dc'
+  on-primary: '#faf8f3'
+  secondary: '#22211d'
+  secondary-soft: '#edeae2'
+  accent: '#8a6a3b'
+  accent-soft: '#f2eadb'
+  success: '#2f6b43'
+  success-soft: '#e6efe5'
+  warning: '#8f5a12'
+  warning-soft: '#f7ecd9'
+  error: '#a3321f'
+  error-soft: '#f8e6e1'
+  info: '#2f5577'
+  info-soft: '#e5ecf2'
+  live: '#b3261e'
 typography:
   display:
-    fontFamily: "Bitter, 'Roboto Slab', Rockwell, Georgia, serif"
-    fontSize: 'clamp(2.25rem, 6vw, 3.5rem)'
-    fontWeight: 700
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: 'clamp(3rem, 8.4vw, 6rem)'
+    fontWeight: 400
+    lineHeight: 0.94
+    letterSpacing: '-0.025em'
+  headline:
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: 'clamp(2.625rem, 5.6vw, 4.75rem)'
+    fontWeight: 400
+    lineHeight: 0.98
+    letterSpacing: '-0.022em'
+  headline-section:
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: 'clamp(2.125rem, 3.9vw, 3.5rem)'
+    fontWeight: 400
+    lineHeight: 1.02
+    letterSpacing: '-0.018em'
+  title-serif:
+    fontFamily: "'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif"
+    fontSize: 'clamp(1.5rem, 2.1vw, 2rem)'
+    fontWeight: 400
     lineHeight: 1.1
     letterSpacing: '-0.01em'
-  headline:
-    fontFamily: "Bitter, 'Roboto Slab', Rockwell, Georgia, serif"
-    fontSize: 'clamp(1.875rem, 4vw, 2.5rem)'
-    fontWeight: 700
-    lineHeight: 1.15
-    letterSpacing: '-0.01em'
-  page-title:
-    fontFamily: "Bitter, 'Roboto Slab', Rockwell, Georgia, serif"
-    fontSize: '1.625rem'
-    fontWeight: 700
-    lineHeight: 1.25
-    letterSpacing: '-0.01em'
-  title:
-    fontFamily: "Bitter, 'Roboto Slab', Rockwell, Georgia, serif"
-    fontSize: '1.125rem'
+  title-ui:
+    fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif"
+    fontSize: '1rem'
     fontWeight: 600
     lineHeight: 1.375
-  figure:
-    fontFamily: "Bitter, 'Roboto Slab', Rockwell, Georgia, serif"
-    fontSize: '1.875rem'
-    fontWeight: 600
-    lineHeight: 1
-    fontFeature: "'tnum' 1, 'lnum' 1"
-  body-lg:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
-    fontSize: '1.125rem'
+  lede:
+    fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif"
+    fontSize: 'clamp(1.0625rem, 1.3vw, 1.25rem)'
     fontWeight: 400
-    lineHeight: 1.625
+    lineHeight: 1.65
+  body-long:
+    fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif"
+    fontSize: '1.0625rem'
+    fontWeight: 400
+    lineHeight: 1.8
   body:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
-    fontSize: '1rem'
-    fontWeight: 400
-    lineHeight: 1.625
-  body-admin:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif"
     fontSize: '0.875rem'
     fontWeight: 400
     lineHeight: 1.43
-  prose:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
-    fontSize: '1.0625rem'
-    fontWeight: 400
-    lineHeight: 1.75
   label:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
-    fontSize: '0.75rem'
-    fontWeight: 600
-    lineHeight: 1rem
-    letterSpacing: '0.025em'
-  stamp:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
-    fontSize: '0.75rem'
-    fontWeight: 600
-    lineHeight: 1rem
-    letterSpacing: '0.06em'
-  micro:
-    fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif"
     fontSize: '0.6875rem'
     fontWeight: 600
-    lineHeight: 1rem
+    lineHeight: 1.4545
+    letterSpacing: '0.16em'
+  numeral:
+    fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif"
+    fontFeature: "'tnum' 1, 'lnum' 1"
 rounded:
-  xs: '2px'
-  sm: '4px'
-  md: '6px'
-  lg: '8px'
-  xl: '10px'
-  2xl: '14px'
-  full: '9999px'
+  xs: '1px'
+  sm: '2px'
+  md: '3px'
+  lg: '4px'
+  xl: '6px'
+  2xl: '8px'
+  round: '9999px'
 spacing:
-  hair: '4px'
-  xs: '8px'
-  sm: '12px'
-  md: '16px'
-  lg: '20px'
-  xl: '24px'
-  2xl: '32px'
-  section: '64px'
-  section-lg: '96px'
+  gutter-sm: '1.25rem'
+  gutter-md: '2rem'
+  gutter-lg: '3rem'
+  section: 'clamp(4.5rem, 10vw, 9rem)'
+  section-tight: 'clamp(3.5rem, 7vw, 6rem)'
+  site-max: '88rem'
+  nav-h: '5rem'
 components:
   button-primary:
     backgroundColor: '{colors.primary}'
     textColor: '{colors.on-primary}'
-    rounded: '{rounded.md}'
-    padding: '0 16px'
-    height: '44px'
+    typography: '{typography.title-ui}'
+    rounded: '{rounded.sm}'
+    padding: '0 1.5rem'
+    height: '3rem'
   button-primary-hover:
-    backgroundColor: '{colors.primary-hover}'
-  button-primary-active:
     backgroundColor: '{colors.primary-active}'
-  button-secondary:
-    backgroundColor: '{colors.surface}'
+  button-dark:
+    backgroundColor: '{colors.night}'
+    textColor: '{colors.on-night}'
+    rounded: '{rounded.sm}'
+    padding: '0 1.5rem'
+    height: '3rem'
+  button-dark-hover:
+    backgroundColor: '{colors.primary}'
+  button-outline:
+    backgroundColor: 'transparent'
     textColor: '{colors.ink}'
-    rounded: '{rounded.md}'
-    padding: '0 16px'
-    height: '44px'
-  button-secondary-hover:
-    backgroundColor: '{colors.surface-muted}'
-  button-danger:
-    backgroundColor: '{colors.error}'
-    textColor: '{colors.on-primary}'
-    rounded: '{rounded.md}'
-    padding: '0 16px'
-    height: '44px'
-  button-ghost:
-    textColor: '{colors.ink-muted}'
-    rounded: '{rounded.md}'
-    padding: '0 16px'
-    height: '44px'
-  button-ghost-hover:
-    backgroundColor: '{colors.surface-sunken}'
-    textColor: '{colors.ink}'
-  button-public-lg:
+    rounded: '{rounded.sm}'
+    padding: '0 1.5rem'
+    height: '3rem'
+  button-outline-hover:
+    backgroundColor: '{colors.ink}'
+    textColor: '{colors.surface}'
+  button-light:
+    backgroundColor: '{colors.on-night}'
+    textColor: '{colors.night}'
+    rounded: '{rounded.sm}'
+    padding: '0 1.5rem'
+    height: '3rem'
+  button-light-hover:
+    backgroundColor: '{colors.champagne}'
+  button-admin-primary:
     backgroundColor: '{colors.primary}'
     textColor: '{colors.on-primary}'
-    rounded: '{rounded.md}'
-    padding: '0 24px'
-    height: '48px'
-  icon-button:
-    textColor: '{colors.ink-subtle}'
-    rounded: '{rounded.md}'
-    size: '36px'
-  input:
+    rounded: '{rounded.sm}'
+    padding: '0 1rem'
+    height: '2.5rem'
+  button-admin-primary-hover:
+    backgroundColor: '{colors.primary-hover}'
+  button-admin-secondary:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    rounded: '{rounded.md}'
-    padding: '8px 12px'
-    height: '40px'
-  input-public:
-    backgroundColor: '{colors.surface}'
-    textColor: '{colors.ink}'
-    rounded: '{rounded.md}'
-    padding: '10px 14px'
-    height: '48px'
-  input-disabled:
+    rounded: '{rounded.sm}'
+    padding: '0 1rem'
+    height: '2.5rem'
+  button-admin-secondary-hover:
     backgroundColor: '{colors.surface-muted}'
-    textColor: '{colors.ink-subtle}'
-  card:
-    backgroundColor: '{colors.surface}'
-    rounded: '{rounded.lg}'
-    padding: '20px'
-  stat-card-value:
+  field-input-public:
+    backgroundColor: 'transparent'
     textColor: '{colors.ink}'
-    typography: '{typography.figure}'
-  modal:
+    rounded: '0'
+    padding: '0.75rem 0'
+    height: '3rem'
+  input-admin:
     backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    rounded: '{rounded.xl}'
-  modal-footer:
-    backgroundColor: '{colors.surface-muted}'
-    padding: '14px 20px'
-  table-header:
-    backgroundColor: '{colors.surface-muted}'
-    textColor: '{colors.ink-muted}'
-    typography: '{typography.label}'
-    padding: '10px 16px'
-  table-cell:
+    rounded: '{rounded.sm}'
+    padding: '0.5rem 0.75rem'
+    height: '2.5rem'
+  card-admin:
+    backgroundColor: '{colors.surface}'
     textColor: '{colors.ink}'
-    typography: '{typography.body-admin}'
-    padding: '12px 16px'
-  tab-active:
-    textColor: '{colors.primary-ink}'
-    height: '44px'
-  tab-inactive:
-    textColor: '{colors.ink-muted}'
-    height: '44px'
-  pagination-current:
-    backgroundColor: '{colors.primary}'
-    textColor: '{colors.on-primary}'
-    rounded: '{rounded.md}'
-    size: '36px'
+    rounded: '{rounded.sm}'
+    padding: '1.25rem'
   badge-neutral:
     backgroundColor: '{colors.surface-sunken}'
     textColor: '{colors.ink-muted}'
     rounded: '{rounded.sm}'
-    padding: '2px 8px'
+    padding: '0.125rem 0.5rem'
   badge-success:
     backgroundColor: '{colors.success-soft}'
     textColor: '{colors.success}'
     rounded: '{rounded.sm}'
-    padding: '2px 8px'
-  badge-warning:
-    backgroundColor: '{colors.warning-soft}'
-    textColor: '{colors.warning}'
-    rounded: '{rounded.sm}'
-    padding: '2px 8px'
-  badge-danger:
-    backgroundColor: '{colors.error-soft}'
-    textColor: '{colors.error}'
-    rounded: '{rounded.sm}'
-    padding: '2px 8px'
-  badge-info:
-    backgroundColor: '{colors.info-soft}'
-    textColor: '{colors.info}'
-    rounded: '{rounded.sm}'
-    padding: '2px 8px'
-  badge-account-role:
-    backgroundColor: '{colors.primary-soft}'
-    textColor: '{colors.primary-ink}'
-    rounded: '{rounded.sm}'
-    padding: '2px 8px'
-  category-stamp:
-    backgroundColor: '{colors.accent-soft}'
-    textColor: '{colors.accent}'
-    typography: '{typography.stamp}'
-    rounded: '{rounded.sm}'
-    padding: '4px 8px'
-  toast:
-    backgroundColor: '{colors.surface}'
-    textColor: '{colors.ink}'
-    rounded: '{rounded.lg}'
-    padding: '12px 8px 12px 16px'
-  sidebar:
+    padding: '0.125rem 0.5rem'
+  admin-rail:
     backgroundColor: '{colors.primary}'
-    textColor: '{colors.on-primary}'
-    width: '240px'
-  sidebar-item-active:
-    backgroundColor: '{colors.surface}'
-    textColor: '{colors.primary-hover}'
-    rounded: '{rounded.md}'
-    height: '40px'
-  admin-top-bar:
-    backgroundColor: '{colors.surface}'
-    textColor: '{colors.ink}'
-    typography: '{typography.page-title}'
-  public-nav-link-active:
-    textColor: '{colors.primary-ink}'
-    height: '44px'
-  hero-ledger-panel:
-    backgroundColor: '{colors.surface}'
-    rounded: '{rounded.md}'
-    padding: '40px'
-  footer:
-    backgroundColor: '{colors.primary}'
-    textColor: '{colors.on-primary}'
-    padding: '64px 32px 40px'
+    textColor: '{colors.on-night}'
+    width: '15rem'
 ---
 
 # Design System: Congregation
 
 ## Overview
 
-**Creative North Star: "The Register"**
+**Creative North Star: "The Nave"**
 
-Congregation is the church's record books made legible. The public site is the visitors' book at the door; the admin dashboard is the registers themselves: the nominal roll, the attendance book, the collections ledger. Everything is built from the materials of a bound record book: white ledger pages laid on a cool rule-blue ground, feint blue rules between entries, a red double margin down the left of a page heading, a deep green bookcloth binding, blue-black ink, and small gilt stamps for dates and categories.
+The church as a cultural institution in print: an editorial publication you walk through like a nave, cover first. Pages are warm ivory paper with stone alternates; the cover, live worship and the close of every page sit in charcoal night fields; one deep forest green is the committed colour field. Instrument Serif sets the headlines large, at its single weight, with italic turns; Manrope carries everything that is read or operated. Bronze and champagne appear only as hairlines, dates, marks and active indicators.
 
-Density follows the audience. Public pages are generous and legible for first-time visitors and older congregants on phones: 16-18px body, 44-48px touch targets, 64-96px section rhythm, entries set as ruled rows with a big slab date in the margin. Admin pages are a working register: 14px body, ruled data tables with sticky headers, tabular figures in every column, white panels on the canvas ground, one bookcloth spine on the left. Both surfaces are light only; there is no dark mode.
+Density is generous on the public site (section padding scales from 72px to 144px, more air above a heading than below) and efficient in the admin dashboard, which uses the same palette and type with standard controls: a forest rail, ivory work surface on a stone ground, Instrument Serif page titles and Manrope semibold for every small UI title. The frame is brand-neutral and light-only by product commitment: each church's own photographs and name lead, and nothing in the system assumes one congregation's colours. There is no dark mode.
 
-The system rejects the church-template look (a stock photo hero over three icon cards) and the grey SaaS dashboard. Depth is quiet (hairline rules first, soft ink-tinted shadows second), corners are squared like a bound book, and colour is committed rather than decorative: bookcloth green is the one field colour, everything else is ink on paper.
+Motion is one orchestrated grammar, not a collection of effects: headings rise word by word from behind masks, image frames unveil from their bottom edge while the photo settles, hairlines draw across, content rises into place. Everything eases out exponentially and everything stands still under reduced motion.
 
 **Key Characteristics:**
 
-- White ledger panels on a rule-blue canvas; feint blue hairlines as the default divider.
-- One structural signature: the red double margin, on headers and a single featured entry only.
-- Bookcloth green carries the nav band, footer, admin sidebar, and every primary action.
-- Bitter slab for headings and figures, Public Sans for everything read.
-- Tabular lining figures wherever a number appears.
-- Squared corners (6-8px), hairline borders, soft low shadows; no glows, no glass, no pills except avatars and status dots.
-- Light mode only, everywhere. No dark mode.
+- Warm ivory page, stone alternates, charcoal night fields, one forest field.
+- Instrument Serif headlines at weight 400 only; Manrope for text and UI.
+- Bronze and champagne as hairlines and marks, never as surfaces.
+- Square corners (1 to 8px); round only for dots, avatars and round icon buttons.
+- Lists of entries as hairline-ruled rows, not card grids.
+- Flat surfaces; shadow only on floating layers (modal, menus, toasts).
+- One motion grammar: masked word rise, clip-path unveil, hairline draw, rise.
 
 ## Colors
 
-A ledger palette: cool paper and blue rules, blue-black ink, one deep bookcloth green, and gilt and red used as marks, never as fields.
+A warm, low-chroma print palette: paper, stone, charcoal and forest, with bronze kept to the width of a line.
 
 ### Primary
 
-- **Bookcloth Green** (`primary`): the binding. Primary buttons, active tabs and nav underlines, the current pagination page, checkbox and radio accent, the caret, progress fills, unread dots, and every large colour field (public nav band, hero frame, footer, admin sidebar). Hover deepens to `primary-hover`, press to `primary-active`. Large fields use `.bookcloth`: flat bookcloth green with no imitation texture.
-- **Bookcloth Wash** (`primary-soft`): selected row and unread message backgrounds (at 35%), dropdown icon tiles, account-role chips, mobile nav active item.
-- **Bookcloth Ink** (`primary-ink`): green used as text; links, active nav labels, "Read more" links, unread timestamps. Identical to primary.
+- **Nave Forest** (primary): the one committed large colour field besides night and stone. Primary actions, the admin sidebar rail, the congregation-search field on the home page, focus rings on ivory, checkbox and radio accent, progress fills, the placeholder face of a missing thumbnail. Darkens to Forest Hover and Forest Pressed on interaction; Forest Wash (primary-soft) is its quiet tint.
 
 ### Secondary
 
-- **Ink Blue** (`secondary`): large public headings (hero headline, section headings, date numerals in event rows), the brand wordmark and logo ring. Never used in admin headings, which stay in ink.
-- **Ink Blue Wash** (`secondary-soft`): quiet tinted panels.
+- **Charcoal Night** (night): full-bleed fields for the cover, live worship and the footer close; the dark button. Night Raised lifts panels inside it. Text on night uses Night Ivory (on-night) and Night Stone (on-night-muted).
+- **Heading Charcoal** (secondary): section headings and strong text on ivory.
 
 ### Tertiary
 
-- **Gilt** (`accent`, 5.6:1 on white): the stamp. Dates and categories stamped onto entries set in `.stamp`; category stamps on sermon thumbnails sit on `accent-soft` with a 20% gilt inset ring.
-- **Gilt on Bookcloth** (`gilt-on-bookcloth`): the same role on green fields: footer column headings, the scripture reference under the About hero, the sidebar crest icon, the sidebar unread count chip (with `#3b2a06` text), the footer crest ring. Currently a literal in markup, not a CSS variable.
-- **Margin Red** (`margin`): the red double margin only. Structural, never text, never fill.
+- **Bronze** (accent): hairline marks on ivory. Event dates and categories (the stamp), the active tab underline, the active nav hairline, short rule marks above a signature, the text caret, empty-state icon strokes. Passes 4.6:1 on ivory, so it may carry small metadata text; it never carries body copy.
+- **Champagne** (champagne): the same role on night and forest fields. Active nav hairline over the cover, the animated scroll line, focus rings on dark fields, the admin unread count, the hover state of round play buttons, the hover wipe of the light button.
+- **Margin Bronze** (margin): the 1px signature hairline left of a page header or entry panel.
 
 ### Neutral
 
-- **Rule-Blue Ground** (`canvas`): the admin page ground behind panels.
-- **Ledger Page** (`surface`): panels, cards, tables, modals, inputs, the public page.
-- **Alternate Leaf** (`surface-muted`): alternating public sections, table headers, row hover (at 70%), modal footers, disabled inputs.
-- **Well** (`surface-sunken`): skeleton base, neutral badges, icon-button hover, image placeholders.
-- **Feint Rule** (`rule`, #D5DEEA): every divider, table line, card border, and the 32px ledger-paper ruling.
-- **Strong Rule** (`rule-strong`): input and secondary-button borders, emphasised dividers (the outer rules of a public entry list), the scrollbar thumb.
-- **Blue-Black Ink** (`ink`, 15.6:1), **Muted Ink** (`ink-muted`, 7.4:1), **Faint Ink** (`ink-subtle`, 5.4:1): primary text, secondary text, captions and placeholders.
-- **Scrim** (`overlay`): modal and mobile-sidebar backdrop. The photo lightbox uses its own near-black `rgb(8 11 16 / 0.96)`.
-- The Tailwind `gray-50..950` scale is remapped onto these same tinted neutrals, so stray gray classes stay inside the system.
-
-### Status
-
-`success`, `warning`, `error`, `info`, each with a `-soft` background, drive badges, toast stripes, inline alerts, finance income and expense, and trend deltas. `live` (#C62828) is reserved for live-stream indicators: the pulsing dot in the nav, the live badge on the stream teaser.
+- **Ivory Page** (surface): the default page and every admin work surface.
+- **Stone** (canvas / surface-muted): alternate public sections, the admin ground, quiet panels, modal footers.
+- **Sunken Stone** (surface-sunken): wells, skeletons, neutral badges, image placeholders.
+- **Stone Hairline** (rule) and **Strong Hairline** (rule-strong): every border and divider; strong for inputs, outline buttons and emphasised list tops.
+- **Ink** (ink), **Muted Ink** (ink-muted), **Subtle Ink** (ink-subtle): body text, secondary text, metadata and placeholders. All pass AA on ivory.
+- The Tailwind gray scale is remapped to these warm stones (#faf8f3 to #11100e), so any unmigrated gray still sits in the world.
+- Status colours (success, warning, error, info, each with a soft wash) and Live Red (live) are muted pigments used only for state.
 
 ### Named Rules
 
-**The One Binding Rule.** Bookcloth green is the only colour that fills large areas. Every other hue appears as text, a hairline, a dot, or a soft tint.
+**The Hairline Metal Rule.** Bronze and champagne are for marks, dates, active states and hairlines. They are never a resting fill for a rectangular button, a section background or body text. Champagne may appear as a hover state (the light button's wipe, a round play button) because that is an active state.
 
-**The Gilt Stamp Rule.** Gilt marks; it never carries. Use it for stamped meta (dates, categories, scripture references), column headings on bookcloth, and small marks like the crest and count chips. Never for body text, button fills, or button labels.
+**The One Field Rule.** Large colour fields are night, forest or stone. Forest is the only committed chromatic field; no other hue takes a full section.
 
-**The Margin Is Structure Rule.** Margin red exists only as the two hairlines of the double margin. It never colours text, icons, or fills; errors use `error`, live status uses `live`.
+**The Light Only Rule.** One light scheme on both the public site and the admin. No dark mode, no scheme toggle.
 
 ## Typography
 
-**Display Font:** Bitter (with Roboto Slab, Rockwell, Georgia, serif), weights 500, 600, 700
-**Body Font:** Public Sans (with ui-sans-serif, system-ui, sans-serif), weights 400, 500, 600, 700, italic 400
+**Display Font:** Instrument Serif, regular and italic (with Iowan Old Style, Palatino Linotype, Georgia)
+**Body Font:** Manrope 400, 500, 600, 700 (with ui-sans-serif, system-ui)
 
-**Character:** Bitter is record-book label type, a sturdy slab that reads like a stamped spine title; Public Sans is plain civic text, legible at small sizes in dense tables. All `h1`-`h4` default to Bitter with `text-wrap: balance` and -0.01em tracking; paragraphs use `text-wrap: pretty`.
+**Character:** A condensed, high-contrast editorial serif set oversized and tight, against a calm geometric sans that does all the reading and operating. The contrast is scale and voice, never weight.
 
 ### Hierarchy
 
-- **Display** (Bitter 700, 2.25rem to 3rem at sm to 3.5rem at lg, line-height 1.1): the hero welcome headline in ink blue, inside the margin-ruled ledger panel. A lead-in phrase may sit inside the same `h1` as a Bitter 500 line at 1.25-1.5rem in muted ink. Bookcloth page heroes (About, Gallery) use 2.25rem to 3rem in white.
-- **Headline** (Bitter 700, 1.875rem to 2.5rem at md, line-height 1.15): public section headings in ink blue; subtitle below at 1.125rem/1.625 muted, max 42rem wide, 12px gap.
-- **Page Title** (Bitter 700, 1.25rem to 1.625rem at sm, line-height 1.25): the admin top-bar title, in ink, beside the margin rule; 14px muted subtitle.
-- **Title** (Bitter 600, 1.125rem, line-height 1.375): panel headings, modal titles, card and event titles (1.25rem on md+ in public entry rows). Smaller panel titles step to 1rem or 15px.
-- **Figure** (Bitter 600, 1.875rem, line-height 1, tabular): stat values and finance totals; finance summary figures at 1.25rem; event-row date numerals at 2.25rem Bitter 700.
-- **Body** (Public Sans 400, 1rem to 1.125rem, line-height 1.625): public copy, never below 16px, measure at most 70ch.
-- **Body Admin** (Public Sans 400, 0.875rem, line-height 1.43): admin tables, forms, lists. Dense grids drop to 13px.
-- **Prose** (Public Sans 400, 1.0625rem, line-height 1.75, max 68ch, 1.1em between paragraphs): long-form teaching text.
-- **Label** (Public Sans 600, 0.75rem, 0.025em tracking, uppercase, muted ink): table headers and stat-card labels. Form labels are sentence case, 14px 500 ink (16px on public forms).
-- **Stamp** (Public Sans 600, 0.75rem, 0.06em tracking, uppercase, gilt): dates and categories stamped onto entries.
-- **Citation** (`.citation`, Public Sans 500, 15px/24px, ink-muted, sentence case): the line under a heading that carries a scripture reference, a step label, or a Settings-supplied subtitle label. On bookcloth it is white at 80%.
-- **Micro** (Public Sans 600, 0.6875rem): small badges and sidebar group labels.
-
-The size steps are Tailwind's default ramp (12, 14, 16, 18, 20, 24, 30, 36, 48px) plus the 11px micro step and occasional 13px and 15px; the "1.2 minor third" note in the stylesheet header does not describe what shipped.
+- **Display** (400, clamp 48 to 96px, 0.94): the church name on the cover. One per page.
+- **Headline** (400, clamp 42 to 76px, 0.98): page titles on inner public pages.
+- **Section Headline** (400, clamp 34 to 56px, 1.02): section headings, usually capped near 14 to 18ch.
+- **Serif Title** (400, clamp 24 to 32px, 1.1): sub-sections and form group titles; entry titles in ruled lists sit at 24 to 28px. Admin page titles use the serif at 26 to 32px.
+- **UI Title** (Manrope 600, 16px, 1.375): modal titles, admin card and panel titles, small headings in operational UI.
+- **Lede** (400, clamp 17 to 20px, 1.65, muted ink): the paragraph that opens a section.
+- **Long-form Body** (400, 17px, 1.8, max 68ch): teachings and prose.
+- **Body** (400, 14 to 15px): admin text and UI.
+- **Label** (600, 11px, 0.16em tracking, uppercase): marginalia, metadata, side-rail labels, public form field labels. The bronze stamp is the same face at 0.14em in accent.
+- **Numerals**: tabular, lining figures for money, counts and dates in columns; tables default to tabular figures.
 
 ### Named Rules
 
-**The Tabular Figures Rule.** Every number that can sit in a column or be compared (counts, amounts, dates, times, page numbers, stat values, pagination summaries) is set with tabular lining figures. Tables get it by default; everything else takes the `num` utility. Money columns are right-aligned.
+**The Single Weight Rule.** Instrument Serif ships one weight. It is set at 400 and font synthesis is off; never bold or semibold a serif. Emphasis in a headline is the italic turn.
 
-**The Slab Speaks, Sans Reads Rule.** Bitter is for headings, titles, and display figures. Anything a person reads in sentences is Public Sans.
+**The Sans For Small Titles Rule.** Below about 20px, a UI title is Manrope semibold, not the serif.
+
+**The No Kicker Rule.** Nothing sits above a heading as a small tracked label. Small tracked capitals are marginalia and metadata only; tags and categories go after a title, never before it.
 
 ## Layout
 
-**Public.** Container 1280px max (`max-w-7xl`) with 20/24/32px gutters at base/sm/lg; narrower containers (1152px leaders, 1024px contact form) for reading-led sections. Sections run 64px vertical padding, 96px from md, and alternate `surface` and `surface-muted`; one or two sections per page may be a bookcloth field. Header-to-content spacing is 40px, 48px from md. Card grids are 1/2/3 columns with 24-32px gaps; leader grids 2/3/4 columns. Touch targets are at least 44px, primary hero and form actions 48px. The sticky navbar is translucent white (95% with backdrop blur) under a 4px bookcloth band and gains a rule and `shadow-md` once scrolled.
+One container for every public section: max 88rem, centred, with a gutter of 20px on phones, 32px from 640px and 48px from 1024px. Sections pad vertically with a fluid clamp (72 to 144px; a tight variant 56 to 96px). Compositions use a 12-column grid at large widths with asymmetric splits (a heading block of 5 to 7 columns against a list offset to the right), collapsing to a single column on phones.
 
-**Admin.** Fixed 240px bookcloth sidebar on lg+ (256px off-canvas drawer below lg, sliding in over the scrim). Main column on `canvas`, content capped at 1440px with 16/20/32px padding. Page sections stack with 24px gaps. Forms in settings cap at 42-48rem; two-column field grids from sm.
+The navbar is fixed at 72px (80px from 1024px). Pages that open on a full-bleed cover run under it, transparent, by declaring `navOverlay: true` in page meta (the landing page always does); every other page starts below it.
 
-**Rhythm.** A 4px base: 8, 12, 16, 20, 24, 32px within components; 64/96px between public sections. Panels pad 20px; table cells 16px by 12px; compact field rows 12px.
+Lists of entries (events, teachings, congregations, search results) are hairline-ruled rows inside an ordered list: a strong rule on top, stone hairlines between, generous row padding (28 to 36px), a fixed-width lead column for a date numeral or thumbnail.
 
-**Breakpoints.** Tailwind defaults: 640, 768, 1024, 1280px. The sidebar pins at 1024px; field heights step from 44px to 40px at 640px.
+The admin is a fixed 240px forest rail (256px drawer on mobile) beside a stone ground; a sticky ivory header carries the page title, and content sits in a max 1440px column padded 16 to 32px.
 
-### Named Rules
-
-**The Rows Before Cards Rule.** Lists of entries (events, service times, audit entries, messages, footer links) are ruled rows, not card grids. Cards are for items where a thumbnail carries meaning: sermons, gallery, leaders, roles.
+**The Ruled Rows Rule.** A collection of entries is a ruled list, not a grid of cards. Image tiles in a gallery are the exception; text entries never are.
 
 ## Elevation & Depth
 
-Depth is hairline-first. Borders in `rule` define every panel; shadows are soft, low, and tinted with ink (`--shadow-color: 23 33 49`). Resting panels get only the faintest lift; floating things get real shadows.
+Flat by default. Depth comes from field changes (ivory to stone to night) and hairlines, not shadow. A warm shadow scale exists, tinted from rgb(27 25 20), and is used only on layers that genuinely float: modals, popovers, toasts and the sticky settings save bar. Sticky bars that must hide scrolled content use a near-opaque ivory (92 to 95%) with a light blur; that is the only translucency in the system.
 
 ### Shadow Vocabulary
 
-- **Resting** (`box-shadow: 0 1px 2px rgb(23 33 49 / 0.06)`): cards, tables, inputs, buttons, filter bars.
-- **Small** (`box-shadow: 0 1px 2px rgb(23 33 49 / 0.06), 0 1px 3px rgb(23 33 49 / 0.08)`): the active sidebar item.
-- **Hover lift** (`box-shadow: 0 2px 4px rgb(23 33 49 / 0.05), 0 6px 16px rgb(23 33 49 / 0.08)`): card hover, the scrolled navbar.
-- **Floating** (`box-shadow: 0 4px 8px rgb(23 33 49 / 0.06), 0 16px 40px rgb(23 33 49 / 0.14)`): dropdowns, toasts, the sticky settings save bar, the hero ledger panel on desktop.
-- **Overlay** (`box-shadow: 0 8px 16px rgb(23 33 49 / 0.08), 0 28px 64px rgb(23 33 49 / 0.2)`): modals, the open mobile sidebar, the lightbox image.
+- **Float Medium** (`0 2px 4px rgb(27 25 20 / 0.04), 0 8px 20px rgb(27 25 20 / 0.07)`): menus and popovers.
+- **Float Large** (`0 4px 8px rgb(27 25 20 / 0.05), 0 18px 44px rgb(27 25 20 / 0.12)`): toasts, the settings save bar.
+- **Float Modal** (`0 8px 16px rgb(27 25 20 / 0.07), 0 30px 70px rgb(27 25 20 / 0.18)`): dialogs.
 
 ### Named Rules
 
-**The Hairline First Rule.** A border in `rule` defines the panel; the shadow only confirms it. Never a shadow without a border on a resting surface, never a coloured glow, never a hard offset shadow.
+**The Paper Rule.** Resting surfaces have no shadow. If it does not float above the page, it does not cast.
 
 ## Shapes
 
-Squared like a bound book. Buttons, inputs, selects, icon buttons, badges' larger kin, dropdown menus, image frames, and the hero panel are 6px; cards, tables, filter bars, toasts, and the save bar are 8px; modals 10px (top corners only on the mobile bottom sheet); badges and stamps 4px. Only avatars, social icon buttons, the footer crest, status and unread dots, and the live pulse are round. Borders are 1px hairlines; the only 2px strokes are tab and nav underlines and the logo ring. The double margin is two 1px red rules 5px apart, at 85% opacity, with 20px of text inset. Long-form sections may use ledger-paper ruling: a 1px `rule` line every 32px.
+Square and printed. Radii run 1, 2, 3, 4, 6 and 8px; buttons, inputs, badges and cards sit at 2px, modals at 3px. Round is reserved for dots, avatars, the church seal and round icon buttons (play buttons, empty-state icon rings). Public form fields have no box at all: a single underline that thickens to forest on focus. Image frames are crisp-edged rectangles that clip a slow zoom.
+
+The world's signature is the hairline: stone rules between rows, a 1px bronze margin rule left of a page header, short bronze marks above a signature, a bronze or champagne underline for the active item.
+
+**The No Pill Rule.** Nothing rectangular is pill-shaped. A tag, badge, button or chip keeps its 2px corner.
 
 ## Components
 
 ### Buttons
 
-Plain and firm, like a stamped label.
+Tactile and quiet: a fill wipes up from the baseline on hover, an arrow nudges 4px.
 
-- **Shape:** 6px corners, semibold, no wrap, icon gap 8px (6px small).
-- **Sizes:** small 36px tall, 12px padding, 13px text; medium 44px (40px from sm), 16px padding, 14px; large 48px, 24px padding, 16px. Public hero and form actions use the large size.
-- **Primary:** bookcloth fill, white label, resting shadow; hover `primary-hover`, press `primary-active`.
-- **Secondary:** paper fill, `rule-strong` border, ink label; hover `surface-muted` with border darkening to `ink-subtle`; press `surface-sunken`.
-- **Danger:** `error` fill, `on-primary` label; hover brightness 95%, press 90%.
-- **Ghost:** no fill, muted ink; hover `surface-sunken` and ink.
-- **Icon button:** 36px square (40-48px on touch-heavy public surfaces and in the lightbox), faint ink, hover `surface-sunken`.
-- **Text link action:** "View all" and "Read more" links are 16px semibold bookcloth ink with an underline on hover and a trailing arrow, 44px tall.
-- **Focus:** the global 2px `focus` outline at 2px offset; on bookcloth fields focus turns gold (`focus-on-bookcloth`).
-- **Loading / Disabled:** a spinning `mdi:loading` leads the label and sets `aria-busy`; disabled drops to 55% opacity, no shadow, not-allowed cursor.
+- **Shape:** squared (2px).
+- **Public primary:** forest with ivory text, 48px tall, 24px padding, Manrope 600 at 15px; hover wipes up Forest Pressed over 450ms.
+- **Public dark / outline:** night with ivory (hover wipes forest); outline is a strong hairline with ink text, wiping to solid ink with ivory text.
+- **On night and forest fields:** light (ivory with night text, wiping to champagne) and ghost-light (a 42% ivory hairline, wiping to ivory).
+- **Admin Button:** primary (forest, darkening to Forest Hover), secondary (ivory with strong hairline, stone on hover), danger (error red), ghost (muted text, sunken stone on hover). Sizes 36, 40 (44 on touch) and 48px. Colour transitions only, 150ms.
+- **Inline link:** a 1px underline that retracts left to right on hover, with an arrow that nudges forward.
 
-### Inputs / Fields
+### Chips and Badges
 
-- **Text input:** paper fill, 1px `rule-strong` border, 6px corners, resting shadow, 12px by 8px padding, 40px tall (44px under 640px, with 15px text). Compact density is 36px with 13px text. Public forms are 48px with 16px text.
-- **Hover / Focus:** hover darkens the border to `ink-subtle`; focus sets the border to bookcloth plus a 3px bookcloth ring at 15%. The caret is bookcloth.
-- **Error:** border and ring switch to `error`; message below in 12px semibold error with an alert-circle icon. Required fields add a red asterisk after the label.
-- **Disabled:** `surface-muted` fill, faint ink text.
-- **Select:** same frame, native appearance removed, a faint chevron 10px from the right, placeholder in faint ink until a value is set.
-- **Textarea:** same frame, vertical resize only, relaxed line height.
-- **Checkbox / radio:** native controls tinted bookcloth via `accent-color`; the attendance grid uses 18px checkboxes.
-- **Labels:** 14px medium ink above the field, 6px gap; helper text 12px faint ink.
+- **Style:** 2px corners, soft status wash with its matching ink and a 1px inset ring at 25% strength; neutral is sunken stone with muted ink. 11 to 12px, semibold.
+- **Filters (public):** tag filter buttons underline with a bronze hairline that draws from the left; no filled pills.
 
 ### Cards / Containers
 
-- **Panel:** paper fill, 1px `rule` border, 8px corners, resting shadow, 20px padding (12px small, 24px large).
-- **Image card (sermons, teachings):** the same frame with a 16:9 thumbnail flush to the top on a `surface-sunken` placeholder, up to two category stamps top-left, a Bitter 18px title (bookcloth ink on hover), a muted author and tabular date line, and a "Read more" link pinned to the bottom. Hover deepens the border to `rule-strong`, lifts to the hover shadow, and scales the image to 103%.
-- **Stat strip (dashboard):** the four figures share one ruled register strip: a single bordered `surface` panel whose cells are separated by 1px `rule` gaps (1 column, 2 from sm, 4 from xl). Each cell: a 14px sentence-case muted label, the value in Bitter 28px tabular ink, a quiet sparkline at 70% opacity, and an optional 12px delta badge and subtitle. No floating cards, no icon tiles.
-- **Chart container:** panel frame, header row with a Bitter 16px title and muted subtitle, chart 16px below.
-- **Inline alert:** 6px corners, status-soft fill, status border at 25%, status text, leading outline icon.
+- **Corner Style:** 2px.
+- **Background:** ivory on the stone admin ground.
+- **Shadow Strategy:** none (The Paper Rule).
+- **Border:** one stone hairline.
+- **Internal Padding:** 12, 16 to 20, or 20 to 24px.
+- Cards are an admin container. On the public site, entries are ruled rows; a teaching appears as an image frame over a serif title with author and date after it.
 
-### Data Tables
+### Inputs / Fields
 
-- **Wrapper:** panel frame with horizontal scroll.
-- **Header:** sticky, `surface-muted`, uppercase label style, 16px by 10px cells, `rule` bottom border, no wrap.
-- **Body:** rows divided by `rule`; cells 16px by 12px, 14px ink; secondary cells muted; hover tints the row `surface-muted` at 70%.
-- **Numbers:** tabular by default; money right-aligned.
-- **Row actions:** ghost icon buttons; destructive ones hover to `error-soft` and `error`.
-
-### Pagination
-
-A top-ruled footer row: tabular "Showing 1-20 of 84 members" in 12px muted on the left, 36px square buttons on the right. Pages are paper with a `rule-strong` border; the current page is a bookcloth fill. Windowed with ellipses beyond seven pages. Prev and next disable to 40%.
-
-### Modals
-
-Bottom sheet on mobile (top corners rounded), centred dialog from 640px, widths 384/448/576/768px. Paper panel, `rule` border, 10px corners, overlay shadow, max 88-92vh with an internal scroll. Header row: Bitter 18px title and a 40px close button, ruled below. Optional footer on `surface-muted`, ruled above. Enters with the scrim fading in (180ms) and the panel rising 16px (280ms, expo out). Escape and scrim click close.
-
-### Dropdowns
-
-Paper panel, `rule` border, floating shadow. The public Teachings menu is 320px wide, 8px corners, entries as ruled rows (36px bookcloth-wash icon tile, Bitter 15px label, 14px muted description), hover `surface-muted`; it fades in while rising 4px (150ms). Row action menus are 6px corners with 4px vertical padding.
-
-### Tabs
-
-A single feint rule under a horizontally scrolling row. Tabs are 44px tall with 14px padding. Active: a 2px bookcloth underline, semibold bookcloth ink. Inactive: medium muted ink; hover shows a `rule-strong` underline and ink text.
-
-### Badges
-
-- **Status badge:** 4px corners, semibold, a 1px inset ring at 25% of the status colour on its soft fill (`success`, `warning`, `danger`, `info`); `neutral` is `surface-sunken` with muted ink and a `rule-strong` ring. Medium 12px text with 8px by 2px padding; small 11px.
-- **Role chips:** a member's assigned role is a neutral chip led by an 8px dot in that role's own colour; an account role (Super Admin, Admin, and so on) is a bookcloth-wash chip in bookcloth ink with a 20% ring. Permission counts are small neutral badges with tabular figures; custom permissions are a small warning badge.
-- **Category stamp:** gilt stamp type on `accent-soft`, 4px corners, 20% gilt ring.
-- **Read / unread:** unread rows carry an 8px bookcloth dot in a fixed 8px gutter, a 35% bookcloth-wash background, the sender in semibold ink, and the timestamp in semibold bookcloth ink; read rows drop the dot and fill and fall back to muted and faint ink.
-- **Sidebar count:** a tabular 11px bold chip in gilt-on-bookcloth with dark gilt text, inverting to bookcloth when its item is active.
-
-### Toasts
-
-Top-right stack (full width with 12px insets on mobile), max 384px. Paper card, `rule` border, 8px corners, floating shadow, with a 4px status-colour stripe on the left edge, a status outline icon, 14px ink message, and a 32px dismiss button. Slides in 20px from the right; polite live region.
-
-### Empty and Loading States
-
-- **Empty state:** centred; a 56px (40px small) dashed `rule-strong` well on `surface-muted` holding a faint outline icon, a Bitter title, a muted description up to 24rem, an optional action. Inline variant for card slots.
-- **Spinner:** bookcloth `mdi:loading` with a muted 14px caption.
-- **Skeleton:** for tables; 40px bars, 6px corners, a shimmer from `surface-sunken` through `surface-muted` over 1.6s, each row delayed 80ms and progressively fainter.
+- **Public field:** no box; a strong-hairline underline, 48px tall, 17px text, an uppercase tracked label above. Hover darkens the line; focus turns it forest and doubles it.
+- **Admin field:** ivory, strong hairline, 2px corners, 40px (44 on touch); focus is a forest border with a 3px forest ring at 15%. Error swaps to error red with an icon and message below. Disabled sits on stone with subtle ink.
+- Checkboxes and radios take the forest accent colour; the caret is bronze.
 
 ### Navigation
 
-- **Public navbar:** 4px bookcloth band on top, then a translucent white bar: round crest with ink-blue ring, Bitter 17px wordmark in ink blue, links in 15px medium muted ink with a 2px transparent underline that turns bookcloth (with bookcloth ink text) when active. The Live link turns `live` red with a pinging dot while streaming. A 44px bookcloth primary action ends the row. Below 1024px a 48px menu button opens a full-width ruled panel of 48px rows; active rows take a bookcloth wash.
-- **Admin sidebar:** the bookcloth spine. Church identity block (40px crest tile in white at 10% with a gilt church icon, Bitter 15px name, 12px "Admin Dashboard" at 65% white), then the address in a black-15% well. Items 40px (44px mobile), 14px medium white at 80% with 19px icons at 60%; hover white at 10%. Active: a white tile with deep-green text and icon and a small shadow. A bottom group, ruled off in white at 10%, holds Home and Logout.
-- **Admin top bar:** sticky, white at 95% with blur, ruled below. The page title sits inside the double margin; the `#admin-header-actions` slot on the right receives each page's primary actions. Environment and missing-role banners stack above it.
+- **Public navbar:** fixed, 72 to 80px. Over a cover it is transparent with ivory type over a soft top veil; scrolled, it is 92% ivory with a stone hairline. Links are Manrope 500 at 14px, 78% opacity at rest; hover draws a 1px underline from the left; the active link holds a bronze hairline (champagne over the cover). Mobile opens a full-screen menu that wipes down and sets each link in the serif at 32 to 44px, active in italic forest, rows ruled.
+- **Admin rail:** forest field, church name in the serif, a tracked champagne label for the congregation, Manrope 500 links; the active item carries a champagne mark; unread counts are a small champagne tab with tabular figures.
+- **Tabs:** a stone baseline; the active tab is ink semibold over a 2px bronze underline.
 
-### Public Patterns
+### Empty States
 
-- **Hero:** a bookcloth frame (8-16px) around a 6px-cornered white sheet. The church's own photo fills the sheet (42-50svh on mobile, full height on desktop with a bottom shade). A white ledger panel, at most 672px and floating with the floating shadow on desktop, holds the margin-ruled welcome headline, a service-time line with a bookcloth icon, a Bitter italic line, and a large primary plus large secondary action. Entrance: `hero-animate`, 0.7s expo rise of 14px.
-- **Bookcloth page hero:** interior pages (About, Gallery) open on a flat bookcloth field with a white Bitter title, a white-80% citation line below it, and a white-80% lead.
-- **Section header:** Bitter headline in ink blue with a muted lead; no double margin (that is reserved for page titles and the hero entry).
-- **Entry list (events, service times):** a list bounded by `rule-strong` above and below, rows divided by `rule`, 24px vertical padding. Left column: the day in Bitter 36px tabular ink blue over a gilt stamp of month and time with an 8px category dot. Body: Bitter 18-20px title and a muted 16px meta line with faint icons. A secondary button closes the row.
-- **Sermon cards:** the image card above, in 1/2/3-column grids, revealing with `reveal-scale`.
-- **Gallery:** CSS masonry, 4/3/2 columns, 12px gaps, 6px corners on a `surface-sunken` placeholder; hover scales the image to 102% and dims to 92% brightness.
-- **Lightbox:** a near-black full-screen dialog (`rgb(8 11 16 / 0.96)`); image up to 82vh with 6px corners and the overlay shadow; 48px close and 56px prev/next buttons in white at 10% (20% on hover); a tabular counter pill at the bottom; gold focus ring; swipe on touch.
-- **Leader profiles:** 4:5 portraits with 6px corners and a `rule` border on `surface-sunken` (a Bitter 36px monogram in bookcloth ink when there is no photo), Bitter 18px name, gilt stamp role below.
-- **Form sections:** contact and registration forms on paper, 16px medium labels, 48px public fields, a full-width large primary submit; a bookcloth info aside lists contact details in white.
-- **Footer:** a flat bookcloth field, 56-64px top padding. Brand column (round gilt-ringed crest, Bitter 20px name, address, an italic quotation set off by a 1px gilt rule, 44px round social buttons), then link columns headed by gilt uppercase 12px headings whose links are 44px ruled rows in white at 80%. A white-15% rule separates the copyright line.
+- **Public:** the editorial note. A hairline top rule, one italic serif line (28 to 36px), one muted sentence, set inside the section's own grid. It has ivory, night and forest tones.
+- **Admin:** a centred icon in a thin round bronze ring, a serif title (Manrope semibold at the small size), a muted sentence and an optional action.
 
-### Admin Patterns
+### Masked Headline Reveal (signature)
 
-- **Filter bar:** an 8px panel with 12px padding, controls wrapping with 12px gaps and aligned to the bottom edge.
-- **Attendance grid:** a separated-border table capped at 70vh with both a sticky header row and a sticky first column (member names in Bitter 14px semibold); every cell ruled on the left and bottom; 13px text; totals right-aligned and tabular; 18px bookcloth checkboxes. Info notes in an `info-soft` alert; progress bars are 6px `surface-sunken` tracks with a bookcloth fill that animates width over 280ms.
-- **Finance amounts:** summary figures in Bitter tabular (30px for totals, 20px for income in `success`, expense in `error`, net in ink); amount inputs are tabular and right-aligned; transaction rows carry a success or danger badge with an arrow icon.
-- **Settings layout:** a 224px sticky section nav on lg+, ruled on the right, grouped under 11px uppercase faint labels and replaced by a select below lg. Each section is a panel with a ruled header (Bitter 16px title, 13px muted description up to 70ch) over 20px of body. Repeating sub-entries are 6px cards on `surface-muted` at 50%. Unsaved changes raise a sticky floating save bar with an 8px warning dot.
-- **Audit rows:** a ruled table with a sticky label header; timestamps tabular and muted; the actor in medium ink; long detail truncated at 16rem; a 12px faint explanatory note up to 70ch above.
-- **Messages inbox:** ruled rows using the read/unread treatment above, with a small success "Handled" badge.
+Headings split into words, each rising 105% from behind its own mask over 1.1s on an exponential ease-out, staggered 55ms (70ms on the cover). The full text stays in the DOM as real text. On the cover it plays on mount after a 400ms delay; elsewhere it plays on entering the viewport.
 
-### Chart.js Theme
+### Motion Grammar (signature)
 
-Applied once at startup by the chart-theme plugin. Fonts are Public Sans 12px; text and legend labels use `ink-muted`; gridlines and borders use `rule`. Legends use 8px point-style markers. Tooltips are an ink fill with surface-coloured text, 6px corners, 10px padding, a 600-weight title. Bars have 3px corners; lines are 2px with 0.3 tension and no points until hover (4px); arcs are separated by a 2px surface-coloured border. Series colours come in a fixed order (`chart-bookcloth`, `chart-ink`, `chart-gilt`, `chart-margin`, `chart-slate`, `chart-plum`, `chart-teal`, `chart-clay`), each at least 3:1 against the white surface; status charts use `chart-positive`, `chart-margin` for negative, `chart-slate` for neutral, and `chart-gilt` for caution. Area and bar fills are the same hues at reduced alpha.
-
-### Motion
-
-Durations are 120ms (fast), 180ms (base), 280ms (slow); hovers run 150-200ms. Entrances use expo-out (`cubic-bezier(0.16, 1, 0.3, 1)`), progress and the live pulse quart-out (`cubic-bezier(0.25, 1, 0.5, 1)`). Scroll reveals are deliberately small (16px rise, 20px side slide, or 97% scale, 0.6s) with 75-400ms stagger, so a missed observer never leaves a page blank. Pages crossfade at 180ms. The admin sidebar slides in over 300ms.
-
-**Reduced motion:** under `prefers-reduced-motion: reduce` every animation and transition collapses to 0.01ms and runs once, smooth scrolling stops, reveal elements render in place at full opacity, and the hero entrance is removed.
+- **Rise:** content lifts 28px into place over 1s.
+- **Fade:** opacity only, 1.1s.
+- **Unveil:** an image frame's content opens from the bottom edge with an inset clip over 1.25s (quintic in-out) while the photo settles from 1.14 scale over 1.8s.
+- **Rule:** a hairline scales across from the left over 1.2s.
+- **Parallax:** a slow drift against scroll at a set fraction, for cover and feature imagery only.
+- **Image hover:** a 1.045 zoom over 1.2s inside the frame.
+- **Page change:** the new page rises 12px over 550ms; the old one simply fades.
+- Easing is exponential ease-out (cubic-bezier(0.16, 1, 0.3, 1)) for arrivals and quartic ease-out for state changes. Under reduced motion every element is shown in place and nothing moves.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** use the semantic tokens (`surface`, `ink`, `rule`, `primary`) rather than raw palette colours, so the system stays consistent.
-- **Do** put the red double margin on page-title header blocks, the admin top-bar title, and the single featured hero entry panel.
-- **Do** set every count, amount, date, and time in tabular figures, and right-align money.
-- **Do** build entry lists as ruled rows with a Bitter date column before reaching for cards.
-- **Do** keep public body copy at 16px or larger with a measure under 70ch, and touch targets at 44px or more.
-- **Do** frame resting panels with a `rule` hairline and the resting shadow; save floating shadows for things that float.
-- **Do** use one icon family, Material Design Icons outline glyphs.
+- **Do** set every Instrument Serif headline at weight 400 and use the italic turn for emphasis.
+- **Do** use Manrope semibold for small UI titles in the admin (modal titles, card headings).
+- **Do** set entries as hairline-ruled rows with the date or thumbnail in a fixed lead column.
+- **Do** keep large fields to ivory, stone, night and forest.
+- **Do** use bronze on ivory and champagne on night or forest for dates, marks, active states and hairlines.
+- **Do** keep corners between 1 and 8px; round only for dots, avatars, the seal and round icon buttons.
+- **Do** give numbers tabular, lining figures.
+- **Do** use the editorial note for public empty states and the empty-state block in the admin.
+- **Do** run every reveal through the one grammar (masked word rise, unveil, rule, rise) with exponential ease-out, and respect reduced motion.
+- **Do** declare `navOverlay: true` on any page that opens on a full-bleed cover so the navbar sits transparent over it.
 
 ### Don't:
 
-- **Don't** put the double margin on cards in a grid, list items, or table rows.
-- **Don't** set gilt on body text, button fills, or button labels; it is for stamps and small marks.
-- **Don't** place eyebrow or kicker labels above headings. Meta that carries real information (a scripture reference, a step label) goes below the heading as a `.citation`.
-- **Don't** put the red double margin on ordinary section headings. It belongs on the hero entry panel and page-title headers only; `SectionHeader` does not draw it.
-- **Don't** use gradient text, glassmorphism, coloured glows, hard offset shadows, or a coloured left border wider than 1px on cards (toast status stripes are the single exception).
-- **Don't** use pill-shaped buttons or radii above 10px on surfaces; only avatars, dots, and round icon buttons are fully round.
-- **Don't** use emoji as icons, or fonts other than Bitter and Public Sans.
-- **Don't** add a dark mode or `dark:` classes; the product is light only.
+- **Don't** bold or semibold Instrument Serif, or let the browser synthesise a bold.
+- **Don't** put a small tracked label, kicker or eyebrow above a heading; tags and categories follow the title.
+- **Don't** lay out text entries as a grid of cards.
+- **Don't** fill a rectangular button, a section or body text with bronze or champagne.
+- **Don't** make anything rectangular pill-shaped.
+- **Don't** use a thick coloured side stripe on cards, alerts or list items; the only side mark is the 1px bronze margin rule on a page header or entry panel.
+- **Don't** use gradient text, glass panels or hard offset shadows; shadow only for floating layers.
+- **Don't** add a dark mode or bake one church's colours into the frame.
+- **Don't** introduce a second motion vocabulary (bounces, springs, spins) beside the grammar.

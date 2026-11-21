@@ -29,13 +29,12 @@ const invalid = computed(() => Boolean(props.error))
   width: 100%;
   min-height: 2.5rem;
   border: 1px solid var(--c-rule-strong);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
   color: var(--c-ink);
   background: var(--c-surface);
-  box-shadow: var(--shadow-xs);
   outline: none;
   transition:
     border-color var(--duration-fast),

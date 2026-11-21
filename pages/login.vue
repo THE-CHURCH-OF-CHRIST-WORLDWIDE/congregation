@@ -5,6 +5,8 @@ definePageMeta({
 
 const authStore = useAuthStore()
 const route = useRoute()
+// Presentation only: the navbar already loads the church settings; this just reads the name.
+const settingsStore = useChurchSettingsStore()
 
 const email = ref(typeof route.query.email === 'string' ? route.query.email : '')
 const password = ref('')
@@ -79,56 +81,67 @@ function onSubmit() {
 </script>
 
 <template>
-  <div
-    class="flex min-h-[calc(100vh-4.5rem)] items-center justify-center bg-canvas px-4 py-12 sm:py-16"
-  >
-    <div
-      class="grid w-full max-w-md overflow-hidden rounded-lg border border-rule bg-surface shadow-md md:max-w-3xl md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
+  <div class="grid min-h-[calc(100svh-var(--nav-h))] bg-surface md:grid-cols-12">
+    <!-- Forest field: the church's name, set large -->
+    <section
+      class="field-forest relative flex flex-col justify-between gap-10 overflow-hidden px-[var(--site-gutter)] py-10 md:col-span-5 md:py-16 lg:px-14 lg:py-20"
+      aria-hidden="true"
     >
-      <!-- Bookcloth panel: the register's binding -->
-      <div class="bookcloth flex flex-col justify-between gap-6 px-6 py-6 md:px-8 md:py-10">
-        <Icon
-          icon="mdi:book-account-outline"
-          class="size-9 text-white/85 md:size-11"
-          aria-hidden="true"
-        />
-        <div>
-          <h1 class="font-display text-2xl leading-tight font-bold text-white md:text-3xl">
-            {{ heading }}
-          </h1>
-          <p class="mt-2 text-sm leading-relaxed text-white/80 md:text-base">{{ subheading }}</p>
-        </div>
+      <div
+        class="flex size-12 items-center justify-center rounded-full border border-champagne/40 text-champagne"
+      >
+        <Icon icon="mdi:church" class="text-xl" />
       </div>
+      <div>
+        <p class="t-h1 max-w-[12ch] text-on-night">
+          {{ settingsStore.settings.name || 'Congregation' }}
+        </p>
+        <div class="mt-8 h-px w-16 bg-champagne/70"></div>
+        <p
+          v-if="settingsStore.settings.address"
+          class="mt-5 max-w-xs text-sm leading-relaxed text-on-night-muted"
+        >
+          {{ settingsStore.settings.address }}
+        </p>
+      </div>
+    </section>
 
-      <div class="px-6 py-7 md:px-8 md:py-10">
-        <form class="space-y-5" @submit.prevent="onSubmit">
+    <!-- The form, on ivory -->
+    <section
+      class="flex items-center px-[var(--site-gutter)] py-12 md:col-span-7 md:py-16 lg:px-20"
+    >
+      <div class="w-full max-w-md">
+        <h1 class="t-h2 text-ink">{{ heading }}</h1>
+        <p class="mt-3 text-base leading-relaxed text-ink-muted">{{ subheading }}</p>
+
+        <form class="mt-10 space-y-8" @submit.prevent="onSubmit">
           <div>
-            <label for="email" class="block text-sm font-medium text-ink">Email</label>
+            <label for="email" class="field-label">Email</label>
             <input
               id="email"
               v-model="email"
               type="email"
               autocomplete="email"
               required
-              class="mt-1.5 block min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
+              class="field-input"
             />
           </div>
 
           <div v-if="mode === 'password'">
-            <label for="password" class="block text-sm font-medium text-ink">Password</label>
+            <label for="password" class="field-label">Password</label>
             <input
               id="password"
               v-model="password"
               type="password"
               autocomplete="current-password"
               required
-              class="mt-1.5 block min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
+              class="field-input"
             />
           </div>
 
           <p
             v-if="authStore.error"
-            class="flex items-start gap-2 rounded-md border border-error/25 bg-error-soft px-3 py-2.5 text-sm text-error"
+            class="flex items-start gap-2 rounded-sm border border-error/25 bg-error-soft px-3 py-2.5 text-sm text-error"
           >
             <Icon
               icon="mdi:alert-circle-outline"
@@ -140,16 +153,12 @@ function onSubmit() {
           <!-- <output> carries an implicit status role and is the semantic element for a result. -->
           <output
             v-else-if="notice"
-            class="block rounded-md border border-success/25 bg-success-soft px-3 py-2.5 text-sm text-success"
+            class="block rounded-sm border border-success/25 bg-success-soft px-3 py-2.5 text-sm text-success"
           >
             {{ notice }}
           </output>
 
-          <button
-            type="submit"
-            :disabled="submitting"
-            class="flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active disabled:cursor-not-allowed disabled:opacity-55"
-          >
+          <button type="submit" :disabled="submitting" class="btn btn-primary min-h-13 w-full">
             <Icon v-if="submitting" icon="mdi:loading" class="animate-spin" aria-hidden="true" />
             <template v-if="mode === 'password'">
               {{ submitting ? 'Signing in…' : 'Sign in' }}
@@ -158,11 +167,11 @@ function onSubmit() {
           </button>
         </form>
 
-        <div class="mt-6 flex flex-col items-center gap-1 border-t border-rule pt-4 text-sm">
+        <div class="mt-8 flex flex-col items-start gap-1 border-t border-rule pt-5 text-sm">
           <button
             v-if="mode !== 'reset'"
             type="button"
-            class="min-h-10 rounded-sm px-2 text-ink-muted underline-offset-3 transition-colors duration-150 hover:text-primary-ink hover:underline"
+            class="-mx-2 min-h-10 rounded-sm px-2 text-ink-muted underline-offset-4 transition-colors duration-150 hover:text-primary-ink hover:underline"
             @click="switchTo('reset')"
           >
             Forgot your password?
@@ -170,13 +179,13 @@ function onSubmit() {
           <button
             v-if="mode !== 'password'"
             type="button"
-            class="min-h-10 rounded-sm px-2 text-ink-muted underline-offset-3 transition-colors duration-150 hover:text-primary-ink hover:underline"
+            class="-mx-2 min-h-10 rounded-sm px-2 text-ink-muted underline-offset-4 transition-colors duration-150 hover:text-primary-ink hover:underline"
             @click="switchTo('password')"
           >
             Back to password sign-in
           </button>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>

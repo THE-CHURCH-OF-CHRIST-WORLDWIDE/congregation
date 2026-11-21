@@ -35,7 +35,7 @@ const {
   <div class="space-y-6">
     <!-- Header row -->
     <div
-      class="flex flex-col justify-between gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center"
+      class="flex flex-col justify-between gap-3 rounded-sm border border-rule bg-surface p-3 sm:flex-row sm:items-center"
     >
       <div class="no-scrollbar flex gap-1 overflow-x-auto" role="group" aria-label="Filter by type">
         <button
@@ -64,7 +64,7 @@ const {
             v-model="teachingsStore.searchQuery"
             type="search"
             placeholder="Search teachings..."
-            class="min-h-10 w-full py-2 pr-3 pl-9 text-sm sm:w-56 rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            class="min-h-10 w-full py-2 pr-3 pl-9 text-sm sm:w-56 rounded-md border border-rule-strong bg-surface text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
             aria-label="Search teachings"
           />
         </div>

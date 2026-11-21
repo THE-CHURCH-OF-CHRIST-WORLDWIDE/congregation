@@ -114,7 +114,7 @@ function preview(text: string) {
   <div class="flex flex-col gap-6">
     <!-- Filters + search -->
     <div
-      class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center sm:justify-between"
+      class="flex flex-col gap-3 rounded-sm border border-rule bg-surface p-3 sm:flex-row sm:items-center sm:justify-between"
     >
       <div
         class="inline-flex flex-wrap gap-0.5 self-start rounded-md border border-rule bg-surface-muted p-0.5"
@@ -125,7 +125,7 @@ function preview(text: string) {
           class="inline-flex min-h-8 items-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors duration-150"
           :class="
             activeFilter === f.value
-              ? 'bg-surface text-ink shadow-xs ring-1 ring-rule'
+              ? 'bg-surface text-ink ring-1 ring-rule'
               : 'text-ink-muted hover:text-ink'
           "
           :aria-pressed="activeFilter === f.value"
@@ -150,7 +150,7 @@ function preview(text: string) {
           type="search"
           placeholder="Search name, email, phone or text"
           aria-label="Search messages"
-          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
         />
       </div>
     </div>
@@ -175,7 +175,7 @@ function preview(text: string) {
     <!-- List -->
     <div
       v-else
-      class="flex flex-col divide-y divide-rule overflow-hidden rounded-lg border border-rule bg-surface shadow-xs"
+      class="flex flex-col divide-y divide-rule overflow-hidden rounded-sm border border-rule bg-surface"
     >
       <button
         v-for="m in visible"
@@ -260,7 +260,7 @@ function preview(text: string) {
           <!-- A real anchor, so it opens the staff member's own mail client. -->
           <a
             :href="replyLink(selected)"
-            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover sm:min-h-10"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary transition-colors duration-150 hover:bg-primary-hover sm:min-h-10"
           >
             <Icon icon="mdi:reply" aria-hidden="true" />
             Reply by email

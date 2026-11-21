@@ -49,7 +49,7 @@ function onTouchEnd(e: TouchEvent) {
 
 <template>
   <div
-    class="relative aspect-video w-full overflow-hidden bg-gray-950"
+    class="relative aspect-[4/3] w-full overflow-hidden bg-night"
     @touchstart="onTouchStart"
     @touchend="onTouchEnd"
   >
@@ -64,38 +64,48 @@ function onTouchEnd(e: TouchEvent) {
       />
     </Transition>
 
+    <!-- Floor shade so the controls always read -->
+    <div
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-night/75 to-transparent"
+      aria-hidden="true"
+    ></div>
+
     <!-- Expand icon — top right -->
     <button
-      class="absolute top-3 right-3 z-10 inline-flex size-11 items-center justify-center rounded-md bg-black/55 text-white transition-colors duration-150 hover:bg-black/75"
+      class="absolute top-3 right-3 z-10 inline-flex size-11 items-center justify-center rounded-sm bg-night/55 text-on-night transition-colors duration-300 hover:bg-night/80"
       aria-label="Open full gallery"
       @click="emit('expand', currentIndex)"
     >
       <Icon icon="mdi:arrow-expand" class="size-5" aria-hidden="true" />
     </button>
 
-    <!-- Left arrow -->
-    <button
-      class="absolute top-1/2 left-3 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-md bg-white/85 text-gray-900 shadow-md transition-colors duration-150 hover:bg-white"
-      aria-label="Previous image"
-      @click="prev"
-    >
-      <Icon icon="mdi:chevron-left" class="size-6" aria-hidden="true" />
-    </button>
-
-    <!-- Right arrow -->
-    <button
-      class="absolute top-1/2 right-3 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-md bg-white/85 text-gray-900 shadow-md transition-colors duration-150 hover:bg-white"
-      aria-label="Next image"
-      @click="next"
-    >
-      <Icon icon="mdi:chevron-right" class="size-6" aria-hidden="true" />
-    </button>
-
-    <!-- Counter strip -->
+    <!-- Controls along the floor: previous, counter, next -->
     <div
-      class="num absolute right-0 bottom-0 left-0 z-10 bg-linear-to-t from-black/65 to-transparent pt-6 pb-2 text-center text-sm font-medium text-white"
+      class="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-4 p-3 sm:p-4"
     >
-      {{ currentIndex + 1 }}/{{ images.length }}
+      <!-- Left arrow -->
+      <button
+        class="inline-flex size-11 items-center justify-center rounded-full border border-on-night/40 text-on-night transition-colors duration-300 hover:border-on-night hover:bg-on-night hover:text-night"
+        aria-label="Previous image"
+        @click="prev"
+      >
+        <Icon icon="mdi:arrow-left" class="size-5" aria-hidden="true" />
+      </button>
+
+      <!-- Counter -->
+      <span class="num t-label text-on-night">
+        {{ String(currentIndex + 1).padStart(2, '0') }}
+        <span class="text-on-night-muted">/ {{ String(images.length).padStart(2, '0') }}</span>
+      </span>
+
+      <!-- Right arrow -->
+      <button
+        class="inline-flex size-11 items-center justify-center rounded-full border border-on-night/40 text-on-night transition-colors duration-300 hover:border-on-night hover:bg-on-night hover:text-night"
+        aria-label="Next image"
+        @click="next"
+      >
+        <Icon icon="mdi:arrow-right" class="size-5" aria-hidden="true" />
+      </button>
     </div>
   </div>
 </template>
@@ -103,7 +113,7 @@ function onTouchEnd(e: TouchEvent) {
 <style scoped>
 .img-fade-enter-active,
 .img-fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.45s var(--ease-out-quart);
 }
 .img-fade-enter-from,
 .img-fade-leave-to {

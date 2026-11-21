@@ -21,7 +21,7 @@ const emit = defineEmits<{ 'update:modelValue': [val: string] }>()
       :class="[
         '-mb-px min-h-11 cursor-pointer whitespace-nowrap border-b-2 px-3.5 text-sm transition-colors duration-150',
         modelValue === tab.value
-          ? 'border-primary font-semibold text-primary-ink'
+          ? 'border-accent font-semibold text-ink'
           : 'border-transparent font-medium text-ink-muted hover:border-rule-strong hover:text-ink',
       ]"
       @click="emit('update:modelValue', tab.value)"

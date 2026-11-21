@@ -28,95 +28,111 @@ const secondaryCtaHref = computed(() => settingsStore.settings.heroSecondaryCtaH
 </script>
 
 <template>
-  <!-- Bookcloth frame: the register's binding, holding the church's own photograph -->
-  <section class="bookcloth relative p-2 sm:p-3 lg:p-4">
-    <div
-      class="relative flex flex-col overflow-hidden rounded-md bg-surface lg:min-h-[calc(100svh-6rem)] lg:justify-end"
-    >
-      <!-- Photograph: full-bleed inside the frame -->
-      <div
-        class="relative h-[42svh] min-h-64 overflow-hidden bg-primary-active sm:h-[50svh] lg:absolute lg:inset-0 lg:h-auto"
-      >
+  <!-- The cover: the church's own photograph, its name set like a masthead -->
+  <section
+    class="field-night relative isolate flex h-[100svh] min-h-[38rem] flex-col justify-end overflow-hidden"
+    aria-labelledby="cover-title"
+  >
+    <!-- Photograph -->
+    <div class="absolute inset-0 -z-10" aria-hidden="true">
+      <div v-parallax="0.18" class="absolute -inset-y-[8%] inset-x-0">
         <img
           :src="displayableImageUrl(image)"
           :alt="`${name} building`"
-          class="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
+          class="cover-img h-full w-full object-cover pointer-events-none select-none"
           loading="eager"
+          fetchpriority="high"
         />
-        <!-- A quiet floor shade so the ledger panel sits on the photo, not against it -->
-        <div
-          class="absolute inset-0 hidden bg-gradient-to-t from-black/40 via-black/5 to-transparent lg:block"
-          aria-hidden="true"
-        ></div>
-
-        <!-- Scroll indicator -->
-        <div
-          class="absolute right-4 bottom-4 flex size-10 items-center justify-center rounded-md bg-black/35 text-white/85 lg:right-8 lg:bottom-8"
-        >
-          <Icon icon="mdi:chevron-down" class="h-6 w-6" />
-        </div>
       </div>
-
-      <!-- Ledger panel: the welcome entry -->
+      <!-- Veil, then a floor shade so the masthead always reads -->
+      <div class="absolute inset-0 bg-night/35"></div>
       <div
-        class="relative z-10 bg-surface px-5 py-8 sm:px-8 sm:py-10 lg:m-8 lg:max-w-2xl lg:rounded-md lg:px-10 lg:py-10 lg:shadow-lg xl:m-12"
+        class="absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-t from-night/90 via-night/45 to-transparent"
+      ></div>
+    </div>
+
+    <div class="site-container pb-10 sm:pb-14 lg:pb-16">
+      <h1 id="cover-title" class="max-w-[62rem] text-on-night">
+        <SplitReveal
+          v-if="eyebrow"
+          :text="eyebrow"
+          immediate
+          :delay="250"
+          class="t-turn mb-3 block text-[clamp(1.5rem,2.6vw,2.25rem)] leading-tight text-champagne"
+        />
+        <SplitReveal :text="name" immediate :delay="400" :stagger="70" class="t-display block" />
+      </h1>
+
+      <div
+        class="mt-10 grid gap-8 border-t border-on-night/20 pt-7 md:grid-cols-12 md:items-end lg:mt-14"
       >
-        <div class="margin-rule">
-          <h1
-            class="hero-animate font-display text-[2.25rem] leading-[1.1] font-bold text-secondary sm:text-5xl lg:text-[3.5rem]"
-            style="animation-delay: 0ms"
-          >
-            <span
-              class="mb-2 block font-display text-xl leading-snug font-medium text-ink-muted sm:text-2xl"
-            >
-              {{ eyebrow }}
-            </span>
-            {{ name }}
-          </h1>
-          <p
-            class="hero-animate mt-5 flex items-start gap-2 text-lg leading-relaxed text-ink"
-            style="animation-delay: 120ms"
-          >
+        <div class="hero-animate md:col-span-6 lg:col-span-5" style="animation-delay: 900ms">
+          <p class="flex items-start gap-2.5 text-base leading-relaxed text-on-night sm:text-lg">
             <Icon
               icon="mdi:map-marker-outline"
-              class="mt-1 h-5 w-5 shrink-0 text-primary-ink"
+              class="mt-1 h-5 w-5 shrink-0 text-champagne"
               aria-hidden="true"
             />
             <span>{{ addr }}</span>
           </p>
           <p
             v-if="tagline"
-            class="hero-animate mt-3 font-display text-lg leading-relaxed text-ink-muted italic"
-            style="animation-delay: 240ms"
+            class="mt-3 font-display text-xl leading-snug text-on-night-muted italic sm:text-2xl"
           >
             {{ tagline }}
           </p>
+        </div>
 
-          <div
-            class="hero-animate mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
-            style="animation-delay: 360ms"
+        <div
+          class="hero-animate flex flex-col gap-3 sm:flex-row sm:flex-wrap md:col-span-6 md:justify-end lg:col-span-7"
+          style="animation-delay: 1050ms"
+        >
+          <a
+            v-if="primaryCtaLabel"
+            :href="primaryCtaHref || '#'"
+            class="btn btn-light min-h-14 px-7"
+            :aria-label="primaryCtaLabel"
           >
-            <a
-              v-if="primaryCtaLabel"
-              :href="primaryCtaHref || '#'"
-              class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-6 text-base font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover active:bg-primary-active"
-              :aria-label="primaryCtaLabel"
-            >
-              <Icon icon="mdi:weather-sunny" class="h-5 w-5" />
-              {{ primaryCtaLabel }}
-            </a>
-            <a
-              v-if="secondaryCtaLabel"
-              :href="secondaryCtaHref || '#'"
-              class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-6 text-base font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
-              :aria-label="secondaryCtaLabel"
-            >
-              <Icon icon="mdi:clock-outline" class="h-5 w-5" />
-              {{ secondaryCtaLabel }}
-            </a>
-          </div>
+            {{ primaryCtaLabel }}
+            <Icon icon="mdi:arrow-right" class="btn-arrow h-5 w-5" />
+          </a>
+          <a
+            v-if="secondaryCtaLabel"
+            :href="secondaryCtaHref || '#'"
+            class="btn btn-ghost-light min-h-14 px-7"
+            :aria-label="secondaryCtaLabel"
+          >
+            {{ secondaryCtaLabel }}
+          </a>
         </div>
       </div>
     </div>
+
+    <!-- Scroll indicator: a hairline drawing downward -->
+    <div
+      class="hero-animate pointer-events-none absolute right-[var(--site-gutter)] bottom-[14.75rem] hidden flex-col items-center gap-4 lg:flex"
+      style="animation-delay: 1400ms"
+      aria-hidden="true"
+    >
+      <span class="t-label text-on-night-muted [writing-mode:vertical-rl]">Scroll</span>
+      <span class="relative block h-16 w-px overflow-hidden bg-on-night/20">
+        <span class="scroll-line absolute inset-0 bg-champagne"></span>
+      </span>
+    </div>
   </section>
 </template>
+
+<style scoped>
+.cover-img {
+  animation: cover-settle 2.6s var(--ease-out-expo) both;
+}
+.scroll-line {
+  animation: scroll-line 2.4s var(--ease-in-out-quint) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cover-img,
+  .scroll-line {
+    animation: none;
+  }
+}
+</style>

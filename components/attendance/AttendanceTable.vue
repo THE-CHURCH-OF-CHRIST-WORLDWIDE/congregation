@@ -254,7 +254,7 @@ function doExport() {
   <div class="flex flex-col gap-0">
     <!-- Controls -->
     <div
-      class="mb-4 flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center"
+      class="mb-4 flex flex-col gap-3 rounded-sm border border-rule bg-surface p-3 sm:flex-row sm:items-center"
     >
       <div class="relative flex-1">
         <Icon
@@ -265,7 +265,7 @@ function doExport() {
           v-model="searchQuery"
           type="search"
           placeholder="Search members..."
-          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search attendance"
         />
       </div>
@@ -449,7 +449,7 @@ function doExport() {
     <Transition name="fade">
       <div
         v-if="hasChanged"
-        class="sticky bottom-4 z-[3] mt-4 flex justify-end gap-2 rounded-lg border border-rule-strong bg-surface p-3 shadow-lg"
+        class="sticky bottom-4 z-[3] mt-4 flex justify-end gap-2 rounded-sm border border-rule-strong bg-surface p-3 shadow-lg"
       >
         <Button :loading="attendanceStore.saving" @click="save">Save Changes</Button>
         <Button variant="secondary" @click="cancel">Cancel</Button>

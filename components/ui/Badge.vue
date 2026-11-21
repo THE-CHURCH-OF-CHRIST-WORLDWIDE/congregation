@@ -14,7 +14,7 @@ const variantClasses = {
   danger: 'bg-error-soft text-error ring-error/25',
   info: 'bg-info-soft text-info ring-info/25',
   neutral: 'bg-surface-sunken text-ink-muted ring-rule-strong/60',
-  pink: 'bg-[#fbe8f1] text-[#9d2462] ring-[#9d2462]/20',
+  pink: 'bg-accent-soft text-accent ring-accent/25',
 }
 const sizeClasses = {
   sm: 'px-1.5 py-px text-2xs',

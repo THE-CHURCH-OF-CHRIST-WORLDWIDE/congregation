@@ -32,10 +32,10 @@ useHead({
     <HeroBanner />
     <MinisterWelcome />
     <LiveStreamTeaser />
-    <CongregationSearch />
     <SermonsTeaser />
     <EventsList />
-    <ContactForm />
     <PhotoGallery />
+    <CongregationSearch />
+    <ContactForm />
   </div>
 </template>

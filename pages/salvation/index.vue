@@ -76,64 +76,85 @@ onMounted(() => settingsStore.load())
 </script>
 
 <template>
-  <div>
-    <!-- Page title: calm, ruled, no photograph needed -->
-    <div class="border-b border-rule bg-canvas">
-      <div class="mx-auto max-w-3xl px-5 py-12 sm:px-6 md:py-16">
-        <div class="margin-rule hero-animate">
-          <h1 class="font-display text-4xl leading-[1.1] font-bold text-secondary md:text-5xl">
-            God's Plan for Salvation
-          </h1>
-          <p class="citation num mt-3">Acts 2:36-38</p>
-          <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-muted">
-            What the New Testament sets out for anyone who would be saved
-          </p>
-        </div>
+  <div class="bg-surface">
+    <!-- Page title: a calm editorial header on ivory -->
+    <header class="site-container pt-16 pb-14 md:pt-24 md:pb-20 lg:pt-32">
+      <h1 class="t-display max-w-5xl text-secondary">
+        <SplitReveal text="God's Plan for" immediate :delay="100" />
+        {{ ' ' }}
+        <SplitReveal text="Salvation" immediate :delay="320" class="t-turn text-primary-ink" />
+      </h1>
+      <div class="mt-12 grid gap-6 md:mt-16 md:grid-cols-12 md:gap-8">
+        <p
+          class="hero-animate num font-display text-2xl text-accent italic md:col-span-4"
+          style="animation-delay: 500ms"
+        >
+          Acts 2:36-38
+        </p>
+        <p
+          class="hero-animate t-lede max-w-xl md:col-span-6 md:col-start-6"
+          style="animation-delay: 620ms"
+        >
+          What the New Testament sets out for anyone who would be saved
+        </p>
       </div>
-    </div>
+      <div v-reveal="'rule'" class="mt-14 h-px bg-rule md:mt-20"></div>
+    </header>
 
-    <section class="py-16 md:py-20">
-      <div class="mx-auto max-w-3xl px-5 sm:px-6">
-        <ol class="salvation-steps flex flex-col">
-          <li
-            v-for="step in steps"
-            :id="step.id"
-            :key="step.id"
-            class="relative scroll-mt-24 pb-12 before:absolute before:top-14 before:bottom-2 before:left-[1.375rem] before:w-px before:bg-rule last:pb-0 last:before:hidden md:pb-14"
-          >
-            <div class="flex items-start gap-5 md:gap-7">
-              <span
-                class="step-num flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary-soft font-display text-lg font-semibold text-primary-ink"
-                aria-hidden="true"
-              ></span>
-              <div class="min-w-0 pt-1">
-                <h2
-                  class="font-display text-2xl leading-tight font-bold text-secondary md:text-[1.75rem]"
-                >
-                  {{ step.title }}
-                </h2>
-                <p class="citation num mt-1.5">Step {{ step.order }} · {{ step.scripture }}</p>
-                <p class="mt-3 max-w-[62ch] text-lg leading-relaxed text-ink">{{ step.body }}</p>
-              </div>
-            </div>
-          </li>
-        </ol>
+    <!-- The five steps: a vertical journey, one section per step -->
+    <ol class="salvation-steps site-container pb-8 md:pb-16">
+      <li
+        v-for="step in steps"
+        :id="step.id"
+        :key="step.id"
+        class="relative grid scroll-mt-28 gap-6 border-b border-rule py-16 last:border-b-0 md:grid-cols-12 md:gap-8 md:py-24 lg:py-28"
+      >
+        <!-- Step marker: the large serif numeral with the bronze thread below it -->
+        <div
+          v-reveal="'fade'"
+          class="flex items-end gap-5 md:col-span-3 md:flex-col md:items-start"
+        >
+          <span
+            class="step-num font-display text-[clamp(4.5rem,9vw,8rem)] leading-[0.8] text-accent"
+            aria-hidden="true"
+          ></span>
+          <span class="t-label pb-2 text-ink-subtle md:pb-0">Step {{ step.order }}</span>
+        </div>
 
-        <div class="bookcloth mt-16 rounded-lg px-6 py-8 shadow-xs md:px-10 md:py-10">
-          <h2 class="font-display text-2xl font-bold text-white md:text-[1.75rem]">
-            Want to talk this through?
+        <div class="min-w-0 md:col-span-8 md:col-start-5 lg:col-span-7 lg:col-start-5">
+          <h2 class="t-h1 text-secondary">
+            <SplitReveal :text="step.title" />
           </h2>
-          <p class="mt-3 max-w-xl text-lg leading-relaxed text-white/85">
-            Reach the congregation at {{ settingsStore.settings.phone }} or
-            {{ settingsStore.settings.email }}, or worship with us at
-            {{ settingsStore.settings.address }}.
+          <p v-reveal.150 class="num mt-5 font-display text-2xl text-accent italic">
+            {{ step.scripture }}
           </p>
-          <NuxtLink
-            to="/#contact"
-            class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-white/90"
-          >
-            <Icon icon="mdi:email-outline" aria-hidden="true" />
+          <p v-reveal.250 class="t-lede mt-6 max-w-[62ch]">{{ step.body }}</p>
+        </div>
+      </li>
+    </ol>
+
+    <!-- The invitation: a forest field to close, set apart from the night footer -->
+    <section class="field-forest section">
+      <div class="site-container grid gap-12 md:grid-cols-12 md:gap-8">
+        <h2 class="t-h1 text-on-night md:col-span-6">
+          <SplitReveal text="Want to talk this through?" />
+        </h2>
+        <div v-reveal.200 class="md:col-span-5 md:col-start-8 md:pt-3">
+          <p class="t-lede text-on-night-muted">
+            Reach the congregation at
+            <span class="num whitespace-nowrap text-on-night">{{
+              settingsStore.settings.phone
+            }}</span>
+            or
+            <span class="[overflow-wrap:anywhere] text-on-night">{{
+              settingsStore.settings.email
+            }}</span
+            >, or worship with us at {{ settingsStore.settings.address }}.
+          </p>
+          <NuxtLink to="/#contact" class="btn btn-light mt-10 min-h-14 px-7">
+            <Icon icon="mdi:email-outline" class="h-5 w-5" aria-hidden="true" />
             Contact us
+            <Icon icon="mdi:arrow-right" class="btn-arrow h-5 w-5" aria-hidden="true" />
           </NuxtLink>
         </div>
       </div>

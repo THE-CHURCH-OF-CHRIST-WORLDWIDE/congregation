@@ -43,27 +43,29 @@ function categoryClass(cat: string): string {
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-4">
+  <div class="flex h-full flex-col gap-8">
     <!-- Sub-tabs -->
     <PastEventMonthYearTabs v-model="subTab" :month-count="monthCount" :year-count="yearCount" />
 
-    <!-- Event list -->
-    <div class="ruled flex flex-col overflow-y-auto border-y border-rule">
+    <!-- The archive -->
+    <div class="flex flex-col border-t border-ink/80">
       <!-- Empty state -->
-      <EmptyState
-        v-if="displayedEvents.length === 0"
-        icon="mdi:calendar-remove-outline"
-        :title="subTab === 'year' ? 'No events this year' : 'No events this month'"
-        description="Past gatherings appear here once their date has passed."
-      />
+      <div v-if="displayedEvents.length === 0" class="border-b border-rule-strong">
+        <EmptyState
+          icon="mdi:calendar-remove-outline"
+          :title="subTab === 'year' ? 'No events this year' : 'No events this month'"
+          description="Past gatherings appear here once their date has passed."
+        />
+      </div>
 
       <!-- Event rows -->
       <div
-        v-for="event in displayedEvents"
+        v-for="(event, i) in displayedEvents"
         :key="event.id"
+        v-reveal="{ delay: 60 + Math.min(i, 6) * 80 }"
         :class="[
-          'cursor-pointer px-3 py-4 transition-colors duration-150 focus-visible:-outline-offset-2 sm:px-4',
-          isSelected(event) ? 'bg-primary-soft' : 'bg-surface hover:bg-surface-muted',
+          'group cursor-pointer border-b border-rule-strong px-2 py-6 transition-colors duration-500 focus-visible:-outline-offset-2 sm:px-4 md:py-7',
+          isSelected(event) ? 'bg-surface-muted' : 'hover:bg-surface-muted/60',
         ]"
         role="button"
         tabindex="0"
@@ -71,22 +73,34 @@ function categoryClass(cat: string): string {
         @click="selectEvent(event)"
         @keydown.enter="selectEvent(event)"
       >
-        <div class="flex gap-4">
+        <div
+          class="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-7"
+        >
           <!-- Thumbnail -->
-          <img
-            :src="displayableImageUrl(event.thumbnail)"
-            :alt="event.title"
-            class="h-16 w-24 shrink-0 rounded-md bg-surface-sunken object-cover"
-            loading="lazy"
-            decoding="async"
-          />
+          <div class="img-zoom aspect-[4/3] w-full overflow-hidden bg-surface-sunken">
+            <img
+              v-if="event.thumbnail"
+              :src="displayableImageUrl(event.thumbnail)"
+              :alt="event.title"
+              class="h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+            <div
+              v-else
+              class="flex h-full w-full items-end bg-primary p-2.5 font-display text-[2.5rem] leading-none text-on-night/30 italic"
+              aria-hidden="true"
+            >
+              {{ event.title.charAt(0) }}
+            </div>
+          </div>
 
           <!-- Details -->
-          <div class="min-w-0 flex-1">
+          <div class="min-w-0">
             <!-- Category -->
             <span
               :class="[
-                'mb-1.5 inline-block rounded-sm px-2 py-0.5 text-xs font-semibold',
+                't-label inline-block rounded-sm px-1.5 py-0.5',
                 categoryClass(event.category),
               ]"
             >
@@ -96,7 +110,7 @@ function categoryClass(cat: string): string {
             <!-- Title -->
             <p
               :class="[
-                'truncate font-display text-base leading-snug font-semibold',
+                'mt-2.5 font-display text-[1.5rem] leading-[1.1] transition-[color,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 md:text-[1.875rem]',
                 isSelected(event) ? 'text-primary-ink' : 'text-ink',
               ]"
             >
@@ -104,11 +118,11 @@ function categoryClass(cat: string): string {
             </p>
 
             <!-- Metadata -->
-            <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
+            <div class="mt-2.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-ink-muted">
               <span class="num flex items-center gap-1.5">
                 <Icon
                   icon="mdi:calendar-outline"
-                  class="size-3.5 shrink-0 text-ink-subtle"
+                  class="size-3.5 shrink-0 text-accent"
                   aria-hidden="true"
                 />
                 {{ event.date }}
@@ -116,7 +130,7 @@ function categoryClass(cat: string): string {
               <span class="num flex items-center gap-1.5">
                 <Icon
                   icon="mdi:clock-outline"
-                  class="size-3.5 shrink-0 text-ink-subtle"
+                  class="size-3.5 shrink-0 text-accent"
                   aria-hidden="true"
                 />
                 {{ event.time }}
@@ -124,7 +138,7 @@ function categoryClass(cat: string): string {
               <span class="flex items-center gap-1.5">
                 <Icon
                   icon="mdi:map-marker-outline"
-                  class="size-3.5 shrink-0 text-ink-subtle"
+                  class="size-3.5 shrink-0 text-accent"
                   aria-hidden="true"
                 />
                 {{ event.venue }}
@@ -133,7 +147,7 @@ function categoryClass(cat: string): string {
 
             <!-- Plan to attend button -->
             <button
-              class="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-md border border-rule-strong bg-surface px-4 text-sm font-semibold text-primary-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted sm:min-h-10 sm:w-auto"
+              class="btn btn-outline mt-5 min-h-11 w-full px-5 text-sm sm:w-auto"
               @click.stop="planToAttend(event)"
             >
               Plan to attend

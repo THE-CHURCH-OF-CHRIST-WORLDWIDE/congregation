@@ -5,67 +5,58 @@ const cfg = computed(() => s.settings.activityCalendar)
 </script>
 
 <template>
-  <section class="bg-canvas py-16 md:py-24">
-    <div
-      class="mx-auto grid max-w-7xl items-start gap-10 px-5 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16 lg:px-8"
-    >
+  <section class="section field-stone">
+    <div class="site-container grid items-start gap-12 lg:grid-cols-12 lg:gap-8">
       <!-- Header -->
-      <div class="margin-rule">
-        <h2
-          class="font-display text-[1.875rem] leading-[1.15] font-bold text-secondary md:text-[2.5rem]"
-        >
-          {{ cfg.heading }}
+      <div class="lg:col-span-4">
+        <h2 class="t-h2 max-w-[12ch] text-secondary">
+          <SplitReveal :text="cfg.heading" />
         </h2>
-        <p v-if="cfg.eyebrow" class="citation mt-3">
+        <p v-if="cfg.eyebrow" v-reveal.150 class="t-label mt-6 text-ink-subtle">
           {{ cfg.eyebrow }}
         </p>
-        <p v-if="cfg.subtitle" class="mt-3 max-w-md text-lg leading-relaxed text-ink-muted">
+        <p v-if="cfg.subtitle" v-reveal.200 class="t-lede mt-5 max-w-[36ch]">
           {{ cfg.subtitle }}
         </p>
       </div>
 
-      <!-- The weekly register -->
-      <div class="overflow-x-auto rounded-lg border border-rule bg-surface shadow-xs">
-        <table class="w-full text-base">
-          <!-- Header -->
-          <thead class="bg-surface-muted">
-            <tr>
-              <th
-                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase sm:px-6"
-              >
-                Day
-              </th>
-              <th
-                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase sm:px-6"
-              >
+      <!-- The weekly timetable -->
+      <div
+        v-reveal.150
+        class="-mx-[var(--site-gutter)] overflow-x-auto px-[var(--site-gutter)] lg:col-span-7 lg:col-start-6 lg:mx-0 lg:px-0"
+      >
+        <table class="w-full min-w-[22rem] text-left">
+          <thead>
+            <tr class="border-b border-ink/80">
+              <th class="t-label pr-4 pb-3 font-semibold whitespace-nowrap text-ink-subtle">Day</th>
+              <th class="t-label pr-4 pb-3 font-semibold whitespace-nowrap text-ink-subtle">
                 Activity
               </th>
-              <th
-                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase sm:px-6"
-              >
+              <th class="t-label pb-3 text-right font-semibold whitespace-nowrap text-ink-subtle">
                 Time
               </th>
             </tr>
           </thead>
 
-          <!-- Body -->
-          <tbody class="divide-y divide-rule">
-            <tr
-              v-for="(row, i) in cfg.rows"
-              :key="row.id"
-              :class="i % 2 === 0 ? 'bg-surface' : 'bg-surface-muted/50'"
-            >
-              <td class="num px-4 py-3.5 font-display font-semibold text-ink sm:px-6">
+          <tbody>
+            <tr v-for="row in cfg.rows" :key="row.id" class="border-b border-rule-strong">
+              <td class="num py-5 pr-4 align-baseline text-[0.9375rem] text-ink-muted">
                 {{ row.day }}
               </td>
-              <td class="px-4 py-3.5 text-ink sm:px-6">{{ row.activity }}</td>
-              <td class="num px-4 py-3.5 whitespace-nowrap text-ink-muted sm:px-6">
+              <td
+                class="py-5 pr-4 align-baseline font-display text-[1.375rem] leading-tight text-ink md:text-[1.625rem]"
+              >
+                {{ row.activity }}
+              </td>
+              <td
+                class="num py-5 text-right align-baseline font-display text-[1.375rem] leading-tight whitespace-nowrap text-ink md:text-[1.625rem]"
+              >
                 {{ row.time }}
               </td>
             </tr>
 
-            <tr v-if="!cfg.rows.length">
-              <td colspan="3" class="px-6">
+            <tr v-if="!cfg.rows.length" class="border-b border-rule-strong">
+              <td colspan="3">
                 <EmptyState
                   icon="mdi:calendar-blank-outline"
                   size="sm"
@@ -76,14 +67,11 @@ const cfg = computed(() => s.settings.activityCalendar)
             </tr>
 
             <!-- Footer row -->
-            <tr class="bg-surface">
-              <td colspan="3" class="px-4 py-3 sm:px-6">
-                <NuxtLink
-                  to="/about-us"
-                  class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink underline underline-offset-3 transition-colors duration-150 hover:text-primary-hover"
-                >
-                  Get more information
-                  <Icon icon="mdi:arrow-right" aria-hidden="true" />
+            <tr>
+              <td colspan="3" class="pt-6">
+                <NuxtLink to="/about-us" class="link-line text-sm text-ink">
+                  <span class="link-text">Get more information</span>
+                  <Icon icon="mdi:arrow-right" class="link-arrow h-4 w-4" aria-hidden="true" />
                 </NuxtLink>
               </td>
             </tr>

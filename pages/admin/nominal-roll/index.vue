@@ -144,7 +144,7 @@ function viewList(tab: 'active' | 'sisters' | 'brothers' | 'inactive') {
             </div>
 
             <!-- Big number -->
-            <p class="num font-display text-3xl leading-none font-semibold text-ink">
+            <p class="num font-display text-3xl leading-none text-ink">
               {{ card.value }}
             </p>
 

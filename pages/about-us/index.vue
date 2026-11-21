@@ -2,6 +2,8 @@
 definePageMeta({
   layout: 'default',
   pageTransition: { name: 'fade', mode: 'out-in' },
+  // The page opens on a full-bleed night cover, so the navbar sits over it transparently.
+  navOverlay: true,
 })
 
 useSeoMeta({
@@ -16,7 +18,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div>
+  <div class="bg-surface">
     <AboutHero />
     <ChurchHistoryCard />
     <WorshipActivities />

@@ -44,7 +44,7 @@ const tips = [
       <div class="flex flex-col gap-4">
         <!-- Recent Sermon Uploads -->
         <Card>
-          <h3 class="mb-3 font-display text-lg font-semibold text-ink">Recent Sermon Uploads</h3>
+          <h3 class="mb-3 font-sans text-lg font-semibold text-ink">Recent Sermon Uploads</h3>
 
           <div
             v-if="teachingsStore.recentSermons.length"
@@ -83,7 +83,7 @@ const tips = [
 
         <!-- Upload Tips -->
         <Card>
-          <h3 class="mb-3 font-display text-lg font-semibold text-ink">Upload Tips</h3>
+          <h3 class="mb-3 font-sans text-lg font-semibold text-ink">Upload Tips</h3>
           <ul class="ruled">
             <li
               v-for="tip in tips"

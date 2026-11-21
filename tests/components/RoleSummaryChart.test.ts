@@ -61,6 +61,6 @@ describe('RoleSummaryChart', () => {
     // The empty state deliberately draws a placeholder ring, so assert no *slice* was drawn
     // rather than no circle at all.
     expect(wrapper.findAll('path')).toHaveLength(0)
-    expect(wrapper.find('circle').attributes('fill')).toBe('#1e293b')
+    expect(wrapper.find('circle').attributes('fill')).toBe('#eae5da')
   })
 })

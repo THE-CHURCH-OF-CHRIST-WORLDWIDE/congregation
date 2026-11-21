@@ -68,70 +68,67 @@ async function logout() {
       ></div>
     </Transition>
 
-    <!-- Sidebar: the register's bookcloth spine -->
+    <!-- Sidebar: a forest rail with ivory type; the active item carries a champagne hairline -->
     <aside
       :class="[
-        'bookcloth fixed top-0 left-0 z-30 flex h-full w-64 flex-col transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:w-60',
+        'field-forest fixed top-0 left-0 z-30 flex h-full w-64 flex-col transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:w-60',
         uiStore.mobileSidebarOpen
           ? 'translate-x-0 shadow-xl'
           : '-translate-x-full lg:translate-x-0',
       ]"
     >
       <!-- Church identity -->
-      <div class="border-b border-white/10 px-4 pt-5 pb-4">
+      <div class="border-b border-on-night/12 px-5 pt-6 pb-5">
         <div class="flex items-center gap-3">
           <div
-            class="flex size-10 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/10"
+            class="flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne/40"
           >
-            <Icon icon="mdi:church" class="text-xl text-[#f2d593]" />
+            <Icon icon="mdi:church" class="text-lg text-champagne" />
           </div>
           <div class="min-w-0">
-            <p class="truncate font-display text-[15px] font-semibold leading-tight text-white">
+            <p class="line-clamp-2 font-display text-[1.3125rem] leading-tight text-on-night">
               {{ settingsStore.settings.name }}
             </p>
-            <p class="mt-0.5 text-xs font-medium text-white/65">Admin Dashboard</p>
+            <p class="mt-0.5 text-xs font-medium text-on-night-muted">Admin Dashboard</p>
           </div>
         </div>
-        <div class="mt-4 rounded-md bg-black/15 px-3 py-2">
-          <p class="text-2xs font-semibold tracking-[0.08em] text-[#f2d593]/90 uppercase">
-            Congregation
-          </p>
-          <p class="mt-0.5 text-xs leading-snug text-white/75">
+        <div class="mt-5 border-t border-on-night/12 pt-3">
+          <p class="t-label text-champagne">Congregation</p>
+          <p class="mt-1 text-xs leading-snug text-on-night-muted">
             {{ settingsStore.settings.address }}
           </p>
         </div>
       </div>
 
       <!-- Navigation -->
-      <nav class="sidebar-scroll flex-1 space-y-0.5 overflow-y-auto px-3 py-4" aria-label="Admin">
+      <nav class="sidebar-scroll flex-1 space-y-px overflow-y-auto px-3 py-4" aria-label="Admin">
         <NuxtLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
           :aria-current="isActive(item) ? 'page' : undefined"
           :class="[
-            'group relative flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors duration-150 lg:min-h-10',
+            'group relative flex min-h-11 items-center gap-3 rounded-sm px-3 text-sm transition-colors duration-200 lg:min-h-10',
             isActive(item)
-              ? 'bg-white text-[#163b2d] shadow-sm'
-              : 'text-white/80 hover:bg-white/10 hover:text-white',
+              ? 'bg-on-night/12 font-semibold text-on-night'
+              : 'font-medium text-on-night-muted hover:bg-on-night/5 hover:text-on-night',
           ]"
           @click="uiStore.closeMobileSidebar()"
         >
           <Icon
             :icon="item.icon"
             :class="[
-              'shrink-0 text-[19px]',
-              isActive(item) ? 'text-[#1e4d3b]' : 'text-white/60 group-hover:text-white/90',
+              'shrink-0 text-[19px] transition-colors',
+              isActive(item)
+                ? 'text-champagne'
+                : 'text-on-night-muted/80 group-hover:text-on-night',
             ]"
           />
           {{ item.label }}
           <!-- Unread enquiries, so a message left overnight is visible from any page. -->
           <span
             v-if="item.badge === 'messages' && messagesStore.unreadCount"
-            :class="[
-              'num ml-auto min-w-6 rounded-sm px-1.5 py-0.5 text-center text-[11px] font-bold',
-              isActive(item) ? 'bg-[#1e4d3b] text-white' : 'bg-[#f2d593] text-[#3b2a06]',
-            ]"
+            class="num ml-auto min-w-6 rounded-sm bg-champagne px-1.5 py-0.5 text-center text-[11px] font-bold text-night"
             :aria-label="`${messagesStore.unreadCount} unread`"
           >
             {{ messagesStore.unreadCount }}
@@ -140,25 +137,29 @@ async function logout() {
       </nav>
 
       <!-- Bottom section -->
-      <div class="border-t border-white/10 px-3 py-3">
-        <p class="mb-1 px-3 text-2xs font-semibold tracking-[0.08em] text-white/65 uppercase">
-          Site
-        </p>
+      <div class="border-t border-on-night/12 px-3 py-3">
+        <p class="t-label mb-1 px-3 text-on-night-muted">Site</p>
         <NuxtLink
           to="/"
-          class="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white lg:min-h-10"
+          class="group flex min-h-11 items-center gap-3 rounded-sm px-3 text-sm font-medium text-on-night-muted transition-colors hover:bg-on-night/5 hover:text-on-night lg:min-h-10"
         >
-          <Icon icon="mdi:home-outline" class="text-[19px] text-white/60" />
+          <Icon
+            icon="mdi:home-outline"
+            class="text-[19px] text-on-night-muted/80 group-hover:text-on-night"
+          />
           Go to Home
         </NuxtLink>
         <button
-          class="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60 lg:min-h-10"
+          class="group flex min-h-11 w-full items-center gap-3 rounded-sm px-3 text-sm font-medium text-on-night-muted transition-colors hover:bg-on-night/5 hover:text-on-night disabled:opacity-60 lg:min-h-10"
           :disabled="signingOut"
           @click="logout"
         >
           <Icon
             :icon="signingOut ? 'mdi:loading' : 'mdi:logout'"
-            :class="['text-[19px] text-white/60', signingOut && 'animate-spin']"
+            :class="[
+              'text-[19px] text-on-night-muted/80 group-hover:text-on-night',
+              signingOut && 'animate-spin',
+            ]"
           />
           {{ signingOut ? 'Signing out…' : 'Logout' }}
         </button>
@@ -168,7 +169,7 @@ async function logout() {
     <!-- Main area -->
     <div class="flex min-w-0 flex-1 flex-col lg:ml-60">
       <!-- Topbar -->
-      <header class="sticky top-0 z-10 border-b border-rule bg-surface/95 backdrop-blur-sm">
+      <header class="sticky top-0 z-10 border-b border-rule bg-surface">
         <!-- Renders only outside production, so nobody edits the live congregation
              thinking they are in staging. -->
         <EnvironmentBanner />
@@ -189,16 +190,14 @@ async function logout() {
         </div>
         <div class="flex items-center gap-3 px-4 py-3.5 lg:px-8 lg:py-4">
           <button
-            class="-ml-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-surface-sunken hover:text-ink lg:hidden"
+            class="-ml-1 inline-flex size-11 shrink-0 items-center justify-center rounded-sm text-ink-muted transition-colors hover:bg-surface-sunken hover:text-ink lg:hidden"
             aria-label="Toggle sidebar"
             @click="uiStore.toggleSidebar()"
           >
             <Icon icon="mdi:menu" class="text-[22px]" />
           </button>
           <div class="margin-rule min-w-0 flex-1">
-            <h1
-              class="truncate font-display text-xl leading-tight font-bold text-ink sm:text-[1.625rem]"
-            >
+            <h1 class="truncate font-display text-[1.625rem] leading-tight text-ink sm:text-[2rem]">
               {{ title }}
             </h1>
             <p v-if="subtitle" class="mt-0.5 truncate text-sm text-ink-muted">{{ subtitle }}</p>

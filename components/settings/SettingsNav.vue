@@ -32,7 +32,7 @@ const current = computed(() =>
       <select
         id="settings-section"
         :value="modelValue"
-        class="min-h-11 w-full appearance-none rounded-md border border-rule-strong bg-surface py-2.5 pr-9 pl-9 text-[15px] font-medium text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:text-sm"
+        class="min-h-11 w-full appearance-none rounded-md border border-rule-strong bg-surface py-2.5 pr-9 pl-9 text-[15px] font-medium text-ink outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:text-sm"
         @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value as T)"
       >
         <optgroup v-for="group in groups" :key="group.label" :label="group.label">

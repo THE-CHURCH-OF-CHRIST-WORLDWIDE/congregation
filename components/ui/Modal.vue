@@ -35,7 +35,7 @@ onMounted(() => {
         <div class="modal-scrim absolute inset-0 bg-overlay" @click="close"></div>
         <div
           :class="[
-            'modal-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-xl border border-rule bg-surface text-ink shadow-xl sm:max-h-[88vh] sm:rounded-xl',
+            'modal-panel relative flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-md border border-rule bg-surface text-ink shadow-xl sm:max-h-[88vh] sm:rounded-md',
             sizeClasses[size],
           ]"
           @click.stop
@@ -44,9 +44,9 @@ onMounted(() => {
             v-if="title"
             class="flex shrink-0 items-center justify-between gap-4 border-b border-rule px-5 py-3.5"
           >
-            <h2 class="font-display text-lg font-semibold leading-snug text-ink">{{ title }}</h2>
+            <h2 class="font-sans text-base leading-snug font-semibold text-ink">{{ title }}</h2>
             <button
-              class="-mr-2 inline-flex size-10 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
+              class="-mr-2 inline-flex size-10 items-center justify-center rounded-sm text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
               aria-label="Close modal"
               @click="close"
             >

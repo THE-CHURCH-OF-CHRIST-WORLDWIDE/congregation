@@ -11,7 +11,7 @@ withDefaults(defineProps<Props>(), { variant: 'default' })
 <template>
   <div class="flex min-w-0 items-start gap-2.5">
     <div
-      class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md"
+      class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm"
       :class="variant === 'warning' ? 'bg-warning-soft' : 'bg-primary-soft'"
     >
       <Icon

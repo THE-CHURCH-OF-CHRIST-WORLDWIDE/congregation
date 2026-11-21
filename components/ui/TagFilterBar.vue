@@ -10,16 +10,18 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+  <!-- Quiet text tabs: the active filter is marked by a bronze hairline beneath it -->
+  <div class="no-scrollbar -mb-px flex gap-x-7 overflow-x-auto">
     <button
       v-for="tag in props.tags"
       :key="tag"
       :aria-pressed="props.active === tag"
       :class="[
-        'inline-flex min-h-11 shrink-0 items-center rounded-md border px-4 text-base font-medium whitespace-nowrap transition-colors duration-150 sm:min-h-10 sm:text-sm',
+        'relative inline-flex min-h-11 shrink-0 items-center text-[0.9375rem] font-medium whitespace-nowrap transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
+        'after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:bg-accent after:transition-transform after:duration-500 after:ease-[cubic-bezier(0.16,1,0.3,1)]',
         props.active === tag
-          ? 'border-primary bg-primary text-on-primary shadow-xs'
-          : 'border-rule-strong bg-surface text-ink-muted hover:border-ink-subtle hover:bg-surface-muted hover:text-ink',
+          ? 'text-ink after:scale-x-100'
+          : 'text-ink-subtle after:scale-x-0 hover:text-ink',
       ]"
       @click="emit('update:active', tag)"
     >

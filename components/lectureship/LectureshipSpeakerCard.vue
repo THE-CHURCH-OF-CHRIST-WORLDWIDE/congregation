@@ -17,11 +17,15 @@ const meta = computed(() => LECTURESHIP_ROLES[props.speaker.role])
 </script>
 
 <template>
-  <div
-    class="flex flex-col overflow-hidden rounded-lg border border-rule bg-surface shadow-xs transition-[box-shadow,border-color] duration-200 hover:border-rule-strong hover:shadow-md"
-  >
-    <!-- Portrait photo, badge + name overlaid at the bottom like a name card -->
-    <div :class="['relative aspect-[3/4] w-full', !speaker.avatar && 'bookcloth']">
+  <article class="group flex flex-col">
+    <!-- Portrait -->
+    <div
+      v-reveal="'unveil'"
+      :class="[
+        'img-zoom relative aspect-[4/5] w-full overflow-hidden',
+        speaker.avatar ? 'bg-surface-sunken' : 'bg-primary',
+      ]"
+    >
       <img
         v-if="speaker.avatar"
         :src="displayableImageUrl(speaker.avatar)"
@@ -32,33 +36,21 @@ const meta = computed(() => LECTURESHIP_ROLES[props.speaker.role])
       />
       <p
         v-else
-        class="absolute inset-0 flex items-center justify-center font-display text-6xl font-bold text-white/50"
+        class="absolute inset-0 flex items-end p-5 font-display text-[clamp(3.5rem,8vw,6rem)] leading-none text-on-night/30 italic"
       >
         {{ initials(speaker.name) }}
       </p>
-
-      <div
-        class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/35 to-transparent"
-      ></div>
-
-      <div class="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 p-3 sm:p-4">
-        <span
-          :class="[
-            'w-fit rounded-sm px-1.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase',
-            meta.accentClass,
-          ]"
-        >
-          {{ meta.badgeText }}
-        </span>
-        <p class="font-display text-base leading-snug font-semibold text-white sm:text-lg">
-          {{ speaker.name }}
-        </p>
-        <p v-if="speaker.title" class="text-sm leading-snug text-white/80">{{ speaker.title }}</p>
-      </div>
     </div>
 
-    <p v-if="speaker.bio" class="px-4 py-4 text-sm leading-relaxed text-ink-muted">
+    <!-- Name card -->
+    <p class="stamp mt-5">{{ meta.badgeText }}</p>
+    <h3 class="mt-2 font-display text-[1.5rem] leading-[1.1] text-ink md:text-[1.75rem]">
+      {{ speaker.name }}
+    </h3>
+    <p v-if="speaker.title" class="t-label mt-2.5 text-ink-subtle">{{ speaker.title }}</p>
+
+    <p v-if="speaker.bio" class="mt-4 text-[0.9375rem] leading-relaxed text-ink-muted">
       {{ speaker.bio }}
     </p>
-  </div>
+  </article>
 </template>

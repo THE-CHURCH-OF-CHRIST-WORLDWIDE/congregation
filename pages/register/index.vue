@@ -217,88 +217,147 @@ watch(submitted, (v) => {
 </script>
 
 <template>
-  <div class="register-form min-h-screen bg-surface-muted pb-20">
-    <!-- Page header -->
-    <div class="border-b border-rule bg-surface">
-      <div class="mx-auto max-w-3xl px-5 py-8 sm:px-6 md:py-12">
-        <div class="mb-4 flex items-center gap-1.5 text-sm text-ink-subtle">
-          <NuxtLink
-            to="/"
-            class="rounded-sm py-1 transition-colors duration-150 hover:text-primary-ink"
-            >Home</NuxtLink
-          >
-          <Icon icon="mdi:chevron-right" class="size-4" aria-hidden="true" />
-          <span class="text-ink-muted">Register</span>
-        </div>
-        <div class="margin-rule">
-          <h1
-            class="font-display text-[2rem] leading-[1.15] font-bold text-secondary md:text-[2.5rem]"
-          >
-            Member Registration
-          </h1>
-          <p class="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted md:text-lg">
-            Fill in your details to be added to the church nominal roll. All fields marked
-            <span class="font-bold text-error">*</span> are required.
-          </p>
-        </div>
-      </div>
-    </div>
+  <div class="register-form bg-surface pb-24 md:pb-32">
+    <div class="site-container grid gap-10 pt-12 md:pt-16 lg:grid-cols-12 lg:gap-8 lg:pt-24">
+      <!-- ── Intro column: the invitation, sticky beside the form on desktop ── -->
+      <aside class="lg:col-span-4">
+        <div class="lg:sticky lg:top-[calc(var(--nav-h)+2.5rem)]">
+          <nav class="hero-animate" aria-label="Breadcrumb">
+            <ol class="t-label flex items-center gap-3 text-ink-subtle">
+              <li>
+                <NuxtLink
+                  to="/"
+                  class="inline-flex min-h-8 items-center transition-colors duration-300 hover:text-primary-ink"
+                  >Home</NuxtLink
+                >
+              </li>
+              <li class="text-rule-strong" aria-hidden="true">/</li>
+              <li class="text-ink-muted" aria-current="page">Register</li>
+            </ol>
+          </nav>
 
-    <div class="mx-auto max-w-3xl px-4 pt-6 sm:px-6 md:pt-8">
-      <!-- ── Success state ──────────────────────────────────────────────────── -->
-      <Card v-if="submitted" padding="lg">
-        <div class="flex flex-col items-center py-8 text-center">
-          <div class="flex size-14 items-center justify-center rounded-full bg-success-soft">
-            <Icon
-              icon="mdi:check-circle-outline"
-              class="text-3xl text-success"
-              aria-hidden="true"
-            />
-          </div>
-          <h2 class="mt-4 font-display text-2xl font-bold text-secondary">Registration received</h2>
-          <p class="mt-2 max-w-md text-base leading-relaxed text-ink-muted">
+          <h1 class="t-h1 mt-8 text-secondary lg:mt-12">
+            <SplitReveal text="Member" immediate :delay="100" />
+            {{ ' ' }}
+            <SplitReveal text="Registration" immediate :delay="220" class="t-turn" />
+          </h1>
+          <p class="hero-animate t-lede mt-6 max-w-md" style="animation-delay: 450ms">
+            Fill in your details to be added to the church nominal roll. All fields marked
+            <span class="font-semibold text-error">*</span> are required.
+          </p>
+
+          <ol
+            v-if="!submitted"
+            class="hero-animate mt-12 hidden border-t border-rule lg:block"
+            style="animation-delay: 600ms"
+            aria-label="Form sections"
+          >
+            <li>
+              <a
+                href="#reg-personal"
+                class="group flex min-h-11 items-center gap-4 border-b border-rule text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-ink"
+                ><span class="num w-6 text-xs text-accent">01</span
+                ><span>Personal Information</span></a
+              >
+            </li>
+            <li>
+              <a
+                href="#reg-church"
+                class="group flex min-h-11 items-center gap-4 border-b border-rule text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-ink"
+                ><span class="num w-6 text-xs text-accent">02</span
+                ><span>Church Information</span></a
+              >
+            </li>
+            <li>
+              <a
+                href="#reg-previous"
+                class="group flex min-h-11 items-center gap-4 border-b border-rule text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-ink"
+                ><span class="num w-6 text-xs text-accent">03</span
+                ><span>Previous Congregation</span></a
+              >
+            </li>
+            <li>
+              <a
+                href="#reg-origin"
+                class="group flex min-h-11 items-center gap-4 border-b border-rule text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-ink"
+                ><span class="num w-6 text-xs text-accent">04</span><span>Place of Origin</span></a
+              >
+            </li>
+            <li>
+              <a
+                href="#reg-residence"
+                class="group flex min-h-11 items-center gap-4 border-b border-rule text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-ink"
+                ><span class="num w-6 text-xs text-accent">05</span
+                ><span>Residential Address</span></a
+              >
+            </li>
+            <li>
+              <a
+                href="#reg-emergency"
+                class="group flex min-h-11 items-center gap-4 border-b border-rule text-sm font-medium text-ink-muted transition-colors duration-300 hover:text-ink"
+                ><span class="num w-6 text-xs text-accent">06</span
+                ><span>Emergency Contact</span></a
+              >
+            </li>
+          </ol>
+        </div>
+      </aside>
+
+      <div class="lg:col-span-7 lg:col-start-6">
+        <!-- ── Success state ──────────────────────────────────────────────────── -->
+        <div v-if="submitted" class="border-t border-rule py-14 md:py-20" role="status">
+          <span
+            class="flex size-14 items-center justify-center rounded-full border border-success/40 text-success"
+          >
+            <Icon icon="mdi:check" class="size-7" aria-hidden="true" />
+          </span>
+          <h2 class="t-h2 mt-8 text-secondary">Registration received</h2>
+          <p class="t-lede mt-5 max-w-lg">
             Thank you{{ registeredName ? `, ${registeredName}` : '' }}. Your details have been
             submitted to the church secretary. You will be contacted once your record is confirmed
             on the nominal roll.
           </p>
-          <div class="mt-6 flex flex-wrap justify-center gap-3">
-            <Button variant="secondary" @click="registerAnother">
-              <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
+          <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <button type="button" class="btn btn-outline min-h-14 px-7" @click="registerAnother">
+              <Icon icon="mdi:account-plus-outline" class="size-5" aria-hidden="true" />
               Register another member
-            </Button>
-            <NuxtLink to="/">
-              <Button>Back to Home</Button>
+            </button>
+            <NuxtLink to="/" class="btn btn-primary min-h-14 px-7">
+              Back to Home
+              <Icon icon="mdi:arrow-right" class="btn-arrow size-5" aria-hidden="true" />
             </NuxtLink>
           </div>
         </div>
-      </Card>
 
-      <!-- ── Form ───────────────────────────────────────────────────────────── -->
-      <form v-else class="flex flex-col gap-5" novalidate @submit.prevent="submit">
-        <!-- Personal Information -->
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
-              >
-                <Icon
-                  icon="mdi:account-outline"
-                  class="size-5 shrink-0 text-primary-ink"
-                  aria-hidden="true"
-                />Personal Information
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
-                How the church can identify and reach you.
-              </p>
+        <!-- ── Form ───────────────────────────────────────────────────────────── -->
+        <form v-else class="flex flex-col" novalidate @submit.prevent="submit">
+          <section
+            id="reg-personal"
+            class="reg-section scroll-mt-28 border-t border-rule py-12 md:py-16"
+            aria-labelledby="reg-personal-title"
+          >
+            <header class="mb-10 grid gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
+              <span class="t-label num pt-2 text-accent" aria-hidden="true">01</span>
+              <div>
+                <h2 id="reg-personal-title" class="t-h3 text-secondary">Personal Information</h2>
+                <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">
+                  How the church can identify and reach you.
+                </p>
+              </div>
             </header>
 
-            <div class="space-y-5">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2 md:pl-16">
               <div
                 id="field-avatar"
-                class="flex flex-col items-start gap-4 rounded-md border border-rule bg-surface-muted p-4 sm:flex-row sm:items-center"
+                class="flex flex-col items-start gap-5 sm:col-span-2 sm:flex-row sm:items-center sm:gap-7"
               >
-                <div :class="errors.avatar ? 'rounded-full ring-2 ring-error' : ''">
+                <div
+                  :class="
+                    errors.avatar
+                      ? 'rounded-full ring-2 ring-error ring-offset-4 ring-offset-surface'
+                      : ''
+                  "
+                >
                   <ImageUpload
                     v-model="form.avatar"
                     shape="circle"
@@ -307,408 +366,695 @@ watch(submitted, (v) => {
                   />
                 </div>
                 <div>
-                  <p class="text-sm leading-relaxed text-ink-muted">
-                    <span class="font-semibold text-ink">Passport photograph</span>
-                    <span class="font-bold text-error">*</span><br />
+                  <p class="field-label">
+                    Passport photograph <span class="field-req" aria-hidden="true">*</span>
+                  </p>
+                  <p class="mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">
                     JPG or PNG. Large photos are compressed automatically.
                   </p>
-                  <p v-if="errors.avatar" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.avatar }}
+                  <p v-if="errors.avatar" id="err-avatar" class="field-error" role="alert">
+                    <Icon
+                      icon="mdi:alert-circle-outline"
+                      class="mt-0.5 size-4 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <span>{{ errors.avatar }}</span>
                   </p>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-                <EditField id="field-name" label="Full Name *">
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    autocomplete="name"
-                    placeholder="Enter your full name"
-                    :class="errors.name ? 'border-error focus:border-error' : ''"
+              <div id="field-name">
+                <label class="field-label" for="reg-name"
+                  >Full Name <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <input
+                  id="reg-name"
+                  v-model="form.name"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="Enter your full name"
+                  class="field-input"
+                  :class="errors.name ? 'border-error focus:border-error' : ''"
+                  :aria-invalid="errors.name ? true : undefined"
+                  :aria-describedby="errors.name ? 'err-name' : undefined"
+                  aria-required="true"
+                />
+                <p v-if="errors.name" id="err-name" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
                   />
-                  <p v-if="errors.name" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.name }}
-                  </p>
-                </EditField>
-                <EditField id="field-email" label="Email Address *">
-                  <input
-                    v-model="form.email"
-                    type="email"
-                    autocomplete="email"
-                    placeholder="you@example.com"
-                    :class="errors.email ? 'border-error focus:border-error' : ''"
-                  />
-                  <p v-if="errors.email" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.email }}
-                  </p>
-                </EditField>
+                  <span>{{ errors.name }}</span>
+                </p>
               </div>
-
-              <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-4">
-                <EditField id="field-phone" label="Phone Number *" class="sm:col-span-2">
-                  <input
-                    v-model="form.phone"
-                    type="tel"
-                    autocomplete="tel"
-                    placeholder="+234 800 000 0000"
-                    :class="errors.phone ? 'border-error focus:border-error' : ''"
+              <div id="field-email">
+                <label class="field-label" for="reg-email"
+                  >Email Address <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <input
+                  id="reg-email"
+                  v-model="form.email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                  class="field-input"
+                  :class="errors.email ? 'border-error focus:border-error' : ''"
+                  :aria-invalid="errors.email ? true : undefined"
+                  :aria-describedby="errors.email ? 'err-email' : undefined"
+                  aria-required="true"
+                />
+                <p v-if="errors.email" id="err-email" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
                   />
-                  <p v-if="errors.phone" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.phone }}
-                  </p>
-                </EditField>
-                <EditField id="field-gender" label="Gender *">
-                  <select v-model="form.gender" :class="inputError('gender')">
+                  <span>{{ errors.email }}</span>
+                </p>
+              </div>
+              <div id="field-phone" class="sm:col-span-2">
+                <label class="field-label" for="reg-phone"
+                  >Phone Number <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <input
+                  id="reg-phone"
+                  v-model="form.phone"
+                  type="tel"
+                  autocomplete="tel"
+                  placeholder="+234 800 000 0000"
+                  class="field-input"
+                  :class="errors.phone ? 'border-error focus:border-error' : ''"
+                  :aria-invalid="errors.phone ? true : undefined"
+                  :aria-describedby="errors.phone ? 'err-phone' : undefined"
+                  aria-required="true"
+                />
+                <p v-if="errors.phone" id="err-phone" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.phone }}</span>
+                </p>
+              </div>
+              <div id="field-gender">
+                <label class="field-label" for="reg-gender"
+                  >Gender <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <div class="relative">
+                  <select
+                    id="reg-gender"
+                    v-model="form.gender"
+                    class="field-input cursor-pointer appearance-none pr-8"
+                    :class="inputError('gender')"
+                    :aria-invalid="errors.gender ? true : undefined"
+                    :aria-describedby="errors.gender ? 'err-gender' : undefined"
+                    aria-required="true"
+                  >
                     <option v-for="g in genderOptions" :key="g" :value="g">{{ g }}</option>
                   </select>
-                  <p v-if="errors.gender" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.gender }}
-                  </p>
-                </EditField>
-                <EditField id="field-maritalStatus" label="Marital Status *">
-                  <select v-model="form.maritalStatus" :class="inputError('maritalStatus')">
+                  <Icon
+                    icon="mdi:chevron-down"
+                    class="pointer-events-none absolute right-0 bottom-3.5 size-5 text-ink-subtle"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p v-if="errors.gender" id="err-gender" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.gender }}</span>
+                </p>
+              </div>
+              <div id="field-maritalStatus">
+                <label class="field-label" for="reg-maritalStatus"
+                  >Marital Status <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <div class="relative">
+                  <select
+                    id="reg-maritalStatus"
+                    v-model="form.maritalStatus"
+                    class="field-input cursor-pointer appearance-none pr-8"
+                    :class="inputError('maritalStatus')"
+                    :aria-invalid="errors.maritalStatus ? true : undefined"
+                    :aria-describedby="errors.maritalStatus ? 'err-maritalStatus' : undefined"
+                    aria-required="true"
+                  >
                     <option value="">— Select —</option>
                     <option v-for="m in maritalOptions" :key="m" :value="m">{{ m }}</option>
                   </select>
-                  <p v-if="errors.maritalStatus" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.maritalStatus }}
-                  </p>
-                </EditField>
+                  <Icon
+                    icon="mdi:chevron-down"
+                    class="pointer-events-none absolute right-0 bottom-3.5 size-5 text-ink-subtle"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p
+                  v-if="errors.maritalStatus"
+                  id="err-maritalStatus"
+                  class="field-error"
+                  role="alert"
+                >
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.maritalStatus }}</span>
+                </p>
               </div>
-
-              <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-                <EditField id="field-dob" label="Date of Birth *">
-                  <input
-                    v-model="form.dob"
-                    type="date"
-                    :max="today"
-                    :class="errors.dob ? 'border-error focus:border-error' : ''"
+              <div id="field-dob">
+                <label class="field-label" for="reg-dob"
+                  >Date of Birth <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <input
+                  id="reg-dob"
+                  v-model="form.dob"
+                  type="date"
+                  :max="today"
+                  class="field-input"
+                  :class="errors.dob ? 'border-error focus:border-error' : ''"
+                  :aria-invalid="errors.dob ? true : undefined"
+                  :aria-describedby="errors.dob ? 'err-dob' : undefined"
+                  aria-required="true"
+                />
+                <p v-if="errors.dob" id="err-dob" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
                   />
-                  <p v-if="errors.dob" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.dob }}
-                  </p>
-                </EditField>
-                <EditField id="field-occupation" label="Occupation *">
-                  <input
-                    v-model="form.occupation"
-                    type="text"
-                    placeholder="e.g. Teacher"
-                    :class="inputError('occupation')"
+                  <span>{{ errors.dob }}</span>
+                </p>
+              </div>
+              <div id="field-occupation">
+                <label class="field-label" for="reg-occupation"
+                  >Occupation <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <input
+                  id="reg-occupation"
+                  v-model="form.occupation"
+                  type="text"
+                  placeholder="e.g. Teacher"
+                  class="field-input"
+                  :class="inputError('occupation')"
+                  :aria-invalid="errors.occupation ? true : undefined"
+                  :aria-describedby="errors.occupation ? 'err-occupation' : undefined"
+                  aria-required="true"
+                />
+                <p v-if="errors.occupation" id="err-occupation" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
                   />
-                  <p v-if="errors.occupation" class="mt-1.5 text-sm font-medium text-error">
-                    {{ errors.occupation }}
-                  </p>
-                </EditField>
+                  <span>{{ errors.occupation }}</span>
+                </p>
               </div>
             </div>
           </section>
-        </Card>
 
-        <!-- Church Information -->
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
-              >
-                <Icon
-                  icon="mdi:church"
-                  class="size-5 shrink-0 text-primary-ink"
-                  aria-hidden="true"
-                />Church Information
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
-                Leave the baptism date blank if you have not yet been baptised.
-              </p>
+          <section
+            id="reg-church"
+            class="reg-section scroll-mt-28 border-t border-rule py-12 md:py-16"
+            aria-labelledby="reg-church-title"
+          >
+            <header class="mb-10 grid gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
+              <span class="t-label num pt-2 text-accent" aria-hidden="true">02</span>
+              <div>
+                <h2 id="reg-church-title" class="t-h3 text-secondary">Church Information</h2>
+                <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">
+                  Leave the baptism date blank if you have not yet been baptised.
+                </p>
+              </div>
             </header>
 
-            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-              <EditField id="field-dateOfBaptism" label="Date of Baptism">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2 md:pl-16">
+              <div id="field-dateOfBaptism">
+                <label class="field-label" for="reg-dateOfBaptism">Date of Baptism</label>
                 <input
+                  id="reg-dateOfBaptism"
                   v-model="form.dateOfBaptism"
                   type="date"
                   :max="today"
+                  class="field-input"
                   :class="inputError('dateOfBaptism')"
+                  :aria-invalid="errors.dateOfBaptism ? true : undefined"
+                  :aria-describedby="errors.dateOfBaptism ? 'err-dateOfBaptism' : undefined"
                 />
-                <p v-if="errors.dateOfBaptism" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.dateOfBaptism }}
+                <p
+                  v-if="errors.dateOfBaptism"
+                  id="err-dateOfBaptism"
+                  class="field-error"
+                  role="alert"
+                >
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.dateOfBaptism }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-dateJoined" label="Date of Registration *">
+              </div>
+              <div id="field-dateJoined">
+                <label class="field-label" for="reg-dateJoined"
+                  >Date of Registration <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-dateJoined"
                   v-model="form.dateJoined"
                   type="date"
                   :max="today"
+                  class="field-input"
                   :class="inputError('dateJoined')"
+                  :aria-invalid="errors.dateJoined ? true : undefined"
+                  :aria-describedby="errors.dateJoined ? 'err-dateJoined' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.dateJoined" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.dateJoined }}
+                <p v-if="errors.dateJoined" id="err-dateJoined" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.dateJoined }}</span>
                 </p>
-              </EditField>
+              </div>
             </div>
           </section>
-        </Card>
 
-        <!-- Previous Congregation -->
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
-              >
-                <Icon
-                  icon="mdi:account-switch-outline"
-                  class="size-5 shrink-0 text-primary-ink"
-                  aria-hidden="true"
-                />
-                Previous Congregation
-                <span class="font-sans text-sm font-normal text-ink-subtle">(optional)</span>
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
-                If you are transferring from another congregation, tell us where you worshipped and
-                how we can reach the minister there.
-              </p>
+          <section
+            id="reg-previous"
+            class="reg-section scroll-mt-28 border-t border-rule py-12 md:py-16"
+            aria-labelledby="reg-previous-title"
+          >
+            <header class="mb-10 grid gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
+              <span class="t-label num pt-2 text-accent" aria-hidden="true">03</span>
+              <div>
+                <h2 id="reg-previous-title" class="t-h3 text-secondary">
+                  Previous Congregation
+                  <span class="ml-2 align-middle font-sans text-sm text-ink-subtle"
+                    >(optional)</span
+                  >
+                </h2>
+                <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">
+                  If you are transferring from another congregation, tell us where you worshipped
+                  and how we can reach the minister there.
+                </p>
+              </div>
             </header>
 
-            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-              <EditField id="field-previousCongregation" label="Previous Congregation">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2 md:pl-16">
+              <div id="field-previousCongregation">
+                <label class="field-label" for="reg-previousCongregation"
+                  >Previous Congregation</label
+                >
                 <input
+                  id="reg-previousCongregation"
                   v-model="form.previousCongregation"
                   type="text"
                   placeholder="e.g. Church of Christ, Uyo"
+                  class="field-input"
                 />
-              </EditField>
-              <EditField id="field-previousMinisterPhone" label="Minister / Preacher's Phone">
+              </div>
+              <div id="field-previousMinisterPhone">
+                <label class="field-label" for="reg-previousMinisterPhone"
+                  >Minister / Preacher's Phone</label
+                >
                 <input
+                  id="reg-previousMinisterPhone"
                   v-model="form.previousMinisterPhone"
                   type="tel"
                   placeholder="+234 803 333 4444"
+                  class="field-input"
                   :class="errors.previousMinisterPhone ? 'border-error focus:border-error' : ''"
+                  :aria-invalid="errors.previousMinisterPhone ? true : undefined"
+                  :aria-describedby="
+                    errors.previousMinisterPhone ? 'err-previousMinisterPhone' : undefined
+                  "
                 />
                 <p
                   v-if="errors.previousMinisterPhone"
-                  class="mt-1.5 text-sm font-medium text-error"
+                  id="err-previousMinisterPhone"
+                  class="field-error"
+                  role="alert"
                 >
-                  {{ errors.previousMinisterPhone }}
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.previousMinisterPhone }}</span>
                 </p>
-              </EditField>
+              </div>
             </div>
           </section>
-        </Card>
 
-        <!-- Place of Origin -->
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
-              >
-                <Icon
-                  icon="mdi:map-marker-outline"
-                  class="size-5 shrink-0 text-primary-ink"
-                  aria-hidden="true"
-                />Place of Origin
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">Where you hail from.</p>
+          <section
+            id="reg-origin"
+            class="reg-section scroll-mt-28 border-t border-rule py-12 md:py-16"
+            aria-labelledby="reg-origin-title"
+          >
+            <header class="mb-10 grid gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
+              <span class="t-label num pt-2 text-accent" aria-hidden="true">04</span>
+              <div>
+                <h2 id="reg-origin-title" class="t-h3 text-secondary">Place of Origin</h2>
+                <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">
+                  Where you hail from.
+                </p>
+              </div>
             </header>
 
-            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-              <EditField id="field-country" label="Country *">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2 md:pl-16">
+              <div id="field-country">
+                <label class="field-label" for="reg-country"
+                  >Country <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-country"
                   v-model="form.country"
                   type="text"
                   placeholder="Nigeria"
+                  class="field-input"
                   :class="inputError('country')"
+                  :aria-invalid="errors.country ? true : undefined"
+                  :aria-describedby="errors.country ? 'err-country' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.country" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.country }}
+                <p v-if="errors.country" id="err-country" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.country }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-state" label="State of Origin *">
+              </div>
+              <div id="field-state">
+                <label class="field-label" for="reg-state"
+                  >State of Origin <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-state"
                   v-model="form.state"
                   type="text"
                   placeholder="Akwa Ibom State"
+                  class="field-input"
                   :class="inputError('state')"
+                  :aria-invalid="errors.state ? true : undefined"
+                  :aria-describedby="errors.state ? 'err-state' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.state" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.state }}
+                <p v-if="errors.state" id="err-state" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.state }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-localGovernment" label="Local Government Area *">
+              </div>
+              <div id="field-localGovernment">
+                <label class="field-label" for="reg-localGovernment"
+                  >Local Government Area <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-localGovernment"
                   v-model="form.localGovernment"
                   type="text"
                   placeholder="Ibiono Ibom"
+                  class="field-input"
                   :class="inputError('localGovernment')"
+                  :aria-invalid="errors.localGovernment ? true : undefined"
+                  :aria-describedby="errors.localGovernment ? 'err-localGovernment' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.localGovernment" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.localGovernment }}
+                <p
+                  v-if="errors.localGovernment"
+                  id="err-localGovernment"
+                  class="field-error"
+                  role="alert"
+                >
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.localGovernment }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-village" label="Village *">
+              </div>
+              <div id="field-village">
+                <label class="field-label" for="reg-village"
+                  >Village <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-village"
                   v-model="form.village"
                   type="text"
                   placeholder="Ikot Oku"
+                  class="field-input"
                   :class="inputError('village')"
+                  :aria-invalid="errors.village ? true : undefined"
+                  :aria-describedby="errors.village ? 'err-village' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.village" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.village }}
+                <p v-if="errors.village" id="err-village" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.village }}</span>
                 </p>
-              </EditField>
+              </div>
             </div>
           </section>
-        </Card>
 
-        <!-- Residential Address -->
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
-              >
-                <Icon
-                  icon="mdi:home-outline"
-                  class="size-5 shrink-0 text-primary-ink"
-                  aria-hidden="true"
-                />Residential Address
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">Where you currently live.</p>
+          <section
+            id="reg-residence"
+            class="reg-section scroll-mt-28 border-t border-rule py-12 md:py-16"
+            aria-labelledby="reg-residence-title"
+          >
+            <header class="mb-10 grid gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
+              <span class="t-label num pt-2 text-accent" aria-hidden="true">05</span>
+              <div>
+                <h2 id="reg-residence-title" class="t-h3 text-secondary">Residential Address</h2>
+                <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">
+                  Where you currently live.
+                </p>
+              </div>
             </header>
 
-            <EditField id="field-address" label="Full Address *">
-              <input
-                v-model="form.address"
-                type="text"
-                autocomplete="street-address"
-                placeholder="No. 8 Convent Road, Ikot Ekpene"
-                :class="errors.address ? 'border-error focus:border-error' : ''"
-              />
-              <p v-if="errors.address" class="mt-1.5 text-sm font-medium text-error">
-                {{ errors.address }}
-              </p>
-            </EditField>
-          </section>
-        </Card>
-
-        <!-- Emergency Contact -->
-        <Card padding="lg">
-          <section>
-            <header class="mb-6 border-b border-rule pb-4">
-              <h2
-                class="flex flex-wrap items-center gap-x-2 font-display text-lg font-semibold text-ink sm:text-xl"
-              >
-                <Icon
-                  icon="mdi:phone-alert-outline"
-                  class="size-5 shrink-0 text-primary-ink"
-                  aria-hidden="true"
-                />Emergency Contact
-              </h2>
-              <p class="mt-1 text-sm leading-relaxed text-ink-muted">
-                Someone we can reach on your behalf.
-              </p>
-            </header>
-
-            <div class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-              <EditField id="field-ecName" label="Name *">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2 md:pl-16">
+              <div id="field-address" class="sm:col-span-2">
+                <label class="field-label" for="reg-address"
+                  >Full Address <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-address"
+                  v-model="form.address"
+                  type="text"
+                  autocomplete="street-address"
+                  placeholder="No. 8 Convent Road, Ikot Ekpene"
+                  class="field-input"
+                  :class="errors.address ? 'border-error focus:border-error' : ''"
+                  :aria-invalid="errors.address ? true : undefined"
+                  :aria-describedby="errors.address ? 'err-address' : undefined"
+                  aria-required="true"
+                />
+                <p v-if="errors.address" id="err-address" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.address }}</span>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="reg-emergency"
+            class="reg-section scroll-mt-28 border-t border-rule py-12 md:py-16"
+            aria-labelledby="reg-emergency-title"
+          >
+            <header class="mb-10 grid gap-3 md:grid-cols-[3rem_minmax(0,1fr)] md:gap-4">
+              <span class="t-label num pt-2 text-accent" aria-hidden="true">06</span>
+              <div>
+                <h2 id="reg-emergency-title" class="t-h3 text-secondary">Emergency Contact</h2>
+                <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">
+                  Someone we can reach on your behalf.
+                </p>
+              </div>
+            </header>
+
+            <div class="grid grid-cols-1 gap-x-8 gap-y-9 sm:grid-cols-2 md:pl-16">
+              <div id="field-ecName">
+                <label class="field-label" for="reg-ecName"
+                  >Name <span class="field-req" aria-hidden="true">*</span></label
+                >
+                <input
+                  id="reg-ecName"
                   v-model="form.ecName"
                   type="text"
                   placeholder="Brother John Adebayo"
+                  class="field-input"
                   :class="inputError('ecName')"
+                  :aria-invalid="errors.ecName ? true : undefined"
+                  :aria-describedby="errors.ecName ? 'err-ecName' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.ecName" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.ecName }}
+                <p v-if="errors.ecName" id="err-ecName" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.ecName }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-ecRelationship" label="Relationship *">
+              </div>
+              <div id="field-ecRelationship">
+                <label class="field-label" for="reg-ecRelationship"
+                  >Relationship <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-ecRelationship"
                   v-model="form.ecRelationship"
                   type="text"
                   placeholder="Brother"
+                  class="field-input"
                   :class="inputError('ecRelationship')"
+                  :aria-invalid="errors.ecRelationship ? true : undefined"
+                  :aria-describedby="errors.ecRelationship ? 'err-ecRelationship' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.ecRelationship" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.ecRelationship }}
+                <p
+                  v-if="errors.ecRelationship"
+                  id="err-ecRelationship"
+                  class="field-error"
+                  role="alert"
+                >
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.ecRelationship }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-ecPhone" label="Phone Number *">
+              </div>
+              <div id="field-ecPhone">
+                <label class="field-label" for="reg-ecPhone"
+                  >Phone Number <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-ecPhone"
                   v-model="form.ecPhone"
                   type="tel"
                   placeholder="+234 803 333 4444"
+                  class="field-input"
                   :class="inputError('ecPhone')"
+                  :aria-invalid="errors.ecPhone ? true : undefined"
+                  :aria-describedby="errors.ecPhone ? 'err-ecPhone' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.ecPhone" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.ecPhone }}
+                <p v-if="errors.ecPhone" id="err-ecPhone" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.ecPhone }}</span>
                 </p>
-              </EditField>
-              <EditField id="field-ecAddress" label="Address *">
+              </div>
+              <div id="field-ecAddress">
+                <label class="field-label" for="reg-ecAddress"
+                  >Address <span class="field-req" aria-hidden="true">*</span></label
+                >
                 <input
+                  id="reg-ecAddress"
                   v-model="form.ecAddress"
                   type="text"
                   placeholder="Full address"
+                  class="field-input"
                   :class="inputError('ecAddress')"
+                  :aria-invalid="errors.ecAddress ? true : undefined"
+                  :aria-describedby="errors.ecAddress ? 'err-ecAddress' : undefined"
+                  aria-required="true"
                 />
-                <p v-if="errors.ecAddress" class="mt-1.5 text-sm font-medium text-error">
-                  {{ errors.ecAddress }}
+                <p v-if="errors.ecAddress" id="err-ecAddress" class="field-error" role="alert">
+                  <Icon
+                    icon="mdi:alert-circle-outline"
+                    class="mt-0.5 size-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>{{ errors.ecAddress }}</span>
                 </p>
-              </EditField>
+              </div>
             </div>
           </section>
-        </Card>
 
-        <!-- Submit -->
-        <div
-          class="flex flex-col-reverse items-stretch gap-3 border-t border-rule pt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
-        >
-          <p class="flex items-start gap-1.5 text-sm text-ink-muted">
-            <Icon icon="mdi:lock-outline" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-            Your details are used only for church records and are never shared publicly.
-          </p>
-          <Button
-            type="submit"
-            size="lg"
-            :loading="submitting"
-            class="min-h-13 w-full text-base sm:min-h-12 sm:w-auto"
+          <!-- Submit -->
+          <div
+            class="flex flex-col-reverse items-stretch gap-6 border-t border-rule-strong pt-10 sm:flex-row sm:items-center sm:justify-between"
           >
-            <template #icon-left><Icon icon="mdi:account-check-outline" /></template>
-            Submit Registration
-          </Button>
-        </div>
-      </form>
+            <p class="flex max-w-sm items-start gap-2 text-sm leading-relaxed text-ink-muted">
+              <Icon icon="mdi:lock-outline" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              Your details are used only for church records and are never shared publicly.
+            </p>
+            <button
+              type="submit"
+              :disabled="submitting"
+              :aria-busy="submitting || undefined"
+              class="btn btn-primary min-h-14 w-full px-8 text-base sm:w-auto"
+            >
+              <Icon
+                v-if="submitting"
+                icon="mdi:loading"
+                class="size-5 shrink-0 animate-spin"
+                aria-hidden="true"
+              />
+              <Icon v-else icon="mdi:account-check-outline" class="size-5" aria-hidden="true" />
+              Submit Registration
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Long form for phones and older readers: 16px fields (no iOS zoom), 44px targets, larger labels. */
-.register-form :deep(.edit-field-slot input),
-.register-form :deep(.edit-field-slot select) {
-  min-height: 2.75rem;
-  font-size: 1rem;
-  line-height: 1.5rem;
+/* Long form for phones and older readers: 17px underlined fields (no iOS zoom), 48px targets. */
+.field-req {
+  margin-left: 0.15em;
+  color: var(--c-error);
 }
-.register-form :deep(label > span:first-child) {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--c-ink);
+.field-label + .field-input,
+.field-label + .relative {
+  margin-top: 0.125rem;
 }
-.register-form :deep(.edit-field-slot input.border-error),
-.register-form :deep(.edit-field-slot select.border-error) {
-  border-color: var(--c-error);
+.field-input[type='date'] {
+  font-variant-numeric: tabular-nums;
 }
-.register-form :deep(.edit-field-slot input.border-error:focus),
-.register-form :deep(.edit-field-slot select.border-error:focus) {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-error) 15%, transparent);
+.field-input.border-error {
+  border-bottom-color: var(--c-error);
 }
-@media (min-width: 640px) {
-  .register-form :deep(.edit-field-slot input),
-  .register-form :deep(.edit-field-slot select) {
-    min-height: 2.625rem;
-    font-size: 0.9375rem;
-  }
+.field-input.border-error:focus {
+  border-bottom-color: var(--c-error);
+  box-shadow: 0 1px 0 0 var(--c-error);
+}
+.field-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin-top: 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--c-error);
 }
 </style>
