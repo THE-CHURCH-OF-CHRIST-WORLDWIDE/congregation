@@ -12,6 +12,7 @@ export const ALL_PAGES: AppPage[] = [
   'Attendance',
   'Teachings',
   'Events',
+  'Business Meetings',
   'Finance',
   'Settings',
 ]
@@ -58,7 +59,7 @@ const DEFAULT_ROLES: ChurchRole[] = [
         ['Dashboard', 'Nominal Roll', 'Youth', 'Attendance', 'Teachings', 'Events'],
         ['view', 'add', 'edit', 'delete', 'export']
       ),
-      ...perm(['Finance'], ['view', 'export']),
+      ...perm(['Finance', 'Business Meetings'], ['view', 'export']),
       ...perm(['Settings'], ['view']),
     },
   },
@@ -69,7 +70,7 @@ const DEFAULT_ROLES: ChurchRole[] = [
     description: 'Assists in church administration and member welfare.',
     permissions: {
       ...perm(['Dashboard', 'Nominal Roll', 'Youth', 'Attendance'], ['view', 'add', 'edit']),
-      ...perm(['Teachings', 'Events'], ['view']),
+      ...perm(['Teachings', 'Events', 'Business Meetings'], ['view']),
       ...perm(['Finance'], ['view']),
     },
   },
@@ -93,6 +94,8 @@ const DEFAULT_ROLES: ChurchRole[] = [
         ['Dashboard', 'Nominal Roll', 'Youth', 'Attendance', 'Teachings', 'Events'],
         ['view', 'add', 'edit', 'export']
       ),
+      // The Secretary keeps the minutes. Deleting a meeting stays with Admin and Super Admin.
+      ...perm(['Business Meetings'], ['view', 'add', 'edit', 'export']),
       ...perm(['Finance'], ['view', 'export']),
       ...perm(['Settings'], ['view']),
     },

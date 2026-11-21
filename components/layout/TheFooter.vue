@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { socialPlatformMeta } from '~/constants'
+
 // The congregation's own name and address come from Settings → General. The
 // "Church of Christ, Worldwide" credit in the bottom bar is deliberately not
 // settings-driven: it names the wider fellowship, not this congregation.
@@ -59,6 +61,15 @@ const allResourceLinks: FooterLink[] = [
   },
 ]
 
+/** Only profiles with a link are shown; an admin can leave a row half-filled while drafting. */
+const socialLinks = computed(() =>
+  (settingsStore.settings.socialLinks ?? [])
+    .filter((link) => /^https?:\/\//i.test(link.url.trim()))
+    .map((link) => ({ ...link, meta: socialPlatformMeta(link.platform) }))
+)
+
+const currentYear = new Date().getFullYear()
+
 const quickLinks = computed(() => keep(allQuickLinks))
 const salvationLinks = computed(() => keep(allSalvationLinks))
 const resourceLinks = computed(() => keep(allResourceLinks))
@@ -108,6 +119,17 @@ const resourceLinks = computed(() => keep(allResourceLinks))
         <div class="lg:col-span-4">
           <div class="flex items-center gap-3">
             <div
+              v-if="settingsStore.settings.logoUrl"
+              class="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface ring-1 ring-champagne/50"
+            >
+              <img
+                :src="settingsStore.settings.logoUrl"
+                :alt="`${settingsStore.settings.name} logo`"
+                class="h-full w-full object-contain"
+              />
+            </div>
+            <div
+              v-else
               class="flex size-11 shrink-0 items-center justify-center rounded-full border border-champagne/50 font-display text-sm text-champagne"
             >
               CoC
@@ -125,52 +147,21 @@ const resourceLinks = computed(() => keep(allResourceLinks))
             <span class="t-label mt-3 block text-champagne not-italic">Rom 16:16</span>
           </blockquote>
 
-          <!-- Social icons -->
-          <div class="mt-8 flex items-center gap-2">
-            <!-- Facebook -->
-            <a
-              href="#"
-              aria-label="Facebook"
-              class="flex size-11 items-center justify-center rounded-full border border-on-night/20 text-on-night/85 transition-colors duration-300 hover:border-champagne hover:text-champagne"
-            >
-              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </a>
-
-            <!-- YouTube -->
-            <a
-              href="#"
-              aria-label="YouTube"
-              class="flex size-11 items-center justify-center rounded-full border border-on-night/20 text-on-night/85 transition-colors duration-300 hover:border-champagne hover:text-champagne"
-            >
-              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.97C18.88 4 12 4 12 4s-6.88 0-8.59.45a2.78 2.78 0 0 0-1.95 1.97A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.97C5.12 20 12 20 12 20s6.88 0 8.59-.45a2.78 2.78 0 0 0 1.95-1.97A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"
-                />
-              </svg>
-            </a>
-
-            <!-- Instagram -->
-            <a
-              href="#"
-              aria-label="Instagram"
-              class="flex size-11 items-center justify-center rounded-full border border-on-night/20 text-on-night/85 transition-colors duration-300 hover:border-champagne hover:text-champagne"
-            >
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+          <!-- Social icons: managed from Settings → Branding & Socials -->
+          <ul v-if="socialLinks.length" class="mt-8 flex flex-wrap items-center gap-2">
+            <li v-for="link in socialLinks" :key="link.id">
+              <a
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                :aria-label="link.meta.label"
+                :title="link.meta.label"
+                class="flex size-11 items-center justify-center rounded-full border border-on-night/20 text-on-night/85 transition-colors duration-300 hover:border-champagne hover:text-champagne"
               >
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              </svg>
-            </a>
-          </div>
+                <Icon :icon="link.meta.icon" class="size-[18px]" aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
         </div>
 
         <!-- Quick Links -->
@@ -236,16 +227,20 @@ const resourceLinks = computed(() => keep(allResourceLinks))
         class="mt-16 flex flex-col gap-4 border-t border-on-night/15 pt-8 text-sm sm:flex-row sm:items-start sm:justify-between"
       >
         <div>
-          <p class="font-medium text-on-night">© 2025 Church of Christ, Worldwide</p>
+          <p class="font-medium text-on-night">© {{ currentYear }} Church of Christ, Worldwide</p>
           <p class="mt-1 max-w-[520px] text-[13px] leading-relaxed text-on-night-muted">
             This website template is open-source and available for all Church of Christ
             congregations worldwide.
           </p>
         </div>
         <div class="flex items-center gap-1 text-on-night-muted">
-          <a href="#" class="footer-link min-h-11"><span class="link-text">Privacy Policy</span></a>
+          <NuxtLink to="/privacy-policy" class="footer-link min-h-11">
+            <span class="link-text">Privacy Policy</span>
+          </NuxtLink>
           <span class="mx-3 text-on-night/30" aria-hidden="true">/</span>
-          <a href="#" class="footer-link min-h-11"><span class="link-text">Terms of Use</span></a>
+          <NuxtLink to="/terms-of-use" class="footer-link min-h-11">
+            <span class="link-text">Terms of Use</span>
+          </NuxtLink>
         </div>
       </div>
     </div>

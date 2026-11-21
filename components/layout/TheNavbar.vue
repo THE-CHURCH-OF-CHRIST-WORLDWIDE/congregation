@@ -116,8 +116,19 @@ onBeforeUnmount(() => {
           class="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface ring-1 transition-[box-shadow] duration-500"
           :class="transparent ? 'ring-on-night/40' : 'ring-rule-strong'"
         >
-          <!-- Church seal SVG -->
-          <svg viewBox="0 0 100 100" class="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+          <!-- Uploaded logo (Settings → Branding & Socials), else the built-in church seal -->
+          <img
+            v-if="settingsStore.settings.logoUrl"
+            :src="settingsStore.settings.logoUrl"
+            :alt="`${settingsStore.settings.name} logo`"
+            class="h-full w-full object-contain"
+          />
+          <svg
+            v-else
+            viewBox="0 0 100 100"
+            class="h-full w-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <!-- Background -->
             <circle cx="50" cy="50" r="50" fill="#FAF8F3" />
             <!-- Inner ring -->

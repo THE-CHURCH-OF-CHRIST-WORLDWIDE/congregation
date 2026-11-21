@@ -336,3 +336,92 @@ export const GALLERY_CATEGORIES = [
 ] as const
 
 export type GalleryCategorySlug = (typeof GALLERY_CATEGORIES)[number]['slug']
+
+// ─── Social profiles ─────────────────────────────────────────────────────────
+
+/**
+ * Platforms an admin can link from Settings → Branding & Socials. Each one supplies the footer
+ * icon and accessible label, so adding a platform is a one-line change here. `website` is the
+ * catch-all for anything not listed.
+ */
+export type SocialPlatform =
+  | 'facebook'
+  | 'instagram'
+  | 'x'
+  | 'youtube'
+  | 'tiktok'
+  | 'whatsapp'
+  | 'telegram'
+  | 'threads'
+  | 'linkedin'
+  | 'website'
+
+export const SOCIAL_PLATFORMS: {
+  value: SocialPlatform
+  label: string
+  icon: string
+  placeholder: string
+}[] = [
+  {
+    value: 'facebook',
+    label: 'Facebook',
+    icon: 'mdi:facebook',
+    placeholder: 'https://facebook.com/yourchurch',
+  },
+  {
+    value: 'instagram',
+    label: 'Instagram',
+    icon: 'mdi:instagram',
+    placeholder: 'https://instagram.com/yourchurch',
+  },
+  {
+    value: 'x',
+    label: 'X (Twitter)',
+    icon: 'ri:twitter-x-fill',
+    placeholder: 'https://x.com/yourchurch',
+  },
+  {
+    value: 'youtube',
+    label: 'YouTube',
+    icon: 'mdi:youtube',
+    placeholder: 'https://youtube.com/@yourchurch',
+  },
+  {
+    value: 'tiktok',
+    label: 'TikTok',
+    icon: 'ic:baseline-tiktok',
+    placeholder: 'https://tiktok.com/@yourchurch',
+  },
+  {
+    value: 'whatsapp',
+    label: 'WhatsApp',
+    icon: 'mdi:whatsapp',
+    placeholder: 'https://wa.me/2349000000000',
+  },
+  {
+    value: 'telegram',
+    label: 'Telegram',
+    icon: 'ic:baseline-telegram',
+    placeholder: 'https://t.me/yourchurch',
+  },
+  {
+    value: 'threads',
+    label: 'Threads',
+    icon: 'ri:threads-fill',
+    placeholder: 'https://threads.net/@yourchurch',
+  },
+  {
+    value: 'linkedin',
+    label: 'LinkedIn',
+    icon: 'mdi:linkedin',
+    placeholder: 'https://linkedin.com/company/yourchurch',
+  },
+  { value: 'website', label: 'Other link', icon: 'mdi:web', placeholder: 'https://…' },
+]
+
+export function socialPlatformMeta(platform: SocialPlatform) {
+  return (
+    SOCIAL_PLATFORMS.find((p) => p.value === platform) ??
+    SOCIAL_PLATFORMS[SOCIAL_PLATFORMS.length - 1]!
+  )
+}

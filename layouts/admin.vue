@@ -31,6 +31,11 @@ const allNavItems = [
   { label: 'Teachings', to: '/admin/teachings', icon: 'mdi:book-open-page-variant-outline' },
   { label: 'Events', to: '/admin/events', icon: 'mdi:calendar-outline' },
   { label: 'Lectureship', to: '/admin/lectureship', icon: 'mdi:book-open-page-variant-outline' },
+  {
+    label: 'Business Meetings',
+    to: '/admin/business-meetings',
+    icon: 'mdi:clipboard-text-clock-outline',
+  },
   { label: 'Finance', to: '/admin/finance', icon: 'mdi:cash-multiple' },
   { label: 'Messages', to: '/admin/messages', icon: 'mdi:email-outline', badge: 'messages' },
   { label: 'Settings', to: '/admin/settings', icon: 'mdi:cog-outline' },
@@ -81,6 +86,17 @@ async function logout() {
       <div class="border-b border-on-night/12 px-5 pt-6 pb-5">
         <div class="flex items-center gap-3">
           <div
+            v-if="settingsStore.settings.logoUrl"
+            class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface ring-1 ring-champagne/40"
+          >
+            <img
+              :src="settingsStore.settings.logoUrl"
+              alt=""
+              class="h-full w-full object-contain"
+            />
+          </div>
+          <div
+            v-else
             class="flex size-10 shrink-0 items-center justify-center rounded-full border border-champagne/40"
           >
             <Icon icon="mdi:church" class="text-lg text-champagne" />

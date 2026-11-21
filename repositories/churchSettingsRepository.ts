@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import type { NavVisibilityKey } from '~/constants'
+import type { NavVisibilityKey, SocialPlatform } from '~/constants'
 
 export interface Activity {
   name: string
@@ -157,12 +157,47 @@ export interface HomepageEvent {
  */
 export type NavVisibilitySettings = Record<NavVisibilityKey, boolean>
 
+/** One social profile shown as an icon in the footer. `platform` picks the icon and label. */
+export interface SocialLink {
+  id: string
+  platform: SocialPlatform
+  url: string
+}
+
+export interface LegalSection {
+  id: string
+  heading: string
+  /** Plain text. Blank lines separate paragraphs. */
+  body: string
+}
+
+/**
+ * A legal page (Privacy Policy, Terms of Use). Text may use `{church}`, `{email}`, `{phone}` and
+ * `{address}`, which are filled in from Settings → General when the page renders, so renaming the
+ * church never leaves a stale name in the policy.
+ */
+export interface LegalPage {
+  intro: string
+  sections: LegalSection[]
+  /** ISO date (YYYY-MM-DD), stamped automatically when the page's content is saved. */
+  lastUpdated: string
+}
+
 export interface ChurchSettings {
   // ── General ──────────────────────────────────────────────────────────────
   name: string
   address: string
   phone: string
   email: string
+
+  // ── Branding ─────────────────────────────────────────────────────────────
+  /** Uploaded logo. Empty means the built-in church seal is used. */
+  logoUrl: string
+  socialLinks: SocialLink[]
+
+  // ── Legal ────────────────────────────────────────────────────────────────
+  privacyPolicy: LegalPage
+  termsOfUse: LegalPage
 
   // ── Hero (Landing Page) ───────────────────────────────────────────────────
   heroImageUrl: string

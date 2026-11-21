@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { GALLERY_CATEGORIES, NAV_VISIBILITY_ITEMS } from '~/constants'
+import {
+  GALLERY_CATEGORIES,
+  NAV_VISIBILITY_ITEMS,
+  SOCIAL_PLATFORMS,
+  socialPlatformMeta,
+} from '~/constants'
+import type { LegalPage } from '~/repositories/churchSettingsRepository'
+import { DEFAULT_SETTINGS } from '~/stores/churchSettings'
 
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Settings', description: 'Church admin settings.' })
@@ -29,6 +36,9 @@ onMounted(async () => {
 
 type Tab =
   | 'general'
+  | 'branding'
+  | 'privacy'
+  | 'terms'
   | 'homepage'
   | 'minister'
   | 'live'
@@ -59,6 +69,7 @@ const baseNavGroups: { label: string; items: NavItem[] }[] = [
     label: 'Organisation',
     items: [
       { label: 'General', value: 'general', icon: 'mdi:office-building-outline' },
+      { label: 'Branding & Socials', value: 'branding', icon: 'mdi:palette-outline' },
       { label: 'Congregations', value: 'congregations', icon: 'mdi:map-marker-multiple-outline' },
       { label: 'Leaders', value: 'leaders', icon: 'mdi:account-tie-outline' },
     ],
@@ -86,6 +97,13 @@ const baseNavGroups: { label: string; items: NavItem[] }[] = [
   {
     label: 'Navigation',
     items: [{ label: 'Public Nav Menu', value: 'navigation', icon: 'mdi:menu-open' }],
+  },
+  {
+    label: 'Legal',
+    items: [
+      { label: 'Privacy Policy', value: 'privacy', icon: 'mdi:shield-lock-outline' },
+      { label: 'Terms of Use', value: 'terms', icon: 'mdi:file-document-outline' },
+    ],
   },
   {
     label: 'Access',
@@ -162,6 +180,12 @@ function validate(): boolean {
     activeTab.value = 'general'
     return false
   }
+  // A footer icon that goes nowhere is worse than no icon.
+  if (socialUrlErrors.value.some(Boolean)) {
+    useToast().error('Social links must start with https://')
+    activeTab.value = 'branding'
+    return false
+  }
   // A live broadcast with nowhere to watch it would send every visitor to a dead button.
   if (liveUrlError.value) {
     useToast().error('Add the stream link before going live')
@@ -171,8 +195,20 @@ function validate(): boolean {
   return true
 }
 
+/** Legal page content without its date, so stamping the date doesn't count as an edit. */
+function legalContent(page: LegalPage) {
+  return JSON.stringify({ intro: page.intro, sections: page.sections })
+}
+
 async function save() {
   if (!validate()) return
+  // Visitors see "Last updated …" on each legal page; keep it honest without asking anyone to
+  // remember to change it.
+  for (const key of ['privacyPolicy', 'termsOfUse'] as const) {
+    if (legalContent(draft.value[key]) !== legalContent(store.settings[key])) {
+      draft.value[key].lastUpdated = todayIso()
+    }
+  }
   try {
     await store.save({ ...draft.value })
   } catch {
@@ -214,6 +250,72 @@ onBeforeRouteLeave(() => {
   if (!isDirty.value) return true
   return window.confirm('You have unsaved settings. Leave without saving?')
 })
+
+// ── Branding & socials helpers ───────────────────────────────────────────
+const socialPlatformOptions = SOCIAL_PLATFORMS.map((p) => ({ label: p.label, value: p.value }))
+function addSocialLink() {
+  // Suggest the first platform not yet linked, so "Add" rarely needs a second click.
+  const used = new Set(draft.value.socialLinks.map((l) => l.platform))
+  const next = SOCIAL_PLATFORMS.find((p) => !used.has(p.value)) ?? SOCIAL_PLATFORMS[0]!
+  draft.value.socialLinks.push({ id: `s${Date.now()}`, platform: next.value, url: '' })
+}
+function removeSocialLink(i: number) {
+  draft.value.socialLinks.splice(i, 1)
+}
+function moveSocialLink(i: number, delta: -1 | 1) {
+  const list = draft.value.socialLinks
+  const j = i + delta
+  if (j < 0 || j >= list.length) return
+  ;[list[i], list[j]] = [list[j]!, list[i]!]
+}
+const socialUrlErrors = computed(() =>
+  draft.value.socialLinks.map((l) =>
+    l.url.trim() && !/^https?:\/\//i.test(l.url.trim()) ? 'Must start with https://' : ''
+  )
+)
+
+// ── Legal page helpers ────────────────────────────────────────────────────
+const legalTab = computed<'privacyPolicy' | 'termsOfUse' | null>(() =>
+  activeTab.value === 'privacy'
+    ? 'privacyPolicy'
+    : activeTab.value === 'terms'
+      ? 'termsOfUse'
+      : null
+)
+const legalPreviewPath = computed(() =>
+  legalTab.value === 'termsOfUse' ? '/terms-of-use' : '/privacy-policy'
+)
+function addLegalSection(key: 'privacyPolicy' | 'termsOfUse') {
+  draft.value[key].sections.push({ id: `ls${Date.now()}`, heading: '', body: '' })
+}
+function removeLegalSection(key: 'privacyPolicy' | 'termsOfUse', i: number) {
+  draft.value[key].sections.splice(i, 1)
+}
+function moveLegalSection(key: 'privacyPolicy' | 'termsOfUse', i: number, delta: -1 | 1) {
+  const list = draft.value[key].sections
+  const j = i + delta
+  if (j < 0 || j >= list.length) return
+  ;[list[i], list[j]] = [list[j]!, list[i]!]
+}
+const { confirm } = useConfirm()
+async function resetLegalPage(key: 'privacyPolicy' | 'termsOfUse') {
+  const ok = await confirm({
+    title: 'Restore the starter text?',
+    message:
+      'Every section on this page is replaced with the template text. Nothing is published until you save.',
+    confirmLabel: 'Restore',
+  })
+  if (!ok) return
+  const { lastUpdated } = draft.value[key]
+  draft.value[key] = { ...cloneSettings(DEFAULT_SETTINGS[key]), lastUpdated }
+}
+function formatLegalDate(iso: string) {
+  if (!iso) return 'Not yet saved'
+  const d = new Date(`${iso}T00:00:00`)
+  return Number.isNaN(d.getTime())
+    ? iso
+    : d.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
+}
 
 // ── Activities helpers ────────────────────────────────────────────────────
 function addActivity() {
@@ -423,6 +525,104 @@ function removeSundayDetail(i: number) {
                 </Button>
               </div>
             </div>
+          </SettingsSection>
+        </div>
+
+        <!-- ── Branding & Socials ───────────────────────────────────────── -->
+        <div
+          v-else-if="activeTab === 'branding'"
+          key="branding"
+          class="flex max-w-3xl flex-col gap-5"
+        >
+          <SettingsSection
+            title="Logo"
+            description="Shown in the site header, the footer, the admin sidebar and the browser tab. Leave empty to use the built-in church seal."
+          >
+            <div class="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-start">
+              <ImageUpload
+                v-model="draft.logoUrl"
+                folder="congregation/branding"
+                helper="A square image works best — it is shown inside a circle. PNG with a transparent background is ideal."
+              />
+              <div class="flex flex-col items-center gap-2">
+                <p class="text-2xs font-semibold tracking-[0.06em] text-ink-muted uppercase">
+                  Preview
+                </p>
+                <div
+                  class="flex size-16 items-center justify-center overflow-hidden rounded-full bg-surface ring-1 ring-rule-strong"
+                >
+                  <img
+                    v-if="draft.logoUrl"
+                    :src="draft.logoUrl"
+                    alt="Logo preview"
+                    class="h-full w-full object-contain"
+                  />
+                  <Icon v-else icon="mdi:church" class="text-2xl text-ink-subtle" />
+                </div>
+                <Button v-if="draft.logoUrl" variant="ghost" size="sm" @click="draft.logoUrl = ''">
+                  Remove logo
+                </Button>
+              </div>
+            </div>
+          </SettingsSection>
+
+          <SettingsSection
+            title="Social media"
+            description="Icons in the site footer, in this order. Rows without a link are not shown."
+            density="sm"
+          >
+            <template #actions>
+              <Button variant="secondary" size="sm" @click="addSocialLink">
+                <template #icon-left><Icon icon="mdi:plus" /></template>
+                Add Profile
+              </Button>
+            </template>
+
+            <SettingsRepeater
+              :items="draft.socialLinks"
+              :columns="['Platform', 'Link']"
+              grid-class="grid-cols-1 sm:grid-cols-[11rem_1fr_auto_auto]"
+              empty="No social profiles yet. Add Facebook, Instagram, X, TikTok, YouTube and more."
+              noun="profile"
+              @remove="removeSocialLink"
+            >
+              <template #default="{ item: link, index }">
+                <Select
+                  v-model="link.platform"
+                  :options="socialPlatformOptions"
+                  label="Platform"
+                  label-class="sm:sr-only"
+                />
+                <Input
+                  v-model="link.url"
+                  type="url"
+                  label="Link"
+                  label-class="sm:sr-only"
+                  :placeholder="socialPlatformMeta(link.platform).placeholder"
+                  :error="socialUrlErrors[index]"
+                />
+                <div class="flex items-center gap-0.5 justify-self-end">
+                  <button
+                    type="button"
+                    class="inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink disabled:pointer-events-none disabled:opacity-30"
+                    :disabled="index === 0"
+                    :aria-label="`Move profile ${index + 1} up`"
+                    @click="moveSocialLink(index, -1)"
+                  >
+                    <Icon icon="mdi:arrow-up" class="text-base" />
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink disabled:pointer-events-none disabled:opacity-30"
+                    :disabled="index === draft.socialLinks.length - 1"
+                    :aria-label="`Move profile ${index + 1} down`"
+                    @click="moveSocialLink(index, 1)"
+                  >
+                    <Icon icon="mdi:arrow-down" class="text-base" />
+                  </button>
+                </div>
+              </template>
+            </SettingsRepeater>
           </SettingsSection>
         </div>
 
@@ -1489,6 +1689,128 @@ function removeSundayDetail(i: number) {
                   :aria-label="`Show ${item.label} in navigation`"
                 />
               </label>
+            </div>
+          </SettingsSection>
+        </div>
+
+        <!-- ── Legal pages (Privacy Policy, Terms of Use) ───────────────── -->
+        <div v-else-if="legalTab" :key="activeTab" class="flex max-w-3xl flex-col gap-5">
+          <SettingsSection
+            :title="legalTab === 'privacyPolicy' ? 'Privacy Policy' : 'Terms of Use'"
+            :description="`Published at ${legalPreviewPath} and linked from the site footer. Last updated: ${formatLegalDate(draft[legalTab].lastUpdated)} — the date updates itself when you save changes here.`"
+          >
+            <template #actions>
+              <NuxtLink
+                :to="legalPreviewPath"
+                target="_blank"
+                class="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium text-primary-ink hover:bg-primary-soft"
+              >
+                View page
+                <Icon icon="mdi:open-in-new" class="text-sm" />
+              </NuxtLink>
+            </template>
+
+            <div class="flex flex-col gap-4">
+              <p
+                class="rounded-md border border-rule bg-surface-muted px-3 py-2.5 text-xs leading-relaxed text-ink-muted"
+              >
+                Write <code class="font-mono text-ink">{church}</code>,
+                <code class="font-mono text-ink">{email}</code>,
+                <code class="font-mono text-ink">{phone}</code> or
+                <code class="font-mono text-ink">{address}</code> anywhere and they are filled in
+                from General settings. Leave a blank line between paragraphs.
+              </p>
+              <div>
+                <label for="legal-intro" class="mb-1.5 block text-sm font-medium text-ink"
+                  >Introduction</label
+                >
+                <textarea
+                  id="legal-intro"
+                  v-model="draft[legalTab].intro"
+                  rows="3"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                ></textarea>
+              </div>
+            </div>
+          </SettingsSection>
+
+          <SettingsSection
+            title="Sections"
+            description="Each section is a heading with its text beneath it, shown in this order."
+          >
+            <template #actions>
+              <Button variant="secondary" size="sm" @click="addLegalSection(legalTab)">
+                <template #icon-left><Icon icon="mdi:plus" /></template>
+                Add Section
+              </Button>
+            </template>
+
+            <ol class="flex flex-col gap-3">
+              <li
+                v-for="(section, i) in draft[legalTab].sections"
+                :key="section.id"
+                class="flex flex-col gap-3 rounded-md border border-rule bg-surface-muted/50 p-4"
+              >
+                <div class="flex items-end gap-2">
+                  <div class="min-w-0 flex-1">
+                    <Input
+                      v-model="section.heading"
+                      :label="`Section ${i + 1} heading`"
+                      placeholder="Information we collect"
+                    />
+                  </div>
+                  <div class="flex shrink-0 items-center gap-0.5 pb-1">
+                    <button
+                      type="button"
+                      class="inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink disabled:pointer-events-none disabled:opacity-30"
+                      :disabled="i === 0"
+                      :aria-label="`Move section ${i + 1} up`"
+                      @click="moveLegalSection(legalTab, i, -1)"
+                    >
+                      <Icon icon="mdi:arrow-up" class="text-base" />
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink disabled:pointer-events-none disabled:opacity-30"
+                      :disabled="i === draft[legalTab].sections.length - 1"
+                      :aria-label="`Move section ${i + 1} down`"
+                      @click="moveLegalSection(legalTab, i, 1)"
+                    >
+                      <Icon icon="mdi:arrow-down" class="text-base" />
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
+                      :aria-label="`Remove section ${i + 1}`"
+                      @click="removeLegalSection(legalTab, i)"
+                    >
+                      <Icon icon="mdi:close" class="text-base" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label :for="`legal-body-${i}`" class="sr-only">Section {{ i + 1 }} text</label>
+                  <textarea
+                    :id="`legal-body-${i}`"
+                    v-model="section.body"
+                    rows="5"
+                    class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+                  ></textarea>
+                </div>
+              </li>
+            </ol>
+            <p
+              v-if="!draft[legalTab].sections.length"
+              class="rounded-md border border-dashed border-rule-strong bg-surface-muted py-6 text-center text-sm text-ink-subtle"
+            >
+              No sections yet.
+            </p>
+
+            <div class="mt-5 border-t border-rule pt-4">
+              <Button variant="ghost" size="sm" @click="resetLegalPage(legalTab)">
+                <template #icon-left><Icon icon="mdi:restore" /></template>
+                Restore starter text
+              </Button>
             </div>
           </SettingsSection>
         </div>

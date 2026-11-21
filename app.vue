@@ -21,6 +21,14 @@
 <script setup lang="ts">
 const authStore = useAuthStore()
 authStore.init()
+
+// The browser tab icon follows the logo uploaded in Settings → Branding & Socials. The navbar and
+// admin layout load settings, so this picks it up as soon as either has run.
+const settingsStore = useChurchSettingsStore()
+useHead(() => {
+  const logo = settingsStore.settings.logoUrl
+  return logo ? { link: [{ rel: 'icon', href: logo, key: 'favicon' }] } : {}
+})
 </script>
 
 <template>

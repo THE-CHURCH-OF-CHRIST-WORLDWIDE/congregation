@@ -36,6 +36,11 @@ rules_version = '2';
 //                     anonymous create-only shape as messages. Staff read, and may update only
 //                     the attendedSat/attendedSun flags to check registrants in on the day.
 //
+//   businessMeetings
+//                   — minutes of the congregation's business meetings. Staff read; Super
+//                     Admin, Admin and the Secretary write. Approved minutes are locked to
+//                     Admin / Super Admin, who alone may also delete a meeting.
+//
 //   settings/church — public site content (church name, service times, leaders,
 //                     gallery, congregations, homepage events). The landing and
 //                     about pages read this while signed out, so it is world
@@ -331,6 +336,28 @@ service cloud.firestore {
     match /lectureshipSpeakers/{speakerId} {
       allow read: if true;
       allow write: if canEditPublishedContent();
+    }
+
+    // ── Business meeting minutes ───────────────────────────────────────────
+    // The congregation's internal decisions, so never public: any staff account may read them.
+    // The Secretary keeps them, alongside Admin and Super Admin (canEditRecords).
+    //
+    // Approved minutes are the adopted record, so they are locked: once `status` is 'approved'
+    // only an Admin or Super Admin may change the document — in practice, to reopen it for a
+    // correction. Deleting a meeting outright is likewise Admin / Super Admin only, so the
+    // Secretary can never quietly remove a record of what was decided.
+    match /businessMeetings/{meetingId} {
+      function canManageMinutes() {
+        return roleId() in ['super-admin', 'admin'];
+      }
+
+      allow read: if isStaff();
+      allow create: if canEditRecords()
+                    && request.resource.data.status in ['draft', 'approved'];
+      allow update: if canEditRecords()
+                    && request.resource.data.status in ['draft', 'approved']
+                    && (resource.data.status != 'approved' || canManageMinutes());
+      allow delete: if canManageMinutes();
     }
 
     // ── Church settings ────────────────────────────────────────────────────
