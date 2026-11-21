@@ -15,22 +15,22 @@ const currentYear = new Date().getFullYear()
  * from the chart *and* from the total beneath it.
  */
 const STATUS_COLORS: Record<string, string> = {
-  Active: '#e5e7eb',
-  Inactive: '#94a3b8',
-  Backslider: '#7dd3fc',
-  Weak: '#0284c7',
-  Distant: '#38bdf8',
-  Withdrawal: '#0ea5e9',
-  Disfellowshipped: '#075985',
-  Transfer: '#0369a1',
-  Late: '#38bdf8',
+  Active: '#2f7a5c',
+  Inactive: '#7a8aa0',
+  Backslider: '#a8683f',
+  Weak: '#c08a2e',
+  Distant: '#2e8a92',
+  Withdrawal: '#8a5a9e',
+  Disfellowshipped: '#c2493b',
+  Transfer: '#3d5f8f',
+  Late: '#5e6f3a',
 }
 
 const slices = computed<Slice[]>(() =>
   MEMBER_STATUSES.map((status) => ({
     label: status,
     value: membersStore.members.filter((m) => m.status === status).length,
-    color: STATUS_COLORS[status] ?? '#94a3b8',
+    color: STATUS_COLORS[status] ?? '#7a8aa0',
   }))
 )
 
@@ -76,41 +76,42 @@ const arcs = computed(() => {
 </script>
 
 <template>
-  <div
-    class="relative overflow-hidden rounded-2xl p-6 text-white"
-    style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f3a5f 100%)"
-  >
-    <h3 class="text-lg font-semibold leading-snug mb-5">{{ currentYear }} Nominal Role Summary</h3>
+  <div class="flex flex-col rounded-lg border border-rule bg-surface p-5 shadow-xs">
+    <div class="flex items-center justify-between gap-3">
+      <h3 class="font-display text-base font-semibold text-ink">
+        <span class="num">{{ currentYear }}</span> Nominal Roll Summary
+      </h3>
+    </div>
 
-    <div class="flex items-center gap-6">
+    <div class="mt-4 flex flex-1 items-center gap-6">
       <!-- Legend -->
-      <ul class="flex flex-col gap-2 text-sm">
+      <ul class="flex min-w-0 flex-1 flex-col divide-y divide-rule text-sm">
         <!-- Only statuses anyone actually holds, with the count. Listing all eight against a
              single member was eight lines of noise that said nothing. -->
-        <li v-for="s in presentSlices" :key="s.label" class="flex items-center gap-2">
+        <li v-for="s in presentSlices" :key="s.label" class="flex items-center gap-2 py-1.5">
           <span
-            class="inline-block h-2.5 w-2.5 rounded-full shrink-0"
+            class="inline-block size-2.5 shrink-0 rounded-xs"
             :style="{ backgroundColor: s.color }"
             aria-hidden="true"
           ></span>
-          <span class="text-white/90">{{ s.label }}</span>
-          <span class="ml-auto pl-3 font-medium text-white/60">{{ s.value }}</span>
+          <span class="truncate text-ink">{{ s.label }}</span>
+          <span class="num ml-auto pl-3 font-semibold text-ink-muted">{{ s.value }}</span>
         </li>
-        <li v-if="!presentSlices.length" class="text-white/60">No members yet</li>
+        <li v-if="!presentSlices.length" class="py-1.5 text-ink-muted">No members yet</li>
       </ul>
 
       <!-- Pie -->
-      <div class="relative ml-auto">
+      <div class="relative ml-auto shrink-0">
         <svg
           viewBox="0 0 200 200"
-          class="h-44 w-44"
+          class="size-40 sm:size-44"
           role="img"
           :aria-label="`Member status distribution for ${currentYear}`"
         >
-          <g v-if="totalCount > 0">
+          <g v-if="totalCount > 0" class="stroke-surface" stroke-width="1.5">
             <template v-for="(a, i) in arcs" :key="i">
               <circle v-if="a.full" cx="100" cy="100" r="90" :fill="a.color" />
-              <path v-else :d="a.path" :fill="a.color" />
+              <path v-else :d="a.path" :fill="a.color" stroke-linejoin="round" />
             </template>
             <text
               v-for="(a, i) in arcs"
@@ -119,9 +120,10 @@ const arcs = computed(() => {
               :y="a.labelY"
               text-anchor="middle"
               dominant-baseline="central"
-              class="pie-label"
+              class="pie-label num"
+              stroke="none"
               :style="{
-                fill: a.color === '#e5e7eb' ? '#0ba5ec' : '#ffffff',
+                fill: a.color === '#c08a2e' ? '#172131' : '#ffffff',
                 fontSize: a.pct >= 5 ? '11px' : '9px',
               }"
             >
@@ -129,8 +131,24 @@ const arcs = computed(() => {
             </text>
           </g>
           <g v-else>
-            <circle cx="100" cy="100" r="90" fill="#1e293b" stroke="#334155" stroke-width="1" />
-            <text x="100" y="100" text-anchor="middle" dominant-baseline="central" fill="#94a3b8">
+            <circle
+              cx="100"
+              cy="100"
+              r="90"
+              fill="#1e293b"
+              stroke="#334155"
+              stroke-width="1"
+              class="fill-surface-sunken stroke-rule-strong"
+              stroke-dasharray="4 4"
+            />
+            <text
+              x="100"
+              y="100"
+              text-anchor="middle"
+              dominant-baseline="central"
+              fill="#94a3b8"
+              class="fill-ink-subtle text-xs"
+            >
               No data
             </text>
           </g>
@@ -143,9 +161,6 @@ const arcs = computed(() => {
 <style scoped>
 .pie-label {
   font-weight: 600;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-sans);
 }
 </style>

@@ -77,60 +77,62 @@ onMounted(() => settingsStore.load())
 
 <template>
   <div>
-    <!-- Hero — mirrors AboutHero's proportions without needing a configured image -->
-    <div class="relative h-[200px] w-full overflow-hidden bg-[#1E3A5F] md:h-[280px]">
-      <div class="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
-        <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-300">
-          Acts 2:36-38
-        </p>
-        <h1 class="font-serif text-4xl font-bold text-white md:text-5xl">
-          God's Plan for Salvation
-        </h1>
-        <p class="mt-3 text-base font-light text-white/80 md:text-lg">
-          What the New Testament sets out for anyone who would be saved
-        </p>
+    <!-- Page title: calm, ruled, no photograph needed -->
+    <div class="border-b border-rule bg-canvas">
+      <div class="mx-auto max-w-3xl px-5 py-12 sm:px-6 md:py-16">
+        <div class="margin-rule hero-animate">
+          <h1 class="font-display text-4xl leading-[1.1] font-bold text-secondary md:text-5xl">
+            God's Plan for Salvation
+          </h1>
+          <p class="citation num mt-3">Acts 2:36-38</p>
+          <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-muted">
+            What the New Testament sets out for anyone who would be saved
+          </p>
+        </div>
       </div>
     </div>
 
-    <section class="py-16">
-      <div class="mx-auto max-w-3xl px-4 sm:px-6">
-        <ol class="flex flex-col gap-6">
+    <section class="py-16 md:py-20">
+      <div class="mx-auto max-w-3xl px-5 sm:px-6">
+        <ol class="salvation-steps flex flex-col">
           <li
             v-for="step in steps"
             :id="step.id"
             :key="step.id"
-            class="scroll-mt-24 rounded-2xl border border-gray-200 bg-white p-6 md:p-8"
+            class="relative scroll-mt-24 pb-12 before:absolute before:top-14 before:bottom-2 before:left-[1.375rem] before:w-px before:bg-rule last:pb-0 last:before:hidden md:pb-14"
           >
-            <div class="flex items-start gap-4">
+            <div class="flex items-start gap-5 md:gap-7">
               <span
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700"
+                class="step-num flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary-soft font-display text-lg font-semibold text-primary-ink"
                 aria-hidden="true"
-              >
-                {{ step.order.charAt(0) }}
-              </span>
-              <div class="min-w-0">
-                <p class="text-xs font-semibold uppercase tracking-widest text-blue-600">
-                  Step {{ step.order }} · {{ step.scripture }}
-                </p>
-                <h2 class="mt-1 font-serif text-2xl font-bold text-[#1E3A5F]">{{ step.title }}</h2>
-                <p class="mt-3 leading-relaxed text-gray-600">{{ step.body }}</p>
+              ></span>
+              <div class="min-w-0 pt-1">
+                <h2
+                  class="font-display text-2xl leading-tight font-bold text-secondary md:text-[1.75rem]"
+                >
+                  {{ step.title }}
+                </h2>
+                <p class="citation num mt-1.5">Step {{ step.order }} · {{ step.scripture }}</p>
+                <p class="mt-3 max-w-[62ch] text-lg leading-relaxed text-ink">{{ step.body }}</p>
               </div>
             </div>
           </li>
         </ol>
 
-        <div class="mt-10 rounded-2xl bg-[#F8FAFC] p-6 text-center md:p-8">
-          <h2 class="font-serif text-2xl font-bold text-[#1E3A5F]">Want to talk this through?</h2>
-          <p class="mx-auto mt-2 max-w-xl text-gray-600">
+        <div class="bookcloth mt-16 rounded-lg px-6 py-8 shadow-xs md:px-10 md:py-10">
+          <h2 class="font-display text-2xl font-bold text-white md:text-[1.75rem]">
+            Want to talk this through?
+          </h2>
+          <p class="mt-3 max-w-xl text-lg leading-relaxed text-white/85">
             Reach the congregation at {{ settingsStore.settings.phone }} or
             {{ settingsStore.settings.email }}, or worship with us at
             {{ settingsStore.settings.address }}.
           </p>
           <NuxtLink
             to="/#contact"
-            class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#026AA2] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            class="mt-6 inline-flex min-h-11 items-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-primary shadow-xs transition-colors duration-150 hover:bg-white/90"
           >
-            <Icon icon="mdi:email-outline" />
+            <Icon icon="mdi:email-outline" aria-hidden="true" />
             Contact us
           </NuxtLink>
         </div>
@@ -138,3 +140,17 @@ onMounted(() => settingsStore.load())
     </section>
   </div>
 </template>
+
+<style scoped>
+/* Steps are numbered by the list itself, so the sequence always matches the order shown. */
+.salvation-steps {
+  counter-reset: salvation-step;
+}
+.salvation-steps > li {
+  counter-increment: salvation-step;
+}
+.step-num::before {
+  content: counter(salvation-step);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+</style>

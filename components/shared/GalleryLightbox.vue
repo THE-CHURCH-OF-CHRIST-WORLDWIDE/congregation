@@ -67,8 +67,8 @@ onUnmounted(() => {
     <Transition name="lightbox">
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-[9999] flex items-center justify-center"
-        style="background: rgba(0, 0, 0, 0.94)"
+        class="fixed inset-0 z-[9999] flex items-center justify-center [--c-focus:#f2c14e]"
+        style="background: rgb(8 11 16 / 0.96)"
         role="dialog"
         aria-modal="true"
         aria-label="Photo gallery lightbox"
@@ -77,41 +77,20 @@ onUnmounted(() => {
       >
         <!-- Close -->
         <button
-          class="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25"
+          class="absolute top-3 right-3 z-10 inline-flex size-12 items-center justify-center rounded-md bg-white/10 text-white transition-colors duration-150 hover:bg-white/20 sm:top-5 sm:right-5"
           aria-label="Close gallery"
           @click="emit('close')"
         >
-          <svg
-            class="h-4 w-4"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            aria-hidden="true"
-          >
-            <path d="M2 2l12 12M14 2L2 14" />
-          </svg>
+          <Icon icon="mdi:close" class="size-6" aria-hidden="true" />
         </button>
 
         <!-- Prev arrow -->
         <button
-          class="absolute left-4 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25 sm:flex"
+          class="absolute top-1/2 left-5 z-10 hidden size-14 -translate-y-1/2 items-center justify-center rounded-md bg-white/10 text-white transition-colors duration-150 hover:bg-white/20 sm:inline-flex"
           aria-label="Previous photo"
           @click="prev"
         >
-          <svg
-            class="h-6 w-6"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+          <Icon icon="mdi:chevron-left" class="size-8" aria-hidden="true" />
         </button>
 
         <!-- Image -->
@@ -120,33 +99,23 @@ onUnmounted(() => {
             :key="currentIndex"
             :src="displayableImageUrl(images[currentIndex])"
             :alt="`Gallery item ${currentIndex + 1} of ${images.length}`"
-            class="max-h-[82vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+            class="max-h-[82vh] max-w-[92vw] rounded-md object-contain shadow-xl sm:max-w-[80vw]"
+            decoding="async"
           />
         </Transition>
 
         <!-- Next arrow -->
         <button
-          class="absolute right-4 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25 sm:flex"
+          class="absolute top-1/2 right-5 z-10 hidden size-14 -translate-y-1/2 items-center justify-center rounded-md bg-white/10 text-white transition-colors duration-150 hover:bg-white/20 sm:inline-flex"
           aria-label="Next photo"
           @click="next"
         >
-          <svg
-            class="h-6 w-6"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M9 18l6-6-6-6" />
-          </svg>
+          <Icon icon="mdi:chevron-right" class="size-8" aria-hidden="true" />
         </button>
 
         <!-- Counter -->
         <div
-          class="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-4 py-1.5 text-sm font-medium text-white"
+          class="num absolute bottom-6 left-1/2 -translate-x-1/2 rounded-md bg-white/10 px-3.5 py-1.5 text-sm font-semibold tracking-wide text-white"
           aria-live="polite"
         >
           {{ currentIndex + 1 }} / {{ images.length }}
@@ -159,7 +128,7 @@ onUnmounted(() => {
 <style scoped>
 .lightbox-enter-active,
 .lightbox-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s var(--ease-out-quart);
 }
 .lightbox-enter-from,
 .lightbox-leave-to {

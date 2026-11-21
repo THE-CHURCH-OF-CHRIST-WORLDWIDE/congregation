@@ -23,7 +23,6 @@ const defaultOptions: ChartOptions<'doughnut'> = {
         usePointStyle: true,
         boxWidth: 8,
         font: { size: 11 },
-        color: '#d1d5db',
       },
     },
     tooltip: { callbacks: { label: (ctx) => ` ${ctx.label}: ${ctx.parsed}%` } },

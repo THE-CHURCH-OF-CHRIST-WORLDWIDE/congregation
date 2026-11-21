@@ -12,38 +12,45 @@ function formatViews(n: number): string {
 
 <template>
   <article
-    class="group flex flex-col rounded-xl border border-gray-100 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+    class="group flex flex-col overflow-hidden rounded-lg border border-rule bg-surface shadow-xs transition-[box-shadow,border-color] duration-200 hover:border-rule-strong hover:shadow-md"
   >
     <!-- Thumbnail -->
-    <div class="relative overflow-hidden" style="aspect-ratio: 16/9">
+    <div class="relative overflow-hidden bg-surface-sunken" style="aspect-ratio: 16/9">
       <img
         :src="displayableImageUrl(stream.thumbnailSrc)"
         :alt="stream.title"
         loading="lazy"
-        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        class="h-full w-full object-cover transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
       />
-      <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors"></div>
+      <div
+        class="absolute inset-0 bg-black/10 transition-colors duration-200 group-hover:bg-black/30"
+      ></div>
 
       <!-- Service type badge top-left -->
       <span
-        class="absolute top-3 left-3 rounded-full bg-[#1E3A5F]/80 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm"
+        class="absolute top-3 left-3 rounded-sm bg-surface/95 px-2 py-0.5 text-xs font-semibold text-ink shadow-xs"
       >
         {{ stream.serviceType }}
       </span>
 
-      <!-- Duration badge top-right -->
+      <!-- Duration badge bottom-right -->
       <span
-        class="absolute top-3 right-3 rounded bg-black/60 px-2 py-0.5 text-xs font-mono text-white"
+        class="num absolute right-3 bottom-3 rounded-sm bg-black/75 px-1.5 py-0.5 text-xs font-medium text-white"
       >
         {{ stream.duration }}
       </span>
 
       <!-- Play overlay -->
       <div
-        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+        class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
-        <span class="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg">
-          <svg class="ml-1 h-6 w-6 text-[#2563EB]" fill="currentColor" viewBox="0 0 24 24">
+        <span class="flex size-12 items-center justify-center rounded-full bg-white/95 shadow-md">
+          <svg
+            class="ml-0.5 size-6 text-primary"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <path d="M8 5v14l11-7z" />
           </svg>
         </span>
@@ -51,22 +58,30 @@ function formatViews(n: number): string {
     </div>
 
     <!-- Body -->
-    <div class="flex flex-1 flex-col p-4">
-      <h3 class="font-serif font-bold text-[#1E3A5F] leading-snug line-clamp-2 mb-3">
+    <div class="flex flex-1 flex-col p-5">
+      <h3 class="mb-3 line-clamp-2 font-display text-lg leading-snug font-semibold text-ink">
         {{ stream.title }}
       </h3>
 
-      <div class="flex flex-col gap-1.5 text-xs text-gray-500 mb-4">
-        <div class="flex items-center gap-1.5">
-          <Icon icon="heroicons:user-circle" class="h-3.5 w-3.5 shrink-0" />
+      <div class="mb-5 flex flex-col gap-1.5 text-sm text-ink-muted">
+        <div class="flex items-center gap-2">
+          <Icon
+            icon="mdi:account-outline"
+            class="size-4 shrink-0 text-ink-subtle"
+            aria-hidden="true"
+          />
           {{ stream.preacher }}
         </div>
-        <div class="flex items-center gap-1.5">
-          <Icon icon="heroicons:calendar" class="h-3.5 w-3.5 shrink-0" />
+        <div class="num flex items-center gap-2">
+          <Icon
+            icon="mdi:calendar-outline"
+            class="size-4 shrink-0 text-ink-subtle"
+            aria-hidden="true"
+          />
           {{ stream.date }}
         </div>
-        <div class="flex items-center gap-1.5">
-          <Icon icon="heroicons:eye" class="h-3.5 w-3.5 shrink-0" />
+        <div class="num flex items-center gap-2">
+          <Icon icon="mdi:eye-outline" class="size-4 shrink-0 text-ink-subtle" aria-hidden="true" />
           {{ formatViews(stream.views) }} views
         </div>
       </div>
@@ -74,7 +89,7 @@ function formatViews(n: number): string {
       <!-- Only offer playback once a recording has actually been attached. -->
       <button
         v-if="stream.videoSrc"
-        class="mt-auto w-full rounded-lg bg-[#2563EB] py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+        class="mt-auto inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover"
         :aria-label="`Watch the replay of ${stream.title}`"
         @click="emit('watch', stream)"
       >
@@ -82,7 +97,7 @@ function formatViews(n: number): string {
       </button>
       <p
         v-else
-        class="mt-auto rounded-lg bg-gray-50 py-2.5 text-center text-xs font-medium text-gray-400"
+        class="mt-auto rounded-md border border-dashed border-rule-strong bg-surface-muted py-2.5 text-center text-sm text-ink-subtle"
       >
         Recording not published yet
       </p>

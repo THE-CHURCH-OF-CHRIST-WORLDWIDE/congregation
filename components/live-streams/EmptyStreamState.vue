@@ -6,18 +6,19 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-[#F8F9FA] px-6 py-20 text-center"
+    class="flex flex-col items-center justify-center rounded-lg border border-rule bg-surface-muted px-6 py-16 text-center md:py-20"
   >
     <!-- Play icon (outlined) -->
     <div
-      class="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-gray-300"
+      class="mb-6 flex size-20 items-center justify-center rounded-full border border-dashed border-rule-strong bg-surface"
     >
       <svg
-        class="ml-2 h-10 w-10 text-gray-400"
+        class="ml-1.5 size-9 text-ink-subtle"
         fill="none"
         stroke="currentColor"
         stroke-width="1.5"
         viewBox="0 0 24 24"
+        aria-hidden="true"
       >
         <path
           stroke-linecap="round"
@@ -27,29 +28,29 @@ const emit = defineEmits<{
       </svg>
     </div>
 
-    <h3 class="font-serif text-2xl font-bold text-[#1E3A5F] mb-3">
+    <h3 class="mb-3 font-display text-2xl font-bold text-secondary">
       The last live stream has ended
     </h3>
-    <p class="text-gray-500 max-w-md mb-8 leading-relaxed">
+    <p class="mb-8 max-w-md text-base leading-relaxed text-ink-muted">
       Our live worship service has concluded. Join us next Sunday for our next service or browse our
       recorded streams and sermons below.
     </p>
 
-    <div class="flex flex-col gap-3 sm:flex-row">
+    <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
       <button
-        class="inline-flex items-center gap-2 rounded-full bg-[#2563EB] px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover"
         aria-label="Watch recorded videos"
         @click="emit('watch-recorded')"
       >
-        <Icon icon="heroicons:play-circle" class="h-5 w-5" />
+        <Icon icon="mdi:play-circle-outline" class="size-5" aria-hidden="true" />
         Watch Recorded Videos
       </button>
       <NuxtLink
         to="/teachings/sermons"
-        class="inline-flex items-center gap-2 rounded-full border border-[#2563EB] px-6 py-3 text-sm font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors"
+        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-5 text-sm font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
         aria-label="Browse sermons"
       >
-        <Icon icon="heroicons:book-open" class="h-5 w-5" />
+        <Icon icon="mdi:book-open-page-variant-outline" class="size-5" aria-hidden="true" />
         Browse Sermons Instead
       </NuxtLink>
     </div>

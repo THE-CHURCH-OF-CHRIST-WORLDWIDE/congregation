@@ -20,15 +20,19 @@ defineEmits<{ save: []; discard: [] }>()
   <Transition name="save-bar">
     <div
       v-if="dirty"
-      class="sticky bottom-0 z-20 -mx-4 mt-6 border-t border-gray-200 bg-white/90 px-4 py-3 backdrop-blur lg:-mx-6 lg:px-6"
+      class="sticky bottom-3 z-20 mt-6 rounded-lg border border-rule-strong bg-surface/95 px-4 py-3 shadow-lg backdrop-blur-sm sm:bottom-4"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <!-- Announced politely: the bar appearing is information, not an interruption. -->
-        <p class="flex items-center gap-2 text-sm text-gray-600" role="status" aria-live="polite">
-          <span class="h-2 w-2 shrink-0 rounded-full bg-amber-500" aria-hidden="true"></span>
+        <p
+          class="flex items-center gap-2 text-sm font-semibold text-ink"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="size-2 shrink-0 rounded-full bg-warning" aria-hidden="true"></span>
           Unsaved changes
         </p>
-        <div class="flex gap-2">
+        <div class="ml-auto flex gap-2">
           <Button variant="secondary" :disabled="saving" @click="$emit('discard')">Discard</Button>
           <Button :loading="saving" @click="$emit('save')">
             <template #icon-left><Icon icon="mdi:content-save-outline" /></template>

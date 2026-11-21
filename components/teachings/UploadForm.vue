@@ -89,16 +89,19 @@ async function submit() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-5">
     <Transition name="fade">
       <div
         v-if="success"
-        class="bg-green-50 border border-green-200 rounded-lg px-4 py-3 flex items-center gap-2 text-green-700 text-sm"
+        class="flex items-center gap-2 rounded-md border border-success/25 bg-success-soft px-4 py-3 text-sm font-medium text-success"
+        role="status"
       >
-        <Icon icon="mdi:check-circle-outline" />
+        <Icon icon="mdi:check-circle-outline" class="shrink-0 text-base" aria-hidden="true" />
         Sermon uploaded successfully!
       </div>
     </Transition>
+
+    <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Sermon details</h3>
 
     <!-- Upload Type -->
     <Select
@@ -111,12 +114,12 @@ async function submit() {
     />
 
     <!-- Sermon Date -->
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-gray-700">Sermon</label>
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-ink">Sermon</label>
       <input
         v-model="form.date"
         type="date"
-        class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+        class="num min-h-11 w-full px-3 py-2 text-[15px] sm:min-h-10 sm:text-sm rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
         aria-label="Sermon date"
       />
     </div>
@@ -137,24 +140,33 @@ async function submit() {
     <Input v-model="form.scripture" label="Scripture Reference" placeholder="e.g. 1 Timothy 3:6" />
 
     <!-- Description -->
-    <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium text-gray-700">
-        Brief Description<span class="text-red-500 ml-0.5">*</span>
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-ink">
+        Brief Description<span class="ml-0.5 text-error" aria-hidden="true">*</span>
       </label>
       <textarea
         v-model="form.description"
         rows="3"
         placeholder="Enter a brief description of the topic you are uploading..."
         :class="[
-          'w-full rounded-lg border text-sm px-3 py-2 outline-none resize-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all',
-          errors.description ? 'border-red-400' : 'border-gray-300',
+          'w-full resize-none rounded-md border bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15',
+          errors.description
+            ? 'border-error hover:border-error focus:border-error focus:ring-error/15'
+            : 'border-rule-strong',
         ]"
         aria-label="Brief description"
       ></textarea>
-      <p v-if="errors.description" class="text-xs text-red-500">{{ errors.description }}</p>
+      <p v-if="errors.description" class="text-xs font-medium text-error">
+        {{ errors.description }}
+      </p>
     </div>
 
     <!-- Thumbnail -->
+    <h3
+      class="border-t border-rule pt-5 text-xs font-semibold tracking-wide text-ink-muted uppercase"
+    >
+      Media
+    </h3>
     <ImageUpload
       v-model="thumbnailUrl"
       label="Thumbnail Image"
@@ -176,23 +188,29 @@ async function submit() {
     </Button>
 
     <!-- Document Upload -->
-    <div>
-      <label class="text-sm font-medium text-gray-700 block mb-1.5">Upload Document File</label>
+    <div class="border-t border-rule pt-5">
+      <label class="mb-1.5 block text-sm font-medium text-ink">Upload Document File</label>
       <div
         :class="[
-          'border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer',
-          docDragging ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-gray-300',
+          'cursor-pointer rounded-md border-2 border-dashed p-6 text-center transition-colors duration-150',
+          docDragging
+            ? 'border-primary bg-primary-soft'
+            : 'border-rule-strong bg-surface-muted hover:border-ink-subtle',
         ]"
         @dragover.prevent="docDragging = true"
         @dragleave="docDragging = false"
         @drop.prevent="onDocDrop"
       >
-        <Icon icon="mdi:file-upload-outline" class="text-3xl text-gray-400 mb-2 block mx-auto" />
-        <p v-if="documentFile" class="text-sm text-gray-700 font-medium">{{ documentFile.name }}</p>
-        <p v-else class="text-sm text-gray-500">
-          <span class="text-blue-600 font-medium">Click to upload</span> or drag and drop
+        <Icon
+          icon="mdi:file-upload-outline"
+          class="mx-auto mb-2 block text-3xl text-ink-subtle"
+          aria-hidden="true"
+        />
+        <p v-if="documentFile" class="text-sm font-medium text-ink">{{ documentFile.name }}</p>
+        <p v-else class="text-sm text-ink-muted">
+          <span class="font-medium text-primary-ink">Click to upload</span> or drag and drop
         </p>
-        <p class="text-xs text-gray-400 mt-1">Supported formats: PDF, DOC, DOCX (max 20MB)</p>
+        <p class="mt-1 text-xs text-ink-subtle">Supported formats: PDF, DOC, DOCX (max 20MB)</p>
       </div>
       <div class="text-center mt-3">
         <label class="cursor-pointer">

@@ -33,13 +33,15 @@ function openLightbox(index: number) {
 </script>
 
 <template>
-  <div v-if="gallery" class="w-full bg-white">
+  <div v-if="gallery" class="w-full bg-surface">
     <!-- 1. Hero -->
     <GalleryHero :category-title="gallery.title" :preview-images="previewImages" />
 
     <!-- 2. Masonry gallery -->
-    <section class="px-8 py-10">
-      <h2 class="mb-5 text-[20px] font-bold text-gray-900">{{ gallery.title }}</h2>
+    <section class="mx-auto max-w-7xl px-5 py-12 sm:px-6 md:py-16 lg:px-8">
+      <h2 class="mb-6 font-display text-2xl leading-tight font-bold text-secondary md:text-3xl">
+        {{ gallery.title }}
+      </h2>
       <EmptyState
         v-if="!gallery.images.length"
         icon="mdi:image-multiple-outline"
@@ -70,7 +72,7 @@ function openLightbox(index: number) {
 
   <!-- Unknown category: navigateTo('/404') is async, so render a placeholder
        rather than a blank document while the redirect resolves. -->
-  <div v-else class="mx-auto max-w-3xl px-4 py-24">
+  <div v-else class="mx-auto max-w-3xl px-5 py-24 sm:px-6">
     <EmptyState
       icon="mdi:image-off-outline"
       title="Gallery not found"
@@ -90,7 +92,7 @@ function openLightbox(index: number) {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 32px 32px;
+  padding: 0 20px 40px;
   max-width: 500px;
   margin: 0 auto;
 }
@@ -98,12 +100,13 @@ function openLightbox(index: number) {
 .the-end-divider hr {
   flex: 1;
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--c-rule);
 }
 
 .the-end-divider span {
-  font-size: 13px;
-  color: #9ca3af;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--c-ink-subtle);
   white-space: nowrap;
   font-style: italic;
 }

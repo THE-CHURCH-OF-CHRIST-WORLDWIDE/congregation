@@ -185,16 +185,16 @@ function doExport() {
 </script>
 
 <template>
-  <Card padding="none">
-    <div class="p-4 lg:p-5 border-b border-gray-100">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+  <Card padding="none" class="overflow-hidden">
+    <div class="border-b border-rule p-4 lg:p-5">
+      <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h3 class="text-sm font-semibold text-gray-900">Visitors &amp; Children</h3>
-          <p class="text-xs text-gray-400 mt-0.5">
+          <h3 class="font-display text-lg font-semibold text-ink">Visitors &amp; Children</h3>
+          <p class="mt-0.5 text-xs text-ink-muted">
             Recorded per {{ serviceType }} — visitors by name, children by number
           </p>
         </div>
-        <div class="flex gap-2 shrink-0">
+        <div class="flex shrink-0 gap-2">
           <Button
             variant="secondary"
             size="sm"
@@ -202,11 +202,13 @@ function doExport() {
             :aria-label="`Export ${visitorsStore.totalVisitors} visitors to CSV`"
             @click="doExport"
           >
-            <template #icon-left><Icon icon="mdi:upload-outline" /></template>
+            <template #icon-left><Icon icon="mdi:upload-outline" class="text-base" /></template>
             Export CSV
           </Button>
           <Button size="sm" @click="openAdd">
-            <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
+            <template #icon-left
+              ><Icon icon="mdi:account-plus-outline" class="text-base"
+            /></template>
             Add Visitor
           </Button>
         </div>
@@ -233,17 +235,17 @@ function doExport() {
          the control, because it is the one of the two that is typed in rather than counted from
          a list. -->
     <div
-      class="grid grid-cols-1 gap-3 border-b border-gray-100 bg-gray-50/70 p-4 sm:grid-cols-2 lg:p-5"
+      class="grid grid-cols-1 gap-3 border-b border-rule bg-surface-muted p-4 sm:grid-cols-2 lg:p-5"
     >
       <!-- Visitors -->
-      <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="text-xs font-medium text-gray-500">Visitors</p>
-            <p class="mt-1 text-3xl font-bold text-gray-900 tabular-nums">
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Visitors</p>
+            <p class="num mt-1 font-display text-3xl font-semibold text-ink">
               {{ visitorsForDate.length }}
             </p>
-            <p class="mt-1 text-xs text-gray-400">
+            <p class="mt-1 text-xs text-ink-muted">
               {{
                 visitorsForDate.length
                   ? 'Listed below for this service'
@@ -251,43 +253,41 @@ function doExport() {
               }}
             </p>
           </div>
-          <div
-            class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0BA5EC]/10"
+          <Icon
+            icon="mdi:account-multiple-outline"
+            class="shrink-0 text-xl text-ink-subtle"
             aria-hidden="true"
-          >
-            <Icon icon="mdi:account-multiple-outline" class="text-xl text-[#0BA5EC]" />
-          </div>
+          />
         </div>
       </div>
 
       <!-- Children -->
-      <div class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="text-xs font-medium text-gray-500">Children</p>
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Children</p>
             <!-- An em dash, not 0: nothing has been counted, which is not the same as none came. -->
-            <p class="mt-1 text-3xl font-bold text-gray-900 tabular-nums">
+            <p class="num mt-1 font-display text-3xl font-semibold text-ink">
               {{ recordedChildren === null ? '—' : recordedChildren }}
             </p>
             <p class="mt-1 flex items-center gap-1 text-xs">
               <template v-if="recordedChildren !== null">
-                <Icon icon="mdi:check-circle" class="shrink-0 text-emerald-500" />
-                <span class="text-gray-400">Recorded for this service</span>
+                <Icon icon="mdi:check-circle" class="shrink-0 text-success" />
+                <span class="text-ink-muted">Recorded for this service</span>
               </template>
-              <span v-else class="text-gray-400">Not counted yet</span>
+              <span v-else class="text-ink-muted">Not counted yet</span>
             </p>
           </div>
-          <div
-            class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#0BA5EC]/10"
+          <Icon
+            icon="mdi:human-child"
+            class="shrink-0 text-xl text-ink-subtle"
             aria-hidden="true"
-          >
-            <Icon icon="mdi:human-child" class="text-xl text-[#0BA5EC]" />
-          </div>
+          />
         </div>
 
         <!-- The control. A bare input rather than EditField: the label/hint stack pushed the
              button out of line with the box, which is what the `mb-6` nudge was papering over. -->
-        <div class="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3">
+        <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-rule pt-4">
           <label :for="childrenFieldId" class="sr-only">Number of children present</label>
           <input
             :id="childrenFieldId"
@@ -297,11 +297,11 @@ function doExport() {
             :max="MAX_CHILDREN"
             inputmode="numeric"
             placeholder="0"
-            class="h-9 w-20 rounded-lg border bg-white px-3 text-center text-sm font-semibold text-gray-900 tabular-nums transition-colors outline-none focus:ring-3"
+            class="num h-10 w-24 rounded-md border bg-surface px-3 text-center text-sm font-semibold text-ink shadow-xs transition-[border-color,box-shadow] outline-none placeholder:text-ink-subtle hover:border-ink-subtle focus:ring-3"
             :class="
               childrenError
-                ? 'border-red-400 focus:border-red-400 focus:ring-red-500/15'
-                : 'border-gray-300 focus:border-[#0BA5EC] focus:ring-[#0BA5EC]/15'
+                ? 'border-error focus:border-error focus:ring-error/15'
+                : 'border-rule-strong focus:border-primary focus:ring-primary/15'
             "
             :aria-invalid="Boolean(childrenError)"
             :aria-describedby="childrenError ? `${childrenFieldId}-error` : undefined"
@@ -310,12 +310,12 @@ function doExport() {
 
           <Button
             size="sm"
-            class="h-9"
+            class="h-10"
             :loading="visitorsStore.saving"
             :disabled="Boolean(childrenError) || !childrenDirty"
             @click="saveChildren"
           >
-            <template #icon-left><Icon icon="mdi:check" /></template>
+            <template #icon-left><Icon icon="mdi:check" class="text-base" /></template>
             Save
           </Button>
 
@@ -324,7 +324,7 @@ function doExport() {
             v-if="recordedChildren !== null"
             variant="ghost"
             size="sm"
-            class="h-9"
+            class="h-10"
             :disabled="visitorsStore.saving"
             aria-label="Remove the children's figure for this service"
             @click="clearChildren"
@@ -338,7 +338,7 @@ function doExport() {
           v-if="childrenError"
           :id="`${childrenFieldId}-error`"
           role="alert"
-          class="mt-2 text-xs text-red-600"
+          class="mt-2 text-xs font-medium text-error"
         >
           {{ childrenError }}
         </p>
@@ -353,29 +353,47 @@ function doExport() {
             tableCaption
           }}
         </caption>
-        <thead class="bg-gray-50">
+        <thead class="sticky top-0 z-[1] bg-surface-muted">
           <tr>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase text-left"
+            >
               Name
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase text-left"
+            >
               Phone Number
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase text-left"
+            >
               Email Address
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase text-left"
+            >
               Church
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase text-left"
+            >
               Address
             </th>
-            <th scope="col" class="text-right px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="border-b border-rule px-4 py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase text-right"
+            >
               Actions
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-rule">
           <tr v-if="visitorsStore.loading && !visitorsForDate.length">
             <td colspan="6" class="px-4 py-6">
               <LoadingState :rows="3" size="sm" title="Loading visitors…" />
@@ -390,7 +408,9 @@ function doExport() {
               >
                 <template #action>
                   <Button size="sm" @click="openAdd">
-                    <template #icon-left><Icon icon="mdi:account-plus-outline" /></template>
+                    <template #icon-left
+                      ><Icon icon="mdi:account-plus-outline" class="text-base"
+                    /></template>
                     Add Visitor
                   </Button>
                 </template>
@@ -401,57 +421,65 @@ function doExport() {
             v-for="visitor in visitorsForDate"
             v-else
             :key="visitor.id"
-            class="border-b border-gray-50 hover:bg-gray-50/50"
+            class="transition-colors hover:bg-surface-muted/70"
           >
             <td class="px-4 py-3">
               <!-- A button, not a click handler on the row: the row also holds Call and Email
                    links, and nesting those inside one clickable region makes both unreachable
                    by keyboard. -->
               <button
-                class="flex items-center gap-2.5 text-left group"
+                class="group -my-1 flex min-h-11 items-center gap-2.5 rounded-md text-left"
                 :aria-label="`View ${visitor.name}'s details`"
                 @click="openDetails(visitor)"
               >
                 <Avatar :name="visitor.name" size="sm" />
                 <span
-                  class="font-medium text-gray-900 group-hover:text-blue-600 group-hover:underline"
+                  class="font-medium text-ink group-hover:text-primary-ink group-hover:underline"
                 >
                   {{ visitor.name }}
                 </span>
               </button>
             </td>
-            <td class="px-4 py-3 text-gray-600">
-              <a v-if="visitor.phone" :href="`tel:${visitor.phone}`" class="hover:underline">
+            <td class="px-4 py-3 text-ink-muted">
+              <a
+                v-if="visitor.phone"
+                :href="`tel:${visitor.phone}`"
+                class="num text-ink hover:text-primary-ink hover:underline"
+              >
                 {{ visitor.phone }}
               </a>
-              <span v-else class="text-gray-300">—</span>
+              <span v-else class="text-ink-subtle">—</span>
             </td>
-            <td class="px-4 py-3 text-gray-600">
-              <a v-if="visitor.email" :href="`mailto:${visitor.email}`" class="hover:underline">
+            <td class="px-4 py-3 text-ink-muted">
+              <a
+                v-if="visitor.email"
+                :href="`mailto:${visitor.email}`"
+                class="num text-ink hover:text-primary-ink hover:underline"
+              >
                 {{ visitor.email }}
               </a>
-              <span v-else class="text-gray-300">—</span>
+              <span v-else class="text-ink-subtle">—</span>
             </td>
-            <td class="px-4 py-3 text-gray-600">{{ visitor.church || '—' }}</td>
-            <td class="px-4 py-3 text-gray-600">{{ visitor.address || '—' }}</td>
+            <td class="px-4 py-3 text-ink-muted">{{ visitor.church || '—' }}</td>
+            <td class="px-4 py-3 text-ink-muted">{{ visitor.address || '—' }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center justify-end gap-1">
                 <button
-                  class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+                  class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
                   :aria-label="`View ${visitor.name}'s details`"
                   @click="openDetails(visitor)"
                 >
-                  <Icon icon="mdi:eye-outline" />
+                  <Icon icon="mdi:eye-outline" class="text-lg" />
                 </button>
                 <button
-                  class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors"
+                  class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors hover:bg-surface-sunken hover:text-ink"
                   :aria-label="`Edit ${visitor.name}`"
                   @click="openEdit(visitor)"
                 >
-                  <Icon icon="mdi:pencil-outline" />
+                  <Icon icon="mdi:pencil-outline" class="text-lg" />
                 </button>
                 <button
-                  class="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition-colors disabled:opacity-40"
+                  class="inline-flex size-9 items-center justify-center rounded-md text-error transition-colors hover:bg-error-soft disabled:cursor-not-allowed disabled:opacity-55"
                   :aria-label="`Remove ${visitor.name}`"
                   :disabled="isPending(visitor.id)"
                   @click="remove(visitor)"
@@ -459,6 +487,7 @@ function doExport() {
                   <Icon
                     :icon="isPending(visitor.id) ? 'mdi:loading' : 'mdi:trash-can-outline'"
                     :class="isPending(visitor.id) && 'animate-spin'"
+                    class="text-lg"
                   />
                 </button>
               </div>

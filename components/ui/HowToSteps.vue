@@ -9,19 +9,22 @@ defineProps<{ steps: Step[] }>()
 </script>
 
 <template>
-  <div class="grid gap-6 md:grid-cols-3">
-    <div
+  <ol
+    class="grid divide-y divide-rule border-y border-rule md:grid-cols-3 md:divide-x md:divide-y-0"
+  >
+    <li
       v-for="step in steps"
       :key="step.number"
-      class="flex flex-col items-center text-center p-6"
+      class="flex flex-col py-7 md:px-8 md:py-8 md:first:pl-0 md:last:pr-0"
     >
-      <div
-        class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#2563EB] text-white text-xl font-bold font-serif shadow-md"
+      <span
+        class="num font-display text-3xl leading-none font-semibold text-primary-ink"
+        aria-hidden="true"
       >
         {{ step.number }}
-      </div>
-      <h3 class="mb-2 font-semibold text-[#1E3A5F] text-lg">{{ step.title }}</h3>
-      <p class="text-sm text-gray-500 leading-relaxed">{{ step.description }}</p>
-    </div>
-  </div>
+      </span>
+      <h3 class="mt-4 font-display text-lg font-semibold text-ink">{{ step.title }}</h3>
+      <p class="mt-2 text-base leading-relaxed text-ink-muted">{{ step.description }}</p>
+    </li>
+  </ol>
 </template>

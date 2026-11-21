@@ -5,44 +5,63 @@ const cfg = computed(() => s.settings.activityCalendar)
 </script>
 
 <template>
-  <section class="bg-[#F8F9FA] py-16">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <section class="bg-canvas py-16 md:py-24">
+    <div
+      class="mx-auto grid max-w-7xl items-start gap-10 px-5 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16 lg:px-8"
+    >
       <!-- Header -->
-      <div class="mb-10 text-center">
-        <p
-          v-if="cfg.eyebrow"
-          class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400"
+      <div class="margin-rule">
+        <h2
+          class="font-display text-[1.875rem] leading-[1.15] font-bold text-secondary md:text-[2.5rem]"
         >
+          {{ cfg.heading }}
+        </h2>
+        <p v-if="cfg.eyebrow" class="citation mt-3">
           {{ cfg.eyebrow }}
         </p>
-        <h2 class="mt-2 font-serif text-3xl font-bold text-gray-900">{{ cfg.heading }}</h2>
-        <p v-if="cfg.subtitle" class="mx-auto mt-3 max-w-md text-sm text-gray-500">
+        <p v-if="cfg.subtitle" class="mt-3 max-w-md text-lg leading-relaxed text-ink-muted">
           {{ cfg.subtitle }}
         </p>
       </div>
 
-      <!-- Table card -->
-      <div class="mx-auto max-w-[680px] overflow-hidden rounded-xl bg-white shadow-sm">
-        <table class="w-full text-sm">
+      <!-- The weekly register -->
+      <div class="overflow-x-auto rounded-lg border border-rule bg-surface shadow-xs">
+        <table class="w-full text-base">
           <!-- Header -->
-          <thead>
-            <tr class="bg-navy text-white">
-              <th class="py-3.5 px-6 text-left font-medium tracking-wide">Day</th>
-              <th class="py-3.5 px-6 text-left font-medium tracking-wide">Activity</th>
-              <th class="py-3.5 px-6 text-left font-medium tracking-wide">Time</th>
+          <thead class="bg-surface-muted">
+            <tr>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase sm:px-6"
+              >
+                Day
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase sm:px-6"
+              >
+                Activity
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase sm:px-6"
+              >
+                Time
+              </th>
             </tr>
           </thead>
 
           <!-- Body -->
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="(row, i) in cfg.rows"
               :key="row.id"
-              :class="i % 2 === 0 ? 'bg-white' : 'bg-gray-50'"
+              :class="i % 2 === 0 ? 'bg-surface' : 'bg-surface-muted/50'"
             >
-              <td class="py-3 px-6 text-gray-600">{{ row.day }}</td>
-              <td class="py-3 px-6 font-medium text-gray-900">{{ row.activity }}</td>
-              <td class="py-3 px-6 text-gray-600">{{ row.time }}</td>
+              <td class="num px-4 py-3.5 font-display font-semibold text-ink sm:px-6">
+                {{ row.day }}
+              </td>
+              <td class="px-4 py-3.5 text-ink sm:px-6">{{ row.activity }}</td>
+              <td class="num px-4 py-3.5 whitespace-nowrap text-ink-muted sm:px-6">
+                {{ row.time }}
+              </td>
             </tr>
 
             <tr v-if="!cfg.rows.length">
@@ -51,19 +70,20 @@ const cfg = computed(() => s.settings.activityCalendar)
                   icon="mdi:calendar-blank-outline"
                   size="sm"
                   title="No activities scheduled"
-                  description="The weekly calendar is set up in Settings → Activity Calendar."
+                  description="Our weekly calendar will be published here soon."
                 />
               </td>
             </tr>
 
             <!-- Footer row -->
-            <tr class="border-t border-gray-100 bg-white">
-              <td colspan="3" class="py-3.5 px-6 text-center">
+            <tr class="bg-surface">
+              <td colspan="3" class="px-4 py-3 sm:px-6">
                 <NuxtLink
                   to="/about-us"
-                  class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                  class="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink underline underline-offset-3 transition-colors duration-150 hover:text-primary-hover"
                 >
-                  Get more information &rarr;
+                  Get more information
+                  <Icon icon="mdi:arrow-right" aria-hidden="true" />
                 </NuxtLink>
               </td>
             </tr>

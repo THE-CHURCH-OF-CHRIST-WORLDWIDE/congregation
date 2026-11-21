@@ -202,97 +202,117 @@ function handleSubmit() {
 
 <template>
   <Modal :model-value="modelValue" :title="title" size="xl" @update:model-value="close">
-    <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+    <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
       <!-- Kind toggle (only when creating) -->
-      <div v-if="!isEditing" class="flex gap-2 rounded-lg bg-gray-50 p-1">
+      <div
+        v-if="!isEditing"
+        class="flex gap-1 rounded-md border border-rule bg-surface-sunken p-1"
+        role="group"
+        aria-label="Event type"
+      >
         <button
           type="button"
+          :aria-pressed="kind === 'upcoming'"
           :class="[
-            'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition',
-            kind === 'upcoming' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500',
+            'inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors duration-150',
+            kind === 'upcoming'
+              ? 'bg-surface font-semibold text-primary-ink shadow-xs ring-1 ring-rule'
+              : 'text-ink-muted hover:text-ink',
           ]"
           @click="kind = 'upcoming'"
         >
+          <Icon icon="mdi:calendar-arrow-right" aria-hidden="true" />
           Upcoming
         </button>
         <button
           type="button"
+          :aria-pressed="kind === 'past'"
           :class="[
-            'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition',
-            kind === 'past' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500',
+            'inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors duration-150',
+            kind === 'past'
+              ? 'bg-surface font-semibold text-primary-ink shadow-xs ring-1 ring-rule'
+              : 'text-ink-muted hover:text-ink',
           ]"
           @click="kind = 'past'"
         >
+          <Icon icon="mdi:calendar-check-outline" aria-hidden="true" />
           Past
         </button>
       </div>
 
       <!-- Shared fields -->
-      <Input
-        v-if="kind === 'upcoming'"
-        v-model="upcomingForm.title"
-        label="Title"
-        placeholder="Equipping for Evangelism"
-        :error="errors.title"
-      />
-      <Input
-        v-else
-        v-model="pastForm.title"
-        label="Title"
-        placeholder="Equipping for Evangelism"
-        :error="errors.title"
-      />
+      <section class="flex flex-col gap-4">
+        <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Event details</h3>
+        <Input
+          v-if="kind === 'upcoming'"
+          v-model="upcomingForm.title"
+          label="Title"
+          placeholder="Equipping for Evangelism"
+          :error="errors.title"
+        />
+        <Input
+          v-else
+          v-model="pastForm.title"
+          label="Title"
+          placeholder="Equipping for Evangelism"
+          :error="errors.title"
+        />
 
-      <div class="grid grid-cols-2 gap-3">
-        <div v-if="kind === 'upcoming'">
-          <label class="mb-1.5 block text-sm font-medium text-gray-700">Date</label>
-          <input
-            v-model="upcomingForm.date"
-            type="date"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+        <div class="grid grid-cols-2 gap-3">
+          <div v-if="kind === 'upcoming'">
+            <label class="mb-1.5 block text-sm font-medium text-ink">Date</label>
+            <input
+              v-model="upcomingForm.date"
+              type="date"
+              class="num min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[15px] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
+            />
+            <p v-if="errors.date" class="mt-1.5 text-xs font-medium text-error">
+              {{ errors.date }}
+            </p>
+          </div>
+          <div v-else>
+            <label class="mb-1.5 block text-sm font-medium text-ink">Date</label>
+            <input
+              v-model="pastForm.date"
+              type="date"
+              class="num min-h-11 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[15px] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:min-h-10 sm:text-sm"
+            />
+            <p v-if="errors.date" class="mt-1.5 text-xs font-medium text-error">
+              {{ errors.date }}
+            </p>
+          </div>
+
+          <Input
+            v-if="kind === 'upcoming'"
+            v-model="upcomingForm.time"
+            label="Time"
+            placeholder="7:00 PM"
+            :error="errors.time"
           />
-          <p v-if="errors.date" class="mt-1 text-xs text-red-600">{{ errors.date }}</p>
-        </div>
-        <div v-else>
-          <label class="mb-1.5 block text-sm font-medium text-gray-700">Date</label>
-          <input
-            v-model="pastForm.date"
-            type="date"
-            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+          <Input
+            v-else
+            v-model="pastForm.time"
+            label="Time"
+            placeholder="7:00 PM"
+            :error="errors.time"
           />
-          <p v-if="errors.date" class="mt-1 text-xs text-red-600">{{ errors.date }}</p>
         </div>
 
         <Input
           v-if="kind === 'upcoming'"
-          v-model="upcomingForm.time"
-          label="Time"
-          placeholder="7:00 PM"
-          :error="errors.time"
+          v-model="upcomingForm.venue"
+          label="Venue"
+          placeholder="Church Hall"
+          :error="errors.venue"
         />
         <Input
           v-else
-          v-model="pastForm.time"
-          label="Time"
-          placeholder="7:00 PM"
-          :error="errors.time"
+          v-model="pastForm.venue"
+          label="Venue"
+          placeholder="Church Hall"
+          :error="errors.venue"
         />
-      </div>
-
-      <Input
-        v-if="kind === 'upcoming'"
-        v-model="upcomingForm.venue"
-        label="Venue"
-        placeholder="Church Hall"
-        :error="errors.venue"
-      />
-      <Input
-        v-else
-        v-model="pastForm.venue"
-        label="Venue"
-        placeholder="Church Hall"
-        :error="errors.venue"
-      />
+      </section>
 
       <!-- Upcoming-only: gallery images upload directly to Cloudinary -->
       <GalleryUploader
@@ -305,53 +325,64 @@ function handleSubmit() {
 
       <!-- Past-only -->
       <template v-if="kind === 'past'">
-        <Input
-          v-model="pastForm.category"
-          label="Category"
-          placeholder="Bible Study"
-          :error="errors.category"
-        />
-        <ImageUpload
-          v-model="pastForm.thumbnail"
-          label="Thumbnail"
-          folder="congregation/events"
-          compact
-        />
-        <ImageUpload
-          v-model="pastForm.featuredImage"
-          label="Featured image"
-          folder="congregation/events"
-        />
-
-        <div class="grid grid-cols-2 gap-3">
+        <section class="flex flex-col gap-4 border-t border-rule pt-5">
+          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+            Classification
+          </h3>
           <Input
-            v-model="pastForm.moderatorName"
-            label="Moderator name"
-            placeholder="Bro. James Ikpe"
+            v-model="pastForm.category"
+            label="Category"
+            placeholder="Bible Study"
+            :error="errors.category"
           />
+        </section>
+        <section class="flex flex-col gap-4 border-t border-rule pt-5">
+          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Images</h3>
           <ImageUpload
-            v-model="pastForm.moderatorAvatar"
-            label="Moderator avatar"
+            v-model="pastForm.thumbnail"
+            label="Thumbnail"
             folder="congregation/events"
-            shape="circle"
             compact
           />
-        </div>
+          <ImageUpload
+            v-model="pastForm.featuredImage"
+            label="Featured image"
+            folder="congregation/events"
+          />
+        </section>
+        <section class="flex flex-col gap-4 border-t border-rule pt-5">
+          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">People</h3>
 
-        <div>
-          <label class="mb-1.5 block text-sm font-medium text-gray-700">
-            Speakers
-            <span class="ml-1 font-normal text-gray-400">
-              (one per line, format: <code>Name | avatar URL</code>)
-            </span>
-          </label>
-          <textarea
-            v-model="pastForm.speakers"
-            rows="3"
-            placeholder="Bro. Samuel Eze | https://..."
-            class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-          ></textarea>
-        </div>
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Input
+              v-model="pastForm.moderatorName"
+              label="Moderator name"
+              placeholder="Bro. James Ikpe"
+            />
+            <ImageUpload
+              v-model="pastForm.moderatorAvatar"
+              label="Moderator avatar"
+              folder="congregation/events"
+              shape="circle"
+              compact
+            />
+          </div>
+
+          <div>
+            <label class="mb-1.5 block text-sm font-medium text-ink">
+              Speakers
+              <span class="ml-1 font-normal text-ink-subtle">
+                (one per line, format: <code>Name | avatar URL</code>)
+              </span>
+            </label>
+            <textarea
+              v-model="pastForm.speakers"
+              rows="3"
+              placeholder="Bro. Samuel Eze | https://..."
+              class="w-full resize-none rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
+            ></textarea>
+          </div>
+        </section>
       </template>
     </form>
 

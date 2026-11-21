@@ -5,46 +5,53 @@ const cfg = computed(() => s.settings.worshipActivities)
 </script>
 
 <template>
-  <section class="bg-navy py-16">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <section class="bookcloth py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
       <!-- Header -->
-      <div class="mb-12 text-center">
-        <p
-          v-if="cfg.eyebrow"
-          class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300"
+      <div class="mb-10 max-w-2xl md:mb-12">
+        <h2
+          class="font-display text-[1.875rem] leading-[1.15] font-bold text-white md:text-[2.5rem]"
         >
+          {{ cfg.heading }}
+        </h2>
+        <p v-if="cfg.eyebrow" class="mt-3 text-[15px] font-medium text-white/80">
           {{ cfg.eyebrow }}
         </p>
-        <h2 class="mt-2 font-serif text-3xl font-bold text-white">{{ cfg.heading }}</h2>
-        <p v-if="cfg.subtitle" class="mx-auto mt-3 max-w-xl text-sm text-white/60">
+        <p v-if="cfg.subtitle" class="mt-3 text-lg leading-relaxed text-white/80">
           {{ cfg.subtitle }}
         </p>
       </div>
 
-      <EmptyState
-        v-if="!cfg.items.length"
-        icon="mdi:hands-pray"
-        title="No worship activities listed"
-        description="Add them in Settings → Worship Activities."
-      />
+      <div v-if="!cfg.items.length" class="rounded-lg bg-surface shadow-xs">
+        <EmptyState
+          icon="mdi:hands-pray"
+          title="No worship activities listed"
+          description="Details of how we worship will be shared here soon."
+        />
+      </div>
 
-      <!-- Cards row -->
-      <div v-else class="flex flex-wrap justify-center gap-4">
+      <!-- Ruled register of the acts of worship -->
+      <div
+        v-else
+        class="grid max-w-4xl divide-y divide-white/15 border-y border-white/15 md:grid-cols-2 md:gap-x-12 md:divide-y-0 md:[&>*]:border-b md:[&>*]:border-white/15"
+      >
         <div
           v-for="activity in cfg.items"
           :key="activity.id"
-          class="flex min-w-[130px] flex-1 basis-[130px] flex-col items-center rounded-xl bg-white px-5 py-7 shadow-sm transition-shadow hover:shadow-md sm:basis-[150px]"
+          class="flex min-h-16 items-center gap-4 py-4"
         >
           <!-- Icon -->
-          <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50">
-            <Icon :icon="activity.icon" class="h-7 w-7 text-blue-600" />
-          </div>
+          <Icon :icon="activity.icon" class="size-6 shrink-0 text-[#f2d593]" aria-hidden="true" />
 
           <!-- Name -->
-          <span class="text-[14px] font-semibold text-gray-900">{{ activity.name }}</span>
+          <span class="flex-1 font-display text-lg leading-snug font-semibold text-white">{{
+            activity.name
+          }}</span>
 
           <!-- Scripture ref -->
-          <span class="mt-1 text-[11px] text-gray-400">{{ activity.scripture }}</span>
+          <span class="num shrink-0 text-right text-[15px] text-white/80">{{
+            activity.scripture
+          }}</span>
         </div>
       </div>
     </div>

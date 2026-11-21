@@ -19,28 +19,33 @@ const categories = computed(() =>
 </script>
 
 <template>
-  <div class="px-8 pb-14">
-    <h2 class="mb-5 text-[22px] font-bold text-gray-900">Explore More Images</h2>
+  <div class="border-t border-rule bg-surface-muted">
+    <div class="mx-auto max-w-7xl px-5 py-12 sm:px-6 md:py-16 lg:px-8">
+      <h2 class="mb-6 font-display text-2xl leading-tight font-bold text-secondary md:text-3xl">
+        Explore More Images
+      </h2>
 
-    <div class="grid grid-cols-3 gap-4 sm:grid-cols-3">
-      <NuxtLink
-        v-for="cat in categories"
-        :key="cat.slug"
-        :to="`/gallery/${cat.slug}`"
-        class="explore-card group"
-        :aria-label="`${cat.label} gallery`"
-      >
-        <img
-          v-if="cat.src"
-          :src="displayableImageUrl(cat.src)"
-          :alt="cat.label"
-          class="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-        />
-        <div v-else class="absolute inset-0 bg-gray-200"></div>
-        <div class="explore-overlay group-hover:bg-black/60"></div>
-        <span class="explore-label">{{ cat.label }}</span>
-      </NuxtLink>
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+        <NuxtLink
+          v-for="cat in categories"
+          :key="cat.slug"
+          :to="`/gallery/${cat.slug}`"
+          class="explore-card group"
+          :aria-label="`${cat.label} gallery`"
+        >
+          <img
+            v-if="cat.src"
+            :src="displayableImageUrl(cat.src)"
+            :alt="cat.label"
+            class="explore-img absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+          <div v-else class="absolute inset-0 bg-surface-sunken"></div>
+          <div class="explore-overlay group-hover:bg-black/15"></div>
+          <span class="explore-label">{{ cat.label }}</span>
+        </NuxtLink>
+      </div>
     </div>
   </div>
 </template>
@@ -48,38 +53,42 @@ const categories = computed(() =>
 <style scoped>
 .explore-card {
   position: relative;
-  height: 100px;
-  border-radius: 10px;
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-md);
   overflow: hidden;
   cursor: pointer;
   display: block;
   text-decoration: none;
+  background: var(--c-surface-sunken);
+}
+
+.explore-img {
+  transition: transform 0.4s var(--ease-out-expo);
+}
+
+.explore-card:hover .explore-img,
+.explore-card:focus-visible .explore-img {
+  transform: scale(1.03);
 }
 
 .explore-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background-image: linear-gradient(to top, rgb(14 20 28 / 0.75), rgb(14 20 28 / 0.1) 60%);
   z-index: 1;
-  transition: background 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .explore-label {
   position: absolute;
-  inset: 0;
+  inset: auto 0 0 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 12px 14px;
   color: white;
-  font-size: 15px;
-  font-weight: 700;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-}
-
-@media (max-width: 480px) {
-  .explore-card {
-    height: 80px;
-  }
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
 }
 </style>

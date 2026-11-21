@@ -9,15 +9,15 @@ withDefaults(defineProps<Props>(), {
 })
 
 const variantClasses = {
-  success: 'bg-[#0F973D] text-white',
-  warning: 'bg-amber-100 text-amber-700',
-  danger: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
-  neutral: 'bg-gray-100 text-gray-700',
-  pink: 'bg-pink-500 text-white',
+  success: 'bg-success-soft text-success ring-success/25',
+  warning: 'bg-warning-soft text-warning ring-warning/25',
+  danger: 'bg-error-soft text-error ring-error/25',
+  info: 'bg-info-soft text-info ring-info/25',
+  neutral: 'bg-surface-sunken text-ink-muted ring-rule-strong/60',
+  pink: 'bg-[#fbe8f1] text-[#9d2462] ring-[#9d2462]/20',
 }
 const sizeClasses = {
-  sm: 'px-1.5 py-0.5 text-[10px]',
+  sm: 'px-1.5 py-px text-2xs',
   md: 'px-2 py-0.5 text-xs',
 }
 </script>
@@ -25,7 +25,7 @@ const sizeClasses = {
 <template>
   <span
     :class="[
-      'inline-flex items-center gap-1 rounded-full font-medium',
+      'inline-flex items-center gap-1 whitespace-nowrap rounded-sm font-semibold ring-1 ring-inset',
       variantClasses[variant],
       sizeClasses[size],
     ]"

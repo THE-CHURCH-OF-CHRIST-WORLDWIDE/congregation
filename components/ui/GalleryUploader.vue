@@ -97,16 +97,16 @@ function removeAt(index: number) {
 <template>
   <div class="flex flex-col gap-2">
     <div v-if="label || max" class="flex items-baseline justify-between">
-      <label v-if="label" class="text-sm font-medium text-gray-700">{{ label }}</label>
-      <span v-if="max" class="text-xs text-gray-400">{{ images.length }} / {{ max }}</span>
+      <label v-if="label" class="text-sm font-medium text-ink">{{ label }}</label>
+      <span v-if="max" class="num text-xs text-ink-subtle">{{ images.length }} / {{ max }}</span>
     </div>
 
-    <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
       <!-- Existing thumbnails -->
       <div
         v-for="(src, i) in images"
         :key="`${src}-${i}`"
-        class="relative aspect-square overflow-hidden rounded-lg border border-gray-200 group"
+        class="group relative aspect-square overflow-hidden rounded-md border border-rule bg-surface-muted"
       >
         <img
           :src="displayableImageUrl(src)"
@@ -115,7 +115,7 @@ function removeAt(index: number) {
         />
         <button
           type="button"
-          class="absolute top-1 right-1 rounded-full bg-white/90 p-1 text-gray-700 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500 hover:text-white"
+          class="absolute top-1 right-1 inline-flex size-7 items-center justify-center rounded-md bg-black/55 text-white opacity-0 ring-1 ring-white/25 transition-[opacity,background-color] duration-150 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-[#b42318]"
           :aria-label="`Remove image ${i + 1}`"
           @click="removeAt(i)"
         >
@@ -127,10 +127,12 @@ function removeAt(index: number) {
       <div
         v-if="canAddMore"
         :class="[
-          'relative aspect-square border-2 border-dashed rounded-lg transition-colors flex flex-col items-center justify-center text-center px-2',
+          'relative flex aspect-square flex-col items-center justify-center rounded-md border-2 border-dashed px-2 text-center transition-colors duration-150',
           dragging
-            ? 'border-blue-400 bg-blue-50'
-            : 'border-gray-200 hover:border-gray-300 bg-gray-50',
+            ? 'border-primary bg-primary-soft'
+            : error
+              ? 'border-error/60 bg-error-soft hover:border-error'
+              : 'border-rule-strong bg-surface-muted hover:border-ink-subtle',
           disabled || uploading ? 'cursor-wait' : 'cursor-pointer',
         ]"
         :aria-busy="uploading"
@@ -140,17 +142,38 @@ function removeAt(index: number) {
         @click="openPicker"
       >
         <template v-if="uploading">
-          <Icon icon="mdi:loading" class="animate-spin text-2xl text-blue-600" />
-          <p class="mt-1 text-[11px] font-medium text-blue-600">
+          <Icon
+            icon="mdi:loading"
+            class="animate-spin text-2xl text-primary-ink"
+            aria-hidden="true"
+          />
+          <p class="num mt-1 text-[11px] font-medium text-primary-ink" aria-live="polite">
             <template v-if="compressing">Compressing…</template>
             <template v-else>{{ progress }}%</template>
             <span v-if="queueLength > 1"> · {{ queueDone }} / {{ queueLength }}</span>
           </p>
+          <div
+            class="progress-bar mt-1.5 w-4/5"
+            role="progressbar"
+            aria-label="Upload progress"
+            :aria-valuenow="compressing ? undefined : progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <div
+              class="progress-bar-fill"
+              :style="{ width: `${compressing ? 0 : progress}%` }"
+            ></div>
+          </div>
         </template>
         <template v-else>
-          <Icon icon="mdi:cloud-upload-outline" class="text-2xl text-gray-400" />
-          <p class="mt-1 text-[11px] text-gray-500 leading-tight">
-            <span class="font-medium text-blue-600">Click</span> or drop
+          <Icon
+            icon="mdi:cloud-upload-outline"
+            class="text-2xl text-ink-subtle"
+            aria-hidden="true"
+          />
+          <p class="mt-1 text-[11px] leading-tight text-ink-muted">
+            <span class="font-medium text-primary-ink">Click</span> or drop
           </p>
         </template>
         <input
@@ -165,7 +188,10 @@ function removeAt(index: number) {
       </div>
     </div>
 
-    <p v-if="error" class="text-xs text-red-500">{{ error }}</p>
-    <p v-else-if="helper" class="text-xs text-gray-400">{{ helper }}</p>
+    <p v-if="error" class="flex items-start gap-1 text-xs font-medium text-error" role="alert">
+      <Icon icon="mdi:alert-circle-outline" class="mt-px shrink-0 text-sm" aria-hidden="true" />
+      {{ error }}
+    </p>
+    <p v-else-if="helper" class="text-xs text-ink-subtle">{{ helper }}</p>
   </div>
 </template>

@@ -34,8 +34,8 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section id="congregations" ref="sectionRef" class="bg-[#F8F9FA] py-20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <section id="congregations" ref="sectionRef" class="scroll-mt-20 bg-canvas py-16 md:py-24">
+    <div class="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
       <div :class="['reveal', isVisible && 'is-visible']">
         <SectionHeader
           title="Find a Congregation Near You"
@@ -47,22 +47,22 @@ const { el: sectionRef, isVisible } = useScrollReveal()
       <!-- Search bar -->
       <div
         :class="[
-          'mx-auto mb-10 flex max-w-2xl items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm',
+          'mb-10 flex items-center gap-2 rounded-md border border-rule-strong bg-surface py-1.5 pr-1.5 pl-4 shadow-xs transition-[border-color,box-shadow] focus-within:border-primary focus-within:ring-3 focus-within:ring-primary/15 hover:border-ink-subtle',
           'reveal',
           'delay-150',
           isVisible && 'is-visible',
         ]"
       >
-        <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
+        <Icon icon="mdi:magnify" class="h-6 w-6 shrink-0 text-ink-subtle" />
         <input
           v-model="query"
           type="text"
           placeholder="Search for a congregation near you…"
-          class="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
+          class="min-h-11 min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink-subtle"
           aria-label="Search for a congregation"
         />
         <button
-          class="rounded-lg bg-[#2563EB] px-4 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+          class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-md bg-primary px-5 text-base font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover"
           aria-label="Show matching congregations"
           @click="showResults"
         >
@@ -70,8 +70,12 @@ const { el: sectionRef, isVisible } = useScrollReveal()
         </button>
       </div>
 
-      <!-- Results grid -->
-      <div v-if="results.length" ref="resultsRef" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Results: a ruled directory, one congregation per entry -->
+      <div
+        v-if="results.length"
+        ref="resultsRef"
+        class="scroll-mt-24 divide-y divide-rule rounded-lg border border-rule bg-surface shadow-xs"
+      >
         <div
           v-for="(cg, i) in results"
           :key="cg.id"
@@ -79,24 +83,26 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           :style="{ transitionDelay: `${200 + i * 60}ms` }"
         >
           <div
-            class="rounded-xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3"
+            class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6"
           >
-            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1E3A5F]/10">
-              <Icon icon="heroicons:building-library" class="h-5 w-5 text-[#1E3A5F]" />
-            </div>
-            <h3 class="font-semibold text-[#1E3A5F] text-sm leading-snug">{{ cg.name }}</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">{{ cg.address }}</p>
-            <div class="flex items-center gap-1.5 text-xs text-gray-400">
-              <Icon icon="heroicons:clock" class="h-3.5 w-3.5" />
-              {{ cg.serviceTime }}
+            <div class="min-w-0">
+              <h3 class="font-display text-lg leading-snug font-semibold text-ink">
+                {{ cg.name }}
+              </h3>
+              <p class="mt-1 text-base leading-relaxed text-ink-muted">{{ cg.address }}</p>
+              <div class="num mt-1.5 flex items-center gap-1.5 text-base text-ink-muted">
+                <Icon icon="mdi:clock-outline" class="h-5 w-5 shrink-0 text-ink-subtle" />
+                {{ cg.serviceTime }}
+              </div>
             </div>
             <a
               :href="directionsUrl(cg)"
               target="_blank"
               rel="noopener noreferrer"
-              class="mt-auto w-full rounded-lg bg-[#1E3A5F] py-2 text-center text-xs font-semibold text-white hover:bg-[#2563EB] transition-colors"
+              class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-4 text-base font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
               :aria-label="`Get directions to ${cg.name}`"
             >
+              <Icon icon="mdi:directions" class="h-5 w-5 text-primary-ink" />
               Get Directions
             </a>
           </div>
@@ -106,15 +112,15 @@ const { el: sectionRef, isVisible } = useScrollReveal()
       <LoadingState v-else-if="settingsStore.loading" title="Loading congregations…" />
       <EmptyState
         v-else-if="query"
-        icon="heroicons:building-library"
+        icon="mdi:church-outline"
         title="No congregations found"
         :description="`Nothing matched &quot;${query}&quot;. Try a different city or name.`"
       />
       <EmptyState
         v-else
-        icon="heroicons:building-library"
+        icon="mdi:church-outline"
         title="No congregations listed yet"
-        description="Sister congregations are added from Settings → Congregations."
+        description="Our list of sister congregations is coming soon. Please check back."
       />
     </div>
   </section>

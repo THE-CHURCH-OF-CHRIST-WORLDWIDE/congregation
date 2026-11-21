@@ -30,40 +30,41 @@ function doExport() {
 </script>
 
 <template>
-  <Card padding="none">
+  <Card padding="none" class="overflow-hidden">
     <div
-      class="p-4 lg:p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      class="flex flex-col justify-between gap-3 border-b border-rule px-5 py-4 sm:flex-row sm:items-center"
     >
-      <div>
-        <h3 class="text-sm font-semibold text-gray-900">
+      <div class="min-w-0">
+        <h3 class="font-display text-base font-semibold text-ink">
           Backslider Summary - Members Needing Follow-up
         </h3>
-        <p class="text-xs text-gray-400 mt-0.5">
-          Members who have missed {{ BACKSLIDER_THRESHOLD }} or more Sunday services in a row
+        <p class="mt-0.5 text-xs text-ink-muted">
+          Members who have missed <span class="num">{{ BACKSLIDER_THRESHOLD }}</span> or more Sunday
+          services in a row
         </p>
       </div>
       <button
-        class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors"
-        style="border-color: #0ba5ec; color: #0ba5ec"
+        class="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-md border border-rule-strong bg-surface px-3 text-[13px] font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
         :aria-label="`Export ${filtered.length} backsliders to CSV`"
         @click="doExport"
       >
-        <Icon icon="mdi:upload-outline" class="text-base" />
+        <Icon icon="mdi:upload-outline" class="text-base text-ink-subtle" aria-hidden="true" />
         Export CSV
       </button>
     </div>
 
-    <div class="p-4 flex gap-2">
+    <div class="flex gap-2 border-b border-rule bg-surface-muted/60 px-5 py-3">
       <div class="relative flex-1">
         <Icon
           icon="mdi:magnify"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+          class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-base text-ink-subtle"
+          aria-hidden="true"
         />
         <input
           v-model="search"
           type="search"
           placeholder="Search here..."
-          class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search backsliders"
         />
       </div>
@@ -75,52 +76,69 @@ function doExport() {
 
     <div class="overflow-x-auto">
       <table class="w-full text-sm" role="table">
-        <thead>
-          <tr class="bg-gray-50 border-y border-gray-100">
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-10">
+        <thead class="sticky top-0 z-[1] bg-surface-muted">
+          <tr>
+            <th
+              scope="col"
+              class="px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase border-b border-rule w-12 text-right"
+            >
               S/N
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase border-b border-rule"
+            >
               Name
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase border-b border-rule"
+            >
               Phone Number
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase border-b border-rule"
+            >
               Consecutive Absences
             </th>
-            <th scope="col" class="text-left px-4 py-2.5 text-xs font-medium text-gray-500">
+            <th
+              scope="col"
+              class="px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase border-b border-rule"
+            >
               Action Required
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-rule">
           <tr
             v-for="(member, idx) in paginated"
             :key="member.id"
-            class="border-b border-gray-50 hover:bg-gray-50/50"
+            class="transition-colors duration-150 hover:bg-surface-muted/70"
           >
-            <td class="px-4 py-3 text-gray-500">{{ rangeStart + idx }}</td>
+            <td class="num px-4 py-3 text-right text-ink-subtle">{{ rangeStart + idx }}</td>
             <td class="px-4 py-3">
               <div class="flex items-center gap-2.5">
                 <Avatar :src="member.avatar" :name="member.name" size="sm" />
-                <span class="font-medium text-gray-900">{{ member.name }}</span>
+                <span class="font-medium whitespace-nowrap text-ink">{{ member.name }}</span>
               </div>
             </td>
-            <td class="px-4 py-3 text-gray-600">{{ member.phone }}</td>
+            <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">{{ member.phone }}</td>
             <td class="px-4 py-3">
-              <Badge variant="danger" size="sm">
-                <template #icon><Icon icon="mdi:alert-circle" class="text-[10px]" /></template>
+              <Badge variant="danger" size="sm" class="num">
+                <template #icon>
+                  <Icon icon="mdi:alert-circle-outline" class="text-[11px]" aria-hidden="true" />
+                </template>
                 {{ absencesFor(member.id) }} Sundays missed
               </Badge>
             </td>
             <td class="px-4 py-3">
               <a
                 :href="`tel:${member.phone}`"
-                class="hover:underline text-sm font-medium"
-                style="color: #0ba5ec"
+                class="inline-flex items-center gap-1 text-sm font-medium whitespace-nowrap text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline"
                 :aria-label="`Contact ${member.name}`"
               >
+                <Icon icon="mdi:phone-outline" class="text-sm" aria-hidden="true" />
                 Contact member
               </a>
             </td>

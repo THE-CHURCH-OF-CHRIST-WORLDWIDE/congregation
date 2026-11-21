@@ -58,62 +58,84 @@ async function logout() {
 </script>
 
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden">
+  <div class="theme-admin flex h-screen overflow-hidden bg-canvas text-ink">
     <!-- Mobile overlay -->
-    <div
-      v-if="uiStore.mobileSidebarOpen"
-      class="fixed inset-0 bg-black/40 z-20 lg:hidden"
-      @click="uiStore.closeMobileSidebar()"
-    ></div>
+    <Transition name="fade">
+      <div
+        v-if="uiStore.mobileSidebarOpen"
+        class="fixed inset-0 z-20 bg-overlay lg:hidden"
+        @click="uiStore.closeMobileSidebar()"
+      ></div>
+    </Transition>
 
-    <!-- Sidebar -->
+    <!-- Sidebar: the register's bookcloth spine -->
     <aside
       :class="[
-        'fixed top-0 left-0 h-full w-60 bg-white border-r border-gray-200 flex flex-col z-30 transition-transform duration-200',
-        uiStore.mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        'bookcloth fixed top-0 left-0 z-30 flex h-full w-64 flex-col transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] lg:w-60',
+        uiStore.mobileSidebarOpen
+          ? 'translate-x-0 shadow-xl'
+          : '-translate-x-full lg:translate-x-0',
       ]"
     >
-      <!-- Logo -->
-      <div class="px-4 pt-5 pb-4 border-b border-gray-100">
-        <div class="flex items-center gap-2.5">
+      <!-- Church identity -->
+      <div class="border-b border-white/10 px-4 pt-5 pb-4">
+        <div class="flex items-center gap-3">
           <div
-            class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0"
+            class="flex size-10 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/10"
           >
-            <Icon icon="mdi:church" class="text-white text-lg" />
+            <Icon icon="mdi:church" class="text-xl text-[#f2d593]" />
           </div>
           <div class="min-w-0">
-            <p class="font-bold text-gray-900 text-sm leading-tight">
+            <p class="truncate font-display text-[15px] font-semibold leading-tight text-white">
               {{ settingsStore.settings.name }}
             </p>
-            <p class="text-xs text-blue-600">Admin Dashboard</p>
+            <p class="mt-0.5 text-xs font-medium text-white/65">Admin Dashboard</p>
           </div>
         </div>
-        <div class="mt-3">
-          <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Congregation</p>
-          <p class="text-xs text-gray-600 mt-0.5">{{ settingsStore.settings.address }}</p>
+        <div class="mt-4 rounded-md bg-black/15 px-3 py-2">
+          <p class="text-2xs font-semibold tracking-[0.08em] text-[#f2d593]/90 uppercase">
+            Congregation
+          </p>
+          <p class="mt-0.5 text-xs leading-snug text-white/75">
+            {{ settingsStore.settings.address }}
+          </p>
         </div>
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 px-3 py-4 space-y-0.5 sidebar-scroll overflow-y-auto">
+      <nav class="sidebar-scroll flex-1 space-y-0.5 overflow-y-auto px-3 py-4" aria-label="Admin">
         <NuxtLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
+          :aria-current="isActive(item) ? 'page' : undefined"
           :class="[
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
+            'group relative flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors duration-150 lg:min-h-10',
             isActive(item)
-              ? 'bg-blue-50 text-blue-600 border-l-[3px] border-blue-600 pl-[9px]'
-              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+              ? 'bg-white text-[#163b2d] shadow-sm dark:bg-white/12 dark:text-white dark:shadow-none'
+              : 'text-white/80 hover:bg-white/10 hover:text-white',
           ]"
           @click="uiStore.closeMobileSidebar()"
         >
-          <Icon :icon="item.icon" class="text-[18px] flex-shrink-0" />
+          <Icon
+            :icon="item.icon"
+            :class="[
+              'shrink-0 text-[19px]',
+              isActive(item)
+                ? 'text-[#1e4d3b] dark:text-[#86cfab]'
+                : 'text-white/60 group-hover:text-white/90',
+            ]"
+          />
           {{ item.label }}
           <!-- Unread enquiries, so a message left overnight is visible from any page. -->
           <span
             v-if="item.badge === 'messages' && messagesStore.unreadCount"
-            class="ml-auto rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-semibold text-white"
+            :class="[
+              'num ml-auto min-w-6 rounded-sm px-1.5 py-0.5 text-center text-[11px] font-bold',
+              isActive(item)
+                ? 'bg-[#1e4d3b] text-white dark:bg-[#f2d593] dark:text-[#3b2a06]'
+                : 'bg-[#f2d593] text-[#3b2a06]',
+            ]"
             :aria-label="`${messagesStore.unreadCount} unread`"
           >
             {{ messagesStore.unreadCount }}
@@ -122,25 +144,25 @@ async function logout() {
       </nav>
 
       <!-- Bottom section -->
-      <div class="border-t border-gray-100 px-3 py-4">
-        <p class="text-[10px] font-medium text-gray-400 uppercase tracking-wide px-3 mb-2">
-          Section Title
+      <div class="border-t border-white/10 px-3 py-3">
+        <p class="mb-1 px-3 text-2xs font-semibold tracking-[0.08em] text-white/65 uppercase">
+          Site
         </p>
         <NuxtLink
           to="/"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
+          class="flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white lg:min-h-10"
         >
-          <Icon icon="mdi:home-outline" class="text-[18px]" />
+          <Icon icon="mdi:home-outline" class="text-[19px] text-white/60" />
           Go to Home
         </NuxtLink>
         <button
-          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all disabled:opacity-60"
+          class="flex min-h-11 w-full items-center gap-3 rounded-md px-3 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60 lg:min-h-10"
           :disabled="signingOut"
           @click="logout"
         >
           <Icon
             :icon="signingOut ? 'mdi:loading' : 'mdi:logout'"
-            :class="['text-[18px]', signingOut && 'animate-spin']"
+            :class="['text-[19px] text-white/60', signingOut && 'animate-spin']"
           />
           {{ signingOut ? 'Signing out…' : 'Logout' }}
         </button>
@@ -148,9 +170,9 @@ async function logout() {
     </aside>
 
     <!-- Main area -->
-    <div class="flex flex-col flex-1 min-w-0 lg:ml-60">
+    <div class="flex min-w-0 flex-1 flex-col lg:ml-60">
       <!-- Topbar -->
-      <header class="sticky top-0 z-10 bg-white border-b border-gray-200">
+      <header class="sticky top-0 z-10 border-b border-rule bg-surface/95 backdrop-blur-sm">
         <!-- Renders only outside production, so nobody edits the live congregation
              thinking they are in staging. -->
         <EnvironmentBanner />
@@ -160,28 +182,30 @@ async function logout() {
              each action fail on its own. -->
         <div
           v-if="authStore.roleLoaded && authStore.isAuthenticated && !authStore.isStaff"
-          class="flex items-start gap-2 bg-red-50 px-4 py-2 text-xs text-red-800"
+          class="flex items-start gap-2 border-b border-error/20 bg-error-soft px-4 py-2.5 text-[13px] text-error lg:px-6"
           role="alert"
         >
-          <Icon icon="mdi:shield-alert-outline" class="mt-0.5 shrink-0 text-sm" />
+          <Icon icon="mdi:shield-alert-outline" class="mt-0.5 shrink-0 text-base" />
           <p>
             This account has no role assigned, so saving anything will be refused. Ask a Super Admin
             to grant it a role.
           </p>
         </div>
-        <div class="px-4 lg:px-6 py-4 flex items-start gap-3">
+        <div class="flex items-center gap-3 px-4 py-3.5 lg:px-8 lg:py-4">
           <button
-            class="lg:hidden mt-1 p-1.5 rounded-md hover:bg-gray-100 text-gray-500 shrink-0"
+            class="-ml-1 inline-flex size-11 shrink-0 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-surface-sunken hover:text-ink lg:hidden"
             aria-label="Toggle sidebar"
             @click="uiStore.toggleSidebar()"
           >
-            <Icon icon="mdi:menu" class="text-xl" />
+            <Icon icon="mdi:menu" class="text-[22px]" />
           </button>
-          <div class="min-w-0 flex-1">
-            <h1 class="font-serif text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+          <div class="margin-rule min-w-0 flex-1">
+            <h1
+              class="truncate font-display text-xl leading-tight font-bold text-ink sm:text-[1.625rem]"
+            >
               {{ title }}
             </h1>
-            <p v-if="subtitle" class="text-sm text-gray-500 mt-1">{{ subtitle }}</p>
+            <p v-if="subtitle" class="mt-0.5 truncate text-sm text-ink-muted">{{ subtitle }}</p>
           </div>
           <!-- Page-level action slot. Pages teleport their CTA(s) here so the
                header stays a single source of truth for title + actions. -->
@@ -191,7 +215,7 @@ async function logout() {
 
       <!-- Page content -->
       <main class="flex-1 overflow-y-auto">
-        <div class="p-4 lg:p-6">
+        <div class="mx-auto w-full max-w-[1440px] p-4 sm:p-5 lg:p-8">
           <slot></slot>
         </div>
       </main>

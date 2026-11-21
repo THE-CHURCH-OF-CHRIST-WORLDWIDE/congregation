@@ -62,7 +62,7 @@ async function submit() {
           <button
             type="button"
             :aria-label="showCurrent ? 'Hide password' : 'Show password'"
-            class="pointer-events-auto"
+            class="pointer-events-auto inline-flex rounded-sm text-ink-subtle transition-colors hover:text-ink"
             @click="showCurrent = !showCurrent"
           >
             <Icon :icon="showCurrent ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
@@ -81,7 +81,7 @@ async function submit() {
           <button
             type="button"
             :aria-label="showNext ? 'Hide password' : 'Show password'"
-            class="pointer-events-auto"
+            class="pointer-events-auto inline-flex rounded-sm text-ink-subtle transition-colors hover:text-ink"
             @click="showNext = !showNext"
           >
             <Icon :icon="showNext ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
@@ -98,7 +98,7 @@ async function submit() {
     </div>
 
     <template #footer>
-      <div class="flex gap-2 justify-end">
+      <div class="flex justify-end gap-2">
         <Button variant="secondary" @click="close">Cancel</Button>
         <Button :loading="saving" @click="submit">
           <template #icon-left><Icon icon="mdi:lock-reset" /></template>

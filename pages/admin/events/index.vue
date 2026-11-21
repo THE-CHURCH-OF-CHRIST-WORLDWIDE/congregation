@@ -108,7 +108,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="space-y-6">
     <!-- `defer`: the admin layout is a separately async-loaded chunk, so its header (and this
          teleport's target) is not guaranteed to exist before this page's own chunk mounts.
          Without `defer`, that race intermittently throws "Failed to locate Teleport target". -->
@@ -119,67 +119,99 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
       </Button>
     </Teleport>
 
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-end sm:justify-between"
+    >
       <Tabs v-model="activeTab" :tabs="tabs" />
       <div class="relative w-full sm:max-w-xs">
         <Icon
           icon="mdi:magnify"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-base"
+          class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-ink-subtle"
+          aria-hidden="true"
         />
         <input
           v-model="search"
           type="search"
           placeholder="Search events..."
-          class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          class="min-h-10 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           aria-label="Search events"
         />
       </div>
     </div>
 
-    <Card v-if="activeTab === 'upcoming'" padding="none">
+    <section
+      v-if="activeTab === 'upcoming'"
+      class="overflow-hidden rounded-lg border border-rule bg-surface shadow-xs"
+    >
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead>
-            <tr
-              class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500"
-            >
-              <th class="text-left px-4 py-2.5 font-medium">Title</th>
-              <th class="text-left px-4 py-2.5 font-medium">Date</th>
-              <th class="text-left px-4 py-2.5 font-medium">Time</th>
-              <th class="text-left px-4 py-2.5 font-medium">Venue</th>
-              <th class="text-left px-4 py-2.5 font-medium">Gallery</th>
-              <th class="text-right px-4 py-2.5 font-medium">Actions</th>
+          <thead class="sticky top-0 z-[1] bg-surface-muted">
+            <tr>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Title
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Date
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Time
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Venue
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Gallery
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="event in pagedUpcoming"
               :key="event.id"
-              class="border-b border-gray-50 hover:bg-gray-50/50"
+              class="transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-4 py-3 font-medium text-gray-900">{{ event.title }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ formatDate(event.date) }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ event.time }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ event.venue }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ event.galleryImages.length }} image(s)</td>
-              <td class="px-4 py-3">
-                <div class="flex items-center justify-end gap-1">
+              <td class="px-4 py-3 font-medium text-ink">{{ event.title }}</td>
+              <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">
+                {{ formatDate(event.date) }}
+              </td>
+              <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">{{ event.time }}</td>
+              <td class="px-4 py-3 text-ink-muted">{{ event.venue }}</td>
+              <td class="px-4 py-3 text-ink-muted">
+                <span class="num">{{ event.galleryImages.length }}</span> image(s)
+              </td>
+              <td class="px-4 py-2">
+                <div class="flex items-center justify-end gap-0.5">
                   <button
-                    class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
                     :aria-label="`View ${event.title}`"
                     @click="openView(event)"
                   >
                     <Icon icon="mdi:eye-outline" class="text-base" />
                   </button>
                   <button
-                    class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
                     :aria-label="`Edit ${event.title}`"
                     @click="openEdit(event)"
                   >
                     <Icon icon="mdi:pencil-outline" class="text-base" />
                   </button>
                   <button
-                    class="rounded p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
                     :aria-label="`Delete ${event.title}`"
                     @click="confirmDelete(event)"
                   >
@@ -208,61 +240,84 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
         :range-end="upcomingTo"
         label="events"
       />
-    </Card>
+    </section>
 
-    <Card v-else padding="none">
+    <section v-else class="overflow-hidden rounded-lg border border-rule bg-surface shadow-xs">
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
-          <thead>
-            <tr
-              class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wide text-gray-500"
-            >
-              <th class="text-left px-4 py-2.5 font-medium">Title</th>
-              <th class="text-left px-4 py-2.5 font-medium">Category</th>
-              <th class="text-left px-4 py-2.5 font-medium">Date</th>
-              <th class="text-left px-4 py-2.5 font-medium">Time</th>
-              <th class="text-left px-4 py-2.5 font-medium">Venue</th>
-              <th class="text-left px-4 py-2.5 font-medium">Moderator</th>
-              <th class="text-right px-4 py-2.5 font-medium">Actions</th>
+          <thead class="sticky top-0 z-[1] bg-surface-muted">
+            <tr>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Title
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Category
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Date
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Time
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Venue
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Moderator
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="event in pagedPast"
               :key="event.id"
-              class="border-b border-gray-50 hover:bg-gray-50/50"
+              class="transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-4 py-3 font-medium text-gray-900">{{ event.title }}</td>
+              <td class="px-4 py-3 font-medium text-ink">{{ event.title }}</td>
               <td class="px-4 py-3">
-                <span
-                  class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium"
-                  style="color: #0ba5ec"
-                >
-                  {{ event.category }}
-                </span>
+                <Badge variant="info" size="sm">{{ event.category }}</Badge>
               </td>
-              <td class="px-4 py-3 text-gray-600">{{ formatDate(event.date) }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ event.time }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ event.venue }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ event.moderator.name }}</td>
-              <td class="px-4 py-3">
-                <div class="flex items-center justify-end gap-1">
+              <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">
+                {{ formatDate(event.date) }}
+              </td>
+              <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">{{ event.time }}</td>
+              <td class="px-4 py-3 text-ink-muted">{{ event.venue }}</td>
+              <td class="px-4 py-3 text-ink-muted">{{ event.moderator.name }}</td>
+              <td class="px-4 py-2">
+                <div class="flex items-center justify-end gap-0.5">
                   <button
-                    class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
                     :aria-label="`View ${event.title}`"
                     @click="openView(event)"
                   >
                     <Icon icon="mdi:eye-outline" class="text-base" />
                   </button>
                   <button
-                    class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
                     :aria-label="`Edit ${event.title}`"
                     @click="openEdit(event)"
                   >
                     <Icon icon="mdi:pencil-outline" class="text-base" />
                   </button>
                   <button
-                    class="rounded p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
                     :aria-label="`Delete ${event.title}`"
                     @click="confirmDelete(event)"
                   >
@@ -291,7 +346,7 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
         :range-end="pastTo"
         label="events"
       />
-    </Card>
+    </section>
 
     <EventFormModal v-model="formOpen" :event="editTarget" :default-kind="activeTab" />
 
@@ -301,42 +356,48 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
           v-if="isPast(viewTarget) && viewTarget.featuredImage"
           :src="displayableImageUrl(viewTarget.featuredImage)"
           :alt="viewTarget.title"
-          class="w-full h-48 object-cover rounded-lg"
+          class="h-48 w-full rounded-md border border-rule object-cover"
         />
-        <div class="grid grid-cols-2 gap-4 text-sm">
+        <div
+          class="grid grid-cols-2 gap-x-4 gap-y-3 rounded-md border border-rule bg-surface-muted p-4 text-sm"
+        >
           <div>
-            <p class="text-xs text-gray-500">Date</p>
-            <p class="font-medium text-gray-900">{{ formatDate(viewTarget.date) }}</p>
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Date</p>
+            <p class="num mt-0.5 font-medium text-ink">{{ formatDate(viewTarget.date) }}</p>
           </div>
           <div>
-            <p class="text-xs text-gray-500">Time</p>
-            <p class="font-medium text-gray-900">{{ viewTarget.time }}</p>
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Time</p>
+            <p class="num mt-0.5 font-medium text-ink">{{ viewTarget.time }}</p>
           </div>
           <div>
-            <p class="text-xs text-gray-500">Venue</p>
-            <p class="font-medium text-gray-900">{{ viewTarget.venue }}</p>
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Venue</p>
+            <p class="mt-0.5 font-medium text-ink">{{ viewTarget.venue }}</p>
           </div>
           <div v-if="isPast(viewTarget)">
-            <p class="text-xs text-gray-500">Category</p>
-            <p class="font-medium text-gray-900">{{ viewTarget.category }}</p>
+            <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Category</p>
+            <p class="mt-0.5 font-medium text-ink">{{ viewTarget.category }}</p>
           </div>
         </div>
 
         <div v-if="isPast(viewTarget)" class="flex flex-col gap-3">
           <div>
-            <p class="text-xs text-gray-500 mb-1">Moderator</p>
+            <p class="mb-1.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+              Moderator
+            </p>
             <div class="flex items-center gap-2">
               <img
                 v-if="viewTarget.moderator.avatar"
                 :src="displayableImageUrl(viewTarget.moderator.avatar)"
                 :alt="viewTarget.moderator.name"
-                class="h-8 w-8 rounded-full object-cover"
+                class="size-8 rounded-full border border-rule object-cover"
               />
-              <span class="text-sm text-gray-900">{{ viewTarget.moderator.name }}</span>
+              <span class="text-sm text-ink">{{ viewTarget.moderator.name }}</span>
             </div>
           </div>
           <div v-if="viewTarget.speakers.length">
-            <p class="text-xs text-gray-500 mb-1">Speakers</p>
+            <p class="mb-1.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+              Speakers
+            </p>
             <ul class="flex flex-wrap gap-3">
               <li
                 v-for="(sp, idx) in viewTarget.speakers"
@@ -347,23 +408,25 @@ function isPast(e: UpcomingEvent | PastEvent): e is PastEvent {
                   v-if="sp.avatar"
                   :src="displayableImageUrl(sp.avatar)"
                   :alt="sp.name"
-                  class="h-8 w-8 rounded-full object-cover"
+                  class="size-8 rounded-full border border-rule object-cover"
                 />
-                <span class="text-sm text-gray-900">{{ sp.name }}</span>
+                <span class="text-sm text-ink">{{ sp.name }}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div v-if="!isPast(viewTarget) && viewTarget.galleryImages.length">
-          <p class="text-xs text-gray-500 mb-2">Gallery ({{ viewTarget.galleryImages.length }})</p>
+          <p class="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+            Gallery ({{ viewTarget.galleryImages.length }})
+          </p>
           <div class="grid grid-cols-3 gap-2">
             <img
               v-for="(src, idx) in viewTarget.galleryImages"
               :key="idx"
               :src="displayableImageUrl(src)"
               :alt="`${viewTarget.title} ${idx + 1}`"
-              class="h-24 w-full object-cover rounded-md"
+              class="h-24 w-full rounded-md border border-rule object-cover"
             />
           </div>
         </div>

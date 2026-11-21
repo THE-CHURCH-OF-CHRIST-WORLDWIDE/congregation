@@ -6,37 +6,37 @@ defineProps<{ stream: LiveStream }>()
 
 <template>
   <div
-    class="relative w-full overflow-hidden rounded-2xl bg-[#1E3A5F] min-h-80 flex items-center justify-center"
-    style="background-image: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.95))"
+    class="relative flex min-h-80 w-full items-end overflow-hidden rounded-lg bg-secondary shadow-xs md:min-h-[26rem]"
   >
     <img
       :src="displayableImageUrl(stream.thumbnailSrc)"
       :alt="stream.title"
-      class="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-40"
+      class="absolute inset-0 h-full w-full object-cover"
       loading="lazy"
     />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/15"
+      aria-hidden="true"
+    ></div>
 
-    <div class="relative z-10 flex flex-col items-center text-center text-white px-6 py-16">
-      <!-- Pulsing LIVE badge -->
-      <div
-        class="mb-6 flex items-center gap-3 rounded-full bg-[#EF4444]/20 px-4 py-2 backdrop-blur-sm border border-[#EF4444]/30"
-      >
-        <span class="relative flex h-3 w-3">
-          <span
-            class="absolute inline-flex h-full w-full rounded-full bg-[#EF4444] opacity-75 animate-ping"
-          ></span>
-          <span class="relative inline-flex h-3 w-3 rounded-full bg-[#EF4444]"></span>
-        </span>
-        <span class="text-sm font-bold tracking-widest text-[#EF4444] uppercase">Live Now</span>
-      </div>
+    <!-- The locked corner: the one live signal on the page -->
+    <div
+      class="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-sm bg-live px-2.5 py-1 shadow-md"
+    >
+      <span class="pulse-ring live-dot relative size-2 rounded-full bg-white"></span>
+      <span class="text-xs font-bold tracking-[0.1em] text-white uppercase">Live Now</span>
+    </div>
 
-      <h2 class="font-serif text-3xl font-bold mb-3 max-w-2xl md:text-4xl">
+    <div
+      class="relative z-10 flex w-full flex-col items-start px-6 pt-20 pb-7 text-white md:px-10 md:pb-10"
+    >
+      <h2 class="max-w-2xl font-display text-3xl leading-tight font-bold md:text-4xl">
         {{ stream.title }}
       </h2>
-      <p class="text-white/70 text-base mb-2">{{ stream.congregation }}</p>
-      <div class="flex items-center gap-2 mb-8">
-        <Icon icon="heroicons:eye" class="h-4 w-4 text-white/50" />
-        <span class="text-sm text-white/60"
+      <p class="mt-2 text-base text-white/85">{{ stream.congregation }}</p>
+      <div class="mt-2 mb-7 flex items-center gap-2">
+        <Icon icon="mdi:eye-outline" class="size-4 text-white/70" aria-hidden="true" />
+        <span class="num text-sm text-white/75"
           >{{ stream.viewerCount.toLocaleString() }} watching</span
         >
       </div>
@@ -45,17 +45,20 @@ defineProps<{ stream: LiveStream }>()
         href="#"
         target="_blank"
         rel="noopener"
-        class="inline-flex items-center gap-2 rounded-full bg-[#2563EB] px-8 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 transition-colors"
+        class="inline-flex min-h-11 items-center gap-2 rounded-md bg-primary px-6 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover"
         aria-label="Watch live stream now"
       >
-        <span class="relative flex h-2 w-2">
-          <span
-            class="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping"
-          ></span>
-          <span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
-        </span>
+        <Icon icon="mdi:play" class="size-5" aria-hidden="true" />
         Watch Live Now
       </a>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* On the red indicator the ripple is white, so it stays visible against bg-live. */
+.pulse-ring.live-dot::before,
+.pulse-ring.live-dot::after {
+  background: rgb(255 255 255 / 0.85);
+}
+</style>

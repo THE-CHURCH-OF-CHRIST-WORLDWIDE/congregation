@@ -29,7 +29,7 @@ const defaultOptions: ChartOptions<'bar'> = {
   },
   scales: {
     x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-    y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 } }, beginAtZero: true },
+    y: { ticks: { font: { size: 11 } }, beginAtZero: true },
   },
 }
 

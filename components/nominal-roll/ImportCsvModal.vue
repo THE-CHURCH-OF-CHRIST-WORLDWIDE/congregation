@@ -156,34 +156,47 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
       <!-- Drop zone -->
       <div
         :class="[
-          'border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer',
+          'flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed p-10 transition-colors duration-150',
           isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-200 hover:border-blue-400 hover:bg-gray-50',
+            ? 'border-primary bg-primary-soft'
+            : 'border-rule-strong bg-surface-muted/50 hover:border-primary hover:bg-surface-muted',
         ]"
         @dragover.prevent="isDragging = true"
         @dragleave="isDragging = false"
         @drop.prevent="onDrop"
         @click="fileInputRef?.click()"
       >
-        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center">
-          <Icon icon="mdi:file-upload-outline" class="text-3xl text-blue-500" />
+        <div
+          :class="[
+            'flex size-14 items-center justify-center rounded-md border transition-colors',
+            isDragging
+              ? 'border-primary/30 bg-surface text-primary-ink'
+              : 'border-rule bg-surface text-primary-ink',
+          ]"
+        >
+          <Icon icon="mdi:file-upload-outline" class="text-3xl" />
         </div>
         <div class="text-center">
-          <p class="text-sm font-semibold text-gray-800">Drop your CSV file here</p>
-          <p class="text-xs text-gray-400 mt-1">or click to browse — .csv files only</p>
+          <p class="font-display text-base font-semibold text-ink">Drop your CSV file here</p>
+          <p class="mt-1 text-xs text-ink-subtle">or click to browse — .csv files only</p>
         </div>
         <input ref="fileInputRef" type="file" accept=".csv" class="hidden" @change="onFileInput" />
       </div>
 
-      <p v-if="fileError" class="text-sm text-red-500 flex items-center gap-1.5">
-        <Icon icon="mdi:alert-circle-outline" />
+      <p
+        v-if="fileError"
+        class="flex items-center gap-2 rounded-md border border-error/25 bg-error-soft px-4 py-3 text-sm text-error"
+        role="alert"
+      >
+        <Icon icon="mdi:alert-circle-outline" class="shrink-0 text-base" />
         {{ fileError }}
       </p>
 
       <!-- Expected format guide -->
-      <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
-        <p class="text-xs font-semibold text-gray-600 mb-2">Expected CSV columns</p>
+      <div class="rounded-md border border-rule bg-surface-muted p-4">
+        <p class="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          Expected CSV columns
+        </p>
         <div class="flex flex-wrap gap-1.5">
           <span
             v-for="col in [
@@ -205,13 +218,15 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
             ]"
             :key="col"
             :class="[
-              'px-2 py-0.5 rounded-md text-[11px] font-medium',
-              col.endsWith('*') ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600',
+              'rounded-sm px-2 py-0.5 text-2xs font-semibold ring-1 ring-inset',
+              col.endsWith('*')
+                ? 'bg-primary-soft text-primary-ink ring-primary/25'
+                : 'bg-surface text-ink-muted ring-rule-strong/60',
             ]"
             >{{ col }}</span
           >
         </div>
-        <p class="text-[11px] text-gray-400 mt-2">
+        <p class="mt-2.5 text-xs text-ink-subtle">
           * Required. Column order doesn't matter — headers are auto-detected.
         </p>
       </div>
@@ -220,116 +235,129 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
     <!-- ── STEP 2: Preview ─────────────────────────────────────────────────── -->
     <div v-else class="flex flex-col gap-4">
       <!-- Summary bar -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="rounded-xl bg-gray-50 p-3 text-center">
-          <p class="text-xl font-bold text-gray-900">{{ parsedRows.length }}</p>
-          <p class="text-xs text-gray-400 mt-0.5">Total rows</p>
+      <div
+        class="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-rule bg-rule sm:grid-cols-4"
+      >
+        <div class="bg-surface p-3">
+          <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Total rows</p>
+          <p class="num mt-1 font-display text-2xl leading-none font-semibold text-ink">
+            {{ parsedRows.length }}
+          </p>
         </div>
-        <div class="rounded-xl bg-green-50 p-3 text-center">
-          <p class="text-xl font-bold text-green-600">{{ validRows.length }}</p>
-          <p class="text-xs text-gray-400 mt-0.5">Valid</p>
+        <div class="bg-success-soft p-3">
+          <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Valid</p>
+          <p class="num mt-1 font-display text-2xl leading-none font-semibold text-success">
+            {{ validRows.length }}
+          </p>
         </div>
-        <div
-          class="rounded-xl p-3 text-center"
-          :class="invalidRows.length ? 'bg-red-50' : 'bg-gray-50'"
-        >
+        <div class="p-3" :class="invalidRows.length ? 'bg-error-soft' : 'bg-surface'">
+          <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Invalid</p>
           <p
-            class="text-xl font-bold"
-            :class="invalidRows.length ? 'text-red-500' : 'text-gray-400'"
+            class="num mt-1 font-display text-2xl leading-none font-semibold"
+            :class="invalidRows.length ? 'text-error' : 'text-ink-subtle'"
           >
             {{ invalidRows.length }}
           </p>
-          <p class="text-xs text-gray-400 mt-0.5">Invalid</p>
         </div>
-        <div
-          class="rounded-xl p-3 text-center"
-          :class="duplicateCount ? 'bg-amber-50' : 'bg-gray-50'"
-        >
-          <p class="text-xl font-bold" :class="duplicateCount ? 'text-[#F3A218]' : 'text-gray-400'">
+        <div class="p-3" :class="duplicateCount ? 'bg-warning-soft' : 'bg-surface'">
+          <p class="text-2xs font-semibold tracking-wide text-ink-muted uppercase">Duplicates</p>
+          <p
+            class="num mt-1 font-display text-2xl leading-none font-semibold"
+            :class="duplicateCount ? 'text-warning' : 'text-ink-subtle'"
+          >
             {{ duplicateCount }}
           </p>
-          <p class="text-xs text-gray-400 mt-0.5">Duplicates</p>
         </div>
       </div>
 
       <!-- File name + toggle -->
-      <div class="flex items-center justify-between flex-wrap gap-2">
-        <div class="flex items-center gap-2 text-sm text-gray-500">
-          <Icon icon="mdi:file-delimited-outline" class="text-blue-500" />
-          <span class="font-medium text-gray-700">{{ fileName }}</span>
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex min-w-0 items-center gap-2 text-sm text-ink-muted">
+          <Icon icon="mdi:file-delimited-outline" class="shrink-0 text-base text-primary-ink" />
+          <span class="truncate font-medium text-ink">{{ fileName }}</span>
         </div>
-        <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-          <span class="relative inline-block w-8 h-4">
-            <input v-model="importOnlyValid" type="checkbox" class="sr-only peer" />
+        <label
+          class="flex min-h-9 cursor-pointer items-center gap-2 text-xs font-medium text-ink-muted select-none"
+        >
+          <span class="relative inline-block h-5 w-9">
+            <input v-model="importOnlyValid" type="checkbox" class="peer sr-only" />
             <span
-              class="absolute inset-0 rounded-full bg-gray-300 peer-checked:bg-blue-600 transition-colors"
+              class="absolute inset-0 rounded-full bg-rule-strong transition-colors peer-checked:bg-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
             ></span>
             <span
-              class="absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform peer-checked:translate-x-4"
+              class="absolute top-0.5 left-0.5 size-4 rounded-full bg-surface shadow-xs transition-transform peer-checked:translate-x-4"
             ></span>
           </span>
-          Skip invalid rows ({{ invalidRows.length }})
+          Skip invalid rows (<span class="num">{{ invalidRows.length }}</span
+          >)
         </label>
       </div>
 
       <!-- Preview table -->
-      <div class="overflow-auto rounded-xl border border-gray-200 max-h-80">
+      <div class="max-h-80 overflow-auto rounded-md border border-rule bg-surface">
         <table class="w-full text-xs">
-          <thead class="sticky top-0 bg-gray-50 z-10">
-            <tr class="border-b border-gray-200">
-              <th class="px-3 py-2.5 text-left font-medium text-gray-500 w-8">#</th>
+          <thead class="sticky top-0 z-[1] bg-surface-muted">
+            <tr>
+              <th
+                class="w-8 border-b border-rule px-3 py-2.5 text-right font-semibold tracking-wide text-ink-muted uppercase"
+              >
+                #
+              </th>
               <th
                 v-for="col in previewCols"
                 :key="col.key"
-                class="px-3 py-2.5 text-left font-medium text-gray-500 whitespace-nowrap"
+                class="border-b border-rule px-3 py-2.5 text-left font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
               >
                 {{ col.label }}
               </th>
-              <th class="px-3 py-2.5 text-left font-medium text-gray-500">Status</th>
+              <th
+                class="border-b border-rule px-3 py-2.5 text-left font-semibold tracking-wide text-ink-muted uppercase"
+              >
+                Status
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="(row, i) in parsedRows"
               :key="i"
               :class="[
-                'border-b border-gray-50 transition-colors',
+                'transition-colors',
                 !row.valid
-                  ? 'bg-red-50/60'
+                  ? 'bg-error-soft/50'
                   : isDuplicate(row)
-                    ? 'bg-amber-50/60'
-                    : 'hover:bg-gray-50',
+                    ? 'bg-warning-soft/50'
+                    : 'hover:bg-surface-muted/70',
                 !importOnlyValid && !row.valid ? 'opacity-60' : '',
               ]"
             >
-              <td class="px-3 py-2 text-gray-400">{{ i + 1 }}</td>
+              <td class="num px-3 py-2 text-right text-ink-subtle">{{ i + 1 }}</td>
               <td
                 v-for="col in previewCols"
                 :key="col.key"
-                class="px-3 py-2 text-gray-700 max-w-[140px] truncate"
+                class="max-w-[140px] truncate px-3 py-2 text-ink"
               >
                 {{ row[col.key] || '—' }}
               </td>
               <td class="px-3 py-2">
                 <span
                   v-if="!row.valid"
-                  class="inline-flex items-center gap-1 text-red-600 font-medium"
+                  class="inline-flex items-center gap-1 font-semibold text-error"
                 >
-                  <Icon icon="mdi:close-circle-outline" class="text-sm" />
-                  <span class="truncate max-w-[120px]" :title="row.errors.join(', ')">{{
+                  <Icon icon="mdi:close-circle-outline" class="shrink-0 text-sm" />
+                  <span class="max-w-[120px] truncate" :title="row.errors.join(', ')">{{
                     row.errors[0]
                   }}</span>
                 </span>
                 <span
                   v-else-if="isDuplicate(row)"
-                  class="inline-flex items-center gap-1 font-medium"
-                  style="color: #f3a218"
+                  class="inline-flex items-center gap-1 font-semibold text-warning"
                 >
-                  <Icon icon="mdi:alert-outline" class="text-sm" />
+                  <Icon icon="mdi:alert-outline" class="shrink-0 text-sm" />
                   Duplicate
                 </span>
-                <span v-else class="inline-flex items-center gap-1 text-green-600 font-medium">
-                  <Icon icon="mdi:check-circle-outline" class="text-sm" />
+                <span v-else class="inline-flex items-center gap-1 font-semibold text-success">
+                  <Icon icon="mdi:check-circle-outline" class="shrink-0 text-sm" />
                   Ready
                 </span>
               </td>
@@ -338,9 +366,11 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
         </table>
       </div>
 
-      <p class="text-xs text-gray-400">
-        {{ rowsToImport.length }} row{{ rowsToImport.length !== 1 ? 's' : '' }} will be imported.
-        Duplicates will still be added — remove them from the CSV to skip.
+      <p class="text-xs text-ink-muted">
+        <span class="num font-semibold text-ink">{{ rowsToImport.length }}</span> row{{
+          rowsToImport.length !== 1 ? 's' : ''
+        }}
+        will be imported. Duplicates will still be added — remove them from the CSV to skip.
       </p>
     </div>
 

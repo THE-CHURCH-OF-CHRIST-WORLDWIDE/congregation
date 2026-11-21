@@ -77,16 +77,18 @@ const containerHeight = computed(() => {
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <label v-if="label" class="text-sm font-medium text-gray-700">{{ label }}</label>
+    <label v-if="label" class="text-sm font-medium text-ink">{{ label }}</label>
 
     <div
       :class="[
-        'relative border-2 border-dashed transition-colors overflow-hidden group',
-        shape === 'circle' ? 'rounded-full' : 'rounded-xl',
+        'group relative overflow-hidden border-2 border-dashed transition-colors duration-150',
+        shape === 'circle' ? 'rounded-full' : 'rounded-md',
         containerHeight,
         dragging
-          ? 'border-blue-400 bg-blue-50'
-          : 'border-gray-200 hover:border-gray-300 bg-gray-50',
+          ? 'border-primary bg-primary-soft'
+          : error
+            ? 'border-error/60 bg-error-soft hover:border-error'
+            : 'border-rule-strong bg-surface-muted hover:border-ink-subtle',
         disabled || uploading ? 'cursor-wait' : 'cursor-pointer',
       ]"
       :aria-busy="uploading"
@@ -106,12 +108,23 @@ const containerHeight = computed(() => {
       <!-- Loading overlay -->
       <div
         v-if="uploading"
-        class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/80 text-blue-600"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface/90 px-3 text-primary-ink"
       >
-        <Icon icon="mdi:loading" class="animate-spin text-2xl" />
-        <p class="text-xs font-medium">
+        <Icon icon="mdi:loading" class="animate-spin text-2xl" aria-hidden="true" />
+        <p class="num text-xs font-medium" aria-live="polite">
           {{ compressing ? 'Compressing…' : `Uploading… ${progress}%` }}
         </p>
+        <div
+          v-if="shape !== 'circle'"
+          class="progress-bar w-3/4 max-w-48"
+          role="progressbar"
+          aria-label="Upload progress"
+          :aria-valuenow="compressing ? undefined : progress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div class="progress-bar-fill" :style="{ width: `${compressing ? 0 : progress}%` }"></div>
+        </div>
       </div>
 
       <!-- Empty state -->
@@ -119,11 +132,15 @@ const containerHeight = computed(() => {
         v-else-if="!modelValue"
         class="flex h-full w-full flex-col items-center justify-center px-3 text-center"
       >
-        <Icon icon="mdi:cloud-upload-outline" class="text-3xl text-gray-400" />
-        <p v-if="shape !== 'circle'" class="mt-1 text-sm text-gray-500">
-          <span class="font-medium text-blue-600">Click to upload</span> or drag and drop
+        <Icon
+          :icon="error ? 'mdi:alert-circle-outline' : 'mdi:cloud-upload-outline'"
+          :class="['text-3xl', error ? 'text-error' : 'text-ink-subtle']"
+          aria-hidden="true"
+        />
+        <p v-if="shape !== 'circle'" class="mt-1 text-sm text-ink-muted">
+          <span class="font-medium text-primary-ink">Click to upload</span> or drag and drop
         </p>
-        <p v-if="shape !== 'circle' && !compact" class="mt-0.5 text-xs text-gray-400">
+        <p v-if="shape !== 'circle' && !compact" class="mt-0.5 text-xs text-ink-subtle">
           JPG, PNG, GIF or WebP
         </p>
       </div>
@@ -131,15 +148,15 @@ const containerHeight = computed(() => {
       <!-- Hover overlay on existing image -->
       <div
         v-if="modelValue && !uploading"
-        class="absolute inset-0 hidden items-center justify-center gap-2 bg-black/40 text-white group-hover:flex"
+        class="absolute inset-0 hidden items-center justify-center gap-2 bg-black/50 text-white group-hover:flex"
       >
-        <span class="rounded-md bg-white/20 px-2 py-1 text-xs backdrop-blur-sm">
+        <span class="rounded-md bg-black/45 px-2 py-1 text-xs font-medium ring-1 ring-white/25">
           <Icon icon="mdi:image-edit-outline" class="mr-1 inline-block align-text-bottom" />
           Replace
         </span>
         <button
           type="button"
-          class="rounded-md bg-white/20 px-2 py-1 text-xs backdrop-blur-sm hover:bg-red-500/80"
+          class="rounded-md bg-black/45 px-2 py-1 text-xs font-medium ring-1 ring-white/25 transition-colors duration-150 hover:bg-[#b42318] hover:ring-[#b42318]"
           aria-label="Remove image"
           @click.stop="clear"
         >
@@ -158,7 +175,10 @@ const containerHeight = computed(() => {
       />
     </div>
 
-    <p v-if="error" class="text-xs text-red-500">{{ error }}</p>
-    <p v-else-if="helper" class="text-xs text-gray-400">{{ helper }}</p>
+    <p v-if="error" class="flex items-start gap-1 text-xs font-medium text-error" role="alert">
+      <Icon icon="mdi:alert-circle-outline" class="mt-px shrink-0 text-sm" aria-hidden="true" />
+      {{ error }}
+    </p>
+    <p v-else-if="helper" class="text-xs text-ink-subtle">{{ helper }}</p>
   </div>
 </template>

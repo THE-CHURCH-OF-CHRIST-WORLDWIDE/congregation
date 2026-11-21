@@ -39,25 +39,35 @@ const activeTab = computed({
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 pb-16">
+  <div class="min-h-screen bg-surface pb-16 md:pb-24">
     <!-- Page header -->
-    <div class="bg-white border-b border-gray-100 py-8">
-      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-1 flex items-center gap-2 text-xs font-medium text-gray-400">
-          <NuxtLink to="/" class="hover:text-blue-600 transition-colors">Home</NuxtLink>
-          <Icon icon="mdi:chevron-right" class="h-3.5 w-3.5" />
-          <span class="text-gray-600">Events</span>
+    <div class="border-b border-rule bg-canvas py-10 md:py-14">
+      <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+        <div class="margin-rule">
+          <div class="mb-3 flex items-center gap-1.5 text-sm font-medium text-ink-subtle">
+            <NuxtLink
+              to="/"
+              class="rounded-sm transition-colors duration-150 hover:text-primary-ink hover:underline"
+              >Home</NuxtLink
+            >
+            <Icon icon="mdi:chevron-right" class="size-4" aria-hidden="true" />
+            <span class="text-ink-muted">Events</span>
+          </div>
+          <h1
+            class="font-display text-[1.875rem] leading-[1.15] font-bold text-secondary md:text-[2.5rem]"
+          >
+            Events
+          </h1>
+          <p class="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            Explore upcoming gatherings and revisit our past programmes.
+          </p>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Events</h1>
-        <p class="mt-1 text-sm text-gray-500">
-          Explore upcoming gatherings and revisit our past programmes.
-        </p>
       </div>
     </div>
 
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
       <!-- Tab toggle -->
-      <div class="flex justify-center py-6 md:justify-start">
+      <div class="flex justify-center py-8 md:justify-start">
         <EventTabToggle v-model="activeTab" />
       </div>
 
@@ -66,28 +76,28 @@ const activeTab = computed({
         <div
           v-if="activeTab === 'upcoming'"
           key="upcoming"
-          class="flex flex-col gap-4 md:flex-row md:gap-0"
+          class="flex flex-col gap-8 md:flex-row md:gap-0"
         >
           <!-- Left: preview panel (45%) -->
-          <div class="w-full md:w-[45%] md:pr-6">
+          <div class="w-full md:w-[45%] md:pr-8">
             <UpcomingPreviewPanel />
           </div>
 
           <!-- Right: event list (55%) -->
-          <div class="w-full md:w-[55%] md:border-l md:border-gray-100 md:pl-6">
+          <div class="w-full md:w-[55%] md:border-l md:border-rule md:pl-8">
             <UpcomingEventList />
           </div>
         </div>
 
         <!-- ─── PAST EVENTS ─── -->
-        <div v-else key="past" class="flex flex-col gap-4 md:flex-row md:gap-0">
+        <div v-else key="past" class="flex flex-col gap-8 md:flex-row md:gap-0">
           <!-- Left: featured card (45%) -->
-          <div class="w-full md:w-[45%] md:pr-6">
+          <div class="w-full md:w-[45%] md:pr-8">
             <PastEventFeatured />
           </div>
 
           <!-- Right: past event list (55%) -->
-          <div class="w-full md:w-[55%] md:border-l md:border-gray-100 md:pl-6">
+          <div class="w-full md:w-[55%] md:border-l md:border-rule md:pl-8">
             <PastEventList />
           </div>
         </div>
@@ -108,8 +118,8 @@ const activeTab = computed({
 .tab-switch-enter-active,
 .tab-switch-leave-active {
   transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity 0.2s var(--ease-out-quart),
+    transform 0.2s var(--ease-out-quart);
 }
 .tab-switch-enter-from {
   opacity: 0;

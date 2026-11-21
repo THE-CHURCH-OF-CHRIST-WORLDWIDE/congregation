@@ -6,21 +6,28 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section ref="sectionRef" class="py-20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  <section ref="sectionRef" class="bg-surface py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
       <!-- Header row -->
-      <div :class="['mb-10 flex items-end justify-between', 'reveal', isVisible && 'is-visible']">
+      <div
+        :class="[
+          'mb-10 flex items-end justify-between gap-6 md:mb-12',
+          'reveal',
+          isVisible && 'is-visible',
+        ]"
+      >
         <SectionHeader
+          class="mb-0! md:mb-0!"
           title="Sermons & Teachings"
           subtitle="Biblical preaching for every season of life."
         />
         <NuxtLink
           to="/teachings/sermons"
-          class="hidden shrink-0 items-center gap-1 text-sm font-medium text-[#2563EB] hover:underline sm:flex"
+          class="hidden min-h-11 shrink-0 items-center gap-1.5 text-base font-semibold text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline sm:flex"
           aria-label="View all sermons"
         >
           View All Sermons
-          <Icon icon="heroicons:arrow-right" class="h-4 w-4" />
+          <Icon icon="mdi:arrow-right" class="h-5 w-5" />
         </NuxtLink>
       </div>
 
@@ -32,7 +39,7 @@ const { el: sectionRef, isVisible } = useScrollReveal()
       />
 
       <!-- 3-column grid -->
-      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
         <div
           v-for="(sermon, i) in featured"
           :key="sermon.id"
@@ -51,14 +58,14 @@ const { el: sectionRef, isVisible } = useScrollReveal()
         </div>
       </div>
 
-      <div class="mt-8 text-center sm:hidden">
+      <div class="mt-8 sm:hidden">
         <NuxtLink
           to="/teachings/sermons"
-          class="inline-flex items-center gap-1 text-sm font-medium text-[#2563EB] hover:underline"
+          class="inline-flex min-h-11 shrink-0 items-center gap-1.5 text-base font-semibold text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline"
           aria-label="View all sermons"
         >
           View All Sermons
-          <Icon icon="heroicons:arrow-right" class="h-4 w-4" />
+          <Icon icon="mdi:arrow-right" class="h-5 w-5" />
         </NuxtLink>
       </div>
     </div>

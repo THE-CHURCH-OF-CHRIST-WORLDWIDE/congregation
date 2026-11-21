@@ -8,20 +8,27 @@ const { el: sectionRef, isVisible } = useScrollReveal()
 </script>
 
 <template>
-  <section id="events" ref="sectionRef" class="bg-[#F8F9FA] py-20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div :class="['mb-10 flex items-end justify-between', 'reveal', isVisible && 'is-visible']">
+  <section id="events" ref="sectionRef" class="scroll-mt-20 bg-canvas py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+      <div
+        :class="[
+          'mb-10 flex items-end justify-between gap-6 md:mb-12',
+          'reveal',
+          isVisible && 'is-visible',
+        ]"
+      >
         <SectionHeader
+          class="mb-0! md:mb-0!"
           title="Upcoming Events"
           subtitle="Stay connected with what's happening in the congregation."
         />
         <NuxtLink
           to="/events"
-          class="hidden shrink-0 items-center gap-1 text-sm font-medium text-[#2563EB] hover:underline sm:flex"
+          class="hidden min-h-11 shrink-0 items-center gap-1.5 text-base font-semibold text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline sm:flex"
           aria-label="View all events"
         >
           View All Events
-          <Icon icon="heroicons:arrow-right" class="h-4 w-4" />
+          <Icon icon="mdi:arrow-right" class="h-5 w-5" />
         </NuxtLink>
       </div>
 
@@ -30,10 +37,11 @@ const { el: sectionRef, isVisible } = useScrollReveal()
         v-else-if="!events.length"
         icon="mdi:calendar-blank-outline"
         title="No upcoming events"
-        description="Events are published from Settings → Upcoming Events."
+        description="New gatherings are announced here. Please check back soon."
       />
 
-      <div v-else class="flex flex-col gap-4">
+      <!-- The visitors' book: one ruled entry per event, date in the left column -->
+      <div v-else class="divide-y divide-rule border-y border-rule-strong">
         <div
           v-for="(event, i) in events"
           :key="event.id"
@@ -41,29 +49,36 @@ const { el: sectionRef, isVisible } = useScrollReveal()
           :style="{ transitionDelay: `${100 + i * 90}ms` }"
         >
           <div
-            class="flex items-center gap-5 rounded-xl bg-white border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow"
+            class="grid grid-cols-[4rem_minmax(0,1fr)] items-center gap-x-6 gap-y-4 py-6 sm:flex"
           >
-            <!-- Color left border + date block -->
-            <div
-              :class="[
-                'flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl text-white',
-                event.colorClass,
-              ]"
-            >
-              <span class="text-xl font-bold leading-none">{{ event.day }}</span>
-              <span class="text-xs font-semibold tracking-wider">{{ event.month }}</span>
+            <!-- Date column, with the event's colour as a small key mark -->
+            <div class="flex w-16 shrink-0 flex-col items-start sm:w-20">
+              <span class="num font-display text-4xl leading-none font-bold text-secondary">{{
+                event.day
+              }}</span>
+              <span class="stamp mt-1.5 flex items-center gap-1.5">
+                <span
+                  :class="['inline-block size-2 shrink-0 rounded-full', event.colorClass]"
+                  aria-hidden="true"
+                ></span>
+                {{ event.month }}
+              </span>
             </div>
 
             <!-- Event info -->
-            <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-[#1E3A5F] leading-snug">{{ event.title }}</h3>
-              <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
-                <span class="flex items-center gap-1">
-                  <Icon icon="heroicons:map-pin" class="h-3.5 w-3.5 shrink-0" />
+            <div class="min-w-0 flex-1">
+              <h3 class="font-display text-lg leading-snug font-semibold text-ink md:text-xl">
+                {{ event.title }}
+              </h3>
+              <div
+                class="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-base text-ink-muted"
+              >
+                <span class="flex items-center gap-1.5">
+                  <Icon icon="mdi:map-marker-outline" class="h-5 w-5 shrink-0 text-ink-subtle" />
                   {{ event.location }}
                 </span>
-                <span class="flex items-center gap-1">
-                  <Icon icon="heroicons:clock" class="h-3.5 w-3.5 shrink-0" />
+                <span class="num flex items-center gap-1.5">
+                  <Icon icon="mdi:clock-outline" class="h-5 w-5 shrink-0 text-ink-subtle" />
                   {{ event.time }}
                 </span>
               </div>
@@ -73,10 +88,11 @@ const { el: sectionRef, isVisible } = useScrollReveal()
                  goes to the full events listing. -->
             <NuxtLink
               to="/events"
-              class="shrink-0 rounded-full border border-[#2563EB] px-4 py-1.5 text-xs font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors"
+              class="col-start-2 inline-flex min-h-11 justify-self-start shrink-0 items-center justify-center gap-1.5 rounded-md border border-rule-strong bg-surface px-4 text-base font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted"
               :aria-label="`View details for ${event.title}`"
             >
               Details
+              <Icon icon="mdi:chevron-right" class="h-5 w-5 text-ink-subtle" />
             </NuxtLink>
           </div>
         </div>

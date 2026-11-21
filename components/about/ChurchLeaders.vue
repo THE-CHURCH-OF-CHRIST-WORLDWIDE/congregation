@@ -21,44 +21,47 @@ function onImgError(e: Event) {
 </script>
 
 <template>
-  <section class="bg-white py-16">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <div class="mb-12 text-center">
-        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Leaders</p>
-        <h2 class="mt-2 font-serif text-3xl font-bold text-gray-900">Our Church Leaders</h2>
-      </div>
+  <section class="bg-surface py-16 md:py-24">
+    <div class="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
+      <SectionHeader title="Our Church Leaders" />
 
       <LoadingState v-if="s.loading" title="Loading leaders…" />
       <EmptyState
         v-else-if="!leaders.length"
         icon="mdi:account-tie-outline"
         title="No leaders listed yet"
-        description="Elders, deacons and ministers appear here once they are added in Settings → Leaders."
+        description="Our elders, deacons and ministers will be introduced here soon."
       />
 
-      <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        <div
-          v-for="leader in leaders"
-          :key="leader.id"
-          class="flex flex-col items-center rounded-2xl border border-gray-200 bg-gray-50/60 px-4 py-7"
-        >
-          <div class="relative h-[110px] w-[110px] shrink-0">
+      <!-- Profile entries: photograph, name, office -->
+      <div
+        v-else
+        class="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-8"
+      >
+        <div v-for="leader in leaders" :key="leader.id" class="flex flex-col">
+          <div
+            class="relative aspect-[4/5] w-full shrink-0 overflow-hidden rounded-md border border-rule bg-surface-sunken"
+          >
             <img
               :src="displayableImageUrl(leader.avatar)"
               :alt="leader.name"
-              class="h-[110px] w-[110px] rounded-full object-cover"
+              loading="lazy"
+              decoding="async"
+              class="h-full w-full object-cover"
               @error="onImgError"
             />
-            <div
-              class="absolute inset-0 hidden h-[110px] w-[110px] items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-800"
-            >
-              {{ initials(leader.name) }}
+            <div class="absolute inset-0 hidden bg-primary-soft">
+              <span
+                class="flex h-full w-full items-center justify-center font-display text-4xl font-semibold text-primary-ink"
+              >
+                {{ initials(leader.name) }}
+              </span>
             </div>
           </div>
-          <p class="mt-4 text-center text-[15px] font-semibold leading-snug text-gray-900">
+          <p class="mt-4 font-display text-lg leading-snug font-semibold text-ink">
             {{ leader.name }}
           </p>
-          <p class="mt-1 text-center text-[13px] text-gray-500">{{ leader.role }}</p>
+          <p class="stamp mt-1.5">{{ leader.role }}</p>
         </div>
       </div>
     </div>

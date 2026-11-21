@@ -9,13 +9,17 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="inline-flex gap-2">
+  <div
+    class="inline-flex gap-1 rounded-md border border-rule-strong bg-surface-muted p-1"
+    role="group"
+    aria-label="Event timeframe"
+  >
     <button
       :class="[
-        'rounded-full px-5 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+        'inline-flex min-h-11 items-center justify-center rounded-[5px] px-5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-150',
         modelValue === 'upcoming'
-          ? 'bg-blue-600 text-white shadow-sm'
-          : 'border border-gray-300 text-gray-600 bg-white hover:bg-gray-50',
+          ? 'bg-primary text-on-primary shadow-xs'
+          : 'text-ink-muted hover:bg-surface hover:text-ink',
       ]"
       :aria-pressed="modelValue === 'upcoming'"
       @click="emit('update:modelValue', 'upcoming')"
@@ -24,10 +28,10 @@ const emit = defineEmits<{
     </button>
     <button
       :class="[
-        'rounded-full px-5 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+        'inline-flex min-h-11 items-center justify-center rounded-[5px] px-5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-150',
         modelValue === 'past'
-          ? 'bg-blue-600 text-white shadow-sm'
-          : 'border border-gray-300 text-gray-600 bg-white hover:bg-gray-50',
+          ? 'bg-primary text-on-primary shadow-xs'
+          : 'text-ink-muted hover:bg-surface hover:text-ink',
       ]"
       :aria-pressed="modelValue === 'past'"
       @click="emit('update:modelValue', 'past')"

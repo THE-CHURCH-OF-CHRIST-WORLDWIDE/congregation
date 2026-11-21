@@ -23,19 +23,19 @@ const tips = [
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="space-y-6">
     <NuxtLink
       to="/admin/teachings"
-      class="inline-flex w-fit items-center gap-1.5 rounded-lg py-1 text-sm text-gray-500 transition-colors hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
+      class="inline-flex min-h-9 w-fit items-center gap-1.5 rounded-md text-sm font-medium text-ink-muted transition-colors duration-150 hover:text-primary-ink"
     >
-      <Icon icon="mdi:arrow-left" class="text-base" />
+      <Icon icon="mdi:arrow-left" class="text-base" aria-hidden="true" />
       Back to teachings
     </NuxtLink>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
       <!-- Left: Upload form -->
       <div class="xl:col-span-2">
-        <Card>
+        <Card padding="lg">
           <UploadForm />
         </Card>
       </div>
@@ -44,52 +44,54 @@ const tips = [
       <div class="flex flex-col gap-4">
         <!-- Recent Sermon Uploads -->
         <Card>
-          <h3 class="font-serif text-lg font-bold text-gray-900 mb-4">Recent Sermon Uploads</h3>
+          <h3 class="mb-3 font-display text-lg font-semibold text-ink">Recent Sermon Uploads</h3>
 
           <div
             v-if="teachingsStore.recentSermons.length"
-            class="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-1"
+            class="sidebar-scroll -mx-4 flex max-h-[360px] flex-col divide-y divide-rule overflow-y-auto border-y border-rule lg:-mx-5"
           >
             <article
               v-for="sermon in teachingsStore.recentSermons"
               :key="sermon.id"
-              class="rounded-xl border border-gray-100 bg-white p-4 hover:border-blue-100 transition-colors"
+              class="px-4 py-3 transition-colors duration-150 hover:bg-surface-muted/70 lg:px-5"
             >
-              <div v-if="sermon.categories.length" class="flex flex-wrap gap-1.5 mb-2">
+              <div v-if="sermon.categories.length" class="mb-1.5 flex flex-wrap gap-1.5">
                 <span
                   v-for="cat in sermon.categories.slice(0, 3)"
                   :key="cat"
-                  class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium"
-                  style="color: #0ba5ec"
+                  class="stamp text-2xs"
                 >
                   {{ cat }}
                 </span>
               </div>
-              <p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">
+              <p class="line-clamp-2 text-sm leading-snug font-semibold text-ink">
                 {{ sermon.topic }}
               </p>
               <NuxtLink
                 to="/admin/teachings"
-                class="mt-2 inline-flex items-center gap-1 text-sm font-medium"
-                style="color: #0ba5ec"
+                class="mt-1.5 inline-flex items-center gap-1 text-sm font-medium text-primary-ink underline-offset-3 hover:text-primary-hover hover:underline"
                 :aria-label="`Read ${sermon.topic}`"
               >
                 Read more
-                <Icon icon="mdi:arrow-right" class="text-sm" />
+                <Icon icon="mdi:arrow-right" class="text-sm" aria-hidden="true" />
               </NuxtLink>
             </article>
           </div>
 
-          <div v-else class="text-center py-6 text-gray-400 text-sm">No uploads yet</div>
+          <div v-else class="py-6 text-center text-sm text-ink-subtle">No uploads yet</div>
         </Card>
 
         <!-- Upload Tips -->
         <Card>
-          <h3 class="font-serif text-lg font-bold text-gray-900 mb-3">Upload Tips</h3>
-          <ul class="space-y-2.5">
-            <li v-for="tip in tips" :key="tip" class="flex items-start gap-2 text-sm text-gray-600">
+          <h3 class="mb-3 font-display text-lg font-semibold text-ink">Upload Tips</h3>
+          <ul class="ruled">
+            <li
+              v-for="tip in tips"
+              :key="tip"
+              class="flex items-start gap-2.5 py-2 text-sm text-ink-muted"
+            >
               <span
-                class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-400"
+                class="mt-2 size-1.5 shrink-0 rounded-full bg-primary"
                 aria-hidden="true"
               ></span>
               {{ tip }}

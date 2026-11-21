@@ -11,14 +11,14 @@ const invalid = computed(() => Boolean(props.error))
 </script>
 
 <template>
-  <label class="flex flex-col gap-1" :class="{ 'edit-field-invalid': invalid }">
-    <span class="text-xs font-medium text-gray-500">{{ label }}</span>
+  <label class="flex flex-col gap-1.5" :class="{ 'edit-field-invalid': invalid }">
+    <span class="text-[13px] font-medium text-ink-muted">{{ label }}</span>
     <div class="edit-field-slot">
       <slot></slot>
     </div>
     <!-- role="alert" so a screen reader announces the clash rather than leaving it unread. -->
-    <span v-if="error" role="alert" class="text-xs text-red-600">{{ error }}</span>
-    <span v-else-if="hint" class="text-xs text-gray-400">{{ hint }}</span>
+    <span v-if="error" role="alert" class="text-xs font-medium text-error">{{ error }}</span>
+    <span v-else-if="hint" class="text-xs text-ink-subtle">{{ hint }}</span>
   </label>
 </template>
 
@@ -27,33 +27,47 @@ const invalid = computed(() => Boolean(props.error))
 .edit-field-slot :deep(select),
 .edit-field-slot :deep(textarea) {
   width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--c-rule-strong);
+  border-radius: var(--radius-md);
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  color: #111827;
-  background: #fff;
+  color: var(--c-ink);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-xs);
   outline: none;
   transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+    border-color var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+.edit-field-slot :deep(input:hover),
+.edit-field-slot :deep(select:hover),
+.edit-field-slot :deep(textarea:hover) {
+  border-color: var(--c-ink-subtle);
+}
+.edit-field-slot :deep(input:disabled),
+.edit-field-slot :deep(select:disabled),
+.edit-field-slot :deep(textarea:disabled) {
+  background: var(--c-surface-muted);
+  color: var(--c-ink-subtle);
+  cursor: not-allowed;
 }
 .edit-field-slot :deep(input:focus),
 .edit-field-slot :deep(select:focus),
 .edit-field-slot :deep(textarea:focus) {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.15);
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 15%, transparent);
 }
 .edit-field-invalid .edit-field-slot :deep(input),
 .edit-field-invalid .edit-field-slot :deep(select),
 .edit-field-invalid .edit-field-slot :deep(textarea) {
-  border-color: #dc2626;
+  border-color: var(--c-error);
 }
 .edit-field-invalid .edit-field-slot :deep(input:focus),
 .edit-field-invalid .edit-field-slot :deep(select:focus),
 .edit-field-invalid .edit-field-slot :deep(textarea:focus) {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgb(220 38 38 / 0.15);
+  border-color: var(--c-error);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-error) 15%, transparent);
 }
 </style>

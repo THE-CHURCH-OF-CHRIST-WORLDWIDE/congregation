@@ -111,29 +111,38 @@ function preview(text: string) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-6">
     <!-- Filters + search -->
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div class="flex flex-wrap gap-2">
+    <div
+      class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div
+        class="inline-flex flex-wrap gap-0.5 self-start rounded-md border border-rule bg-surface-muted p-0.5"
+      >
         <button
           v-for="f in filters"
           :key="f.value"
-          class="rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
+          class="inline-flex min-h-8 items-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors duration-150"
           :class="
             activeFilter === f.value
-              ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+              ? 'bg-surface text-ink shadow-xs ring-1 ring-rule'
+              : 'text-ink-muted hover:text-ink'
           "
+          :aria-pressed="activeFilter === f.value"
           @click="activeFilter = f.value"
         >
           {{ f.label }}
-          <span class="ml-1 opacity-70">{{ countFor(f.value) }}</span>
+          <span
+            class="num text-xs"
+            :class="activeFilter === f.value ? 'text-primary-ink font-semibold' : 'text-ink-subtle'"
+            >{{ countFor(f.value) }}</span
+          >
         </button>
       </div>
       <div class="relative sm:w-72">
         <Icon
           icon="mdi:magnify"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-ink-subtle"
           aria-hidden="true"
         />
         <input
@@ -141,7 +150,7 @@ function preview(text: string) {
           type="search"
           placeholder="Search name, email, phone or text"
           aria-label="Search messages"
-          class="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+          class="min-h-9 w-full rounded-md border border-rule-strong bg-surface py-1.5 pr-3 pl-9 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
         />
       </div>
     </div>
@@ -164,28 +173,47 @@ function preview(text: string) {
     />
 
     <!-- List -->
-    <div v-else class="flex flex-col gap-2">
+    <div
+      v-else
+      class="flex flex-col divide-y divide-rule overflow-hidden rounded-lg border border-rule bg-surface shadow-xs"
+    >
       <button
         v-for="m in visible"
         :key="m.id"
-        class="flex w-full flex-col gap-1.5 rounded-xl border bg-white px-4 py-3.5 text-left transition-colors hover:border-blue-300"
-        :class="m.read ? 'border-gray-200' : 'border-blue-200 bg-blue-50/40'"
+        class="group relative flex w-full gap-3 px-4 py-3.5 text-left transition-colors duration-150 hover:bg-surface-muted/70 sm:px-5"
+        :class="m.read ? '' : 'bg-primary-soft/35'"
         @click="open(m)"
       >
-        <div class="flex flex-wrap items-center gap-2">
+        <span class="flex w-2 shrink-0 justify-center pt-1.5">
           <span
             v-if="!m.read"
-            class="h-2 w-2 shrink-0 rounded-full bg-blue-600"
+            class="size-2 shrink-0 rounded-full bg-primary"
             aria-label="Unread"
           ></span>
-          <span class="text-sm font-semibold text-gray-900">{{ m.name }}</span>
-          <Badge v-if="m.handled" variant="success" size="sm">Handled</Badge>
-          <span class="ml-auto text-xs text-gray-400">{{
-            m.submittedAt ? formatRelative(m.submittedAt) : '—'
-          }}</span>
-        </div>
-        <p class="text-xs text-gray-500">{{ m.email }} · {{ m.phone || 'No phone' }}</p>
-        <p class="text-sm leading-relaxed text-gray-600">{{ preview(m.message) }}</p>
+        </span>
+        <span class="flex min-w-0 flex-1 flex-col gap-1">
+          <span class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span
+              class="text-sm"
+              :class="m.read ? 'font-medium text-ink-muted' : 'font-semibold text-ink'"
+              >{{ m.name }}</span
+            >
+            <Badge v-if="m.handled" variant="success" size="sm">Handled</Badge>
+            <span
+              class="num ml-auto text-xs whitespace-nowrap"
+              :class="m.read ? 'text-ink-subtle' : 'font-semibold text-primary-ink'"
+              >{{ m.submittedAt ? formatRelative(m.submittedAt) : '—' }}</span
+            >
+          </span>
+          <span class="truncate text-xs text-ink-subtle"
+            >{{ m.email }} · {{ m.phone || 'No phone' }}</span
+          >
+          <span
+            class="text-sm leading-relaxed"
+            :class="m.read ? 'text-ink-subtle' : 'text-ink-muted'"
+            >{{ preview(m.message) }}</span
+          >
+        </span>
       </button>
     </div>
 
@@ -196,8 +224,10 @@ function preview(text: string) {
       size="lg"
       @update:model-value="openMessage = null"
     >
-      <div v-if="selected" class="flex flex-col gap-4">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div v-if="selected" class="flex flex-col gap-5">
+        <div
+          class="grid grid-cols-1 gap-3 rounded-md border border-rule bg-surface-muted p-3 sm:grid-cols-3"
+        >
           <InfoField icon="mdi:email-outline" label="Email" :value="selected.email" />
           <InfoField icon="mdi:phone-outline" label="Phone" :value="selected.phone || '—'" />
           <InfoField
@@ -207,9 +237,11 @@ function preview(text: string) {
           />
         </div>
 
-        <div class="rounded-xl bg-gray-50 px-4 py-3">
-          <p class="text-xs font-medium text-gray-500">Message</p>
-          <p class="mt-1.5 text-sm leading-relaxed whitespace-pre-wrap text-gray-800">
+        <div>
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Message</p>
+          <p
+            class="mt-2 max-w-[68ch] border-t border-rule pt-3 text-[15px] leading-relaxed whitespace-pre-wrap text-ink"
+          >
             {{ selected.message }}
           </p>
         </div>
@@ -228,7 +260,7 @@ function preview(text: string) {
           <!-- A real anchor, so it opens the staff member's own mail client. -->
           <a
             :href="replyLink(selected)"
-            class="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-on-primary shadow-xs transition-colors duration-150 hover:bg-primary-hover sm:min-h-10"
           >
             <Icon icon="mdi:reply" aria-hidden="true" />
             Reply by email

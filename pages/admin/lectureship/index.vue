@@ -145,32 +145,34 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="space-y-6">
     <Tabs v-model="activeTab" :tabs="tabs" />
 
     <template v-if="activeTab === 'registrations'">
       <!-- Summary -->
-      <div class="grid grid-cols-3 gap-3 sm:max-w-md">
-        <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-center">
-          <p class="text-lg font-bold text-gray-900">{{ totalCount }}</p>
-          <p class="text-xs text-gray-500">Registered</p>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:max-w-3xl">
+        <div class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Registered</p>
+          <p class="num mt-2 font-display text-3xl font-semibold text-ink">{{ totalCount }}</p>
         </div>
-        <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-center">
-          <p class="text-lg font-bold text-gray-900">{{ satCount }}</p>
-          <p class="text-xs text-gray-500">Attended Sat</p>
+        <div class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Attended Sat</p>
+          <p class="num mt-2 font-display text-3xl font-semibold text-ink">{{ satCount }}</p>
         </div>
-        <div class="rounded-xl border border-gray-200 bg-white px-4 py-3 text-center">
-          <p class="text-lg font-bold text-gray-900">{{ sunCount }}</p>
-          <p class="text-xs text-gray-500">Attended Sun</p>
+        <div class="rounded-lg border border-rule bg-surface p-4 shadow-xs">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Attended Sun</p>
+          <p class="num mt-2 font-display text-3xl font-semibold text-ink">{{ sunCount }}</p>
         </div>
       </div>
 
       <!-- Search + export -->
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div
+        class="flex flex-col gap-3 rounded-lg border border-rule bg-surface p-3 shadow-xs sm:flex-row sm:items-center sm:justify-between"
+      >
         <div class="relative sm:w-72">
           <Icon
             icon="mdi:magnify"
-            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-subtle"
             aria-hidden="true"
           />
           <input
@@ -178,7 +180,7 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
             type="search"
             placeholder="Search name, email, congregation or phone"
             aria-label="Search registrations"
-            class="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+            class="min-h-10 w-full py-2 pr-3 pl-9 text-sm rounded-md border border-rule-strong bg-surface text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
         </div>
         <Button
@@ -214,55 +216,87 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
       />
 
       <!-- List -->
-      <Card v-else padding="none">
-        <div class="overflow-x-auto">
+      <div v-else class="overflow-x-auto rounded-lg border border-rule bg-surface shadow-xs">
+        <div>
           <table class="w-full text-sm" role="table">
-            <thead>
-              <tr class="border-b border-gray-100 bg-gray-50">
-                <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium text-gray-500">
+            <thead class="sticky top-0 z-[1] bg-surface-muted">
+              <tr>
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-4 text-left"
+                >
                   Name
                 </th>
-                <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium text-gray-500">
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-4 text-left"
+                >
                   Email
                 </th>
-                <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium text-gray-500">
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-4 text-left"
+                >
                   Phone / WhatsApp
                 </th>
-                <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium text-gray-500">
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-4 text-left"
+                >
                   Congregation
                 </th>
-                <th scope="col" class="px-3 py-2.5 text-left text-xs font-medium text-gray-500">
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-4 text-left"
+                >
                   Registered
                 </th>
-                <th scope="col" class="px-2 py-2.5 text-center text-xs font-medium text-gray-500">
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-2 text-center"
+                >
                   Sat
                 </th>
-                <th scope="col" class="px-2 py-2.5 text-center text-xs font-medium text-gray-500">
+                <th
+                  scope="col"
+                  class="border-b border-rule py-2.5 text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase px-2 text-center"
+                >
                   Sun
                 </th>
-                <th scope="col" class="w-10 px-2 py-2.5"></th>
+                <th scope="col" class="w-10 border-b border-rule px-2 py-2.5"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-rule">
               <tr
                 v-for="(r, idx) in visible"
                 :key="r.id"
-                :class="['border-b border-gray-50', idx % 2 === 0 ? '' : 'bg-gray-50/30']"
+                :class="[
+                  'transition-colors hover:bg-surface-muted/70',
+                  idx % 2 === 0 ? '' : 'bg-surface-muted/40',
+                ]"
               >
-                <td class="px-3 py-2.5 font-medium whitespace-nowrap text-gray-900">
+                <td class="px-4 py-3 font-medium whitespace-nowrap text-ink">
                   {{ r.fullName }}
                 </td>
-                <td class="px-3 py-2.5 whitespace-nowrap text-gray-600">{{ r.email }}</td>
-                <td class="px-3 py-2.5 whitespace-nowrap text-gray-600">{{ r.phone }}</td>
-                <td class="px-3 py-2.5 text-gray-600">{{ r.congregation }}</td>
-                <td class="px-3 py-2.5 whitespace-nowrap text-xs text-gray-500">
+                <td class="px-4 py-3 whitespace-nowrap text-ink-muted">{{ r.email }}</td>
+                <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">{{ r.phone }}</td>
+                <td class="px-4 py-3 text-ink-muted">{{ r.congregation }}</td>
+                <td class="num px-4 py-3 text-xs whitespace-nowrap text-ink-muted">
                   {{ r.submittedAt ? formatDate(r.submittedAt, 'dateTime') : '—' }}
                 </td>
-                <td class="px-2 py-2.5 text-center">
-                  <span class="inline-flex items-center gap-1">
+                <td class="px-2 py-2 text-center">
+                  <label
+                    :class="[
+                      'inline-flex size-9 cursor-pointer items-center justify-center rounded-md border transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus has-[:disabled]:cursor-wait',
+                      r.attendedSat
+                        ? 'border-success/30 bg-success-soft text-success hover:border-success/60'
+                        : 'border-rule-strong bg-surface text-ink-subtle hover:border-ink-subtle hover:text-ink-muted',
+                    ]"
+                    :title="r.attendedSat ? 'Attended Saturday' : 'Not marked for Saturday'"
+                  >
                     <input
                       type="checkbox"
-                      class="attendance-check"
+                      class="attendance-check sr-only"
                       :checked="r.attendedSat ?? false"
                       :disabled="attendanceBusyKey === `${r.id}:sat`"
                       :aria-label="`${r.fullName} attended Saturday`"
@@ -271,15 +305,29 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
                     <Icon
                       v-if="attendanceBusyKey === `${r.id}:sat`"
                       icon="mdi:loading"
-                      class="animate-spin text-xs text-gray-400"
+                      class="animate-spin text-base text-ink-subtle"
                     />
-                  </span>
+                    <Icon
+                      v-else
+                      :icon="r.attendedSat ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                      class="text-lg"
+                      aria-hidden="true"
+                    />
+                  </label>
                 </td>
-                <td class="px-2 py-2.5 text-center">
-                  <span class="inline-flex items-center gap-1">
+                <td class="px-2 py-2 text-center">
+                  <label
+                    :class="[
+                      'inline-flex size-9 cursor-pointer items-center justify-center rounded-md border transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus has-[:disabled]:cursor-wait',
+                      r.attendedSun
+                        ? 'border-success/30 bg-success-soft text-success hover:border-success/60'
+                        : 'border-rule-strong bg-surface text-ink-subtle hover:border-ink-subtle hover:text-ink-muted',
+                    ]"
+                    :title="r.attendedSun ? 'Attended Sunday' : 'Not marked for Sunday'"
+                  >
                     <input
                       type="checkbox"
-                      class="attendance-check"
+                      class="attendance-check sr-only"
                       :checked="r.attendedSun ?? false"
                       :disabled="attendanceBusyKey === `${r.id}:sun`"
                       :aria-label="`${r.fullName} attended Sunday`"
@@ -288,13 +336,19 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
                     <Icon
                       v-if="attendanceBusyKey === `${r.id}:sun`"
                       icon="mdi:loading"
-                      class="animate-spin text-xs text-gray-400"
+                      class="animate-spin text-base text-ink-subtle"
                     />
-                  </span>
+                    <Icon
+                      v-else
+                      :icon="r.attendedSun ? 'mdi:check-circle' : 'mdi:circle-outline'"
+                      class="text-lg"
+                      aria-hidden="true"
+                    />
+                  </label>
                 </td>
-                <td class="px-2 py-2.5 text-right">
+                <td class="px-2 py-2 text-right">
                   <button
-                    class="rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                    class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error disabled:opacity-55"
                     :disabled="busyId === r.id"
                     :aria-label="`Delete ${r.fullName}'s registration`"
                     @click="confirmDelete(r)"
@@ -309,12 +363,12 @@ async function confirmDeleteSpeaker(speaker: LectureshipSpeaker) {
             </tbody>
           </table>
         </div>
-      </Card>
+      </div>
     </template>
 
     <!-- ── Speakers, Officiating Ministers, Song Leaders & Moderators ──────── -->
     <template v-else>
-      <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-8">
         <LectureshipRoleSection
           v-for="role in LECTURESHIP_ROLE_ORDER"
           :key="role"

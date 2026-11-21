@@ -80,13 +80,13 @@ const chartData = computed<ChartData<'bar'>>(() => {
       {
         label: 'Income',
         data: labels.map((l) => incMap[l] ?? 0),
-        backgroundColor: '#3b82f6',
+        backgroundColor: '#2f8a57',
         borderRadius: 6,
       },
       {
         label: 'Expenses',
         data: labels.map((l) => expMap[l] ?? 0),
-        backgroundColor: '#f87171',
+        backgroundColor: '#c2493b',
         borderRadius: 6,
       },
     ],
@@ -95,15 +95,15 @@ const chartData = computed<ChartData<'bar'>>(() => {
 
 // ─── Donut chart (expenses by category this month) ───────────────────────────
 const categoryColors: Record<ExpenseCategory, string> = {
-  Building: '#3b82f6',
-  Evangelism: '#a855f7',
-  Welfare: '#22c55e',
-  Technical: '#0ba5ec',
-  Youth: '#ec4899',
-  Preacher: '#f59e0b',
-  Edification: '#8b5cf6',
-  Media: '#14b8a6',
-  Others: '#94a3b8',
+  Building: '#2f7a5c',
+  Evangelism: '#8a5a9e',
+  Welfare: '#2e8a92',
+  Technical: '#3d5f8f',
+  Youth: '#c2493b',
+  Preacher: '#c08a2e',
+  Edification: '#a8683f',
+  Media: '#6b7f2e',
+  Others: '#7a8aa0',
 }
 
 const donutData = computed<ChartData<'doughnut'>>(() => {
@@ -454,11 +454,10 @@ async function saveExpense() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="space-y-6">
     <!-- Header actions -->
-    <div class="flex items-center justify-between flex-wrap gap-3">
-      <div></div>
-      <div class="flex gap-2">
+    <Teleport defer to="#admin-header-actions">
+      <div class="flex flex-wrap gap-2">
         <Button variant="secondary" @click="showAddExpense = true">
           <template #icon-left><Icon icon="mdi:minus-circle-outline" /></template>
           Record Expense
@@ -468,142 +467,136 @@ async function saveExpense() {
           Add Collection
         </Button>
       </div>
-    </div>
+    </Teleport>
 
     <!-- Top stat cards -->
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
-      <Card>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-xs text-gray-500 font-medium">Total Income</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">{{ fmt(financeStore.totalIncome) }}</p>
-            <p class="text-xs text-gray-400 mt-1">All time</p>
-          </div>
-          <div
-            class="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0"
-          >
-            <Icon icon="mdi:trending-up" class="text-blue-600 text-lg" />
-          </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Total Income</p>
+          <Icon icon="mdi:trending-up" class="shrink-0 text-lg text-success" aria-hidden="true" />
         </div>
-      </Card>
+        <p class="num mt-3 font-display text-3xl font-semibold text-ink">
+          {{ fmt(financeStore.totalIncome) }}
+        </p>
+        <p class="mt-1 text-xs text-ink-subtle">All time</p>
+      </div>
 
-      <Card>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-xs text-gray-500 font-medium">Total Expenses</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">
-              {{ fmt(financeStore.totalExpenses) }}
-            </p>
-            <p class="text-xs text-gray-400 mt-1">All time</p>
-          </div>
-          <div class="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
-            <Icon icon="mdi:trending-down" class="text-red-500 text-lg" />
-          </div>
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Total Expenses</p>
+          <Icon icon="mdi:trending-down" class="shrink-0 text-lg text-error" aria-hidden="true" />
         </div>
-      </Card>
+        <p class="num mt-3 font-display text-3xl font-semibold text-ink">
+          {{ fmt(financeStore.totalExpenses) }}
+        </p>
+        <p class="mt-1 text-xs text-ink-subtle">All time</p>
+      </div>
 
-      <Card>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-xs text-gray-500 font-medium">Net Balance</p>
-            <p
-              class="text-2xl font-bold mt-1"
-              :class="financeStore.netBalance >= 0 ? 'text-green-600' : 'text-red-500'"
-            >
-              {{ fmt(financeStore.netBalance) }}
-            </p>
-            <p class="text-xs text-gray-400 mt-1">All time</p>
-          </div>
-          <div
-            class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            :class="financeStore.netBalance >= 0 ? 'bg-green-100' : 'bg-red-100'"
-          >
-            <Icon
-              :icon="
-                financeStore.netBalance >= 0
-                  ? 'mdi:check-circle-outline'
-                  : 'mdi:alert-circle-outline'
-              "
-              :class="financeStore.netBalance >= 0 ? 'text-green-600' : 'text-red-500'"
-              class="text-lg"
-            />
-          </div>
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Net Balance</p>
+          <Icon
+            :icon="
+              financeStore.netBalance >= 0 ? 'mdi:check-circle-outline' : 'mdi:alert-circle-outline'
+            "
+            :class="financeStore.netBalance >= 0 ? 'text-success' : 'text-error'"
+            class="shrink-0 text-lg"
+            aria-hidden="true"
+          />
         </div>
-      </Card>
+        <p
+          class="num mt-3 font-display text-3xl font-semibold"
+          :class="financeStore.netBalance >= 0 ? 'text-success' : 'text-error'"
+        >
+          {{ fmt(financeStore.netBalance) }}
+        </p>
+        <p class="mt-1 text-xs text-ink-subtle">All time</p>
+      </div>
 
-      <Card>
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-xs text-gray-500 font-medium">This Month Net</p>
-            <p
-              class="text-2xl font-bold mt-1"
-              :class="financeStore.thisMonthNet >= 0 ? 'text-green-600' : 'text-red-500'"
-            >
-              {{ fmt(financeStore.thisMonthNet) }}
-            </p>
-            <p class="text-xs text-gray-400 mt-1">
-              In: {{ fmt(financeStore.thisMonthIncome) }} / Out:
-              {{ fmt(financeStore.thisMonthExpenses) }}
-            </p>
-          </div>
-          <div
-            class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0"
-          >
-            <Icon icon="mdi:calendar-month-outline" class="text-purple-600 text-lg" />
-          </div>
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs">
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-xs font-semibold tracking-wide text-ink-muted uppercase">This Month Net</p>
+          <Icon
+            icon="mdi:calendar-month-outline"
+            class="shrink-0 text-lg text-ink-subtle"
+            aria-hidden="true"
+          />
         </div>
-      </Card>
+        <p
+          class="num mt-3 font-display text-3xl font-semibold"
+          :class="financeStore.thisMonthNet >= 0 ? 'text-success' : 'text-error'"
+        >
+          {{ fmt(financeStore.thisMonthNet) }}
+        </p>
+        <p class="num mt-1 text-xs text-ink-subtle">
+          In: {{ fmt(financeStore.thisMonthIncome) }} / Out:
+          {{ fmt(financeStore.thisMonthExpenses) }}
+        </p>
+      </div>
     </div>
 
     <!-- Chart + Donut row -->
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
       <!-- Income vs Expenses bar chart -->
-      <Card class="xl:col-span-2">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <h3 class="text-sm font-semibold text-gray-800">Income vs Expenses</h3>
-          <div class="flex gap-2 flex-wrap">
+      <div class="rounded-lg border border-rule bg-surface p-5 shadow-xs xl:col-span-2">
+        <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <h3 class="font-display text-base font-semibold text-ink">Income vs Expenses</h3>
+            <p class="mt-0.5 text-xs text-ink-muted">Collections against spending, by period</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
             <Tabs v-model="activePeriod" :tabs="periodTabs" />
           </div>
         </div>
-        <BarChart v-if="hasFinanceData" :data="chartData" :height="240" />
-        <EmptyState
-          v-else
-          icon="mdi:chart-bar"
-          title="Nothing to chart yet"
-          description="Income and expenses will be compared here once transactions are recorded."
-        />
-      </Card>
+        <div class="mt-4">
+          <BarChart v-if="hasFinanceData" :data="chartData" :height="240" />
+          <EmptyState
+            v-else
+            icon="mdi:chart-bar"
+            title="Nothing to chart yet"
+            description="Income and expenses will be compared here once transactions are recorded."
+          />
+        </div>
+      </div>
 
       <!-- Expense category donut -->
-      <div class="bg-slate-800 rounded-xl p-4 flex flex-col">
-        <h3 class="text-sm font-semibold text-white mb-1">Expenses This Month</h3>
-        <p class="text-xs text-slate-400 mb-3">By category</p>
-        <DonutChart
-          v-if="Object.keys(financeStore.expenseByCategory).length"
-          :data="donutData"
-          :height="180"
-        />
-        <p v-else class="py-10 text-center text-xs text-slate-400">
-          No expenses recorded this month.
-        </p>
-        <div class="mt-3 space-y-1.5">
+      <div class="flex flex-col rounded-lg border border-rule bg-surface p-5 shadow-xs">
+        <div>
+          <h3 class="font-display text-base font-semibold text-ink">Expenses This Month</h3>
+          <p class="mt-0.5 text-xs text-ink-muted">By category</p>
+        </div>
+        <div class="mt-4">
+          <DonutChart
+            v-if="Object.keys(financeStore.expenseByCategory).length"
+            :data="donutData"
+            :height="180"
+          />
+          <p v-else class="py-10 text-center text-xs text-ink-subtle">
+            No expenses recorded this month.
+          </p>
+        </div>
+        <div class="mt-4 divide-y divide-rule border-t border-rule">
           <div
             v-for="[cat, amount] in Object.entries(financeStore.expenseByCategory)"
             :key="cat"
-            class="flex items-center justify-between"
+            class="flex items-center justify-between gap-3 py-1.5"
           >
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-2">
               <span
-                class="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                class="size-2.5 shrink-0 rounded-sm"
                 :style="{ backgroundColor: categoryColors[cat as ExpenseCategory] }"
+                aria-hidden="true"
               ></span>
-              <span class="text-xs text-slate-300">{{ cat }}</span>
+              <span class="text-xs text-ink-muted">{{ cat }}</span>
             </div>
-            <span class="text-xs text-white font-medium">{{ fmt(amount as number) }}</span>
+            <span class="num text-right text-xs font-medium text-ink">{{
+              fmt(amount as number)
+            }}</span>
           </div>
           <p
             v-if="!Object.keys(financeStore.expenseByCategory).length"
-            class="py-3 text-center text-xs text-slate-400"
+            class="py-3 text-center text-xs text-ink-subtle"
           >
             No expenses recorded this month.
           </p>
@@ -612,9 +605,11 @@ async function saveExpense() {
     </div>
 
     <!-- Report table -->
-    <Card padding="none">
-      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <h3 class="text-sm font-semibold text-gray-800 capitalize">{{ activePeriod }} Report</h3>
+    <section class="overflow-hidden rounded-lg border border-rule bg-surface shadow-xs">
+      <div class="flex items-center justify-between gap-3 border-b border-rule px-4 py-3">
+        <h3 class="font-display text-base font-semibold text-ink capitalize">
+          {{ activePeriod }} Report
+        </h3>
         <!-- Nothing to export while the ledger is empty. -->
         <Button
           variant="secondary"
@@ -636,35 +631,57 @@ async function saveExpense() {
 
       <div v-else class="overflow-x-auto">
         <table class="w-full text-sm" role="table">
-          <thead>
-            <tr class="bg-gray-50 border-b border-gray-100">
-              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Period</th>
-              <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Income (₦)</th>
-              <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Expenses (₦)</th>
-              <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Net (₦)</th>
-              <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Surplus %</th>
+          <thead class="sticky top-0 z-[1] bg-surface-muted">
+            <tr>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Period
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Income (₦)
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Expenses (₦)
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Net (₦)
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Surplus %
+              </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="row in summaryRows"
               :key="row.Period"
-              class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+              class="transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-4 py-3 font-medium text-gray-700">{{ row.Period }}</td>
-              <td class="px-4 py-3 text-right text-gray-600">
+              <td class="num px-4 py-3 font-medium whitespace-nowrap text-ink">
+                {{ row.Period }}
+              </td>
+              <td class="num px-4 py-3 text-right text-ink-muted">
                 {{ row.Income.toLocaleString('en-NG') }}
               </td>
-              <td class="px-4 py-3 text-right text-gray-600">
+              <td class="num px-4 py-3 text-right text-ink-muted">
                 {{ row.Expenses.toLocaleString('en-NG') }}
               </td>
               <td
-                class="px-4 py-3 text-right font-semibold"
-                :class="row.Net >= 0 ? 'text-green-600' : 'text-red-500'"
+                class="num px-4 py-3 text-right font-semibold"
+                :class="row.Net >= 0 ? 'text-success' : 'text-error'"
               >
                 {{ row.Net.toLocaleString('en-NG') }}
               </td>
-              <td class="px-4 py-3 text-right">
+              <td class="num px-4 py-3 text-right">
                 <Badge
                   :variant="row.Income === 0 ? 'neutral' : row.Net >= 0 ? 'success' : 'danger'"
                   size="sm"
@@ -676,31 +693,49 @@ async function saveExpense() {
           </tbody>
         </table>
       </div>
-    </Card>
+    </section>
 
     <!-- Recent activity -->
-    <Card padding="none">
-      <div class="px-4 py-3 border-b border-gray-100">
-        <h3 class="text-sm font-semibold text-gray-800">Recent Transactions</h3>
+    <section class="overflow-hidden rounded-lg border border-rule bg-surface shadow-xs">
+      <div class="border-b border-rule px-4 py-3">
+        <h3 class="font-display text-base font-semibold text-ink">Recent Transactions</h3>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm" role="table">
-          <thead>
-            <tr class="bg-gray-50 border-b border-gray-100">
-              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Date</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Type</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-gray-500">Description</th>
-              <th class="text-right px-4 py-3 text-xs font-medium text-gray-500">Amount (₦)</th>
-              <th class="w-10 px-4 py-3"></th>
+          <thead class="sticky top-0 z-[1] bg-surface-muted">
+            <tr>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Date
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Type
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-left text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Description
+              </th>
+              <th
+                class="border-b border-rule px-4 py-2.5 text-right text-xs font-semibold tracking-wide whitespace-nowrap text-ink-muted uppercase"
+              >
+                Amount (₦)
+              </th>
+              <th class="w-10 border-b border-rule px-4 py-2.5"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-rule">
             <tr
               v-for="tx in pagedActivity"
               :key="tx.id"
-              class="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+              class="transition-colors hover:bg-surface-muted/70"
             >
-              <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ fmtDate(tx.date) }}</td>
+              <td class="num px-4 py-3 whitespace-nowrap text-ink-muted">
+                {{ fmtDate(tx.date) }}
+              </td>
               <td class="px-4 py-3">
                 <Badge :variant="tx.type === 'income' ? 'success' : 'danger'" size="sm">
                   <template #icon>
@@ -712,16 +747,16 @@ async function saveExpense() {
                   {{ tx.type === 'income' ? 'Income' : 'Expense' }}
                 </Badge>
               </td>
-              <td class="px-4 py-3 text-gray-700">{{ tx.description }}</td>
+              <td class="px-4 py-3 text-ink">{{ tx.description }}</td>
               <td
-                class="px-4 py-3 text-right font-medium"
-                :class="tx.type === 'income' ? 'text-green-600' : 'text-red-500'"
+                class="num px-4 py-3 text-right font-medium whitespace-nowrap"
+                :class="tx.type === 'income' ? 'text-success' : 'text-error'"
               >
                 {{ tx.type === 'income' ? '+' : '−' }}{{ tx.amount.toLocaleString('en-NG') }}
               </td>
-              <td class="px-4 py-3 text-right">
+              <td class="px-4 py-2 text-right">
                 <button
-                  class="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                  class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error disabled:opacity-55"
                   :aria-label="`Delete ${tx.description}`"
                   :disabled="isPending(tx.id)"
                   @click="removeEntry(tx)"
@@ -753,51 +788,51 @@ async function saveExpense() {
         :range-end="txTo"
         label="transactions"
       />
-    </Card>
+    </section>
 
     <!-- ── Add Collection modal ─────────────────────────────────────────────── -->
     <Modal v-model="showAddCollection" title="Record Weekly Collection" size="md">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700"
-            >Date<span class="text-red-500 ml-0.5">*</span></label
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-ink"
+            >Date<span class="ml-0.5 text-error" aria-hidden="true">*</span></label
           >
           <input
             v-model="newCollection.date"
             type="date"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
-          <p v-if="collectionErrors.date" class="text-xs text-red-500">
+          <p v-if="collectionErrors.date" class="text-xs font-medium text-error">
             {{ collectionErrors.date }}
           </p>
         </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700"
-            >Amount (₦)<span class="text-red-500 ml-0.5">*</span></label
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-ink"
+            >Amount (₦)<span class="ml-0.5 text-error" aria-hidden="true">*</span></label
           >
           <input
             v-model.number="newCollection.amount"
             type="number"
             min="0"
             placeholder="e.g. 75000"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-right text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
-          <p v-if="collectionErrors.amount" class="text-xs text-red-500">
+          <p v-if="collectionErrors.amount" class="text-xs font-medium text-error">
             {{ collectionErrors.amount }}
           </p>
         </div>
-        <div class="sm:col-span-2 flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700">Description</label>
+        <div class="flex flex-col gap-1.5 sm:col-span-2">
+          <label class="text-sm font-medium text-ink">Description</label>
           <input
             v-model="newCollection.description"
             type="text"
             placeholder="e.g. Sunday Collection, Special offering..."
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
         </div>
       </div>
       <template #footer>
-        <div class="flex gap-2 justify-end">
+        <div class="flex justify-end gap-2">
           <Button variant="secondary" @click="showAddCollection = false">Cancel</Button>
           <Button :loading="financeStore.saving" @click="saveCollection">
             <template #icon-left><Icon icon="mdi:check" /></template>
@@ -809,61 +844,65 @@ async function saveExpense() {
 
     <!-- ── Add Expense modal ────────────────────────────────────────────────── -->
     <Modal v-model="showAddExpense" title="Record Expense" size="md">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700"
-            >Date<span class="text-red-500 ml-0.5">*</span></label
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-ink"
+            >Date<span class="ml-0.5 text-error" aria-hidden="true">*</span></label
           >
           <input
             v-model="newExpense.date"
             type="date"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
-          <p v-if="expenseErrors.date" class="text-xs text-red-500">{{ expenseErrors.date }}</p>
+          <p v-if="expenseErrors.date" class="text-xs font-medium text-error">
+            {{ expenseErrors.date }}
+          </p>
         </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700"
-            >Amount (₦)<span class="text-red-500 ml-0.5">*</span></label
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-ink"
+            >Amount (₦)<span class="ml-0.5 text-error" aria-hidden="true">*</span></label
           >
           <input
             v-model.number="newExpense.amount"
             type="number"
             min="0"
             placeholder="e.g. 15000"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-right text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
-          <p v-if="expenseErrors.amount" class="text-xs text-red-500">{{ expenseErrors.amount }}</p>
+          <p v-if="expenseErrors.amount" class="text-xs font-medium text-error">
+            {{ expenseErrors.amount }}
+          </p>
         </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700"
-            >Category<span class="text-red-500 ml-0.5">*</span></label
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-ink"
+            >Category<span class="ml-0.5 text-error" aria-hidden="true">*</span></label
           >
           <select
             v-model="newExpense.category"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           >
             <option v-for="opt in expenseCategoryOptions" :key="opt.value" :value="opt.value">
               {{ opt.label }}
             </option>
           </select>
         </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium text-gray-700"
-            >Description<span class="text-red-500 ml-0.5">*</span></label
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-ink"
+            >Description<span class="ml-0.5 text-error" aria-hidden="true">*</span></label
           >
           <input
             v-model="newExpense.description"
             type="text"
             placeholder="Brief description"
-            class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            class="min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
           />
-          <p v-if="expenseErrors.description" class="text-xs text-red-500">
+          <p v-if="expenseErrors.description" class="text-xs font-medium text-error">
             {{ expenseErrors.description }}
           </p>
         </div>
       </div>
       <template #footer>
-        <div class="flex gap-2 justify-end">
+        <div class="flex justify-end gap-2">
           <Button variant="secondary" @click="showAddExpense = false">Cancel</Button>
           <Button :loading="financeStore.saving" @click="saveExpense">
             <template #icon-left><Icon icon="mdi:check" /></template>
@@ -877,38 +916,38 @@ async function saveExpense() {
     <Modal v-model="showExport" title="Export Financial Report" size="lg">
       <div class="flex flex-col gap-5">
         <!-- Date range -->
-        <div>
-          <p class="text-sm font-medium text-gray-700 mb-3">Select Date Range</p>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-gray-500">From</label>
+        <section>
+          <h3 class="font-display text-sm font-semibold text-ink">Select Date Range</h3>
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-ink">From</label>
               <input
                 v-model="exportRange.from"
                 type="date"
-                class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
               />
-              <p v-if="exportRangeErrors.from" class="text-xs text-red-500">
+              <p v-if="exportRangeErrors.from" class="text-xs font-medium text-error">
                 {{ exportRangeErrors.from }}
               </p>
             </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-xs font-medium text-gray-500">To</label>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-ink">To</label>
               <input
                 v-model="exportRange.to"
                 type="date"
-                class="w-full rounded-lg border border-gray-300 text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                class="num min-h-10 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
               />
-              <p v-if="exportRangeErrors.to" class="text-xs text-red-500">
+              <p v-if="exportRangeErrors.to" class="text-xs font-medium text-error">
                 {{ exportRangeErrors.to }}
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
         <!-- Quick range shortcuts -->
-        <div>
-          <p class="text-xs font-medium text-gray-500 mb-2">Quick Select</p>
-          <div class="flex flex-wrap gap-2">
+        <section>
+          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">Quick Select</h3>
+          <div class="mt-2 flex flex-wrap gap-2">
             <button
               v-for="preset in [
                 { label: 'This Week', fn: () => setPreset('week') },
@@ -919,40 +958,48 @@ async function saveExpense() {
                 { label: 'All Time', fn: () => setPreset('all') },
               ]"
               :key="preset.label"
-              class="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors"
+              class="inline-flex min-h-9 items-center rounded-md border border-rule-strong bg-surface px-3 text-xs font-medium text-ink transition-colors duration-150 hover:border-primary hover:bg-primary-soft hover:text-primary-ink"
               @click="preset.fn()"
             >
               {{ preset.label }}
             </button>
           </div>
-        </div>
+        </section>
 
         <!-- Preview -->
-        <div class="rounded-xl bg-gray-50 border border-gray-100 p-4">
-          <p class="text-xs font-medium text-gray-500 mb-2">Export Preview</p>
-          <div class="grid grid-cols-3 gap-3 text-center">
-            <div>
-              <p class="text-lg font-bold text-blue-600">{{ exportPreviewIncome }}</p>
-              <p class="text-xs text-gray-400 mt-0.5">Income entries</p>
+        <section class="rounded-md border border-rule bg-surface-muted p-4">
+          <h3 class="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+            Export Preview
+          </h3>
+          <div class="mt-3 grid grid-cols-3 divide-x divide-rule text-center">
+            <div class="px-2">
+              <p class="num font-display text-xl font-semibold text-success">
+                {{ exportPreviewIncome }}
+              </p>
+              <p class="mt-0.5 text-xs text-ink-muted">Income entries</p>
             </div>
-            <div>
-              <p class="text-lg font-bold text-red-500">{{ exportPreviewExpenses }}</p>
-              <p class="text-xs text-gray-400 mt-0.5">Expense entries</p>
+            <div class="px-2">
+              <p class="num font-display text-xl font-semibold text-error">
+                {{ exportPreviewExpenses }}
+              </p>
+              <p class="mt-0.5 text-xs text-ink-muted">Expense entries</p>
             </div>
-            <div>
-              <p class="text-lg font-bold text-gray-800">{{ exportPreviewCount }}</p>
-              <p class="text-xs text-gray-400 mt-0.5">Total rows</p>
+            <div class="px-2">
+              <p class="num font-display text-xl font-semibold text-ink">
+                {{ exportPreviewCount }}
+              </p>
+              <p class="mt-0.5 text-xs text-ink-muted">Total rows</p>
             </div>
           </div>
-          <p class="text-xs text-gray-400 mt-3 text-center">
+          <p class="mt-3 border-t border-rule pt-3 text-center text-xs text-ink-subtle">
             CSV will include: Date, Type, Category, Description, Amount, Running Balance + Summary
             footer
           </p>
-        </div>
+        </section>
       </div>
 
       <template #footer>
-        <div class="flex gap-2 justify-end">
+        <div class="flex flex-wrap justify-end gap-2">
           <Button variant="secondary" @click="showExport = false">Cancel</Button>
           <Button variant="secondary" :disabled="exportPreviewCount === 0" @click="doExportPdf">
             <template #icon-left><Icon icon="mdi:file-pdf-box" /></template>

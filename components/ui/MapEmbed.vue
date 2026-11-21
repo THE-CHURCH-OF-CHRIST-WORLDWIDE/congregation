@@ -15,7 +15,10 @@ const query = computed(() => props.address?.trim() || settingsStore.settings.add
 </script>
 
 <template>
-  <div :style="{ height: height ?? '320px' }" class="w-full overflow-hidden rounded-xl bg-gray-100">
+  <div
+    :style="{ height: height ?? '320px' }"
+    class="w-full overflow-hidden rounded-lg border border-rule bg-surface-sunken"
+  >
     <iframe
       :src="`https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`"
       width="100%"

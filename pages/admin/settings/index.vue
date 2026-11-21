@@ -325,7 +325,7 @@ function removeSundayDetail(i: number) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+  <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-8">
     <SettingsNav v-model="activeTab" :groups="navGroups" />
 
     <div class="min-w-0 flex-1">
@@ -375,18 +375,20 @@ function removeSundayDetail(i: number) {
             title="Your account"
             description="The signed-in account and the role it carries. Roles are managed under Access."
           >
-            <div class="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+            <div
+              class="flex flex-wrap items-center gap-3 rounded-md border border-rule bg-surface-muted p-4"
+            >
               <Avatar :name="authStore.user?.email ?? 'Admin'" size="lg" />
               <div class="min-w-0">
-                <p class="truncate text-sm font-medium text-gray-900">
+                <p class="truncate text-sm font-semibold text-ink">
                   {{ authStore.user?.email ?? '—' }}
                 </p>
-                <p class="text-xs text-gray-500">{{ accountRole }}</p>
+                <p class="mt-0.5 text-xs text-ink-muted">{{ accountRole }}</p>
               </div>
               <div class="ml-auto flex shrink-0 items-center gap-2">
                 <span
                   v-if="authStore.roleLoaded && !authStore.isStaff"
-                  class="rounded bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700"
+                  class="inline-flex items-center rounded-sm bg-error-soft px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-error ring-1 ring-error/25 ring-inset"
                 >
                   Cannot save changes
                 </span>
@@ -418,17 +420,17 @@ function removeSundayDetail(i: number) {
               />
               <Input v-model="draft.heroEyebrow" label="Eyebrow" placeholder="Welcome to" />
               <div>
-                <label for="hero-tagline" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="hero-tagline" class="mb-1.5 block text-sm font-medium text-ink"
                   >Tagline / Scripture</label
                 >
                 <textarea
                   id="hero-tagline"
                   v-model="draft.heroTagline"
                   rows="2"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
                   v-model="draft.heroPrimaryCtaLabel"
                   label="Primary CTA Label"
@@ -530,7 +532,7 @@ function removeSundayDetail(i: number) {
             title="Congregation Background Photos"
             description="Shown behind the minister's welcome letter on the landing page."
           >
-            <p class="mb-3 text-xs text-gray-400">
+            <p class="mb-4 text-xs text-ink-subtle">
               These appear as the stacked "fan" cards behind the minister portrait.
             </p>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -565,47 +567,47 @@ function removeSundayDetail(i: number) {
                 placeholder="Dear Friend,"
               />
               <div>
-                <label for="letter-p1" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="letter-p1" class="mb-1.5 block text-sm font-medium text-ink"
                   >Paragraph 1 (opening, with drop-cap)</label
                 >
                 <textarea
                   id="letter-p1"
                   v-model="draft.ministerLetterP1"
                   rows="3"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
-                <label for="letter-p2" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="letter-p2" class="mb-1.5 block text-sm font-medium text-ink"
                   >Paragraph 2</label
                 >
                 <textarea
                   id="letter-p2"
                   v-model="draft.ministerLetterP2"
                   rows="4"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
-                <label for="letter-p3" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="letter-p3" class="mb-1.5 block text-sm font-medium text-ink"
                   >Paragraph 3</label
                 >
                 <textarea
                   id="letter-p3"
                   v-model="draft.ministerLetterP3"
                   rows="3"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
-                <label for="letter-p4" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="letter-p4" class="mb-1.5 block text-sm font-medium text-ink"
                   >Paragraph 4 (closing)</label
                 >
                 <textarea
                   id="letter-p4"
                   v-model="draft.ministerLetterP4"
                   rows="2"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -625,17 +627,17 @@ function removeSundayDetail(i: number) {
                 placeholder="Join Our Live Worship"
               />
               <div>
-                <label for="lw-sub" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="lw-sub" class="mb-1.5 block text-sm font-medium text-ink"
                   >Subheading</label
                 >
                 <textarea
                   id="lw-sub"
                   v-model="draft.liveWorship.subheading"
                   rows="2"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
                   v-model="draft.liveWorship.nextTitle"
                   label="Next Service Title"
@@ -712,14 +714,14 @@ function removeSundayDetail(i: number) {
             <div class="flex flex-col gap-4">
               <Input v-model="draft.aboutHistory.eyebrow" label="Eyebrow" placeholder="History" />
               <div>
-                <label for="hist-heading" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="hist-heading" class="mb-1.5 block text-sm font-medium text-ink"
                   >Main Heading</label
                 >
                 <textarea
                   id="hist-heading"
                   v-model="draft.aboutHistory.heading"
                   rows="2"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -731,36 +733,36 @@ function removeSundayDetail(i: number) {
           >
             <div class="flex flex-col gap-4">
               <div>
-                <label for="hist-p1" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="hist-p1" class="mb-1.5 block text-sm font-medium text-ink"
                   >Opening Paragraph</label
                 >
                 <textarea
                   id="hist-p1"
                   v-model="draft.aboutHistory.openingParagraph"
                   rows="5"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
-                <label for="hist-p2" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="hist-p2" class="mb-1.5 block text-sm font-medium text-ink"
                   >Growth Paragraph</label
                 >
                 <textarea
                   id="hist-p2"
                   v-model="draft.aboutHistory.growthParagraph"
                   rows="4"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
               <div>
-                <label for="hist-p3" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="hist-p3" class="mb-1.5 block text-sm font-medium text-ink"
                   >Closing Paragraph</label
                 >
                 <textarea
                   id="hist-p3"
                   v-model="draft.aboutHistory.closingParagraph"
                   rows="4"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -782,11 +784,11 @@ function removeSundayDetail(i: number) {
               label="Section Heading"
               placeholder="Founding members and early leaders include:"
             />
-            <div class="mt-4 flex flex-col gap-2">
+            <div class="mt-4 flex flex-col divide-y divide-rule border-y border-rule">
               <div
                 v-for="(founder, i) in draft.aboutHistory.founders"
                 :key="founder.id"
-                class="relative flex items-center gap-2 rounded-lg border border-gray-200 p-2 pr-9"
+                class="flex items-center gap-2 py-2"
               >
                 <Input
                   v-model="founder.name"
@@ -794,16 +796,16 @@ function removeSundayDetail(i: number) {
                   placeholder="Bro. Akpan Ekom — Elder"
                 />
                 <button
-                  class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
                   :aria-label="`Remove founder ${i + 1}`"
                   @click="removeFounder(i)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon icon="mdi:close" class="text-base" />
                 </button>
               </div>
               <p
                 v-if="!draft.aboutHistory.founders.length"
-                class="text-center text-sm text-gray-400"
+                class="py-6 text-center text-sm text-ink-subtle"
               >
                 No founders added yet.
               </p>
@@ -826,20 +828,20 @@ function removeSundayDetail(i: number) {
               label="Section Heading"
               placeholder="Regular Meeting Schedule:"
             />
-            <div class="mt-4 flex flex-col gap-2">
+            <div class="mt-4 flex flex-col divide-y divide-rule border-y border-rule">
               <div
                 v-for="(row, i) in draft.aboutHistory.schedule"
                 :key="i"
-                class="relative grid grid-cols-[2fr_1fr_auto] gap-2 rounded-lg border border-gray-200 p-2 pr-9"
+                class="grid grid-cols-[2fr_1fr_auto] items-center gap-2 py-2"
               >
                 <Input v-model="row.label" placeholder="Bible Class — Every Sunday" />
                 <Input v-model="row.time" placeholder="7:30 AM" />
                 <button
-                  class="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  class="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
                   :aria-label="`Remove schedule row ${i + 1}`"
                   @click="removeHistoryScheduleRow(i)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon icon="mdi:close" class="text-base" />
                 </button>
               </div>
             </div>
@@ -849,7 +851,7 @@ function removeSundayDetail(i: number) {
             title="Signature"
             description="The sign-off at the end of the history card."
           >
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
                 v-model="draft.aboutHistory.signatureName"
                 label="Signed By"
@@ -867,7 +869,7 @@ function removeSundayDetail(i: number) {
             title="Corner Decorative Images"
             description="Decorative images in the corners of the history card."
           >
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <ImageUpload
                 v-model="draft.aboutHistory.cornerImages[0]"
                 label="Top Left"
@@ -922,14 +924,14 @@ function removeSundayDetail(i: number) {
                 placeholder="Our Worship Activities"
               />
               <div>
-                <label for="wa-sub" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="wa-sub" class="mb-1.5 block text-sm font-medium text-ink"
                   >Subtitle</label
                 >
                 <textarea
                   id="wa-sub"
                   v-model="draft.worshipActivities.subtitle"
                   rows="2"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -1000,14 +1002,14 @@ function removeSundayDetail(i: number) {
                 placeholder="Our Activity Calendar"
               />
               <div>
-                <label for="ac-sub" class="mb-1.5 block text-sm font-medium text-gray-700"
+                <label for="ac-sub" class="mb-1.5 block text-sm font-medium text-ink"
                   >Subtitle</label
                 >
                 <textarea
                   id="ac-sub"
                   v-model="draft.activityCalendar.subtitle"
                   rows="2"
-                  class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  class="w-full resize-y rounded-md border border-rule-strong bg-surface px-3 py-2 text-sm leading-relaxed text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                 ></textarea>
               </div>
             </div>
@@ -1169,20 +1171,20 @@ function removeSundayDetail(i: number) {
               <div
                 v-for="(leader, i) in draft.leaders"
                 :key="leader.id"
-                class="relative grid grid-cols-[auto_1fr_1fr] items-start gap-3 rounded-lg border border-gray-200 p-3 pr-9"
+                class="relative grid grid-cols-1 items-start gap-4 sm:grid-cols-[auto_1fr_1fr] rounded-md border border-rule bg-surface-muted/50 p-4 pr-12"
               >
                 <ImageUpload v-model="leader.avatar" folder="congregation/leaders" shape="circle" />
                 <Input v-model="leader.name" label="Name" placeholder="Akpan Lincoln" />
                 <div>
                   <label
                     :for="`role-${leader.id}`"
-                    class="mb-1.5 block text-sm font-medium text-gray-700"
+                    class="mb-1.5 block text-sm font-medium text-ink"
                     >Role</label
                   >
                   <select
                     :id="`role-${leader.id}`"
                     v-model="leader.role"
-                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    class="min-h-9 w-full rounded-md border border-rule-strong bg-surface px-2.5 py-1.5 text-[13px] text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15"
                   >
                     <option>Elder</option>
                     <option>Deacon</option>
@@ -1192,14 +1194,17 @@ function removeSundayDetail(i: number) {
                   </select>
                 </div>
                 <button
-                  class="absolute right-2 top-2 rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  class="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error"
                   :aria-label="`Remove ${leader.name || 'leader'}`"
                   @click="removeLeader(i)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon icon="mdi:close" class="text-base" />
                 </button>
               </div>
-              <p v-if="!draft.leaders.length" class="py-4 text-center text-sm text-gray-400">
+              <p
+                v-if="!draft.leaders.length"
+                class="mt-3 rounded-md border border-dashed border-rule-strong bg-surface-muted py-6 text-center text-sm text-ink-subtle"
+              >
                 No leaders added yet.
               </p>
             </div>
@@ -1228,7 +1233,7 @@ function removeSundayDetail(i: number) {
               <div
                 v-for="(img, i) in draft.galleryPhotos"
                 :key="img.id"
-                class="relative flex flex-col gap-2 rounded-lg border border-gray-200 p-3 pr-9"
+                class="relative flex flex-col gap-3 rounded-md border border-rule bg-surface-muted/50 p-4 pr-12"
               >
                 <ImageUpload v-model="img.src" folder="congregation/gallery" compact />
                 <Input
@@ -1237,15 +1242,18 @@ function removeSundayDetail(i: number) {
                   placeholder="Sunday worship service"
                 />
                 <button
-                  class="absolute right-2 top-2 rounded bg-white/80 p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  class="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error bg-surface/80"
                   :aria-label="`Remove gallery item ${i + 1}`"
                   @click="removePhoto(i)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon icon="mdi:close" class="text-base" />
                 </button>
               </div>
             </div>
-            <p v-if="!draft.galleryPhotos.length" class="py-4 text-center text-sm text-gray-400">
+            <p
+              v-if="!draft.galleryPhotos.length"
+              class="mt-3 rounded-md border border-dashed border-rule-strong bg-surface-muted py-6 text-center text-sm text-ink-subtle"
+            >
               No photos added yet.
             </p>
           </SettingsSection>
@@ -1273,22 +1281,25 @@ function removeSundayDetail(i: number) {
               <div
                 v-for="(cg, i) in draft.congregations"
                 :key="cg.id"
-                class="relative grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 pr-9 sm:grid-cols-2"
+                class="relative grid grid-cols-1 gap-4 sm:grid-cols-2 rounded-md border border-rule bg-surface-muted/50 p-4 pr-12"
               >
                 <Input v-model="cg.name" label="Name" placeholder="Church of Christ, Uyo Central" />
                 <Input v-model="cg.city" label="City" placeholder="Uyo" />
                 <Input v-model="cg.address" label="Address" placeholder="14 Oron Road, Uyo" />
                 <Input v-model="cg.serviceTime" label="Service Time" placeholder="Sun 8:30 AM" />
                 <button
-                  class="absolute right-2 top-2 rounded bg-white/80 p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  class="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error bg-surface/80"
                   :aria-label="`Remove congregation ${i + 1}`"
                   @click="removeCongregation(i)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon icon="mdi:close" class="text-base" />
                 </button>
               </div>
             </div>
-            <p v-if="!draft.congregations.length" class="py-4 text-center text-sm text-gray-400">
+            <p
+              v-if="!draft.congregations.length"
+              class="mt-3 rounded-md border border-dashed border-rule-strong bg-surface-muted py-6 text-center text-sm text-ink-subtle"
+            >
               No congregations added yet.
             </p>
           </SettingsSection>
@@ -1312,13 +1323,13 @@ function removeSundayDetail(i: number) {
               <div
                 v-for="(ev, i) in draft.homepageEvents"
                 :key="ev.id"
-                class="relative rounded-lg border border-gray-200 p-3"
+                class="relative rounded-md border border-rule bg-surface-muted/50 p-4 pr-12"
               >
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <Input v-model="ev.title" label="Title" placeholder="Annual Youth Convention" />
                   <Input v-model="ev.location" label="Location" placeholder="Church Auditorium" />
                 </div>
-                <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                   <Input v-model="ev.day" label="Day" placeholder="18" />
                   <Input v-model="ev.month" label="Month" placeholder="APR" />
                   <Input v-model="ev.time" label="Time" placeholder="9:00 AM – 5:00 PM" />
@@ -1331,15 +1342,18 @@ function removeSundayDetail(i: number) {
                   </EditField>
                 </div>
                 <button
-                  class="absolute right-2 top-2 rounded bg-white/80 p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                  class="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error bg-surface/80"
                   :aria-label="`Remove event ${i + 1}`"
                   @click="removeHomepageEvent(i)"
                 >
-                  <Icon icon="mdi:close" class="text-sm" />
+                  <Icon icon="mdi:close" class="text-base" />
                 </button>
               </div>
             </div>
-            <p v-if="!draft.homepageEvents.length" class="py-4 text-center text-sm text-gray-400">
+            <p
+              v-if="!draft.homepageEvents.length"
+              class="mt-3 rounded-md border border-dashed border-rule-strong bg-surface-muted py-6 text-center text-sm text-ink-subtle"
+            >
               No events added yet.
             </p>
           </SettingsSection>
@@ -1355,15 +1369,15 @@ function removeSundayDetail(i: number) {
             title="Public Nav Menu"
             description="Choose which links appear on the public site's navigation. Turning an item off also blocks its page directly — visiting the URL shows a 404, not just a hidden link."
           >
-            <div class="flex flex-col divide-y divide-gray-100">
+            <div class="flex flex-col divide-y divide-rule">
               <label
                 v-for="item in NAV_VISIBILITY_ITEMS"
                 :key="item.key"
-                class="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
+                class="flex min-h-14 cursor-pointer items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
               >
                 <div class="min-w-0">
-                  <p class="text-sm font-medium text-gray-900">{{ item.label }}</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-sm font-medium text-ink">{{ item.label }}</p>
+                  <p class="mt-0.5 text-xs text-ink-muted">
                     {{
                       item.key === 'home'
                         ? "Doesn't 404 — visiting / instead lands on the first other enabled page"

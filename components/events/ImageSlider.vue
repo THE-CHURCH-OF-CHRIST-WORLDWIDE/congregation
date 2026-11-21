@@ -49,8 +49,7 @@ function onTouchEnd(e: TouchEvent) {
 
 <template>
   <div
-    class="relative w-full overflow-hidden bg-gray-900"
-    style="aspect-ratio: 16/9"
+    class="relative aspect-video w-full overflow-hidden bg-gray-950"
     @touchstart="onTouchStart"
     @touchend="onTouchEnd"
   >
@@ -60,55 +59,41 @@ function onTouchEnd(e: TouchEvent) {
         :key="currentIndex"
         :src="displayableImageUrl(images[currentIndex])"
         :alt="`Event photo ${currentIndex + 1} of ${images.length}`"
-        class="absolute inset-0 w-full h-full object-cover"
+        class="absolute inset-0 h-full w-full object-cover"
+        decoding="async"
       />
     </Transition>
 
     <!-- Expand icon — top right -->
     <button
-      class="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded bg-black/50 text-white transition-colors hover:bg-black/70"
+      class="absolute top-3 right-3 z-10 inline-flex size-11 items-center justify-center rounded-md bg-black/55 text-white transition-colors duration-150 hover:bg-black/75"
       aria-label="Open full gallery"
       @click="emit('expand', currentIndex)"
     >
-      <!-- Expand / maximize SVG -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-4 w-4"
-      >
-        <polyline points="15 3 21 3 21 9" />
-        <polyline points="9 21 3 21 3 15" />
-        <line x1="21" y1="3" x2="14" y2="10" />
-        <line x1="3" y1="21" x2="10" y2="14" />
-      </svg>
+      <Icon icon="mdi:arrow-expand" class="size-5" aria-hidden="true" />
     </button>
 
     <!-- Left arrow -->
     <button
-      class="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/70 text-gray-800 shadow transition-colors hover:bg-white sm:h-9 sm:w-9"
+      class="absolute top-1/2 left-3 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-md bg-white/85 text-gray-900 shadow-md transition-colors duration-150 hover:bg-white"
       aria-label="Previous image"
       @click="prev"
     >
-      <Icon icon="mdi:chevron-left" class="h-5 w-5" />
+      <Icon icon="mdi:chevron-left" class="size-6" aria-hidden="true" />
     </button>
 
     <!-- Right arrow -->
     <button
-      class="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/70 text-gray-800 shadow transition-colors hover:bg-white"
+      class="absolute top-1/2 right-3 z-10 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-md bg-white/85 text-gray-900 shadow-md transition-colors duration-150 hover:bg-white"
       aria-label="Next image"
       @click="next"
     >
-      <Icon icon="mdi:chevron-right" class="h-5 w-5" />
+      <Icon icon="mdi:chevron-right" class="size-6" aria-hidden="true" />
     </button>
 
     <!-- Counter strip -->
     <div
-      class="absolute bottom-0 left-0 right-0 z-10 bg-black/40 py-1.5 text-center text-sm text-white"
+      class="num absolute right-0 bottom-0 left-0 z-10 bg-linear-to-t from-black/65 to-transparent pt-6 pb-2 text-center text-sm font-medium text-white"
     >
       {{ currentIndex + 1 }}/{{ images.length }}
     </div>

@@ -10,19 +10,19 @@ const showMenu = ref(false)
 const expanded = ref(false)
 
 const categoryColors: Record<string, string> = {
-  Church: 'bg-blue-100 text-blue-700',
-  Truth: 'bg-purple-100 text-purple-700',
-  Faith: 'bg-green-100 text-green-700',
-  Prayer: 'bg-amber-100 text-amber-700',
-  Youth: 'bg-pink-100 text-pink-700',
-  'Bible Study': 'bg-teal-100 text-teal-700',
-  'Christian Living': 'bg-indigo-100 text-indigo-700',
-  Spirit: 'bg-violet-100 text-violet-700',
-  Worship: 'bg-rose-100 text-rose-700',
+  Church: 'bg-info-soft text-info',
+  Truth: 'bg-secondary-soft text-secondary',
+  Faith: 'bg-success-soft text-success',
+  Prayer: 'bg-warning-soft text-warning',
+  Youth: 'bg-accent-soft text-accent',
+  'Bible Study': 'bg-primary-soft text-primary-ink',
+  'Christian Living': 'bg-info-soft text-info',
+  Spirit: 'bg-secondary-soft text-secondary',
+  Worship: 'bg-accent-soft text-accent',
 }
 
 function getCategoryColor(cat: string) {
-  return categoryColors[cat] ?? 'bg-gray-100 text-gray-700'
+  return categoryColors[cat] ?? 'bg-surface-sunken text-ink-muted'
 }
 
 const { isPending, run } = usePendingAction()
@@ -43,15 +43,17 @@ async function deleteSermon(id: string) {
   <Card class="flex flex-col gap-3">
     <!-- Thumbnail -->
     <div
-      class="w-full h-36 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 overflow-hidden flex items-center justify-center"
+      class="bookcloth flex aspect-video w-full items-center justify-center overflow-hidden rounded-md border border-rule"
     >
       <img
         v-if="sermon.thumbnail"
         :src="displayableImageUrl(sermon.thumbnail)"
         :alt="sermon.topic"
-        class="w-full h-full object-cover"
+        loading="lazy"
+        decoding="async"
+        class="h-full w-full object-cover"
       />
-      <Icon v-else icon="mdi:play-circle-outline" class="text-white text-5xl opacity-70" />
+      <Icon v-else icon="mdi:play-circle-outline" class="text-5xl opacity-70" aria-hidden="true" />
     </div>
 
     <!-- Categories -->
@@ -59,7 +61,7 @@ async function deleteSermon(id: string) {
       <span
         v-for="cat in sermon.categories"
         :key="cat"
-        :class="['text-[10px] font-medium px-2 py-0.5 rounded-full', getCategoryColor(cat)]"
+        :class="['rounded-sm px-1.5 py-0.5 text-[11px] font-semibold', getCategoryColor(cat)]"
       >
         {{ cat }}
       </span>
@@ -67,19 +69,23 @@ async function deleteSermon(id: string) {
 
     <!-- Content -->
     <div class="flex-1">
-      <h4 class="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">
+      <h4 class="line-clamp-2 font-display text-[15px] leading-snug font-semibold text-ink">
         {{ sermon.topic }}
       </h4>
-      <p class="text-xs text-gray-500 mt-1">
-        {{ sermon.preacher }} · {{ formatDate(sermon.date) }}
+      <p class="mt-1 text-xs text-ink-muted">
+        {{ sermon.preacher }} · <span class="num">{{ formatDate(sermon.date) }}</span>
       </p>
 
-      <div v-if="expanded" class="mt-3 space-y-2 border-t border-gray-100 pt-3">
-        <p v-if="sermon.scripture" class="text-xs font-medium text-gray-700">
-          <Icon icon="mdi:book-open-variant" class="mr-1 inline-block align-text-bottom" />
+      <div v-if="expanded" class="mt-3 space-y-2 border-t border-rule pt-3">
+        <p v-if="sermon.scripture" class="text-xs font-medium text-ink">
+          <Icon
+            icon="mdi:book-open-variant"
+            class="mr-1 inline-block align-text-bottom text-ink-subtle"
+            aria-hidden="true"
+          />
           {{ sermon.scripture }}
         </p>
-        <p class="text-xs leading-relaxed text-gray-600">
+        <p class="text-[13px] leading-relaxed text-ink-muted">
           {{ sermon.description || 'No description was provided for this teaching.' }}
         </p>
         <a
@@ -87,46 +93,47 @@ async function deleteSermon(id: string) {
           :href="sermon.documentFile"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+          class="inline-flex items-center gap-1 text-xs font-medium text-primary-ink underline-offset-3 hover:underline"
         >
-          <Icon icon="mdi:file-document-outline" />
+          <Icon icon="mdi:file-document-outline" aria-hidden="true" />
           Open attached document
         </a>
       </div>
     </div>
 
-    <div class="flex items-center justify-between">
+    <div class="-mx-1 flex items-center justify-between border-t border-rule pt-2">
       <button
-        class="text-xs text-blue-600 hover:underline flex items-center gap-1"
+        class="inline-flex min-h-9 items-center gap-1 rounded-md px-1 text-xs font-medium text-primary-ink hover:underline"
         :aria-expanded="expanded"
         @click="expanded = !expanded"
       >
         {{ expanded ? 'Show less' : 'Read more' }}
         <Icon
           icon="mdi:chevron-down"
-          class="text-[12px] transition-transform"
+          class="text-[14px] transition-transform duration-150"
           :class="expanded && 'rotate-180'"
+          aria-hidden="true"
         />
       </button>
       <div class="relative">
         <button
-          class="p-1 rounded hover:bg-gray-100 text-gray-400"
+          class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
           :aria-label="`Actions for ${sermon.topic}`"
           @click.stop="showMenu = !showMenu"
         >
-          <Icon icon="mdi:dots-vertical" />
+          <Icon icon="mdi:dots-vertical" aria-hidden="true" />
         </button>
         <div
           v-if="showMenu"
-          class="absolute right-0 bottom-8 z-10 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-28"
+          class="absolute right-0 bottom-10 z-10 w-32 rounded-md border border-rule bg-surface py-1 shadow-lg"
           @click.stop
         >
           <button
-            class="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+            class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-error hover:bg-error-soft disabled:opacity-55"
             :disabled="isPending(sermon.id)"
             @click="deleteSermon(sermon.id)"
           >
-            <Icon icon="mdi:trash-can-outline" />Delete
+            <Icon icon="mdi:trash-can-outline" aria-hidden="true" />Delete
           </button>
         </div>
       </div>

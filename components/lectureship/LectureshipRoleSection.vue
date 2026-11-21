@@ -20,8 +20,8 @@ const meta = computed(() => LECTURESHIP_ROLES[props.role])
 
 <template>
   <div class="flex flex-col gap-3">
-    <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-gray-900">{{ meta.plural }}</h3>
+    <div class="flex items-center justify-between gap-3 border-b border-rule pb-2">
+      <h3 class="font-display text-lg font-semibold text-ink">{{ meta.plural }}</h3>
       <Button size="sm" variant="secondary" @click="emit('add')">
         <template #icon-left><Icon icon="mdi:plus" /></template>
         Add {{ meta.label }}
@@ -37,34 +37,38 @@ const meta = computed(() => LECTURESHIP_ROLES[props.role])
     />
 
     <Card v-else padding="none">
-      <ul class="divide-y divide-gray-50">
-        <li v-for="s in items" :key="s.id" class="flex items-center gap-3 px-4 py-3">
+      <ul class="divide-y divide-rule">
+        <li
+          v-for="s in items"
+          :key="s.id"
+          class="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-surface-muted/70"
+        >
           <img
             v-if="s.avatar"
             :src="displayableImageUrl(s.avatar)"
             :alt="s.name"
-            class="h-10 w-10 shrink-0 rounded-full object-cover"
+            class="size-10 shrink-0 rounded-full border border-rule object-cover"
           />
           <div
             v-else
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-800"
+            class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-xs font-bold text-primary-ink"
           >
             {{ s.name.slice(0, 2).toUpperCase() }}
           </div>
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-medium text-gray-900">{{ s.name }}</p>
-            <p v-if="s.title" class="truncate text-xs text-gray-500">{{ s.title }}</p>
+            <p class="truncate text-sm font-medium text-ink">{{ s.name }}</p>
+            <p v-if="s.title" class="truncate text-xs text-ink-muted">{{ s.title }}</p>
           </div>
-          <div class="flex shrink-0 items-center gap-1">
+          <div class="flex shrink-0 items-center gap-0.5">
             <button
-              class="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-surface-sunken hover:text-ink"
               :aria-label="`Edit ${s.name}`"
               @click="emit('edit', s)"
             >
               <Icon icon="mdi:pencil-outline" class="text-base" />
             </button>
             <button
-              class="rounded p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+              class="inline-flex size-9 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error disabled:opacity-55"
               :disabled="busyId === s.id"
               :aria-label="`Remove ${s.name}`"
               @click="emit('delete', s)"

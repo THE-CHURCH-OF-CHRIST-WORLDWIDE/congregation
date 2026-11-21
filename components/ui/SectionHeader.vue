@@ -7,11 +7,15 @@ defineProps<{
 </script>
 
 <template>
-  <div :class="['mb-10', centered ? 'text-center' : '']">
-    <h2 class="font-serif text-3xl font-bold text-[#1E3A5F] md:text-4xl">{{ title }}</h2>
+  <div :class="['mb-10 md:mb-12', centered ? 'text-center' : '']">
+    <h2
+      class="font-display text-[1.875rem] font-bold leading-[1.15] text-secondary md:text-[2.5rem]"
+    >
+      {{ title }}
+    </h2>
     <p
       v-if="subtitle"
-      class="mt-3 text-gray-500 text-lg max-w-2xl"
+      class="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted"
       :class="centered ? 'mx-auto' : ''"
     >
       {{ subtitle }}

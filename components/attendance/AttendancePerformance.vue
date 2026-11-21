@@ -25,9 +25,9 @@ const rows = computed(() => {
 </script>
 
 <template>
-  <Card>
-    <h3 class="text-base font-semibold text-gray-900 mb-5">
-      Attendance Performance per Activity for {{ year }}
+  <Card padding="lg">
+    <h3 class="mb-5 font-display text-base font-semibold text-ink">
+      Attendance Performance per Activity for <span class="num">{{ year }}</span>
     </h3>
 
     <EmptyState
@@ -40,9 +40,9 @@ const rows = computed(() => {
 
     <div v-else class="flex flex-col gap-4">
       <div v-for="row in rows" :key="row.name">
-        <div class="flex items-center justify-between text-sm mb-1.5">
-          <span class="text-gray-700">{{ row.name }}</span>
-          <span class="font-semibold" style="color: #0ba5ec">{{ row.rate }}%</span>
+        <div class="mb-1.5 flex items-center justify-between gap-3 text-sm">
+          <span class="text-ink-muted">{{ row.name }}</span>
+          <span class="num font-semibold text-ink">{{ row.rate }}%</span>
         </div>
         <div class="progress-bar">
           <div class="progress-bar-fill" :style="{ width: `${row.rate}%` }"></div>

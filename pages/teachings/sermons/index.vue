@@ -42,45 +42,51 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="pt-16">
-    <!-- Banner -->
-    <section class="relative bg-[#1E3A5F] py-20 overflow-hidden">
-      <img
-        src="https://picsum.photos/seed/sermons-banner/1920/600"
-        alt="Sermons banner"
-        class="absolute inset-0 h-full w-full object-cover opacity-20"
-        loading="lazy"
-      />
-      <div class="relative z-10 mx-auto max-w-4xl px-6 text-center text-white">
-        <h1 class="font-serif text-5xl font-bold drop-shadow-lg md:text-6xl">Sermons</h1>
-        <p class="mt-4 text-white/70 text-lg max-w-2xl mx-auto">
-          Biblical preaching that exalts Christ and proclaims the whole counsel of God.
-        </p>
+  <div>
+    <!-- Library header -->
+    <section class="border-b border-rule bg-canvas">
+      <div class="mx-auto max-w-7xl px-5 py-12 sm:px-6 md:py-16 lg:px-8">
+        <div class="hero-animate margin-rule">
+          <h1
+            class="font-display text-[2.25rem] leading-[1.1] font-bold text-secondary md:text-[3rem]"
+          >
+            Sermons
+          </h1>
+          <p class="mt-3 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            Biblical preaching that exalts Christ and proclaims the whole counsel of God.
+          </p>
+        </div>
       </div>
     </section>
 
-    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-5 py-10 sm:px-6 md:py-12 lg:px-8">
       <!-- Filter bar -->
-      <div class="mb-3">
-        <TagFilterBar
-          :tags="filterTags"
-          :active="activeFilter"
-          @update:active="activeFilter = $event"
-        />
-      </div>
-
-      <!-- Search -->
       <div
-        class="mb-8 flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm max-w-md"
+        class="mb-8 flex flex-col gap-4 border-b border-rule pb-6 lg:flex-row lg:items-center lg:justify-between lg:gap-6"
       >
-        <Icon icon="heroicons:magnifying-glass" class="h-5 w-5 shrink-0 text-gray-400" />
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search sermons…"
-          class="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
-          aria-label="Search sermons"
-        />
+        <div class="min-w-0 lg:flex-1">
+          <TagFilterBar
+            :tags="filterTags"
+            :active="activeFilter"
+            @update:active="activeFilter = $event"
+          />
+        </div>
+
+        <!-- Search -->
+        <div class="relative w-full lg:max-w-xs">
+          <Icon
+            icon="mdi:magnify"
+            class="pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 text-ink-subtle"
+            aria-hidden="true"
+          />
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search sermons…"
+            class="min-h-11 w-full rounded-md border border-rule-strong bg-surface py-2 pr-3 pl-10 text-base text-ink shadow-xs outline-none transition-[border-color,box-shadow] duration-150 placeholder:text-ink-subtle hover:border-ink-subtle focus:border-primary focus:ring-3 focus:ring-primary/15 sm:text-[15px]"
+            aria-label="Search sermons"
+          />
+        </div>
       </div>
 
       <!-- Grid -->
@@ -99,44 +105,47 @@ useSeoMeta({
       </div>
       <EmptyState
         v-else-if="store.sermons.length"
-        icon="heroicons:microphone-slash"
+        icon="mdi:microphone-off"
         title="No sermons match your search"
         description="Try a different filter or search term."
       />
       <EmptyState
         v-else
-        icon="heroicons:microphone-slash"
+        icon="mdi:microphone-off"
         title="No sermons published yet"
-        description="Sermons appear here once they are uploaded from the admin dashboard."
+        description="Sermons will appear here as they are published."
       />
 
       <!-- Load more -->
-      <div v-if="hasMore" class="mt-10 text-center">
+      <div v-if="hasMore" class="mt-12 flex justify-center border-t border-rule pt-8">
         <button
-          class="rounded-full border border-[#2563EB] px-8 py-3 text-sm font-semibold text-[#2563EB] hover:bg-blue-50 transition-colors"
+          class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-rule-strong bg-surface px-6 text-sm font-semibold text-ink shadow-xs transition-colors duration-150 hover:border-ink-subtle hover:bg-surface-muted sm:w-auto"
           aria-label="Load more sermons"
           @click="loadMore"
         >
           Load More Sermons
+          <Icon icon="mdi:chevron-down" class="size-4" aria-hidden="true" />
         </button>
       </div>
     </div>
 
     <!-- CTA banner -->
-    <section class="bg-[#1E3A5F] py-14">
-      <div class="mx-auto max-w-4xl px-6 text-center text-white">
-        <h2 class="font-serif text-3xl font-bold mb-3">Want to Study the Bible?</h2>
-        <p class="text-white/70 mb-8 max-w-xl mx-auto">
+    <section class="bookcloth py-16 md:py-20">
+      <div class="mx-auto max-w-3xl px-5 text-center sm:px-6">
+        <h2 class="font-display text-3xl leading-tight font-bold text-white md:text-4xl">
+          Want to Study the Bible?
+        </h2>
+        <p class="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-white/80">
           Our Sunday School lessons offer in-depth, structured Bible study for every level of
           maturity in the faith.
         </p>
         <NuxtLink
           to="/teachings/sunday-school"
-          class="inline-flex items-center gap-2 rounded-full bg-[#2563EB] px-8 py-3.5 text-sm font-semibold text-white hover:bg-blue-600 transition-colors"
+          class="mt-8 inline-flex min-h-12 items-center gap-2 rounded-md bg-surface px-6 text-base font-semibold text-primary-ink shadow-xs transition-colors duration-150 hover:bg-primary-soft"
           aria-label="View Sunday School lessons"
         >
           View Sunday School Lessons
-          <Icon icon="heroicons:arrow-right" class="h-4 w-4" />
+          <Icon icon="mdi:arrow-right" class="size-5" aria-hidden="true" />
         </NuxtLink>
       </div>
     </section>

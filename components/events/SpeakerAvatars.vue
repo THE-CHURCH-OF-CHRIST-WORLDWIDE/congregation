@@ -27,53 +27,57 @@ function onImgError(e: Event) {
   <div class="flex gap-6">
     <!-- Moderator group -->
     <div>
-      <p class="text-xs text-white/60 mb-2 font-medium uppercase tracking-wide">Moderator</p>
+      <p class="mb-2 text-xs font-semibold tracking-wide text-white/70 uppercase">Moderator</p>
       <div class="flex flex-col items-center gap-1">
-        <div class="relative w-10 h-10">
+        <div class="relative size-10">
           <img
             :src="displayableImageUrl(moderator.avatar)"
             :alt="moderator.name"
-            class="w-10 h-10 rounded-full object-cover ring-2 ring-white/30"
+            class="size-10 rounded-full object-cover ring-2 ring-white/40"
+            loading="lazy"
+            decoding="async"
             @error="onImgError"
           />
           <div
-            class="hidden absolute inset-0 w-10 h-10 rounded-full bg-blue-500 items-center justify-center text-white text-xs font-bold ring-2 ring-white/30"
+            class="absolute inset-0 hidden size-10 rounded-full bg-primary text-center text-xs leading-10 font-bold text-white ring-2 ring-white/40"
           >
             {{ initials(moderator.name) }}
           </div>
         </div>
-        <span class="text-white text-[11px] text-center w-12 truncate leading-tight">
+        <span class="w-14 truncate text-center text-xs leading-tight text-white">
           {{ moderator.name.split(' ')[0] }}
         </span>
       </div>
     </div>
 
     <!-- Divider -->
-    <div class="w-px bg-white/20 self-stretch"></div>
+    <div class="w-px self-stretch bg-white/20"></div>
 
     <!-- Speakers group -->
     <div>
-      <p class="text-xs text-white/60 mb-2 font-medium uppercase tracking-wide">Speakers</p>
+      <p class="mb-2 text-xs font-semibold tracking-wide text-white/70 uppercase">Speakers</p>
       <div class="flex gap-2">
         <div
           v-for="speaker in speakers.slice(0, 4)"
           :key="speaker.name"
           class="flex flex-col items-center gap-1"
         >
-          <div class="relative w-10 h-10">
+          <div class="relative size-10">
             <img
               :src="displayableImageUrl(speaker.avatar)"
               :alt="speaker.name"
-              class="w-10 h-10 rounded-full object-cover ring-2 ring-white/30"
+              class="size-10 rounded-full object-cover ring-2 ring-white/40"
+              loading="lazy"
+              decoding="async"
               @error="onImgError"
             />
             <div
-              class="hidden absolute inset-0 w-10 h-10 rounded-full bg-indigo-500 items-center justify-center text-white text-xs font-bold ring-2 ring-white/30"
+              class="absolute inset-0 hidden size-10 rounded-full bg-secondary text-center text-xs leading-10 font-bold text-white ring-2 ring-white/40"
             >
               {{ initials(speaker.name) }}
             </div>
           </div>
-          <span class="text-white text-[11px] text-center w-12 truncate leading-tight">
+          <span class="w-14 truncate text-center text-xs leading-tight text-white">
             {{ speaker.name.split(' ')[0] }}
           </span>
         </div>
