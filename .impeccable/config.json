@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "instrument serif",
+        "createdAt": "2026-11-21T18:20:57.354Z",
+        "reason": "Project design system: DESIGN.md names Instrument Serif as the headline face; predates this session"
+      }
+    ]
+  }
+}

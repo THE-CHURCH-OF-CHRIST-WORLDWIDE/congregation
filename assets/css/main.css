@@ -885,6 +885,9 @@
     vertical-align: top;
     padding-bottom: 0.12em;
     margin-bottom: -0.12em;
+    /* Room for an italic word's overhang (the tail of a "y" or "f"), net of layout. */
+    padding-right: 0.1em;
+    margin-right: -0.1em;
   }
   .split-word {
     display: inline-block;

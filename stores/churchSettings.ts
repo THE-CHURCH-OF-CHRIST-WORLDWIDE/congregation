@@ -12,6 +12,96 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
   phone: '(+234) 900 197 0700',
   email: 'churchofchristesa_atan@gmail.com',
 
+  // Branding — empty until an admin uploads a logo or adds a profile
+  logoUrl: '',
+  socialLinks: [],
+
+  // Legal — starter text; review it with the congregation before relying on it
+  privacyPolicy: {
+    intro:
+      '{church} respects your privacy. This policy explains what information this website collects, why we collect it, and how we look after it.',
+    lastUpdated: '',
+    sections: [
+      {
+        id: 'pp1',
+        heading: 'Information we collect',
+        body: 'We only collect information you choose to give us:\n\n• Contact form — your name, email address, phone number (optional) and message.\n• Member registration — the details on the registration form, such as your name, contact details, address, date of birth, baptism and membership information, emergency contact and photo.\n\nWe do not use advertising trackers, and we do not sell or rent your information to anyone.',
+      },
+      {
+        id: 'pp2',
+        heading: 'How we use your information',
+        body: 'We use your information to reply to your messages, keep the congregation’s membership records, contact members about church activities, and provide pastoral care. We will not use it for anything unrelated to the life and work of the church.',
+      },
+      {
+        id: 'pp3',
+        heading: 'Who can see it',
+        body: 'Membership records and messages are visible only to authorised church staff who need them to serve the congregation. Access is controlled by role and every change is recorded.\n\nWe use trusted service providers to run this website: Google Firebase stores our data and handles sign-in, and Cloudinary hosts uploaded images. They process data on our behalf and are not permitted to use it for their own purposes.',
+      },
+      {
+        id: 'pp4',
+        heading: 'Embedded content',
+        body: 'Some pages include videos or maps from other services such as YouTube, Facebook and Google Maps. When you view them, those services may collect information about you under their own privacy policies.',
+      },
+      {
+        id: 'pp5',
+        heading: 'How long we keep it',
+        body: 'We keep membership records for as long as you are part of the congregation, and messages for as long as they are needed to respond. You may ask us to delete your information at any time.',
+      },
+      {
+        id: 'pp6',
+        heading: 'Your choices',
+        body: 'You can ask to see, correct or delete the information we hold about you. Contact us at {email} or {phone}, or write to us at {address}.',
+      },
+      {
+        id: 'pp7',
+        heading: 'Changes to this policy',
+        body: 'We may update this policy from time to time. The date at the top of this page shows when it last changed.',
+      },
+    ],
+  },
+  termsOfUse: {
+    intro:
+      'These terms apply to your use of the {church} website. By using this site you agree to them.',
+    lastUpdated: '',
+    sections: [
+      {
+        id: 'tu1',
+        heading: 'Using this website',
+        body: 'This website is provided to share the gospel, teachings and news of {church}, and to help members and visitors connect with the congregation. Please use it lawfully and respectfully.',
+      },
+      {
+        id: 'tu2',
+        heading: 'Content',
+        body: 'Sermons, lessons, photographs and other material on this site are shared for personal study and edification. You are welcome to share links to them. Please do not republish them for commercial purposes, or alter them in a way that misrepresents their teaching, without our permission.',
+      },
+      {
+        id: 'tu3',
+        heading: 'Information you submit',
+        body: 'When you send us a message or register as a member, please make sure the information you give is accurate and that you are entitled to share it. How we handle it is explained in our Privacy Policy.',
+      },
+      {
+        id: 'tu4',
+        heading: 'Things you must not do',
+        body: 'Do not attempt to access areas of the site you are not authorised to use, interfere with how the site works, or submit content that is false, offensive or unlawful.',
+      },
+      {
+        id: 'tu5',
+        heading: 'Links to other websites',
+        body: 'This site links to and embeds content from other services such as YouTube, Facebook and Google Maps. We are not responsible for their content or practices.',
+      },
+      {
+        id: 'tu6',
+        heading: 'Availability',
+        body: 'We do our best to keep this website accurate and available, but we cannot guarantee it will always be error-free or uninterrupted. Service times and events may change; please contact us to confirm.',
+      },
+      {
+        id: 'tu7',
+        heading: 'Changes and contact',
+        body: 'We may update these terms from time to time. The date at the top of this page shows when they last changed. If you have any questions, contact us at {email}.',
+      },
+    ],
+  },
+
   // Hero
   heroImageUrl: '',
   heroEyebrow: 'Welcome to',
