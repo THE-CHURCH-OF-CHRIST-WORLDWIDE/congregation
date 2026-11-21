@@ -538,6 +538,21 @@ Three things carry the word "role" and are deliberately separate. Confusing them
 
 A member on the nominal roll can be an elder with no login at all, and a login can exist with no member record. Only `users/{uid}` gates anything.
 
+### Business meetings
+
+**Admin → Business Meetings** is where the Secretary records the minutes of each business
+meeting, following the usual order of business: meeting details, attendance (present,
+apologies, absent, visitors, quorum), opening, reading and adoption of the previous minutes,
+matters arising, reports, new business, any other business, action points, announcements,
+the next meeting, and closing. Any item can record a motion (moved, seconded, outcome).
+Name fields suggest people from the nominal roll. Each meeting has a **Print / PDF** copy
+with signature lines.
+
+Minutes live in the `businessMeetings` collection. Any staff account can read them. Super
+Admin, Admin and the Secretary can write them. Once minutes are **approved** they are locked.
+Only an Admin or Super Admin can reopen them, and only those two roles can delete a meeting.
+`firestore.rules` enforces all of this, not just the UI.
+
 ### Contact messages
 
 The "Send Us A Message" form on the landing page writes to the `messages` collection, and staff

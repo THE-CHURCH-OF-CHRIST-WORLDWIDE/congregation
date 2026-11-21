@@ -17,6 +17,8 @@ interface Props {
    * stacked mobile layouts while hiding it at widths where a column heading is shown.
    */
   labelClass?: string
+  /** Id of a `<datalist>` offering suggestions (e.g. member names). */
+  list?: string
 }
 const props = withDefaults(defineProps<Props>(), { type: 'text' })
 const emit = defineEmits<{ 'update:modelValue': [val: string] }>()
@@ -50,6 +52,7 @@ const messageId = computed(() => (props.error || props.helper ? `${inputId}-mess
       <input
         :id="inputId"
         :type="type"
+        :list="list"
         :value="modelValue"
         :placeholder="placeholder"
         :required="required"

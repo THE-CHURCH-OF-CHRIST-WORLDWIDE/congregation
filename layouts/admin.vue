@@ -31,6 +31,11 @@ const allNavItems = [
   { label: 'Teachings', to: '/admin/teachings', icon: 'mdi:book-open-page-variant-outline' },
   { label: 'Events', to: '/admin/events', icon: 'mdi:calendar-outline' },
   { label: 'Lectureship', to: '/admin/lectureship', icon: 'mdi:book-open-page-variant-outline' },
+  {
+    label: 'Business Meetings',
+    to: '/admin/business-meetings',
+    icon: 'mdi:clipboard-text-clock-outline',
+  },
   { label: 'Finance', to: '/admin/finance', icon: 'mdi:cash-multiple' },
   { label: 'Messages', to: '/admin/messages', icon: 'mdi:email-outline', badge: 'messages' },
   { label: 'Settings', to: '/admin/settings', icon: 'mdi:cog-outline' },

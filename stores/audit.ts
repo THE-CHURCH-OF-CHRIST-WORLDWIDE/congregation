@@ -36,6 +36,11 @@ const ACTION_LABELS: Record<AuditAction, string> = {
   'lectureship.delete': 'Deleted a lectureship registration',
   'lectureship.attendance': 'Marked lectureship attendance',
   'lectureship.speaker.create': 'Added a lectureship speaker profile',
+  'businessMeeting.create': 'Recorded business meeting minutes',
+  'businessMeeting.update': 'Edited business meeting minutes',
+  'businessMeeting.approve': 'Approved business meeting minutes',
+  'businessMeeting.reopen': 'Reopened approved business meeting minutes',
+  'businessMeeting.delete': 'Deleted a business meeting',
   'lectureship.speaker.update': 'Updated a lectureship speaker profile',
   'lectureship.speaker.delete': 'Removed a lectureship speaker profile',
 }

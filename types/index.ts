@@ -283,6 +283,7 @@ export type AppPage =
   | 'Attendance'
   | 'Teachings'
   | 'Events'
+  | 'Business Meetings'
   | 'Finance'
   | 'Settings'
 
@@ -362,6 +363,11 @@ export type AuditAction =
   | 'lectureship.speaker.create'
   | 'lectureship.speaker.update'
   | 'lectureship.speaker.delete'
+  | 'businessMeeting.create'
+  | 'businessMeeting.update'
+  | 'businessMeeting.approve'
+  | 'businessMeeting.reopen'
+  | 'businessMeeting.delete'
 
 /**
  * One recorded change, stored append-only at `auditLog/{id}`.
