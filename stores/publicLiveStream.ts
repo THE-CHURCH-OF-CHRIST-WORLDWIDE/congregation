@@ -12,7 +12,8 @@ interface PublicLiveStreamState {
 
 export const usePublicLiveStreamStore = defineStore('publicLiveStream', {
   state: (): PublicLiveStreamState => ({
-    isLive: true,
+    // Off until Settings says otherwise — a default of `true` showed a live badge on every page.
+    isLive: false,
     currentStream: null,
     recordedStreams: [],
     activeTab: 'live',
@@ -39,11 +40,34 @@ export const usePublicLiveStreamStore = defineStore('publicLiveStream', {
   },
 
   actions: {
-    fetchLiveStatus() {
-      // TODO: read from Firestore once the repository lands.
+    /**
+     * Reads the live broadcast staff switch on in Settings → Live Worship. The church settings
+     * document is public and already loaded by the navbar, so this costs no extra request.
+     */
+    async fetchLiveStatus() {
+      const settingsStore = useChurchSettingsStore()
+      await settingsStore.load()
+      const ls = settingsStore.settings.liveStream
+      const live = Boolean(ls?.isLive && ls.url)
+      this.isLive = live
+      this.currentStream = live
+        ? {
+            id: 'live',
+            title: ls.title || settingsStore.settings.liveWorship.nextTitle || 'Live worship',
+            congregation: ls.congregation || settingsStore.settings.name,
+            city: ls.city,
+            viewerCount: 0,
+            thumbnailSrc: ls.thumbnail || settingsStore.settings.heroImageUrl || '',
+            startedAt: ls.startedAt,
+            url: ls.url,
+          }
+        : null
     },
-    fetchRecordedStreams() {
-      // TODO: read from Firestore once the repository lands.
+    /** Recordings are the teachings staff published with a video link. */
+    async fetchRecordedStreams() {
+      const teachings = usePublicTeachingsStore()
+      await teachings.load()
+      this.recordedStreams = teachings.recordings
     },
     setTab(tab: 'live' | 'recorded') {
       this.activeTab = tab

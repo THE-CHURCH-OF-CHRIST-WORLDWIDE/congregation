@@ -3,6 +3,7 @@ definePageMeta({ layout: 'default' })
 
 const route = useRoute()
 const store = usePublicTeachingsStore()
+onMounted(() => store.load())
 
 const sermon = computed(() => store.getSermonBySlug(route.params.slug as string))
 const related = computed(() =>
@@ -53,8 +54,17 @@ function share() {
 
 <template>
   <div class="pb-24 md:pb-32">
+    <!-- Loading: hold the page rather than flash "Not Found" before the data arrives -->
+    <div
+      v-if="!sermon && !store.loaded && !store.error"
+      class="site-container flex min-h-[60vh] items-center py-20"
+      role="status"
+    >
+      <p class="t-label text-ink-subtle">Loading sermon…</p>
+    </div>
+
     <!-- Not found -->
-    <div v-if="!sermon" class="site-container flex min-h-[60vh] flex-col justify-center py-20">
+    <div v-else-if="!sermon" class="site-container flex min-h-[60vh] flex-col justify-center py-20">
       <div class="max-w-2xl border-t border-rule-strong pt-10">
         <h1 class="t-h1 text-ink">Sermon <span class="t-turn">Not Found</span></h1>
         <p class="t-lede mt-6 max-w-md">
@@ -99,11 +109,8 @@ function share() {
             <SplitReveal :text="sermon.title" immediate :delay="100" />
           </h1>
 
-          <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+          <div v-if="sermon.tags.length" class="mt-6 flex flex-wrap gap-x-5 gap-y-2">
             <CategoryBadge v-for="tag in sermon.tags" :key="tag" :label="tag" />
-            <CategoryBadge label="Faith" />
-            <CategoryBadge label="Growth" />
-            <CategoryBadge label="Discipline" />
           </div>
 
           <!-- Ruled metadata row -->
@@ -168,7 +175,7 @@ function share() {
               <p class="prose-register drop-cap">{{ sermon.description }}</p>
 
               <!-- Why this lesson -->
-              <div class="mt-16">
+              <div v-if="sermon.lessonPoints.length" class="mt-16">
                 <h3 class="t-h3 text-ink">Key Lesson Points</h3>
                 <ol class="prose-register mt-6 border-t border-rule">
                   <li
@@ -185,7 +192,7 @@ function share() {
               </div>
 
               <!-- Divider + scripture -->
-              <div class="mt-16">
+              <div v-if="sermon.soulWinnerPoints.length" class="mt-16">
                 <h3 class="t-h3 text-ink">Why Be a Soul Winner?</h3>
                 <ol class="prose-register mt-6 border-t border-rule">
                   <li

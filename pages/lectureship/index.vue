@@ -4,7 +4,6 @@ import { LECTURESHIP_ROLE_ORDER, LECTURESHIP_ROLES } from '~/constants'
 
 definePageMeta({
   layout: 'default',
-  pageTransition: { name: 'fade', mode: 'out-in' },
 })
 
 useSeoMeta({

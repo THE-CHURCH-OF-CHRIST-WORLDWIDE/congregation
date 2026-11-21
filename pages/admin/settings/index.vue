@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NAV_VISIBILITY_ITEMS } from '~/constants'
+import { GALLERY_CATEGORIES, NAV_VISIBILITY_ITEMS } from '~/constants'
 
 definePageMeta({ layout: 'admin', middleware: ['auth'] })
 useSeoMeta({ title: 'Settings', description: 'Church admin settings.' })
@@ -162,6 +162,12 @@ function validate(): boolean {
     activeTab.value = 'general'
     return false
   }
+  // A live broadcast with nowhere to watch it would send every visitor to a dead button.
+  if (liveUrlError.value) {
+    useToast().error('Add the stream link before going live')
+    activeTab.value = 'live'
+    return false
+  }
   return true
 }
 
@@ -226,8 +232,27 @@ function removeLeader(i: number) {
 }
 
 // ── Gallery helpers ───────────────────────────────────────────────────────
+// ── Live broadcast helpers ────────────────────────────────────────────────
+function setLive(on: boolean) {
+  draft.value.liveStream.isLive = on
+  // Stamp the start so the public page can say how long the service has been on.
+  if (on) draft.value.liveStream.startedAt = new Date().toISOString()
+}
+const liveUrlError = computed(() =>
+  draft.value.liveStream.isLive && !/^https?:\/\//i.test(draft.value.liveStream.url.trim())
+    ? 'Add the link viewers should open (it must start with https://).'
+    : ''
+)
+
+const galleryCategoryOptions = GALLERY_CATEGORIES.map((c) => ({ label: c.title, value: c.slug }))
+
 function addPhoto() {
-  draft.value.galleryPhotos.push({ id: `g${Date.now()}`, src: '', alt: '' })
+  draft.value.galleryPhotos.push({
+    id: `g${Date.now()}`,
+    src: '',
+    alt: '',
+    category: GALLERY_CATEGORIES[0].slug,
+  })
 }
 function removePhoto(i: number) {
   draft.value.galleryPhotos.splice(i, 1)
@@ -616,6 +641,70 @@ function removeSundayDetail(i: number) {
 
         <!-- ── Live Worship ─────────────────────────────────────────────── -->
         <div v-else-if="activeTab === 'live'" key="live" class="flex max-w-2xl flex-col gap-5">
+          <SettingsSection
+            title="Live Broadcast"
+            description="Switch this on while a service is streaming. The public site shows the live badge, the live screen and a Watch button linking to your stream. Switch it off when the service ends, then save."
+          >
+            <div class="flex flex-col gap-4">
+              <label
+                class="flex cursor-pointer items-center justify-between gap-4 rounded-sm border px-4 py-3 transition-colors"
+                :class="
+                  draft.liveStream.isLive
+                    ? 'border-live/40 bg-error-soft'
+                    : 'border-rule bg-surface-muted/50'
+                "
+              >
+                <span class="flex items-center gap-3">
+                  <span
+                    class="relative flex size-2.5 rounded-full"
+                    :class="draft.liveStream.isLive ? 'bg-live' : 'bg-rule-strong'"
+                    aria-hidden="true"
+                  ></span>
+                  <span>
+                    <span class="block text-sm font-semibold text-ink">{{
+                      draft.liveStream.isLive ? 'We are live now' : 'Not live'
+                    }}</span>
+                    <span class="block text-xs text-ink-muted">
+                      Takes effect on the public site once you save.
+                    </span>
+                  </span>
+                </span>
+                <input
+                  :checked="draft.liveStream.isLive"
+                  type="checkbox"
+                  class="attendance-check shrink-0"
+                  aria-label="Broadcast is live"
+                  @change="setLive(($event.target as HTMLInputElement).checked)"
+                />
+              </label>
+              <Input
+                v-model="draft.liveStream.url"
+                label="Stream link"
+                placeholder="https://www.youtube.com/live/… or a Facebook live link"
+                :error="liveUrlError"
+              />
+              <Input
+                v-model="draft.liveStream.title"
+                label="Broadcast title"
+                placeholder="Sunday Morning Worship"
+              />
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Input
+                  v-model="draft.liveStream.congregation"
+                  label="Congregation"
+                  :placeholder="draft.name"
+                />
+                <Input v-model="draft.liveStream.city" label="City" placeholder="Ikot Ekpene" />
+              </div>
+              <ImageUpload
+                v-model="draft.liveStream.thumbnail"
+                label="Cover image"
+                folder="congregation/live"
+                helper="Shown behind the live screen. Optional."
+              />
+            </div>
+          </SettingsSection>
+
           <SettingsSection
             title="Live Worship Section"
             description="The live-stream teaser on the landing page, above the sermons."
@@ -1219,7 +1308,7 @@ function removeSundayDetail(i: number) {
         >
           <SettingsSection
             title="Photo Gallery"
-            description="Photos in the gallery strip on the landing page."
+            description="Photos in the landing-page gallery strip. Each also appears on its gallery page (/gallery/…) under the category you choose."
             density="sm"
           >
             <template #actions>
@@ -1240,6 +1329,12 @@ function removeSundayDetail(i: number) {
                   v-model="img.alt"
                   label="Caption / Alt text"
                   placeholder="Sunday worship service"
+                />
+                <Select
+                  :model-value="img.category || galleryCategoryOptions[0]!.value"
+                  :options="galleryCategoryOptions"
+                  label="Gallery"
+                  @update:model-value="(v: string) => (img.category = v)"
                 />
                 <button
                   class="absolute top-2 right-2 inline-flex size-8 items-center justify-center rounded-md text-ink-subtle transition-colors duration-150 hover:bg-error-soft hover:text-error bg-surface/80"

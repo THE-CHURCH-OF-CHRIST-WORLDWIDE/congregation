@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { isEmbeddable } from '~/utils/videoEmbed'
+
 const teachingsStore = useTeachingsStore()
+const { uploadDocument, uploading: docUploading } = useCloudinaryUpload()
 
 const form = reactive({
   type: '',
@@ -9,6 +12,7 @@ const form = reactive({
   scripture: '',
   description: '',
   categories: [] as string[],
+  videoUrl: '',
 })
 
 const thumbnailUrl = ref<string>('')
@@ -21,6 +25,7 @@ const errors = reactive({
   date: '',
   preacher: '',
   description: '',
+  videoUrl: '',
 })
 
 const typeOptions = [
@@ -31,7 +36,13 @@ const typeOptions = [
   { label: 'Youth Class', value: 'Youth Class' },
 ]
 
-const isValid = computed(() => form.type && form.preacher && form.description)
+const videoLinkInvalid = computed(
+  () => Boolean(form.videoUrl.trim()) && !isEmbeddable(form.videoUrl)
+)
+const isValid = computed(
+  () => form.type && form.preacher && form.description && !videoLinkInvalid.value
+)
+const busy = computed(() => teachingsStore.uploading || docUploading.value)
 
 function onDocChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
@@ -60,15 +71,34 @@ async function submit() {
   errors.type = form.type ? '' : 'Upload type is required'
   errors.preacher = form.preacher ? '' : 'Preacher name is required'
   errors.description = form.description ? '' : 'Description is required'
+  errors.videoUrl = videoLinkInvalid.value
+    ? 'Paste a YouTube, Facebook or Vimeo link to the recording'
+    : ''
 
   if (!isValid.value) return
 
-  await teachingsStore.uploadSermon({
+  // The handout goes to the file host first; only its URL is stored with the teaching.
+  let documentUrl: string | undefined
+  if (documentFile.value) {
+    try {
+      documentUrl = (await uploadDocument(documentFile.value, { folder: 'congregation/handouts' }))
+        .url
+    } catch (e: unknown) {
+      useToast().error(e instanceof Error ? e.message : 'The document could not be uploaded.')
+      return
+    }
+  }
+
+  const created = await teachingsStore.uploadSermon({
     ...form,
+    videoUrl: form.videoUrl.trim() || undefined,
     thumbnail: thumbnailUrl.value || undefined,
     documentFile: documentFile.value?.name,
+    documentUrl,
     videoAttendees: 0,
   })
+  // A failed save keeps everything that was typed; the store has already shown the error.
+  if (!created) return
 
   success.value = true
   Object.assign(form, {
@@ -79,6 +109,7 @@ async function submit() {
     scripture: '',
     description: '',
     categories: [],
+    videoUrl: '',
   })
   thumbnailUrl.value = ''
   documentFile.value = null
@@ -170,18 +201,19 @@ async function submit() {
       helper="JPG, PNG, GIF or WebP — max 5MB."
     />
 
-    <!-- Upload Sermon Button -->
-    <Button
-      :loading="teachingsStore.uploading"
-      :disabled="!isValid || teachingsStore.uploading"
-      type="submit"
-      size="lg"
-      class="w-full"
-      @click="submit"
-    >
-      <template #icon-left><Icon icon="mdi:upload" /></template>
-      {{ teachingsStore.uploading ? 'Uploading…' : 'Upload Sermon' }}
-    </Button>
+    <Input
+      v-model="form.videoUrl"
+      label="Video link"
+      placeholder="https://www.youtube.com/watch?v=…"
+      :error="
+        errors.videoUrl ||
+        (videoLinkInvalid ? 'Paste a YouTube, Facebook or Vimeo link to the recording' : '')
+      "
+    />
+    <p class="-mt-3 text-xs text-ink-subtle">
+      Optional. YouTube, Facebook or Vimeo. Teachings with a video also appear under Live Streams →
+      Recorded.
+    </p>
 
     <!-- Document Upload -->
     <div class="border-t border-rule pt-5">
@@ -206,7 +238,7 @@ async function submit() {
         <p v-else class="text-sm text-ink-muted">
           <span class="font-medium text-primary-ink">Click to upload</span> or drag and drop
         </p>
-        <p class="mt-1 text-xs text-ink-subtle">Supported formats: PDF, DOC, DOCX (max 20MB)</p>
+        <p class="mt-1 text-xs text-ink-subtle">Optional handout. PDF, DOC, DOCX (max 20MB)</p>
       </div>
       <div class="text-center mt-3">
         <label class="cursor-pointer">
@@ -229,5 +261,23 @@ async function submit() {
         </label>
       </div>
     </div>
+    <!-- Upload Sermon Button -->
+    <Button
+      :loading="busy"
+      :disabled="!isValid || busy"
+      type="submit"
+      size="lg"
+      class="w-full"
+      @click="submit"
+    >
+      <template #icon-left><Icon icon="mdi:upload" /></template>
+      {{
+        docUploading
+          ? 'Uploading document…'
+          : teachingsStore.uploading
+            ? 'Uploading…'
+            : 'Upload Sermon'
+      }}
+    </Button>
   </div>
 </template>

@@ -58,6 +58,17 @@ export const DEFAULT_SETTINGS: ChurchSettings = {
     reminderCtaLabel: 'Set Reminder',
   },
 
+  // Live broadcast — off until staff switch it on from Settings → Live Worship
+  liveStream: {
+    isLive: false,
+    title: '',
+    url: '',
+    thumbnail: '',
+    congregation: '',
+    city: '',
+    startedAt: '',
+  },
+
   // About: Hero
   aboutHero: {
     scriptureRef: 'Romans 16:16',

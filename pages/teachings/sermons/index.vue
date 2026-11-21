@@ -5,7 +5,7 @@ const store = usePublicTeachingsStore()
 const activeFilter = ref('All Sermons')
 const searchQuery = ref('')
 
-const filterTags = [
+const fallbackTags = [
   'All Sermons',
   'Church',
   'Faith',
@@ -23,6 +23,15 @@ watch(activeFilter, (v) => {
 
 watch(searchQuery, (v) => store.setSearch(v))
 
+// Filters come from the categories actually used on published sermons; until anything is
+// published the original list stands in, so the bar never renders empty.
+const filterTags = computed(() => {
+  const used = [...new Set(store.sermons.flatMap((t) => t.tags))].sort((a, b) => a.localeCompare(b))
+  return used.length ? ['All Sermons', ...used] : fallbackTags
+})
+
+onMounted(() => store.load())
+
 const displayedCount = ref(9)
 const paginated = computed(() => store.filteredSermons.slice(0, displayedCount.value))
 const hasMore = computed(() => store.filteredSermons.length > displayedCount.value)
@@ -37,7 +46,7 @@ useSeoMeta({
     'Browse our full library of biblical sermons preached at the Church of Christ. Topics include faith, baptism, salvation, gospel, and more.',
   ogTitle: 'Sermons — Church of Christ',
   ogDescription: 'Biblical preaching that exalts Christ and proclaims the whole counsel of God.',
-  ogImage: '/images/heroImg.png',
+  ogImage: '/images/hero-cover.jpg',
 })
 </script>
 
@@ -208,6 +217,18 @@ useSeoMeta({
           </li>
         </ol>
       </div>
+      <p
+        v-else-if="store.loading && !store.loaded"
+        class="t-label py-10 text-ink-subtle"
+        role="status"
+      >
+        Loading sermons…
+      </p>
+      <EditorialNote
+        v-else-if="store.error"
+        title="Sermons could not be loaded"
+        :description="store.error"
+      />
       <EditorialNote
         v-else-if="store.sermons.length"
         title="No sermons match your search"

@@ -223,6 +223,10 @@ export interface Sermon {
   categories: string[]
   createdAt: string
   videoAttendees?: number
+  /** Recording link (YouTube / Facebook / Vimeo). Also lists the teaching under recorded streams. */
+  videoUrl?: string
+  /** Uploaded handout (Cloudinary URL). `documentFile` keeps the original file name. */
+  documentUrl?: string
 }
 
 export interface MonthlyAttendanceSummary {

@@ -18,6 +18,11 @@ const activityOptions = [
 ]
 
 watch(searchQuery, (v) => store.setSearch(v))
+
+onMounted(() => {
+  store.fetchLiveStatus()
+  store.fetchRecordedStreams()
+})
 watch(activityFilter, (v) => store.setFilter(v))
 
 function onWatchRecorded() {
@@ -76,7 +81,7 @@ useSeoMeta({
     'Watch live Sunday worship services and recorded Bible classes from Church of Christ congregations. Join thousands of believers worshipping online.',
   ogTitle: 'Live Streams — Church of Christ',
   ogDescription: 'Watch live and recorded worship services from the Church of Christ, worldwide.',
-  ogImage: '/images/heroImg.png',
+  ogImage: '/images/hero-cover.jpg',
 })
 </script>
 

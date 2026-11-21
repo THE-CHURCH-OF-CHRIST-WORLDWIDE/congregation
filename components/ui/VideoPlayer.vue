@@ -31,7 +31,9 @@ function play() {
         {{ props.title }}
       </div>
       <div class="absolute inset-0 bg-night/35" aria-hidden="true"></div>
+      <!-- No recording published yet: the frame stays a still, with nothing to press -->
       <button
+        v-if="props.src"
         :aria-label="`Play ${props.title}`"
         class="group absolute inset-0 flex items-center justify-center"
         @click="play"
@@ -50,7 +52,7 @@ function play() {
     <!-- Iframe embed -->
     <iframe
       v-else
-      :src="`${props.src}?autoplay=1`"
+      :src="`${props.src}${props.src.includes('?') ? '&' : '?'}autoplay=1`"
       :title="props.title"
       class="absolute inset-0 h-full w-full"
       allow="autoplay; fullscreen; picture-in-picture"

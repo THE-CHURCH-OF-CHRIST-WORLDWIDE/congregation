@@ -8,7 +8,7 @@ const { galleries } = useGalleryData('')
  * never a stock image standing in for church content.
  */
 const categories = computed(() =>
-  Object.entries(galleries)
+  Object.entries(galleries.value)
     .filter(([slug]) => slug !== route.params.category)
     .map(([slug, gallery]) => ({
       slug,

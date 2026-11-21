@@ -82,8 +82,12 @@ export function useCloudinaryUpload() {
     }
   }
 
-  function uploadWithProgress(file: File, folder: string): Promise<CloudinaryResponse> {
-    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`
+  function uploadWithProgress(
+    file: File,
+    folder: string,
+    resourceType: 'image' | 'raw' = 'image'
+  ): Promise<CloudinaryResponse> {
+    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`
     const formData = new FormData()
     formData.append('file', file)
     formData.append('upload_preset', uploadPreset!)
@@ -191,6 +195,39 @@ export function useCloudinaryUpload() {
     }
   }
 
+  /**
+   * Uploads a non-image file (a lesson handout: PDF, Word, PowerPoint) as a Cloudinary "raw"
+   * asset and returns its public URL. No compression; the size is checked up front.
+   */
+  async function uploadDocument(
+    file: File,
+    options: { folder?: string; maxBytes?: number } = {}
+  ): Promise<{ url: string; bytes: number }> {
+    const maxBytes = options.maxBytes ?? 20 * 1024 * 1024
+    uploading.value = true
+    progress.value = 0
+    error.value = null
+    try {
+      if (!cloudName || !uploadPreset) {
+        throw new Error(
+          'Cloudinary is not configured. Set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET.'
+        )
+      }
+      if (file.size > maxBytes) throw new Error(`Document must be under ${mb(maxBytes)}.`)
+      const data = await uploadWithProgress(
+        file,
+        options.folder ?? `${defaultFolder ?? 'congregation'}/documents`,
+        'raw'
+      )
+      return { url: data.secure_url, bytes: data.bytes }
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Document upload failed.'
+      throw e
+    } finally {
+      uploading.value = false
+    }
+  }
+
   function reset() {
     uploading.value = false
     compressing.value = false
@@ -199,5 +236,5 @@ export function useCloudinaryUpload() {
     compression.value = null
   }
 
-  return { upload, reset, uploading, compressing, progress, error, compression }
+  return { upload, uploadDocument, reset, uploading, compressing, progress, error, compression }
 }

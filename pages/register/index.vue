@@ -3,7 +3,6 @@ import type { EmergencyContact, Member } from '~/types'
 
 definePageMeta({
   layout: 'default',
-  pageTransition: { name: 'fade', mode: 'out-in' },
 })
 
 useSeoMeta({

@@ -1,31 +1,32 @@
 <script setup lang="ts">
+// No page-level `mode: 'out-in'` here: it races Nuxt's Suspense page resolution (see the note
+// in nuxt.config.ts) and left this page blank when navigated to from another route.
 definePageMeta({
   layout: 'default',
-  pageTransition: { name: 'fade', mode: 'out-in' },
   navOverlay: true,
 })
 
 const route = useRoute()
 const slug = computed(() => route.params.category as string)
 
-const { gallery, galleries } = useGalleryData(slug.value)
+const { gallery, galleries, loading: galleryLoading } = useGalleryData(() => slug.value)
 
 // An unknown slug used to redirect to /404, but no such route (or error.vue)
 // exists, so the page hung on a navigation that never resolved. Render the
 // not-found state below instead — same outcome for the reader, no dead end.
 
 useSeoMeta({
-  title: `${gallery?.title ?? 'Gallery'} — Church of Christ`,
-  description: `Browse the ${gallery?.title} gallery at Church of Christ, Ikot Ekpene.`,
+  title: () => `${gallery.value?.title ?? 'Gallery'} — Church of Christ`,
+  description: () => `Browse the ${gallery.value?.title} gallery at Church of Christ, Ikot Ekpene.`,
 })
 
 // Preview thumbnails for hero (first 2 images)
-const previewImages = computed(() => (gallery?.images ?? []).slice(0, 2).map((i) => i.src))
+const previewImages = computed(() => (gallery.value?.images ?? []).slice(0, 2).map((i) => i.src))
 
 // Lightbox
 const lightboxOpen = ref(false)
 const lightboxIndex = ref(0)
-const lightboxImages = computed(() => (gallery?.images ?? []).map((i) => i.src))
+const lightboxImages = computed(() => (gallery.value?.images ?? []).map((i) => i.src))
 
 function openLightbox(index: number) {
   lightboxIndex.value = index
@@ -75,8 +76,15 @@ function openLightbox(index: number) {
             {{ gallery.images.length === 1 ? 'photograph' : 'photographs' }}
           </p>
         </div>
+        <p
+          v-if="!gallery.images.length && galleryLoading"
+          class="t-label py-10 text-ink-subtle"
+          role="status"
+        >
+          Loading photographs…
+        </p>
         <EditorialNote
-          v-if="!gallery.images.length"
+          v-else-if="!gallery.images.length"
           title="No photos in this gallery yet"
           description="Photographs from this category will appear here once they are uploaded."
         />

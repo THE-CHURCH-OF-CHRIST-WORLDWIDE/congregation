@@ -1,7 +1,11 @@
 <script setup lang="ts">
 const liveStore = usePublicLiveStreamStore()
 const settingsStore = useChurchSettingsStore()
-onMounted(() => settingsStore.load())
+onMounted(() => {
+  settingsStore.load()
+  liveStore.fetchLiveStatus()
+  liveStore.fetchRecordedStreams()
+})
 
 const isLive = computed(() => liveStore.isLive && !!liveStore.currentStream)
 const stream = computed(() => liveStore.currentStream)
@@ -60,7 +64,7 @@ const thumb = computed(() => displayableImageUrl(stream.value?.thumbnailSrc))
               </div>
             </div>
             <div
-              v-if="isLive"
+              v-if="isLive && (stream?.viewerCount ?? 0) > 0"
               class="num t-label absolute top-5 right-5 z-[2] inline-flex items-center gap-2 text-on-night sm:top-7 sm:right-7"
             >
               <Icon icon="mdi:account-multiple-outline" class="size-4" aria-hidden="true" />

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const store = usePublicTeachingsStore()
+onMounted(() => store.load())
 const featured = computed(() => store.sermons.slice(0, 3))
 const lead = computed(() => featured.value[0])
 const rest = computed(() => featured.value.slice(1))

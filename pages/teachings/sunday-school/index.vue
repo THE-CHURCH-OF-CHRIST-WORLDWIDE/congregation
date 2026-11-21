@@ -5,7 +5,7 @@ const store = usePublicTeachingsStore()
 const activeFilter = ref('All')
 const searchQuery = ref('')
 
-const filterTags = [
+const fallbackTags = [
   'All',
   'Attendance',
   'Court',
@@ -21,6 +21,17 @@ const filterTags = [
 watch(activeFilter, (v) => store.setFilter(v))
 watch(searchQuery, (v) => store.setSearch(v))
 
+// Filters come from the categories actually used on published lessons; until anything is
+// published the original list stands in, so the bar never renders empty.
+const filterTags = computed(() => {
+  const used = [...new Set(store.sundaySchool.flatMap((t) => t.tags))].sort((a, b) =>
+    a.localeCompare(b)
+  )
+  return used.length ? ['All', ...used] : fallbackTags
+})
+
+onMounted(() => store.load())
+
 const displayedCount = ref(9)
 const paginated = computed(() => store.filteredLessons.slice(0, displayedCount.value))
 const hasMore = computed(() => store.filteredLessons.length > displayedCount.value)
@@ -35,7 +46,7 @@ useSeoMeta({
     'In-depth Sunday School lessons from the Church of Christ. Explore topics on attendance, baptism, mission, soul-winning, church duties, and more.',
   ogTitle: 'Sunday School — Church of Christ',
   ogDescription: 'In-depth Scripture study for every member of the congregation.',
-  ogImage: '/images/heroImg.png',
+  ogImage: '/images/hero-cover.jpg',
 })
 </script>
 
@@ -206,6 +217,18 @@ useSeoMeta({
           </li>
         </ol>
       </div>
+      <p
+        v-else-if="store.loading && !store.loaded"
+        class="t-label py-10 text-ink-subtle"
+        role="status"
+      >
+        Loading lessons…
+      </p>
+      <EditorialNote
+        v-else-if="store.error"
+        title="Lessons could not be loaded"
+        :description="store.error"
+      />
       <EditorialNote
         v-else-if="store.sundaySchool.length"
         title="No lessons match your search"

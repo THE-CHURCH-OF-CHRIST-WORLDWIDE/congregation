@@ -17,7 +17,7 @@ onMounted(() => {
 const name = computed(() => props.churchName ?? settingsStore.settings.name)
 const addr = computed(() => props.address ?? settingsStore.settings.address)
 const image = computed(
-  () => props.buildingImage ?? (settingsStore.settings.heroImageUrl || '/images/heroImg.png')
+  () => props.buildingImage ?? (settingsStore.settings.heroImageUrl || '/images/hero-cover.jpg')
 )
 const eyebrow = computed(() => settingsStore.settings.heroEyebrow)
 const tagline = computed(() => settingsStore.settings.heroTagline)

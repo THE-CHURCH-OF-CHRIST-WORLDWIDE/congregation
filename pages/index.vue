@@ -8,7 +8,7 @@ useSeoMeta({
   ogTitle: 'The Church of Christ — Ekot Ekpene',
   ogDescription:
     'A New Testament church built solely on the word of God. Find worship times, live streams, sermons, and Sunday School lessons.',
-  ogImage: '/images/heroImg.png',
+  ogImage: '/images/hero-cover.jpg',
 })
 
 useHead({

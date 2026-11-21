@@ -10,6 +10,7 @@ defineProps<{ stream: LiveStream }>()
     class="relative flex aspect-[4/5] w-full items-end overflow-hidden bg-night-raised sm:aspect-video"
   >
     <img
+      v-if="stream.thumbnailSrc"
       :src="displayableImageUrl(stream.thumbnailSrc)"
       :alt="stream.title"
       class="absolute inset-0 h-full w-full object-cover"
@@ -29,6 +30,7 @@ defineProps<{ stream: LiveStream }>()
       <span>Live Now</span>
     </div>
     <div
+      v-if="stream.viewerCount > 0"
       class="t-label absolute top-5 right-5 z-20 flex items-center gap-2 text-on-night sm:top-7 sm:right-7"
     >
       <Icon icon="mdi:eye-outline" class="size-4" aria-hidden="true" />
@@ -44,9 +46,9 @@ defineProps<{ stream: LiveStream }>()
       </div>
 
       <a
-        href="#"
+        :href="stream.url || '#'"
         target="_blank"
-        rel="noopener"
+        rel="noopener noreferrer"
         class="btn btn-light min-h-14 shrink-0 px-7"
         aria-label="Watch live stream now"
       >

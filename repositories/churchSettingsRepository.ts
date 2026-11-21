@@ -18,6 +18,28 @@ export interface GalleryPhoto {
   id: string
   src: string
   alt: string
+  /**
+   * Gallery category slug (see `GALLERY_CATEGORIES`) this photo appears under at
+   * /gallery/<slug>. Photos saved before categories existed have none and are shown
+   * under the first category.
+   */
+  category?: string
+}
+
+/**
+ * The live broadcast, switched on by staff from Settings → Live Worship while a service is
+ * streaming. Drives the navbar's live dot, the landing-page teaser and /live-streams.
+ */
+export interface LiveStreamSettings {
+  isLive: boolean
+  title: string
+  /** Where viewers watch: a YouTube / Facebook / Vimeo link (watch or live page). */
+  url: string
+  thumbnail: string
+  congregation: string
+  city: string
+  /** ISO timestamp of when staff switched the broadcast on. */
+  startedAt: string
 }
 
 export interface LiveWorshipSettings {
@@ -166,6 +188,7 @@ export interface ChurchSettings {
 
   // ── Live Worship Teaser ───────────────────────────────────────────────────
   liveWorship: LiveWorshipSettings
+  liveStream: LiveStreamSettings
 
   // ── About Page: Hero ──────────────────────────────────────────────────────
   aboutHero: AboutHeroSettings

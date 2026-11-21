@@ -3,6 +3,7 @@ definePageMeta({ layout: 'default' })
 
 const route = useRoute()
 const store = usePublicTeachingsStore()
+onMounted(() => store.load())
 
 const lesson = computed(() => store.getLessonBySlug(route.params.slug as string))
 const related = computed(() =>
@@ -53,8 +54,17 @@ function share() {
 
 <template>
   <div class="pb-24 md:pb-32">
+    <!-- Loading: hold the page rather than flash "Not Found" before the data arrives -->
+    <div
+      v-if="!lesson && !store.loaded && !store.error"
+      class="site-container flex min-h-[60vh] items-center py-20"
+      role="status"
+    >
+      <p class="t-label text-ink-subtle">Loading lesson…</p>
+    </div>
+
     <!-- Not found -->
-    <div v-if="!lesson" class="site-container flex min-h-[60vh] flex-col justify-center py-20">
+    <div v-else-if="!lesson" class="site-container flex min-h-[60vh] flex-col justify-center py-20">
       <div class="max-w-2xl border-t border-rule-strong pt-10">
         <h1 class="t-h1 text-ink">Lesson <span class="t-turn">Not Found</span></h1>
         <p class="t-lede mt-6 max-w-md">
@@ -99,7 +109,7 @@ function share() {
             <SplitReveal :text="lesson.title" immediate :delay="100" />
           </h1>
 
-          <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+          <div v-if="lesson.tags.length" class="mt-6 flex flex-wrap gap-x-5 gap-y-2">
             <CategoryBadge v-for="tag in lesson.tags" :key="tag" :label="tag" />
           </div>
 
@@ -161,7 +171,7 @@ function share() {
 
             <div class="lg:col-span-8 lg:col-start-5">
               <!-- Overview Goals -->
-              <div>
+              <div v-if="lesson.overviewGoals.length">
                 <h3 class="t-h3 text-ink">Why This Lesson?</h3>
                 <ol class="prose-register mt-6 border-t border-rule">
                   <li
@@ -179,6 +189,7 @@ function share() {
 
               <!-- Scripture pull-quote -->
               <blockquote
+                v-if="lesson.scripture"
                 v-reveal
                 class="relative my-16 max-w-[34ch] pl-8 font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.15] text-ink italic md:my-20 md:pl-10"
               >
@@ -190,7 +201,7 @@ function share() {
               </blockquote>
 
               <!-- Church Duties section -->
-              <div>
+              <div v-if="lesson.churchDuties.length">
                 <h3 class="t-h3 text-ink">Duty of the Church</h3>
                 <ol class="prose-register mt-6 border-t border-rule">
                   <li

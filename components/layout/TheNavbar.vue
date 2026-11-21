@@ -13,6 +13,13 @@ const settingsStore = useChurchSettingsStore()
 // no individual page has to remember to. load() is a no-op once the settings doc has arrived.
 onMounted(() => settingsStore.load())
 
+// The live badge follows Settings → Live Worship → Live Broadcast, including right after staff save.
+watch(
+  () => settingsStore.settings.liveStream,
+  () => liveStore.fetchLiveStatus(),
+  { deep: true, immediate: true }
+)
+
 const teachingsOpen = ref(false)
 const mobileOpen = ref(false)
 let teachingsTimer: ReturnType<typeof setTimeout> | null = null
