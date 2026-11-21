@@ -3,8 +3,7 @@
  *
  * Presentation only: colours, fonts, gridlines and tooltips. No chart's data, datasets or
  * calculations live here. Series colours are ordered so neighbours stay distinguishable for
- * common colour-vision deficiencies, and each one holds at least 3:1 against both the light and
- * dark admin surfaces.
+ * common colour-vision deficiencies, and each one holds at least 3:1 against the white surface.
  */
 
 /** Categorical series, in order of use. Bookcloth first so a single-series chart is on brand. */

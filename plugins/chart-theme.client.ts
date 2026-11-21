@@ -4,10 +4,9 @@ import { chartFontFamily, chartToken } from '~/utils/chartTheme'
 
 /**
  * Applies the design system to every Chart.js chart: fonts, text colour, gridlines and
- * tooltips. Purely presentational. Re-applied when the OS colour scheme changes so admin
- * charts follow dark mode; charts pick the new defaults up on their next update.
+ * tooltips. Purely presentational. Light mode only, so the defaults are set once at startup.
  */
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   // Each chart component registers what it uses, but plugin and element defaults only exist once
   // registered, so register them here first. All of them already ship in the chart bundle.
   Chart.register(Tooltip, Legend, BarElement, LineElement, PointElement, ArcElement)
@@ -51,14 +50,4 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   apply()
-
-  // Dark tokens only apply while the admin shell is mounted, so moving between the public site
-  // and the dashboard can change them too. Re-read after each page render, before charts mount.
-  nuxtApp.hook('page:finish', apply)
-
-  const media = window.matchMedia('(prefers-color-scheme: dark)')
-  media.addEventListener('change', () => {
-    // Wait a frame so the new CSS variables are computed before they are read.
-    requestAnimationFrame(apply)
-  })
 })

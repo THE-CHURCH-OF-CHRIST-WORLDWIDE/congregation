@@ -58,7 +58,7 @@ async function logout() {
 </script>
 
 <template>
-  <div class="theme-admin flex h-screen overflow-hidden bg-canvas text-ink">
+  <div class="flex h-screen overflow-hidden bg-canvas text-ink">
     <!-- Mobile overlay -->
     <Transition name="fade">
       <div
@@ -112,7 +112,7 @@ async function logout() {
           :class="[
             'group relative flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors duration-150 lg:min-h-10',
             isActive(item)
-              ? 'bg-white text-[#163b2d] shadow-sm dark:bg-white/12 dark:text-white dark:shadow-none'
+              ? 'bg-white text-[#163b2d] shadow-sm'
               : 'text-white/80 hover:bg-white/10 hover:text-white',
           ]"
           @click="uiStore.closeMobileSidebar()"
@@ -121,9 +121,7 @@ async function logout() {
             :icon="item.icon"
             :class="[
               'shrink-0 text-[19px]',
-              isActive(item)
-                ? 'text-[#1e4d3b] dark:text-[#86cfab]'
-                : 'text-white/60 group-hover:text-white/90',
+              isActive(item) ? 'text-[#1e4d3b]' : 'text-white/60 group-hover:text-white/90',
             ]"
           />
           {{ item.label }}
@@ -132,9 +130,7 @@ async function logout() {
             v-if="item.badge === 'messages' && messagesStore.unreadCount"
             :class="[
               'num ml-auto min-w-6 rounded-sm px-1.5 py-0.5 text-center text-[11px] font-bold',
-              isActive(item)
-                ? 'bg-[#1e4d3b] text-white dark:bg-[#f2d593] dark:text-[#3b2a06]'
-                : 'bg-[#f2d593] text-[#3b2a06]',
+              isActive(item) ? 'bg-[#1e4d3b] text-white' : 'bg-[#f2d593] text-[#3b2a06]',
             ]"
             :aria-label="`${messagesStore.unreadCount} unread`"
           >

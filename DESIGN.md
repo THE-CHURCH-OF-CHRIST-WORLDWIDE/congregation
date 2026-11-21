@@ -35,38 +35,6 @@ colors:
   info-soft: '#e7f0fa'
   live: '#c62828'
   focus: '#1f5fa8'
-  dark-canvas: '#0e141c'
-  dark-surface: '#151d28'
-  dark-surface-muted: '#1b2532'
-  dark-surface-sunken: '#111821'
-  dark-overlay: 'rgb(4 7 11 / 0.7)'
-  dark-rule: '#273445'
-  dark-rule-strong: '#3a4a5f'
-  dark-margin: '#e0675a'
-  dark-ink: '#e7ecf3'
-  dark-ink-muted: '#a9b4c3'
-  dark-ink-subtle: '#8a97a9'
-  dark-primary: '#6cbf98'
-  dark-primary-hover: '#86cfab'
-  dark-primary-active: '#9fdabb'
-  dark-primary-soft: '#18332a'
-  dark-primary-ink: '#86cfab'
-  dark-on-primary: '#08160f'
-  dark-secondary: '#c9d6e8'
-  dark-secondary-soft: '#1d2a3b'
-  dark-accent: '#e0b562'
-  dark-accent-soft: '#2c2415'
-  dark-bookcloth: '#102a20'
-  dark-success: '#5fcf95'
-  dark-success-soft: '#14301f'
-  dark-warning: '#f0b450'
-  dark-warning-soft: '#33260f'
-  dark-error: '#f2867a'
-  dark-error-soft: '#3a1714'
-  dark-info: '#7fb2f2'
-  dark-info-soft: '#142a44'
-  dark-live: '#ff6b6b'
-  dark-focus: '#7fb2f2'
   chart-bookcloth: '#2f7a5c'
   chart-ink: '#3d5f8f'
   chart-gilt: '#c08a2e'
@@ -328,7 +296,7 @@ components:
 
 Congregation is the church's record books made legible. The public site is the visitors' book at the door; the admin dashboard is the registers themselves: the nominal roll, the attendance book, the collections ledger. Everything is built from the materials of a bound record book: white ledger pages laid on a cool rule-blue ground, feint blue rules between entries, a red double margin down the left of a page heading, a deep green bookcloth binding, blue-black ink, and small gilt stamps for dates and categories.
 
-Density follows the audience. Public pages are generous and legible for first-time visitors and older congregants on phones: 16-18px body, 44-48px touch targets, 64-96px section rhythm, entries set as ruled rows with a big slab date in the margin. Admin pages are a working register: 14px body, ruled data tables with sticky headers, tabular figures in every column, white panels on the canvas ground, one bookcloth spine on the left. The admin follows the operating system into dark mode through CSS variables alone; the public site is always light.
+Density follows the audience. Public pages are generous and legible for first-time visitors and older congregants on phones: 16-18px body, 44-48px touch targets, 64-96px section rhythm, entries set as ruled rows with a big slab date in the margin. Admin pages are a working register: 14px body, ruled data tables with sticky headers, tabular figures in every column, white panels on the canvas ground, one bookcloth spine on the left. Both surfaces are light only; there is no dark mode.
 
 The system rejects the church-template look (a stock photo hero over three icon cards) and the grey SaaS dashboard. Depth is quiet (hairline rules first, soft ink-tinted shadows second), corners are squared like a bound book, and colour is committed rather than decorative: bookcloth green is the one field colour, everything else is ink on paper.
 
@@ -340,7 +308,7 @@ The system rejects the church-template look (a stock photo hero over three icon 
 - Bitter slab for headings and figures, Public Sans for everything read.
 - Tabular lining figures wherever a number appears.
 - Squared corners (6-8px), hairline borders, soft low shadows; no glows, no glass, no pills except avatars and status dots.
-- Admin follows OS dark mode via tokens alone; the public site never goes dark.
+- Light mode only, everywhere. No dark mode.
 
 ## Colors
 
@@ -348,9 +316,9 @@ A ledger palette: cool paper and blue rules, blue-black ink, one deep bookcloth 
 
 ### Primary
 
-- **Bookcloth Green** (`primary`): the binding. Primary buttons, active tabs and nav underlines, the current pagination page, checkbox and radio accent, the caret, progress fills, unread dots, and every large colour field (public nav band, hero frame, footer, admin sidebar). Hover deepens to `primary-hover`, press to `primary-active`. Large fields use `.bookcloth`: flat bookcloth green with no imitation texture (in admin dark mode it deepens to #102a20).
+- **Bookcloth Green** (`primary`): the binding. Primary buttons, active tabs and nav underlines, the current pagination page, checkbox and radio accent, the caret, progress fills, unread dots, and every large colour field (public nav band, hero frame, footer, admin sidebar). Hover deepens to `primary-hover`, press to `primary-active`. Large fields use `.bookcloth`: flat bookcloth green with no imitation texture.
 - **Bookcloth Wash** (`primary-soft`): selected row and unread message backgrounds (at 35%), dropdown icon tiles, account-role chips, mobile nav active item.
-- **Bookcloth Ink** (`primary-ink`): green used as text; links, active nav labels, "Read more" links, unread timestamps. Identical to primary in light mode, lifted separately in dark.
+- **Bookcloth Ink** (`primary-ink`): green used as text; links, active nav labels, "Read more" links, unread timestamps. Identical to primary.
 
 ### Secondary
 
@@ -373,15 +341,11 @@ A ledger palette: cool paper and blue rules, blue-black ink, one deep bookcloth 
 - **Strong Rule** (`rule-strong`): input and secondary-button borders, emphasised dividers (the outer rules of a public entry list), the scrollbar thumb.
 - **Blue-Black Ink** (`ink`, 15.6:1), **Muted Ink** (`ink-muted`, 7.4:1), **Faint Ink** (`ink-subtle`, 5.4:1): primary text, secondary text, captions and placeholders.
 - **Scrim** (`overlay`): modal and mobile-sidebar backdrop. The photo lightbox uses its own near-black `rgb(8 11 16 / 0.96)`.
-- The Tailwind `gray-50..950` scale is remapped onto these same tinted neutrals and inverts in admin dark mode, so stray gray classes stay inside the system.
+- The Tailwind `gray-50..950` scale is remapped onto these same tinted neutrals, so stray gray classes stay inside the system.
 
 ### Status
 
 `success`, `warning`, `error`, `info`, each with a `-soft` background, drive badges, toast stripes, inline alerts, finance income and expense, and trend deltas. `live` (#C62828) is reserved for live-stream indicators: the pulsing dot in the nav, the live badge on the stream teaser.
-
-### Admin dark mode
-
-Inside the admin shell (`.theme-admin`) and only when the OS prefers dark, every `--c-*` token swaps to its `dark-*` value. Teleported modals and toasts pick the values up because the switch is keyed on `:root:has(.theme-admin)`. Bookcloth goes deep (`dark-bookcloth`, ink text) rather than bright; the primary lifts to a light sage so it holds contrast as text and fill, and `on-primary` flips to near-black. The `dark:` variant only fires inside the admin shell.
 
 ### Named Rules
 
@@ -437,7 +401,7 @@ The size steps are Tailwind's default ramp (12, 14, 16, 18, 20, 24, 30, 36, 48px
 
 ## Elevation & Depth
 
-Depth is hairline-first. Borders in `rule` define every panel; shadows are soft, low, and tinted with ink (`--shadow-color: 23 33 49`, pure black in dark mode). Resting panels get only the faintest lift; floating things get real shadows.
+Depth is hairline-first. Borders in `rule` define every panel; shadows are soft, low, and tinted with ink (`--shadow-color: 23 33 49`). Resting panels get only the faintest lift; floating things get real shadows.
 
 ### Shadow Vocabulary
 
@@ -536,7 +500,7 @@ Top-right stack (full width with 12px insets on mobile), max 384px. Paper card, 
 ### Navigation
 
 - **Public navbar:** 4px bookcloth band on top, then a translucent white bar: round crest with ink-blue ring, Bitter 17px wordmark in ink blue, links in 15px medium muted ink with a 2px transparent underline that turns bookcloth (with bookcloth ink text) when active. The Live link turns `live` red with a pinging dot while streaming. A 44px bookcloth primary action ends the row. Below 1024px a 48px menu button opens a full-width ruled panel of 48px rows; active rows take a bookcloth wash.
-- **Admin sidebar:** the bookcloth spine. Church identity block (40px crest tile in white at 10% with a gilt church icon, Bitter 15px name, 12px "Admin Dashboard" at 65% white), then the address in a black-15% well. Items 40px (44px mobile), 14px medium white at 80% with 19px icons at 60%; hover white at 10%. Active: a white tile with deep-green text and icon and a small shadow (in dark mode a white-12% tile with white text). A bottom group, ruled off in white at 10%, holds Home and Logout.
+- **Admin sidebar:** the bookcloth spine. Church identity block (40px crest tile in white at 10% with a gilt church icon, Bitter 15px name, 12px "Admin Dashboard" at 65% white), then the address in a black-15% well. Items 40px (44px mobile), 14px medium white at 80% with 19px icons at 60%; hover white at 10%. Active: a white tile with deep-green text and icon and a small shadow. A bottom group, ruled off in white at 10%, holds Home and Logout.
 - **Admin top bar:** sticky, white at 95% with blur, ruled below. The page title sits inside the double margin; the `#admin-header-actions` slot on the right receives each page's primary actions. Environment and missing-role banners stack above it.
 
 ### Public Patterns
@@ -563,7 +527,7 @@ Top-right stack (full width with 12px insets on mobile), max 384px. Paper card, 
 
 ### Chart.js Theme
 
-Applied globally by the chart-theme plugin and re-read after each page render and on OS scheme change, so admin charts follow dark mode. Fonts are Public Sans 12px; text and legend labels use `ink-muted`; gridlines and borders use `rule`. Legends use 8px point-style markers. Tooltips are an ink fill with surface-coloured text, 6px corners, 10px padding, a 600-weight title. Bars have 3px corners; lines are 2px with 0.3 tension and no points until hover (4px); arcs are separated by a 2px surface-coloured border. Series colours come in a fixed order (`chart-bookcloth`, `chart-ink`, `chart-gilt`, `chart-margin`, `chart-slate`, `chart-plum`, `chart-teal`, `chart-clay`), each at least 3:1 against both light and dark surfaces; status charts use `chart-positive`, `chart-margin` for negative, `chart-slate` for neutral, and `chart-gilt` for caution. Area and bar fills are the same hues at reduced alpha.
+Applied once at startup by the chart-theme plugin. Fonts are Public Sans 12px; text and legend labels use `ink-muted`; gridlines and borders use `rule`. Legends use 8px point-style markers. Tooltips are an ink fill with surface-coloured text, 6px corners, 10px padding, a 600-weight title. Bars have 3px corners; lines are 2px with 0.3 tension and no points until hover (4px); arcs are separated by a 2px surface-coloured border. Series colours come in a fixed order (`chart-bookcloth`, `chart-ink`, `chart-gilt`, `chart-margin`, `chart-slate`, `chart-plum`, `chart-teal`, `chart-clay`), each at least 3:1 against the white surface; status charts use `chart-positive`, `chart-margin` for negative, `chart-slate` for neutral, and `chart-gilt` for caution. Area and bar fills are the same hues at reduced alpha.
 
 ### Motion
 
@@ -575,7 +539,7 @@ Durations are 120ms (fast), 180ms (base), 280ms (slow); hovers run 150-200ms. En
 
 ### Do:
 
-- **Do** use the semantic tokens (`surface`, `ink`, `rule`, `primary`) rather than raw palette colours, so admin dark mode follows automatically.
+- **Do** use the semantic tokens (`surface`, `ink`, `rule`, `primary`) rather than raw palette colours, so the system stays consistent.
 - **Do** put the red double margin on page-title header blocks, the admin top-bar title, and the single featured hero entry panel.
 - **Do** set every count, amount, date, and time in tabular figures, and right-align money.
 - **Do** build entry lists as ruled rows with a Bitter date column before reaching for cards.
@@ -592,4 +556,4 @@ Durations are 120ms (fast), 180ms (base), 280ms (slow); hovers run 150-200ms. En
 - **Don't** use gradient text, glassmorphism, coloured glows, hard offset shadows, or a coloured left border wider than 1px on cards (toast status stripes are the single exception).
 - **Don't** use pill-shaped buttons or radii above 10px on surfaces; only avatars, dots, and round icon buttons are fully round.
 - **Don't** use emoji as icons, or fonts other than Bitter and Public Sans.
-- **Don't** let the public site go dark; dark tokens and the `dark:` variant belong to the admin shell only.
+- **Don't** add a dark mode or `dark:` classes; the product is light only.

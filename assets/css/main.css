@@ -1,22 +1,12 @@
 @import 'tailwindcss';
 
-/* `dark:` fires only for the admin dashboard, and only when the OS prefers dark. */
-@custom-variant dark {
-  @media (prefers-color-scheme: dark) {
-    :root:has(.theme-admin) & {
-      @slot;
-    }
-  }
-}
-
 /*
  * ─────────────────────────────────────────────────────────────────────────────
  *  Congregation design system: "The Register"
  *
  *  The church's record books made legible: white ledger pages, feint blue rules,
  *  a red double margin, deep bookcloth green, blue-black ink, and gilt for stamped
- *  labels. Every colour is a CSS variable so the admin dashboard can follow the
- *  OS dark-mode preference with no JavaScript and no stored state.
+ *  labels. Light mode only, on both the public site and the admin dashboard.
  *
  *  Use the semantic utilities (bg-surface, text-ink, border-rule, bg-primary…)
  *  rather than raw palette classes. The gray scale below is remapped to the
@@ -24,7 +14,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
-/* ── Tokens: light (both surfaces) ─────────────────────────────────────────── */
+/* ── Tokens (both surfaces, light only) ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
 
@@ -90,71 +80,6 @@
 
   /* Elevation: soft, offset, ink-tinted */
   --shadow-color: 23 33 49;
-}
-
-/*
- * ── Tokens: admin dark mode ──────────────────────────────────────────────────
- * Follows the OS. Scoped to documents that contain the admin shell, so the
- * public site is always light, and teleported modals/toasts (mounted on
- * <body>, outside the shell) still pick the dark values up.
- */
-@media (prefers-color-scheme: dark) {
-  :root:has(.theme-admin) {
-    color-scheme: dark;
-
-    --c-canvas: #0e141c;
-    --c-surface: #151d28;
-    --c-surface-muted: #1b2532;
-    --c-surface-sunken: #111821;
-    --c-overlay: rgb(4 7 11 / 0.7);
-
-    --c-rule: #273445;
-    --c-rule-strong: #3a4a5f;
-    --c-margin: #e0675a;
-
-    --c-ink: #e7ecf3; /* 13.9:1 on surface */
-    --c-ink-muted: #a9b4c3; /* 8.1:1 */
-    --c-ink-subtle: #8a97a9; /* 5.5:1 */
-
-    --c-primary: #6cbf98; /* bookcloth, lifted for dark ground */
-    --c-primary-hover: #86cfab;
-    --c-primary-active: #9fdabb;
-    --c-primary-soft: #18332a;
-    --c-primary-ink: #86cfab;
-    --c-on-primary: #08160f;
-
-    --c-secondary: #c9d6e8;
-    --c-secondary-soft: #1d2a3b;
-
-    --c-accent: #e0b562;
-    --c-accent-soft: #2c2415;
-
-    --c-success: #5fcf95;
-    --c-success-soft: #14301f;
-    --c-warning: #f0b450;
-    --c-warning-soft: #33260f;
-    --c-error: #f2867a;
-    --c-error-soft: #3a1714;
-    --c-info: #7fb2f2;
-    --c-info-soft: #142a44;
-    --c-live: #ff6b6b;
-
-    --c-focus: #7fb2f2;
-
-    --g-50: #1b2532;
-    --g-100: #212c3a;
-    --g-200: #273445;
-    --g-300: #3a4a5f;
-    --g-400: #6e7b8e;
-    --g-500: #8a97a9;
-    --g-600: #a9b4c3;
-    --g-700: #c5ced9;
-    --g-800: #dce2ea;
-    --g-900: #e7ecf3;
-    --g-950: #f3f6f9;
-
-    --shadow-color: 0 0 0;
-  }
 }
 
 /* ── Tailwind theme bindings ───────────────────────────────────────────────── */
@@ -416,14 +341,6 @@
   background-color: var(--c-primary);
   color: #fff;
 }
-/* In admin dark mode the bookcloth goes deep rather than bright */
-@media (prefers-color-scheme: dark) {
-  :root:has(.theme-admin) .bookcloth {
-    background-color: #102a20;
-    color: var(--c-ink);
-  }
-}
-
 /* Skeleton: a shimmer across a sunken rule-coloured block */
 .skeleton {
   border-radius: var(--radius-md);

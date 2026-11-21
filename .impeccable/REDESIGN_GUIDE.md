@@ -18,7 +18,7 @@ The church's record books, made legible. Public site = the visitors' book at the
 
 Colours: `canvas surface surface-muted surface-sunken overlay rule rule-strong margin ink ink-muted ink-subtle primary primary-hover primary-active primary-soft primary-ink on-primary secondary secondary-soft accent accent-soft success(-soft) warning(-soft) error(-soft) info(-soft) live focus`. All accept opacity modifiers (`bg-primary/10`).
 
-The `gray-*` scale is remapped to the ledger's tinted neutrals and inverts in admin dark mode, so leftover gray classes still work, but prefer semantic tokens.
+The `gray-*` scale is remapped to the ledger's tinted neutrals, so leftover gray classes still work, but prefer semantic tokens.
 
 Fonts: `font-display` (Bitter slab, headings) and `font-sans` (Public Sans, default). `font-serif` also maps to Bitter. Never use Playfair, Poppins, Roboto, Piedra, or `font-['…']`.
 
@@ -30,18 +30,9 @@ Shadows: `shadow-xs` on resting panels, `shadow-md`/`shadow-lg` only for floatin
 
 Motion: `duration-150`/`duration-200` for hovers; `ease-[cubic-bezier(0.16,1,0.3,1)]` for entrances. The global CSS already handles `prefers-reduced-motion`. Keep existing `reveal` classes where present.
 
-## Admin dark mode
+## Light mode only
 
-Admin follows the OS dark preference automatically. Semantic tokens and `gray-*` flip on their own. Things that DON'T flip and must be replaced in admin files:
-
-- `bg-white` → `bg-surface`
-- `text-black`, hardcoded hex text/bg (`#1E3A5F`, `#111827`, `#0BA5EC`, `#2563EB`, etc.) → tokens
-- `blue-*` used as the brand/primary colour → `primary` tokens (`bg-primary`, `text-primary-ink`, `bg-primary-soft`, `ring-primary/15`)
-- `blue-*` used as info → `info` tokens; `red-*` → `error`; `green-*` → `success`; `amber/yellow/orange-*` → `warning`
-- `text-white` on a coloured fill: use `text-on-primary` when the fill is `bg-primary` or `bg-error`/`bg-success` (it flips to dark ink in dark mode where those fills get lighter).
-- The `dark:` variant exists and fires ONLY inside the admin shell. Use it sparingly for one-off fixes.
-
-The public site is always light. Public files may keep `text-white` on photos/bookcloth.
+The product is light mode only, on both surfaces. Do not add `dark:` classes or dark tokens.
 
 ## Component patterns
 
