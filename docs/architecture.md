@@ -156,7 +156,7 @@ Client-side route protection is the first layer only. Authoritative enforcement 
 
 [`middleware/auth.ts`](../middleware/auth.ts) is active on every `/admin/*` page. It awaits `authStore.whenReady()` first, because Firebase restores a persisted session asynchronously — without that wait, refreshing an admin page would read `isAuthenticated === false` and bounce a user who is in fact signed in.
 
-**Signing in is not the same as being allowed to write.** Privilege comes from a `users/{uid}` document, which Firestore rules read on every write; the auth store loads it into `roleId` / `isStaff` / `isSuperAdmin`. That fetch deliberately runs _after_ `whenReady()` resolves, so a slow Firestore read can never stall routing. An account with no role reaches the dashboard shell and sees a banner explaining that saves will be refused. See [Deployment & Access Control](../README.md#deployment--access-control).
+**Signing in is not the same as being allowed to write.** Privilege comes from a `users/{uid}` document, which Firestore rules read on every write; the auth store loads it into `roleId` / `isStaff` / `isSuperAdmin`. That fetch deliberately runs _after_ `whenReady()` resolves, so a slow Firestore read can never stall routing. An account with no role reaches the dashboard shell and sees a banner explaining that saves will be refused. See [Deployment & Access Control](deployment.md).
 
 ---
 

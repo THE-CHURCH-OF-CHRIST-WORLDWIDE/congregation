@@ -41,7 +41,7 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
-Open `.env` and fill in your Firebase project credentials:
+Open `.env` and fill in your Firebase project credentials, plus Cloudinary if you need image uploads:
 
 ```env
 VITE_FIREBASE_API_KEY=your_api_key
@@ -50,9 +50,15 @@ VITE_FIREBASE_PROJECT_ID=your_project_id
 VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
+
+VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
+VITE_CLOUDINARY_UPLOAD_PRESET=your_unsigned_preset
+VITE_CLOUDINARY_FOLDER=congregation
+
+APP_ENV=development
 ```
 
-> See [Firebase Setup](firebase-setup.md) for instructions on creating a Firebase project and obtaining these values.
+> See [Firebase Setup](firebase-setup.md) for creating a Firebase project and obtaining these values, and [Cloudinary Setup](cloudinary-setup.md) for image uploads. The full variable reference is in the [README](../README.md#environment-variables).
 
 ---
 
@@ -69,26 +75,28 @@ The app will be available at `http://localhost:3000`.
 
 ---
 
-## 5. (Optional) Use the Firebase Emulator Suite
+## 5. Seed the First Super Admin
 
-For local backend development without touching your production Firebase project:
+The dashboard only lets an account change data if it has a `users/{uid}` document with a role. Create your first account under **Authentication → Users** in the Firebase console, then create the Firestore document `users/<that-uid>` with `roleId: "super-admin"`, and deploy the rules. See [Firebase Setup § Bootstrapping the first Super Admin](firebase-setup.md#bootstrapping-the-first-super-admin).
 
-```bash
-firebase emulators:start
-```
-
-This starts local emulators for Firestore, Authentication, and Storage. Make sure your `.env` or plugin configuration points to the emulator ports when running locally.
+> **Firebase Emulator Suite:** the app does not currently call `connect*Emulator`, so running `firebase emulators:start` alone will not redirect it. Use a separate, non-production Firebase project for development.
 
 ---
 
 ## Available Scripts
 
-| Command            | Description                          |
-| ------------------ | ------------------------------------ |
-| `npm run dev`      | Start development server             |
-| `npm run build`    | Build for production                 |
-| `npm run generate` | Generate a static site               |
-| `npm run preview`  | Preview the production build locally |
+| Command                | Description                          |
+| ---------------------- | ------------------------------------ |
+| `npm run dev`          | Start development server             |
+| `npm run build`        | Build for production                 |
+| `npm run generate`     | Generate the static SPA              |
+| `npm run preview`      | Preview the production build locally |
+| `npm run typecheck`    | Type-check                           |
+| `npm run lint`         | Run ESLint                           |
+| `npm run format:check` | Check formatting                     |
+| `npm run test`         | Run the unit tests                   |
+
+The full list, including the staging and production variants, is in the [README](../README.md#available-scripts).
 
 ---
 
@@ -96,4 +104,5 @@ This starts local emulators for Firestore, Authentication, and Storage. Make sur
 
 - [Firebase Setup](firebase-setup.md) — Configure Firestore, Auth, and Storage
 - [Architecture](architecture.md) — Understand the codebase structure
-- [Contributing](contributing.md) — Learn how to submit changes
+- [Deployment & Access Control](deployment.md) — Security model, roles, and going live
+- [Contributing](../CONTRIBUTING.md) — Learn how to submit changes

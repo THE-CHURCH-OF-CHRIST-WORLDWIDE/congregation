@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/blob/main/SECURITY.md
+    about: Please do not open a public issue for security problems. Follow the private reporting process in SECURITY.md.

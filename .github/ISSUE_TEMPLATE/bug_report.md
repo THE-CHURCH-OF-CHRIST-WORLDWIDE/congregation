@@ -45,7 +45,7 @@ assignees: ''
 | ------------ | ---------------------------- |
 | OS           | e.g. macOS 14, Windows 11    |
 | Browser      | e.g. Chrome 123, Firefox 124 |
-| Node version | e.g. 20.11.0                 |
+| Node version | e.g. 22.11.0                 |
 | npm version  | e.g. 10.2.4                  |
 | App version  | e.g. main, commit hash       |
 

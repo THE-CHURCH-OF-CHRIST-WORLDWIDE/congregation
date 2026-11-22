@@ -1,313 +1,243 @@
 # Congregation
 
-[![GitHub stars](https://img.shields.io/github/stars/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation?style=social)](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation?style=social)](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/network/members)
-[![GitHub issues](https://img.shields.io/github/issues/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation)](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/issues)
-[![GitHub license](https://img.shields.io/github/license/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation)](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/blob/main/LICENSE)
+[![CI](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/actions/workflows/ci.yml)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/THE-CHURCH-OF-CHRIST-WORLDWIDE)
 
-An open-source **Church Management System (CMS)** built with Nuxt 4, Vue 3, TypeScript, Tailwind CSS, and Firebase. Congregation helps churches manage members, attendance, giving, events, and communications — and presents a full public-facing website — from a single modern codebase.
+**Congregation is an open-source Church Management System built for churches and faith-based organizations of every size. Manage members, track attendance, record giving, coordinate events, and stay connected with your congregation, all from one modern, accessible platform.**
+
+One codebase gives a congregation two things that usually live in separate tools:
+
+- a **public website** where visitors find service times, watch live streams, read teachings, see events, register as members, and send a message, and
+- an **admin dashboard** where church staff keep the nominal roll, record attendance and finances, publish content, minute business meetings, and control who may change what.
+
+Both halves read from the same Firebase backend, so content staff edit in Settings appears on the public site straight away.
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Why Congregation](#why-congregation)
+- [Preview](#preview)
 - [Features](#features)
-- [Tech Stack](#tech-stack)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
-- [Deployment & Access Control](#deployment--access-control)
-- [UI Conventions](#ui-conventions)
-- [Date Formatting](#date-formatting)
+- [Backend Setup (Firebase)](#backend-setup-firebase)
+- [Available Scripts](#available-scripts)
+- [Testing and Quality Checks](#testing-and-quality-checks)
+- [Deployment](#deployment)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
+- [Community and Support](#community-and-support)
+- [Sponsorship](#sponsorship)
 - [License](#license)
 - [Authors](#authors)
 
 ---
 
-## Overview
+## Why Congregation
 
-Congregation is a single-page application (SPA) with two distinct areas:
+Many congregations keep their records in notebooks, spreadsheets, and group chats, and run their website as a separate, disconnected project. Commercial church management software often costs more than a small church can justify, and it holds the church's data on someone else's terms.
 
-**Admin Dashboard** (`/admin/*`) — A full-featured CMS for church staff to manage members, attendance, giving, events, teachings, and roles. Protected by Firebase Auth with route-level middleware.
+Congregation is designed for:
 
-**Public Website** (`/`, `/about-us`, `/events`, `/live-streams`, `/teachings/*`) — A clean, SEO-friendly public site for sharing the church's story, live streams, sermons, Sunday School lessons, and upcoming events.
+- **Church secretaries and administrators** who do weekly record-keeping (attendance after each service, collections and expenses, member updates) and want it to be fast and hard to get wrong.
+- **Ministers, elders, and leaders** who need an accurate picture of membership and attendance, including who has been absent and may need a visit.
+- **Visitors and members** who use the public site, many of them on phones, to find a service, watch a stream, or read a lesson.
+- **Developers** who serve their church and want a modern, typed, tested codebase they can deploy and extend.
 
-> Licensed under **GNU AGPL v3** — free to use, modify, and self-host.
+**Why open source?** Congregation is free to self-host on infrastructure the church controls. It is licensed under the GNU AGPL v3, so improvements made to hosted versions are shared back with every church that uses it. It is also brand-neutral: the church name, logo, photos, service times, and most public copy come from Settings rather than from code, so any congregation can deploy it as its own.
+
+> **Project status:** Congregation is in active pre-1.0 development. Security fixes are applied to `main` only. See [SECURITY.md](SECURITY.md).
+
+---
+
+## Preview
+
+<!--
+  TODO (maintainers): add screenshots here.
+  Suggested: public home page, admin dashboard, nominal roll, attendance.
+  Capture them from a deployment with sample (non-personal) data, save under
+  docs/images/, and reference them like:
+  ![Admin dashboard](docs/images/admin-dashboard.png)
+-->
+
+_Screenshots are coming soon. To see Congregation now, follow [Getting Started](#getting-started) to run it locally._
 
 ---
 
 ## Features
 
+Everything below is implemented in this repository. Routes are shown so you can find each feature in the code.
+
 ### Public Website
 
-- **Home page** — Hero banner, minister welcome, live stream teaser, sermons teaser, events list, congregation search, contact form, photo gallery
-- **About Us page** — Church history card, worship activities, leaders grid, activity calendar, service location with embedded map
-- **Events page** — Upcoming events with image gallery preview slider, past events with featured card and month/year filtering, full-screen gallery lightbox
-- **Live Streams page** — Active live stream cards, recorded stream archive
-- **Teachings pages** — Sermons library (with detail pages), Sunday School lessons (with detail pages)
+| Feature                       | What visitors can do                                                                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Home** (`/`)                | See the hero banner, minister's welcome, live stream and sermon teasers, upcoming events, congregation search, gallery, and contact form |
+| **About Us**                  | Read the church's history, worship activities, leaders, activity calendar, and Sunday service location with an embedded map              |
+| **Events**                    | Browse upcoming and past events, filter past events by month and year, and view event photos in a full-screen lightbox                   |
+| **Live Streams**              | Watch the current live service and browse recorded streams                                                                               |
+| **Teachings**                 | Browse and filter sermons and Sunday School lessons, each with its own detail page                                                       |
+| **Gallery**                   | Browse photos by category (`/gallery/:category`)                                                                                         |
+| **Bible Lectureship**         | View the lectureship programme and speakers, and register to attend                                                                      |
+| **Member Registration**       | Submit a membership registration form (`/register`)                                                                                      |
+| **Salvation, Privacy, Terms** | Read the plan of salvation, privacy policy, and terms of use                                                                             |
 
-### Admin Dashboard
+Administrators can show or hide individual public navigation items from Settings without a code change.
 
-- **Dashboard** — Stats cards, recent uploads, backslider tracking, charts (bar, donut, line, sparkline)
-- **Nominal Roll** — Member table, filters, detail panel, add/import (CSV) modals, role summary chart
-- **Attendance** — Service attendance recording, monthly grid view, summary stats
-- **Finance** — Income/expense tracking and reporting
-- **Events** — Internal event management
-- **Teachings** — Sermon and Sunday School upload/management
-- **Settings** — Church and public-site content across 14 panels, roles and permissions, dashboard access (create logins with a password or grant existing accounts by UID), plus a Super-Admin-only audit log
-- **Youth** — Youth ministry section
+### Admin Dashboard (`/admin`)
 
-### Platform
+**Member management**
 
-- Firebase Auth with route-guard middleware (`middleware/auth.ts`)
-- Cloud Firestore via a repository layer (`repositories/`)
-- **Cloudinary-backed image uploads** — every image picker (sermons, hero, minister, leaders, gallery) uploads the file to Cloudinary first, then persists the returned `secure_url` to Firestore. Includes a reusable `<ImageUpload>` component and `useCloudinaryUpload` composable with progress, validation, and error states.
-- Pinia stores with optional persistence (`pinia-plugin-persistedstate`)
-- CSV import/export for member data
-- Chart.js visualisations via `vue-chartjs`
-- Iconify icons registered globally — use any icon set anywhere
-- **Append-only audit log** — every change made through the dashboard is recorded with its actor and a server timestamp; readable by Super Admins only
-- **Accessible form primitives** — `Input` and `Select` associate their label via `for`/`id` and wire `aria-invalid` / `aria-describedby` to their error text
-- **Loading states on every async action**, including per-row spinners for row-level work (`usePendingAction`)
+- **Nominal Roll**: search, filter, add, edit, and delete members; view a member's details in a side panel; import members from CSV and export to CSV; see a summary of roles.
+- **Unique church numbers**: membership numbers are reserved in a Firestore transaction, so two people cannot be given the same number.
+- **Youth**: a dedicated view of youth members (ages 13–35) with CSV export.
+
+**Attendance**
+
+- Record attendance per service, view a monthly grid, and see summary statistics and trends.
+- Record visitors and children's numbers alongside each service.
+- Absence tracking derives who has been missing from the Sunday register, and for how long, so leaders can follow up.
+- Export attendance to CSV.
+
+**Giving and finance**
+
+- Record collections (income) and expenses by category.
+- Export to CSV, or download a finance report as a PDF.
+
+**Events, teachings, and lectureship**
+
+- Create and manage the events shown on the public Events page.
+- Upload and manage sermons and Sunday School lessons.
+- Manage Bible Lectureship speakers and registrations, check registrants in on the day, and export registrations to CSV.
+
+**Communication**
+
+- **Messages**: an inbox for the public contact form, with an unread count in the sidebar and separate _read_ and _handled_ flags. Replies open in the staff member's own mail client via `mailto:`; Congregation does not send email itself.
+
+**Business meetings**
+
+- Record minutes following the usual order of business: attendance and quorum, previous minutes, matters arising, reports, new business, action points, and more.
+- Record motions (moved, seconded, outcome) on any item.
+- Approved minutes are locked; only an Admin or Super Admin can reopen them. Each meeting has a print / PDF copy with signature lines.
+
+**Reporting**
+
+- The dashboard shows statistics cards, bar, line, donut, and sparkline charts (Chart.js), recent uploads, and a follow-up list of absent members.
+
+**Settings and administration**
+
+- Edit church details and public-site content (homepage, branding, logo, social links, and more) across multiple settings panels, with a single page-level save bar and unsaved-change protection.
+- Image uploads go to Cloudinary, with progress, validation, and client-side compression.
+
+### Users, Roles, and Permissions
+
+- **Firebase Authentication** with email and password, including password reset and an in-app password change.
+- **Role-based access control** with nine staff roles: Super Admin, Admin, Elder, Deacon, Preacher, Secretary, Youth Leader, Financial Secretary, and Content Editor. Each role has a per-page View / Add / Edit / Delete / Export permission matrix that a Super Admin can adjust.
+- **Server-side enforcement**: [`firestore.rules`](firestore.rules) checks privilege on every write. The UI hides what a role cannot do, and the rules refuse it regardless.
+- **Dashboard access management**: a Super Admin can create staff logins from inside the app, with no Cloud Functions or Admin SDK required.
+- **Append-only audit log**: dashboard changes are recorded with the actor and a server timestamp, readable only by a Super Admin.
+
+The full security model, role matrix, and their limits are documented in [docs/deployment.md](docs/deployment.md).
 
 ---
 
-## Tech Stack
+## Technology Stack
 
-| Area       | Technology                          | Version  |
-| ---------- | ----------------------------------- | -------- |
-| Framework  | Nuxt 4 (SPA mode)                   | ^4.1.3   |
-| UI Library | Vue 3                               | ^3.5.22  |
-| Language   | TypeScript (strict)                 | —        |
-| Styling    | Tailwind CSS v4                     | ^4.1.15  |
-| State      | Pinia + persistedstate              | ^3.0.3   |
-| Icons      | Iconify for Vue                     | ^5.0.0   |
-| Charts     | Chart.js + vue-chartjs              | ^4.5.1   |
-| Dates      | date-fns (via `utils/date.ts`)      | ^4.2.1   |
-| Backend    | Firebase (Auth, Firestore, Storage) | ^12.10.0 |
-| Media      | Cloudinary (unsigned uploads)       | —        |
-| Routing    | Vue Router                          | ^4.6.3   |
-| License    | GNU AGPL v3                         | —        |
+| Category                       | Technology                                                                                                                                                  |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend framework**         | [Nuxt 4](https://nuxt.com) in SPA mode (`ssr: false`), [Vue 3](https://vuejs.org), [Vue Router](https://router.vuejs.org)                                   |
+| **Language**                   | [TypeScript](https://www.typescriptlang.org) (strict mode, type-checked with `vue-tsc`)                                                                     |
+| **UI and styling**             | [Tailwind CSS v4](https://tailwindcss.com), [Iconify](https://iconify.design) icons                                                                         |
+| **State management**           | [Pinia](https://pinia.vuejs.org) with `pinia-plugin-persistedstate`                                                                                         |
+| **Backend**                    | [Firebase](https://firebase.google.com): Authentication and Cloud Firestore. No custom server and no Cloud Functions.                                       |
+| **Database**                   | Cloud Firestore, secured by [`firestore.rules`](firestore.rules)                                                                                            |
+| **Authentication**             | Firebase Authentication (email and password)                                                                                                                |
+| **Media**                      | [Cloudinary](https://cloudinary.com) unsigned uploads for all images                                                                                        |
+| **Charts, dates, and exports** | [Chart.js](https://www.chartjs.org) with `vue-chartjs`, [date-fns](https://date-fns.org), [jsPDF](https://github.com/parallax/jsPDF) with `jspdf-autotable` |
+| **Testing**                    | [Vitest](https://vitest.dev), `@nuxt/test-utils`, `@vue/test-utils`, `happy-dom`                                                                            |
+| **Code quality**               | ESLint (`@nuxt/eslint`), Prettier, Husky and lint-staged pre-commit hooks                                                                                   |
+| **CI and hosting**             | GitHub Actions ([`ci.yml`](.github/workflows/ci.yml)), Netlify static hosting ([`netlify.toml`](netlify.toml)), Firebase CLI for rules                      |
+
+Exact versions are pinned in [`package.json`](package.json) and `package-lock.json`.
+
+---
+
+## Architecture
+
+Congregation is a client-rendered single-page application. There is no application server: the browser talks directly to Firebase and Cloudinary, and Firestore security rules are the trust boundary.
+
+```text
+┌───────────────────────── Browser (Nuxt 4 SPA) ─────────────────────────┐
+│                                                                         │
+│   pages/  ──►  components/  ──►  stores/ (Pinia)  ──►  repositories/   │
+│   (routes)     (UI, by feature)  (state & actions)     (Firestore I/O)  │
+│                                                                         │
+│   middleware/ (auth guard, nav visibility)   composables/   utils/      │
+└───────────────┬──────────────────────────────────────────┬──────────────┘
+                │                                          │
+                ▼                                          ▼
+   Firebase Auth + Cloud Firestore               Cloudinary (image uploads)
+   (enforced by firestore.rules)
+```
+
+Key conventions:
+
+- **Repository layer.** All Firestore reads and writes go through `repositories/`, one repository per collection. Components and stores never call Firestore directly.
+- **Privilege lives in Firestore.** A `users/{uid}` document grants an account its role. Signing in alone grants nothing; `firestore.rules` reads that document on every write.
+- **Auto-imports.** Components are auto-imported without a path prefix (`<MemberTable />`, not `<NominalRollMemberTable />`). Composables, utils, and Pinia stores are auto-discovered.
+- **Client-only plugins.** Firebase, Iconify, the Chart.js theme, and motion directives are registered in `plugins/*.client.ts`.
+
+Read [docs/architecture.md](docs/architecture.md) for the authentication flow, data flow, and how to add a new feature.
 
 ---
 
 ## Project Structure
 
-```
+```text
 congregation/
-├── assets/
-│   └── css/
-│       └── main.css                  # Tailwind entry point + custom theme tokens
-│
-├── components/
-│   ├── about/                        # /about-us page sections
-│   │   ├── AboutHero.vue
-│   │   ├── ChurchHistoryCard.vue
-│   │   ├── WorshipActivities.vue
-│   │   ├── ChurchLeaders.vue
-│   │   ├── ActivityCalendar.vue
-│   │   └── WorshipThisSunday.vue
-│   ├── attendance/                   # Attendance admin components
-│   │   ├── AttendanceSummary.vue
-│   │   ├── AttendanceTable.vue
-│   │   └── MonthlyGrid.vue
-│   ├── charts/                       # Chart.js wrappers
-│   │   ├── BarChart.vue
-│   │   ├── DonutChart.vue
-│   │   ├── LineChart.vue
-│   │   └── SparkLine.vue
-│   ├── dashboard/                    # Admin dashboard widgets
-│   │   ├── BacksliderTable.vue
-│   │   ├── RecentUploads.vue
-│   │   └── StatsCard.vue
-│   ├── events/                       # /events page components
-│   │   ├── EventTabToggle.vue
-│   │   ├── UpcomingPreviewPanel.vue
-│   │   ├── UpcomingEventList.vue
-│   │   ├── ImageSlider.vue
-│   │   ├── GalleryLightbox.vue
-│   │   ├── PastEventFeatured.vue
-│   │   ├── PastEventList.vue
-│   │   ├── PastEventMonthYearTabs.vue
-│   │   └── SpeakerAvatars.vue
-│   ├── home/                         # Home page sections
-│   │   ├── HeroBanner.vue
-│   │   ├── MinisterWelcome.vue
-│   │   ├── LiveStreamTeaser.vue
-│   │   ├── SermonsTeaser.vue
-│   │   ├── EventsList.vue
-│   │   ├── CongregationSearch.vue
-│   │   ├── ContactForm.vue
-│   │   └── PhotoGallery.vue
-│   ├── layout/                       # App-wide shell components
-│   │   ├── TheNavbar.vue
-│   │   └── TheFooter.vue
-│   ├── live-streams/                 # /live-streams page components
-│   │   ├── LiveNowCard.vue
-│   │   ├── StreamCard.vue
-│   │   └── EmptyStreamState.vue
-│   ├── nominal-roll/                 # Member management admin components
-│   │   ├── MemberTable.vue
-│   │   ├── MemberFilters.vue
-│   │   ├── MemberDetailPanel.vue
-│   │   ├── AddMemberModal.vue
-│   │   ├── ImportCsvModal.vue
-│   │   └── RoleSummaryChart.vue
-│   ├── settings/                     # Settings panels and primitives
-│   │   ├── AuditLogPanel.vue         # Who changed what (Super Admin only)
-│   │   ├── RolesPanel.vue
-│   │   ├── SettingsNav.vue
-│   │   ├── SettingsRepeater.vue
-│   │   ├── SettingsSaveBar.vue
-│   │   └── SettingsSection.vue
-│   ├── teachings/                    # Teachings admin components
-│   │   ├── SermonCard.vue
-│   │   └── UploadForm.vue
-│   └── ui/                           # Reusable primitives (auto-imported)
-│       ├── Avatar.vue
-│       ├── Badge.vue
-│       ├── Button.vue
-│       ├── Card.vue
-│       ├── CategoryBadge.vue
-│       ├── ContentCard.vue
-│       ├── EditField.vue
-│       ├── EmptyState.vue
-│       ├── EnvironmentBanner.vue      # Names the environment outside production
-│       ├── GalleryUploader.vue
-│       ├── HowToSteps.vue
-│       ├── ImageUpload.vue
-│       ├── InfoField.vue
-│       ├── Input.vue
-│       ├── LoadingState.vue
-│       ├── MapEmbed.vue
-│       ├── Modal.vue
-│       ├── Pagination.vue
-│       ├── SectionHeader.vue
-│       ├── Select.vue
-│       ├── Tabs.vue
-│       ├── ToastContainer.vue
-│       ├── TagFilterBar.vue
-│       └── VideoPlayer.vue
-│
-├── composables/
-│   ├── useCloudinaryUpload.ts        # Unsigned Cloudinary upload with progress
-│   ├── useExportCSV.ts               # Member CSV export
-│   ├── useFieldDensity.ts            # Lets a container set the size of the fields inside it
-│   ├── useFinancePdf.ts              # Finance report PDF export
-│   ├── useGalleryData.ts             # Gallery category lookups
-│   ├── useImportCsv.ts               # Member CSV import
-│   ├── useLiveStreams.ts             # Public live stream helpers
-│   ├── usePageHeader.ts              # Admin header title/subtitle
-│   ├── usePagination.ts              # Reusable table pagination
-│   ├── usePendingAction.ts           # Per-row pending state for async row actions
-│   ├── useScrollReveal.ts            # Scroll-into-view animations
-│   └── useToast.ts                   # Toast notifications
-│
-├── docs/
-│   ├── getting-started.md
-│   ├── firebase-setup.md
-│   ├── architecture.md
-│   └── contributing.md
-│
-├── layouts/
-│   ├── default.vue                   # Public site layout (TheNavbar + slot + TheFooter)
-│   └── admin.vue                     # Admin layout (sidebar + slot)
-│
-├── middleware/
-│   └── auth.ts                       # Firebase Auth route guard
-│
-├── pages/
-│   ├── index.vue                     # Home (/)
-│   ├── login.vue                     # Login (/login)
-│   ├── about-us/
-│   │   └── index.vue                 # About Us (/about-us)
-│   ├── register/
-│   │   └── index.vue                 # Public member registration (/register)
-│   ├── salvation/
-│   │   └── index.vue                 # God's Plan for Salvation (/salvation)
-│   ├── gallery/
-│   │   └── [category].vue            # Gallery by category (/gallery/:category)
-│   ├── events/
-│   │   └── index.vue                 # Events (/events?tab=upcoming|past)
-│   ├── live-streams/
-│   │   └── index.vue                 # Live Streams (/live-streams)
-│   ├── teachings/
-│   │   ├── sermons/
-│   │   │   ├── index.vue             # Sermons list (/teachings/sermons)
-│   │   │   └── [slug].vue            # Sermon detail (/teachings/sermons/:slug)
-│   │   └── sunday-school/
-│   │       ├── index.vue             # Sunday School list
-│   │       └── [slug].vue            # Lesson detail
-│   └── admin/
-│       ├── index.vue                 # Admin dashboard (/admin)
-│       ├── nominal-roll/
-│       │   └── index.vue             # Member management
-│       ├── attendance/
-│       │   ├── index.vue             # Attendance overview
-│       │   └── [service].vue         # Per-service attendance
-│       ├── finance/
-│       │   └── index.vue
-│       ├── events/
-│       │   └── index.vue
-│       ├── teachings/
-│       │   ├── index.vue
-│       │   └── upload.vue
-│       ├── youth/
-│       │   └── index.vue
-│       └── settings/
-│           └── index.vue
-│
-├── plugins/
-│   ├── firebase.client.ts            # Initialises Firebase app
-│   └── iconify.client.ts             # Registers <Icon> globally
-│
-├── public/
-│   ├── favicon.ico
-│   ├── robots.txt
-│   └── images/
-│       └── heroImg.png
-│
-├── repositories/                     # Firestore data access layer
-│   ├── auditRepository.ts            # auditLog — append-only activity record
-│   ├── churchSettingsRepository.ts   # settings/church document
-│   ├── membersRepository.ts          # members collection (nominal roll) + memberNumbers
-│   ├── messagesRepository.ts         # messages collection (public contact form)
-│   ├── roleAssignmentsRepository.ts  # roleAssignments — member ↔ role
-│   ├── rolesRepository.ts            # roles/{roleId} — permission overrides
-│   └── usersRepository.ts            # users/{uid} — account roles (grants access)
-│
-├── stores/
-│   ├── accounts.ts                   # users/{uid} records — who may write
-│   ├── attendance.ts                 # Attendance records (admin)
-│   ├── audit.ts                      # Activity log; `record()` is fire-and-forget
-│   ├── auth.ts                       # Firebase Auth state + the account's role
-│   ├── churchSettings.ts             # Church configuration
-│   ├── events.ts                     # Public events state
-│   ├── finance.ts                    # Finance records (admin)
-│   ├── members.ts                    # Member records (admin)
-│   ├── publicLiveStream.ts           # Public live stream state
-│   ├── publicTeachings.ts            # Public sermons/lessons state
-│   ├── roles.ts                      # Role definitions and member assignments
-│   ├── teachings.ts                  # Teachings management (admin)
-│   ├── toast.ts                      # Toast queue
-│   └── ui.ts                         # Global UI state (modals, sidebar)
-│
-├── types/
-│   ├── index.ts                      # Admin domain types (Member, Sermon, etc.)
-│   ├── public.ts                     # Public site types (LiveStream, ChurchEvent, etc.)
-│   ├── events.ts                     # Events page types (UpcomingEvent, PastEvent, Speaker)
-│   └── iconify.d.ts                  # Global <Icon> component declaration
-│
-├── utils/
-│   └── date.ts                       # Date formatting helpers (date-fns wrapper)
-│
-├── app.vue                           # Root — initialises auth + seeds mock data
-├── nuxt.config.ts                    # Nuxt configuration
-├── tsconfig.json
+├── .github/
+│   ├── ISSUE_TEMPLATE/        # Bug report and feature request templates
+│   ├── workflows/ci.yml       # Typecheck, lint, format check, test, and build
+│   ├── FUNDING.yml            # GitHub Sponsors button
+│   └── PULL_REQUEST_TEMPLATE.md
+├── assets/css/main.css        # Tailwind entry point and theme tokens
+├── components/                # Vue components, grouped by feature (auto-imported)
+│   ├── about/  attendance/  business-meetings/  charts/  dashboard/
+│   ├── events/  gallery/  home/  layout/  lectureship/  legal/
+│   ├── live-streams/  nominal-roll/  settings/  shared/  teachings/
+│   └── ui/                    # Reusable primitives: Button, Input, Modal, ImageUpload, ...
+├── composables/               # Shared logic: CSV import/export, finance PDF, uploads, pagination, ...
+├── constants/                 # Routes, nav items, roles, and other shared constants
+├── docs/                      # Developer and operator documentation
+├── layouts/                   # default.vue (public site) and admin.vue (dashboard shell)
+├── middleware/                # auth.ts route guard, nav-visibility and staging-only global guards
+├── pages/                     # File-based routes
+│   ├── admin/                 # Dashboard: nominal-roll, attendance, finance, events, teachings,
+│   │                          #   youth, lectureship, business-meetings, messages, settings
+│   └── ...                    # Public: index, about-us, events, live-streams, teachings, gallery,
+│                              #   lectureship, register, salvation, privacy-policy, terms-of-use, login
+├── plugins/                   # Client-only plugins: firebase, iconify, chart-theme, motion
+├── public/                    # Static files: favicon, robots.txt, _redirects (SPA fallback), images
+├── repositories/              # Firestore data access, one file per collection
+├── scripts/                   # require-dotenv.mjs (env preflight), netlify-env.mjs (env upload)
+├── stores/                    # Pinia stores, one per domain
+├── tests/                     # Vitest suites: components, composables, repositories, stores, utils
+├── types/                     # Shared TypeScript types
+├── utils/                     # Pure helpers: dates, church numbers, audit, image compression, ...
+├── app.vue                    # Root component: starts auth, applies the uploaded favicon
+├── firestore.rules            # Firestore security rules (the access-control source of truth)
+├── firebase.json / .firebaserc# Firebase CLI config and staging / production project aliases
+├── netlify.toml               # Netlify build settings shared by staging and production
+├── nuxt.config.ts             # Nuxt configuration and public runtime config
+├── vitest.config.ts           # Test configuration
+├── .env.example               # Environment variable template
+├── CONTRIBUTING.md  SECURITY.md  LICENSE  NOTICE
 └── package.json
 ```
 
@@ -315,20 +245,20 @@ congregation/
 
 ## Prerequisites
 
-- **Node.js** v22 or higher (see `.nvmrc`)
-- **npm** (or yarn / pnpm)
-- **Git**
-- **Firebase CLI** — `npm install -g firebase-tools`
-- A Google account with an active Firebase project
-
-**Recommended:**
-
-- VS Code with the [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar), [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss), and Prettier extensions
-- Firebase Emulator Suite for local backend development
+| Requirement                                          | Version / notes                                                                                     |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [Node.js](https://nodejs.org)                        | **22 or newer** (`engines` in `package.json`; `.nvmrc` pins 22)                                     |
+| npm                                                  | **10 or newer**. The repository ships a `package-lock.json`, so use npm.                            |
+| Git                                                  | Any recent version                                                                                  |
+| A Firebase project                                   | Free Spark plan is sufficient. Authentication (email/password) and Cloud Firestore must be enabled. |
+| A Cloudinary account                                 | Free tier is sufficient. Needed only for image uploads.                                             |
+| [Firebase CLI](https://firebase.google.com/docs/cli) | Needed to deploy `firestore.rules` (`npm install -g firebase-tools`).                               |
 
 ---
 
 ## Getting Started
+
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation.git
@@ -336,615 +266,234 @@ cd congregation
 npm install
 ```
 
-Copy the environment variable template and fill in your Firebase credentials:
+`npm install` also runs `nuxt prepare` (which generates types and auto-imports) and installs the Husky pre-commit hook.
+
+### 2. Configure environment variables
 
 ```bash
 cp .env.example .env
 ```
 
-Start the development server:
+Fill in your Firebase web app config and Cloudinary settings. See [Environment Variables](#environment-variables).
 
-```bash
-npm run dev        # http://localhost:3000
-```
+### 3. Set up Firebase
 
-Other commands:
+Create a Firebase project, enable email/password sign-in, create a Firestore database, deploy the security rules, and seed your first Super Admin. The steps are summarised in [Backend Setup](#backend-setup-firebase).
 
-```bash
-npm run build      # Production build
-npm run generate   # Static site generation
-npm run preview    # Preview production build
-```
-
-For the full setup guide including Firebase project creation, see [docs/getting-started.md](docs/getting-started.md).
-
----
-
-## Environment Variables
-
-Create a `.env` file at the project root with your Firebase project credentials and Cloudinary upload settings:
-
-```env
-# Firebase
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-
-# Cloudinary — host for all uploaded images
-VITE_CLOUDINARY_CLOUD_NAME=
-VITE_CLOUDINARY_UPLOAD_PRESET=
-VITE_CLOUDINARY_FOLDER=congregation
-
-# One of: development | staging | production
-APP_ENV=development
-```
-
-All `VITE_`-prefixed variables are exposed to the browser (SPA mode). Never commit real credentials — `.env` is git-ignored.
-
-### Environments
-
-Staging and production are **separate Firebase projects**, each with its own git-ignored env file — `.env.staging` and `.env.production`, plus `.env` as the local development default:
-
-```bash
-npm run dev                 # uses .env
-npm run dev:staging         # uses .env.staging
-npm run build:staging       # uses .env.staging
-npm run build:production    # uses .env.production
-npm run generate:staging    # uses .env.staging
-npm run generate:production # uses .env.production
-```
-
-Each script fails immediately if its env file is missing, rather than silently building an empty Firebase config.
-
-Any `APP_ENV` other than `production` shows a banner in the admin header naming the connected Firebase project, so a staging session never looks like the live site. Firebase CLI targets are aliased in `.firebaserc` (`firebase use staging` / `firebase use production`).
-
-Deploys are hosted on **Netlify** as two separate sites — `coc-abadina-prod` builds `main` against the production Firebase project, `coc-abadina-staging` builds `dev` against staging. [netlify.toml](netlify.toml) holds the shared build settings only; `APP_ENV` and the credentials are set per site (`npm run netlify:env -- staging|production`) rather than committed, because a committed value would apply to both sites.
-
-See [docs/firebase-setup.md](docs/firebase-setup.md#environments) for the full setup.
-
-### Image uploads (Cloudinary)
-
-Every image picker in the app (sermon thumbnails, hero image, minister and congregation photos, leader avatars, gallery photos) follows the same flow:
-
-1. User picks or drops a file.
-2. The file is POSTed to Cloudinary using an **unsigned upload preset**.
-3. Cloudinary returns a `secure_url`.
-4. That URL is saved to Firestore — never the raw file or a base64 string.
-5. The URL is what's read back whenever the image is rendered.
-
-#### Setting up Cloudinary
-
-The free tier is more than enough for a single church. Setup takes a few minutes:
-
-**1. Get your Cloud Name**
-
-Sign up at [cloudinary.com](https://cloudinary.com/) and open the dashboard. The top of the page shows **Product Environment Credentials** — copy the **Cloud name** (something like `dxxxx1234`). You don't need the API key or secret because uploads from the browser are unsigned.
-
-**2. Create an unsigned upload preset**
-
-This is the access token that lets the browser POST images directly without exposing your API secret.
-
-1. Click the **gear icon** (Settings) in the left sidebar of the dashboard.
-2. Open the **Upload** tab → scroll to **Upload presets** → click **Add upload preset**.
-3. Fill in:
-   - **Preset name** — anything memorable, e.g. `congregation_unsigned`. Copy this exact string into `.env`.
-   - **Signing Mode** — set to **Unsigned**. This is the critical setting.
-   - **Folder** — leave blank. The app already files uploads into sub-folders like `congregation/sermons`, `congregation/leaders`, `congregation/gallery`.
-   - **Allowed formats** (recommended) — `jpg, png, webp, gif`.
-   - **Max file size** (recommended) — `5000000` (5 MB), matches the client-side limit.
-4. Click **Save**.
-
-**3. Fill in `.env`**
-
-```env
-VITE_CLOUDINARY_CLOUD_NAME=dxxxx1234
-VITE_CLOUDINARY_UPLOAD_PRESET=congregation_unsigned
-VITE_CLOUDINARY_FOLDER=congregation        # optional — defaults to "congregation"
-```
-
-`VITE_CLOUDINARY_FOLDER` is the root namespace under which every image lives. Individual uploaders pin sub-folders on top (e.g. the hero uploader uses `congregation/hero`, leaders use `congregation/leaders`).
-
-**4. Restart the dev server**
-
-Vite only reads `.env` at startup:
+### 4. Start the development server
 
 ```bash
 npm run dev
 ```
 
-**5. Verify it works**
-
-1. Open `/admin/settings` → **Homepage** tab.
-2. Drag an image into **Building Photo**. You should see a progress overlay (`Uploading… 42%`), then a preview.
-3. Click **Save Settings**.
-4. Check your Cloudinary **Media Library** — the file should be under `congregation/hero/`.
-5. Check Firestore (`settings/church` document) — `heroImageUrl` should hold the `https://res.cloudinary.com/...` URL.
-
-#### Troubleshooting
-
-| Symptom                                          | Fix                                                                                    |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `Cloudinary is not configured` error             | You didn't restart `npm run dev` after editing `.env`.                                 |
-| `Upload preset must be whitelisted for unsigned` | The preset is set to **Signed** mode. Edit it and switch Signing Mode to **Unsigned**. |
-| `Invalid cloud name`                             | Typo, or you copied the dashboard URL instead of just the cloud name string.           |
-| Image uploads but doesn't persist after refresh  | Firestore save failed. Check the browser console and your Firestore security rules.    |
-
-#### Where the integration lives
-
-- [`composables/useCloudinaryUpload.ts`](composables/useCloudinaryUpload.ts) — handles the upload, exposes `uploading` / `progress` / `error` reactive state, and returns the `secure_url`.
-- [`components/ui/ImageUpload.vue`](components/ui/ImageUpload.vue) — drag-and-drop image picker with live progress, replace/remove overlay, and `shape="circle"` / `compact` variants. Drop it anywhere with `v-model` bound to a URL string.
+| URL                         | What it is                       |
+| --------------------------- | -------------------------------- |
+| http://localhost:3000       | Public website                   |
+| http://localhost:3000/login | Staff sign-in                    |
+| http://localhost:3000/admin | Admin dashboard (requires login) |
 
 ---
 
-## Deployment & Access Control
-
-Everything needed to stand a congregation up on its own Firebase projects and Netlify sites, and to decide who may change what. [docs/firebase-setup.md](docs/firebase-setup.md) carries the same material in more depth; this section is the operational checklist.
-
-### Security model
-
-Signing in and being allowed to write are separate things. Privilege comes from exactly one place: a `users/{uid}` document in Firestore, which [`firestore.rules`](firestore.rules) reads on every write. An account with no such document can sign in and see the dashboard shell but cannot change anything — the admin header shows a red banner saying so, rather than letting each save fail on its own.
-
-Thirteen collections, with deliberately different exposure:
-
-| Collection                              | Holds                                           | Notes                                                        |
-| --------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
-| `users/{uid}`                           | The role a Firebase Auth account carries        | **Grants privilege.** Only a Super Admin may write it        |
-| `roles/{roleId}`                        | Permission-matrix overrides only                | Names, ids and colours stay in code                          |
-| `roleAssignments`                       | Which nominal-roll member holds which role      | Presentational — records standing, not access                |
-| `auditLog`                              | Append-only record of who changed what          | Super Admin reads; staff append; nobody edits or deletes     |
-| `settings/church`                       | Public site content                             | World-readable; the landing page reads it signed out         |
-| `members`                               | The nominal roll                                | Never publicly readable; `/register` may create only         |
-| `memberNumbers`                         | Church-number reservations, keyed by the number | Firestore has no unique constraint — this collection is it   |
-| `messages`                              | The public contact form's inbox                 | The only collection anonymous callers may write; create-only |
-| `financeCollections`, `financeExpenses` | The congregation's books                        | Staff read; `canEditFinance()` writes                        |
-| `teachings`                             | Sermons and Sunday School lessons               | Staff read; `canEditRecords()` writes                        |
-| `attendance`                            | Who was present at which service                | Never public; deterministic ids keep re-saves idempotent     |
-| `events`                                | Upcoming and past events                        | World-readable — `/events` lists them to signed-out visitors |
-
-Who may do what:
-
-|                    | `settings` | `members`                    | `users`    | `roles` | `roleAssignments` | `auditLog`   |
-| ------------------ | ---------- | ---------------------------- | ---------- | ------- | ----------------- | ------------ |
-| Super Admin        | read+write | read+write                   | read+write | r+w     | read+write        | read, append |
-| Admin              | read+write | read+write                   | read       | read    | read              | append only  |
-| Other staff        | read       | read+write                   | read       | read    | read              | append only  |
-| Signed in, no role | read       | —                            | own doc    | —       | —                 | —            |
-| Anonymous          | read       | create only, via `/register` | —          | —       | —                 | —            |
-
-Staff roles are `super-admin`, `admin`, `elder`, `deacon`, `preacher`, `secretary`, `youth-leader`, `financial-secretary`. That list appears in three places which must stay in step: `isStaff()` in [`firestore.rules`](firestore.rules), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `ChurchRoleId` in [`types/index.ts`](types/index.ts).
-
-Rules are the coarse floor; the per-page matrix in Settings → Roles & Permissions is finer-grained on top of it.
-
-> **The floor is narrower than the matrix for four collections.** Teachings, attendance and events
-> accept writes only from Super Admin, Admin and Secretary (`canEditRecords()`); finance only from
-> Super Admin, Admin and Financial Secretary (`canEditFinance()`). The default matrix is more
-> generous — an Elder shows full access to all three record areas, a Preacher to teachings and
-> events, a Deacon and Youth Leader to attendance. Those roles will see the controls and have the
-> write refused. Either narrow the matrix in Settings → Roles & Permissions to match, or widen the
-> rules.
-
-### Roles & permissions
-
-Three things carry the word "role" and are deliberately separate. Confusing them is the most common source of "why can't this person do X":
-
-| Concept             | Lives in                           | Answers                              | Enforced by                   |
-| ------------------- | ---------------------------------- | ------------------------------------ | ----------------------------- |
-| **Role definition** | `DEFAULT_ROLES` + `roles/{roleId}` | "What may an Elder do?"              | The app's UI matrix           |
-| **Role assignment** | `roleAssignments`                  | "Who are our elders?"                | Nothing — it records standing |
-| **Account access**  | `users/{uid}`                      | "May this login change church data?" | **Firestore rules**           |
-
-A member on the nominal roll can be an elder with no login at all, and a login can exist with no member record. Only `users/{uid}` gates anything.
-
-### Business meetings
-
-**Admin → Business Meetings** is where the Secretary records the minutes of each business
-meeting, following the usual order of business: meeting details, attendance (present,
-apologies, absent, visitors, quorum), opening, reading and adoption of the previous minutes,
-matters arising, reports, new business, any other business, action points, announcements,
-the next meeting, and closing. Any item can record a motion (moved, seconded, outcome).
-Name fields suggest people from the nominal roll. Each meeting has a **Print / PDF** copy
-with signature lines.
-
-Minutes live in the `businessMeetings` collection. Any staff account can read them. Super
-Admin, Admin and the Secretary can write them. Once minutes are **approved** they are locked.
-Only an Admin or Super Admin can reopen them, and only those two roles can delete a meeting.
-`firestore.rules` enforces all of this, not just the UI.
-
-### Contact messages
-
-The "Send Us A Message" form on the landing page writes to the `messages` collection, and staff
-read it at **Admin → Messages**. The sidebar item carries an unread count.
-
-Each message has two independent flags. `read` is set when somebody opens it. `handled` is set
-by hand, and means somebody has actually replied or dealt with it — a message can be read and
-still open, which is the state that matters. Replying uses the staff member's own mail client
-via `mailto:`; nothing is sent from inside the app.
-
-**This is the only collection an anonymous caller may write to**, which makes it the app's spam
-surface. Two things bound it, and neither is rate-limiting:
-
-- The rules pin the shape — exactly the seven expected fields, a length cap on each, `read` and
-  `handled` forced to `false`, and `submittedAt` forced to the server's time. It cannot be used
-  as free storage, and a message cannot arrive pre-dismissed from the inbox.
-- Create-only. A visitor cannot list, read, edit or delete any message, including their own.
-  Staff updates are restricted to the two flags, so the text as sent can never be rewritten.
-
-Firestore rules cannot rate-limit, so a determined flood is still possible. If that happens, the
-fix is [App Check](https://firebase.google.com/docs/app-check) with reCAPTCHA on the web app —
-it turns away automated clients without adding a puzzle for real visitors — or moving the write
-behind a Cloud Function that can throttle by IP.
-
-### Church numbers are unique
-
-A member's church (membership) number is assigned when adding or editing them on the nominal
-roll, and no two members may hold the same one.
-
-Firestore has no unique constraint, so uniqueness is enforced with a reservation document at
-`memberNumbers/{key}` naming the member who holds that number. `membersRepository` claims it
-**inside a transaction**, together with the member write — which is the only thing that stops
-two secretaries assigning the same number at the same moment. A plain "is this taken?" query
-would let both read _no_ before either wrote.
-
-The key is a normalised form of the number: lower-cased, with every run of non-alphanumeric
-characters collapsed to a hyphen (`utils/churchNumber.ts`). So `COC/001`, `coc-001` and
-`COC 001` are all the same number, and the key can never contain the `/` that Firestore forbids
-in a document id. The number is _stored_ as typed, only trimmed.
-
-The reservation moves with the member: released when the number changes, when it is cleared,
-and when the member is deleted. The form also checks the loaded roll as you type, so a clash
-shows up before you save — but that check is only for feedback; the transaction is the
-guarantee.
-
-**Numbers already in the roll have no reservation.** Nothing wrote `churchNumber` before this,
-so in practice there is nothing to backfill. If a record does carry one, re-save that member
-once to claim it — until then the number is not actually reserved.
-
-#### Default permission matrix
-
-Eight pages × five actions — **V**iew, **A**dd, **E**dit, **D**elete, e**X**port. Generated from [`stores/roles.ts`](stores/roles.ts):
-
-| Role                | Dash  | Roll  | Youth | Att   | Teach | Events | Fin   | Set   |
-| ------------------- | ----- | ----- | ----- | ----- | ----- | ------ | ----- | ----- |
-| Super Admin         | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VAEDX | VAEDX |
-| Admin               | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VAEDX | VAEDX |
-| Elder               | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX | VAEDX  | VX    | V     |
-| Deacon              | VAE   | VAE   | VAE   | VAE   | V     | V      | V     | —     |
-| Preacher            | VAEDX | V     | V     | V     | VAEDX | VAEDX  | —     | —     |
-| Secretary           | VAEX  | VAEX  | VAEX  | VAEX  | VAEX  | VAEX   | VX    | V     |
-| Youth Leader        | VAEX  | V     | VAEX  | VAEX  | V     | V      | —     | —     |
-| Financial Secretary | VAEDX | V     | —     | —     | —     | —      | VAEDX | —     |
-
-**Admin** matches Super Admin in the matrix above but not in the rules: it may save church settings, and manage members, attendance, finance, teachings and events — but not `users`, `roles` or `roleAssignments`, and it cannot read the audit log. Only **Super Admin** manages who has access. The `V` that Elder and Secretary hold on Settings is view-only, and the rules enforce that independently of the matrix.
-
-#### Managing them
-
-All three live under **Settings → Roles & Permissions**:
-
-- **Role Definitions** — click a role to open its matrix. Toggling any action auto-enables `view`; clearing `view` clears the row. Saving writes a `roles/{roleId}` document holding **only** the permissions, so ids, names and colours stay code-defined — an override cannot rename or invent a role. On load the app rebuilds from the code defaults and layers stored overrides on top, so a role added in code later still appears and an override for a deleted role is ignored.
-- **Member Assignments** — assign a role to a nominal-roll member, optionally with **custom permissions** that override that role's defaults for that person only. Where someone holds several roles, `effectivePermissions()` merges them: any role granting an action grants it, and a custom override wins over the role default either way.
-- **Dashboard Access** — `users/{uid}` records, the only thing that grants privilege. See [Granting dashboard access](#granting-dashboard-access).
-
-Everything on this screen persists to Firestore. Writing any of it requires Super Admin, so a `deacon` opening the page can read the matrix but not change it — the controls render as plain text rather than inputs.
-
-#### Adding a role
-
-Roles are code-defined, so a new one is a code change: add it to `DEFAULT_ROLES` in [`stores/roles.ts`](stores/roles.ts), and if it should be able to write church data, add its id to `ChurchRoleId` in [`types/index.ts`](types/index.ts), `STAFF_ROLES` in [`stores/auth.ts`](stores/auth.ts), and `isStaff()` in [`firestore.rules`](firestore.rules) — then redeploy the rules. Missing the rules step gives a role that looks correct in the UI and is refused by the backend.
-
-### First-time setup, per Firebase project
-
-Do all of this on **staging first**, then repeat on production. Order matters — step 4 refuses every write from an account without a role, and no rule lets an account grant itself one, so seeding comes first.
-
-1. **Create the project** and register a web app (Project Settings → Your apps → SDK setup). Copy the config into the matching env file.
-2. **Enable Authentication** → Sign-in method:
-   - **Email/Password**
-   - Under **Settings → Authorized domains**, add the site's Netlify domain and `localhost`. Sign-in fails silently without this.
-3. **Seed the first Super Admin.** There is no way to bootstrap this from the app:
-   - **Authentication → Users** → copy the UID.
-   - **Firestore → Data** → create `users/<that-uid>` with `roleId: "super-admin"` (and `email` for legibility).
-   - Confirm the document id is the **UID, not the email** — this is the most common way to get locked out.
-4. **Deploy the rules** (see below) and verify: a setting saves, and the red no-role banner does not appear.
-5. **Create the Firestore database** and enable **Storage** if not already done.
-
-Locked out anyway? Rules never restrict the Firebase console — fix or create the `users/{uid}` document under Firestore → Data. Console access is governed by Google Cloud IAM.
-
-### Audit log
-
-**Settings → Access → Audit Log**, visible to Super Admins only. Every change the dashboard makes is recorded: a member added, updated or deleted; settings saved; role permissions changed; roles assigned or revoked; dashboard access granted or revoked. Each entry carries who did it, what changed, and a server-side timestamp.
-
-The rules make the collection **append-only** — `allow update, delete: if false` — so an entry cannot be edited or quietly removed by anyone, Super Admin included. Appending requires a staff role and `actorUid` must equal the caller, so nobody can write an entry attributed to someone else. Reading requires Super Admin.
-
-**What this is not.** Entries are written by the client as each change succeeds. That evidences what the app did, but nothing can compel a client to write one — somebody using the Firebase SDK directly with valid credentials could change `members` and skip the log. Treat it as accountability among trusted staff, not a tamper-proof trail. A trail that cannot be bypassed needs a Firestore trigger in Cloud Functions, which requires the Blaze plan.
-
-Logging never interferes with the work it describes: `record()` is fire-and-forget and swallows its own failures, so a refused log entry cannot turn a successful save into a visible error.
-
-### Granting dashboard access
-
-Once a Super Admin exists, everyone else is granted access from the app — no console, no shared Firebase logins: **Settings → Roles & Permissions → Dashboard Access → Create login with password**.
-
-Enter their email and a password, choose a role, and the account is created immediately with that role applied — share the password with them directly, there is no way to look it up again afterwards. This runs on a second, isolated Firebase App instance (`getSecondaryAuth`, see [`utils/secondaryAuth.ts`](utils/secondaryAuth.ts)) purely so creating the account — which signs in as it — never signs the admin out of their own session. No Cloud Functions or Admin SDK involved.
-
-Optionally link the account to a nominal-roll member, which is carried through to `users/{uid}.memberId`, so the login and the member record describe one person rather than two unrelated things.
-
-Where an account already exists (created elsewhere, or in a previous Firebase project) and only needs a role, use the collapsed **"Or grant an existing account by UID"** fallback instead — paste its UID from **Authentication → Users** in the console.
-
-The same "give them a login" step is also offered inline from **Member Assignments → Assign Role**, so assigning a role and creating the login can happen in one action.
-
-### Signing in
-
-Two routes are on `/login`:
-
-| Route                     | For                                              |
-| ------------------------- | ------------------------------------------------ |
-| Email + password          | The normal way in, for any account created above |
-| **Forgot your password?** | Resetting a forgotten password                   |
-
-### Environment variables on Netlify
-
-Two Netlify sites, each with its own copy of ten variables. [`netlify.toml`](netlify.toml) is committed and shared by both, so **no environment values belong in it** — each site is the `production` context for its own branch, and a committed `APP_ENV` would label staging as production.
-
-```bash
-npx netlify-cli login                       # once per machine
-
-npm run netlify:env -- staging              # dry run: shows old → new, values masked
-npm run netlify:env -- staging --apply
-
-npm run netlify:env -- production           # dry run
-npm run netlify:env -- production --apply
-```
-
-Each environment names its own site and passes it with `--site`, so the locally linked project is irrelevant and no re-linking is needed. The script refuses to run if either env file is missing a value or if the two share a Firebase project ID or API key, and after writing it reads the values back — it will not report success the site has not confirmed.
-
-Environment variable changes only take effect on the **next** build. Trigger a redeploy afterwards.
-
-When inspecting variables by hand, always pass a context — `netlify env:list` defaults to `dev`, which is not what a deploy builds with and will report variables as unset:
-
-```bash
-npx netlify-cli env:list --site coc-abadina-prod --context production
-```
-
-### Deploying security rules
-
-[`firestore.rules`](firestore.rules) is the single source of truth for both projects. Never edit rules in the console — the next deploy silently reverts them.
-
-```bash
-firebase deploy --only firestore:rules -P staging
-# verify on staging, then:
-firebase deploy --only firestore:rules -P production
-```
-
-Rules are not covered by the test suite. Before a production deploy, exercise these in **Firestore → Rules → Playground** — they are the cases the rules are written against:
-
-| Attempt                                                                  | Expected |
-| ------------------------------------------------------------------------ | -------- |
-| `get` on `members/x` as an unauthenticated visitor                       | deny     |
-| `get` on `members/x` as signed-in with no role                           | deny     |
-| `create` on `users/<own-uid>` as a signed-in account with no role        | deny     |
-| `write` on `users/<someone-else-uid>` as a non-Super-Admin staff account | deny     |
-| `write` on `settings/church` as your seeded Super Admin                  | allow    |
-
-### Going live: ordered checklist
-
-1. Apply the Netlify variables for both sites and redeploy both.
-2. Complete the per-project Firebase setup above, staging first.
-3. Deploy rules to staging; confirm saves work and a Super Admin can create a login with a password.
-4. Deploy rules to production.
-5. Merge `dev` → `main`. Production is a separate site building `main`, so until then it has neither `netlify.toml` nor `public/_redirects` — wrong publish directory and 404s on deep links.
-6. Replace the placeholder copy in [`pages/salvation/index.vue`](pages/salvation/index.vue) before pointing anyone at it; it is linked from the footer on every public page.
-
-### Troubleshooting
-
-| Symptom                                                | Cause                                                                 | Fix                                                                      |
-| ------------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `Firebase config is missing VITE_…` on a deployed site | The build had no environment variables                                | Apply them for that site, then **redeploy** — env changes need a build   |
-| `auth/invalid-api-key` locally                         | The `--dotenv` file was missing, so the build shipped an empty config | The `*:staging` / `*:production` scripts now fail fast; create the file  |
-| Red "no role assigned" banner                          | The account has no `users/{uid}` document                             | A Super Admin grants a role, or seed it in the console                   |
-| Staging shows production data                          | Both sites hold the same variables                                    | `npm run netlify:env -- staging --apply`, then redeploy                  |
-| Deploy fails: "secrets detected in build output"       | Vite inlines `VITE_*` into the bundle by design                       | `SECRETS_SCAN_OMIT_KEYS` in `netlify.toml` — extend it for new variables |
-| Deep links 404 in production (`/gallery/photos`)       | The SPA fallback is missing                                           | Confirm `public/_redirects` survived into `dist/_redirects`              |
-| Login works, then nothing loads                        | Rules deployed before a Super Admin was seeded                        | Create `users/<uid>` in the console                                      |
+## Environment Variables
+
+All variables are read in [`nuxt.config.ts`](nuxt.config.ts) and exposed through `useRuntimeConfig().public`. A template with comments lives in [`.env.example`](.env.example).
+
+| Variable                            | Description                                                                                                            | Required                    |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `VITE_FIREBASE_API_KEY`             | Firebase web app API key                                                                                               | Yes                         |
+| `VITE_FIREBASE_AUTH_DOMAIN`         | Firebase Auth domain, usually `<project-id>.firebaseapp.com`                                                           | Yes                         |
+| `VITE_FIREBASE_PROJECT_ID`          | Firebase project ID                                                                                                    | Yes                         |
+| `VITE_FIREBASE_STORAGE_BUCKET`      | Firebase Storage bucket from the web app config                                                                        | Yes                         |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase messaging sender ID                                                                                           | Yes                         |
+| `VITE_FIREBASE_APP_ID`              | Firebase web app ID                                                                                                    | Yes                         |
+| `VITE_CLOUDINARY_CLOUD_NAME`        | Cloudinary cloud name                                                                                                  | For image uploads           |
+| `VITE_CLOUDINARY_UPLOAD_PRESET`     | Name of an **unsigned** Cloudinary upload preset                                                                       | For image uploads           |
+| `VITE_CLOUDINARY_FOLDER`            | Root folder for uploads                                                                                                | No (default `congregation`) |
+| `APP_ENV`                           | `development`, `staging`, or `production`. Any value except `production` shows an environment banner in the dashboard. | No (default `development`)  |
+
+**Where to get them**
+
+- **Firebase:** [Firebase console](https://console.firebase.google.com) → Project settings → Your apps → SDK setup and configuration. The Firebase plugin refuses to start and names any missing value.
+- **Cloudinary:** the Cloudinary dashboard for the cloud name, and Settings → Upload → Upload presets for an unsigned preset. Step-by-step instructions are in [docs/cloudinary-setup.md](docs/cloudinary-setup.md).
+
+> **These values are public by design.** Vite inlines every `VITE_*` value into the browser bundle. Firebase web config is not a secret; your data is protected by `firestore.rules`. Even so, never commit `.env`, `.env.staging`, or `.env.production`. They are git-ignored, and keeping each environment in its own file prevents staging and production from being mixed up.
+
+Separate staging and production environments use `.env.staging` and `.env.production` together with the `:staging` and `:production` scripts below. See [docs/firebase-setup.md § Environments](docs/firebase-setup.md#environments).
 
 ---
 
-## UI Conventions
+## Backend Setup (Firebase)
 
-Patterns worth following rather than reinventing. All of these are enforced by tests.
+Congregation uses **Cloud Firestore**, a schemaless document database. There are **no migrations and no seed scripts**: collections are created on first write, and the data shapes are defined by the TypeScript types in [`types/`](types) and validated by [`firestore.rules`](firestore.rules).
 
-### Loading states
+For each Firebase project (do staging first if you have one):
 
-Every button that waits on something shows it. Single actions bind to the store's pending flag:
+1. **Create a project** and register a **web app**. Copy its config into your `.env` file.
+2. **Enable Authentication → Email/Password**, and add `localhost` plus your deployed domain under Authentication → Settings → Authorized domains.
+3. **Create a Cloud Firestore database.**
+4. **Seed the first Super Admin.** This cannot be done from the app. Create a user under Authentication → Users, copy its **UID**, then create the Firestore document `users/<that-uid>` with the field `roleId: "super-admin"`. The document ID must be the UID, not the email.
+5. **Deploy the security rules** with the Firebase CLI:
 
-```vue
-<Button :loading="membersStore.saving" @click="save">Save</Button>
-```
+   ```bash
+   firebase login
+   firebase deploy --only firestore:rules -P staging      # or -P production
+   ```
 
-Row-level actions must **not** use that flag — binding every row to one shared boolean makes them
-all spin when you click one. Use [`usePendingAction`](composables/usePendingAction.ts), which
-tracks pending work by key and ignores a repeat click while one is in flight:
+   The `staging` and `production` aliases are defined in [`.firebaserc`](.firebaserc). If you use your own Firebase projects, update those aliases first, or run `firebase use --add`.
 
-```ts
-const { isPending, run } = usePendingAction()
-await run(member.id, () => membersStore.deleteMember(member.id))
-```
+6. **Sign in** at `/login`. Further staff accounts are created from **Settings → Roles & Permissions → Dashboard Access**.
 
-```vue
-<button :disabled="isPending(member.id)">
-  <Icon :icon="isPending(member.id) ? 'mdi:loading' : 'mdi:trash-can-outline'" />
-</button>
-```
+The detailed guides are [docs/firebase-setup.md](docs/firebase-setup.md) and [docs/deployment.md](docs/deployment.md).
 
-A spinner is only worth adding where something is actually awaited — around synchronous work it
-never paints a frame. Every store now writes to Firestore, so every save and delete has a real
-loading state.
-
-### Form fields
-
-Use `Input` / `Select` rather than a bare `<input>`: they generate an id, point their label at it
-with `for`, and set `aria-invalid` plus `aria-describedby` on the error text. Pass `:error` to show
-a message — never render one beside the field yourself, or screen readers will not connect them.
-
-Density is inheritable. A container declares it once instead of every field repeating a `size`:
-
-```vue
-<SettingsSection title="Calendar Rows" density="sm">
-```
-
-An explicit `size` on a field still wins, so a single field can opt out.
-
-### Hiding a page in production
-
-Some pages are ready for staging but not for the congregation. Add the route to
-`STAGING_ONLY_ROUTES` in [`constants/index.ts`](constants/index.ts):
-
-```ts
-export const STAGING_ONLY_ROUTES: string[] = [
-  '/admin/finance', // and everything beneath it
-  '/salvation',
-]
-```
-
-That is the only edit. The route then 404s in production via a global middleware, and it drops out
-of the admin sidebar and the footer's link lists automatically. Staging and local development are
-untouched — the work stays reachable where it is reviewed.
-
-Matching is by path segment, so `/admin/finance` covers `/admin/finance/reports` but not
-`/admin/finance-archive`. Query strings and hashes are ignored, so `/salvation` also hides
-`/salvation#hear`.
-
-For a link written inline rather than driven by an array — most of the public navbar — guard it
-with the composable:
-
-```vue
-<NuxtLink v-if="!isHidden('/events')" to="/events">Events</NuxtLink>
-```
-
-```ts
-const { isHidden, isProduction } = useRouteVisibility()
-```
-
-> **This hides pages; it does not secure them.** The code still ships in the production bundle, so
-> anyone can read it, and the data is still whatever Firestore will serve. Anything that must not
-> be reachable belongs in `firestore.rules`.
-
-### Settings panels
-
-Three primitives, in [`components/settings/`](components/settings/):
-
-| Component          | Use for                                                                       |
-| ------------------ | ----------------------------------------------------------------------------- |
-| `SettingsSection`  | A titled block. Always pass `description` — say where the fields surface      |
-| `SettingsRepeater` | A list of editable rows: column headings once, remove control in its own cell |
-| `SettingsSaveBar`  | The page-level save affordance; sticky, appears only while the draft is dirty |
-
-Panels do **not** carry their own save button. The page holds one draft shared by every panel, so
-"is anything unsaved?" is a page-level question — thirteen separate buttons made it possible to
-edit one panel, switch to another, and lose track. The page also guards against losing work:
-`beforeunload` for tab close, `onBeforeRouteLeave` for in-app navigation, and ⌘S / Ctrl+S to save.
+> The app does not currently connect to the Firebase Emulator Suite. Local development runs against a real (ideally non-production) Firebase project.
 
 ---
 
-## Date Formatting
+## Available Scripts
 
-All date display in the app goes through [`utils/date.ts`](utils/date.ts), a thin wrapper over [`date-fns`](https://date-fns.org/). The wrapper is auto-imported by Nuxt, so the helpers are available anywhere — components, pages, stores, composables — without an `import` statement.
+Run from the repository root with npm.
 
-**Why a wrapper?**
+| Command                                                  | Description                                                                         |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `npm run dev`                                            | Start the dev server on http://localhost:3000 using `.env`                          |
+| `npm run dev:staging`                                    | Start the dev server using `.env.staging`                                           |
+| `npm run build`                                          | Production build                                                                    |
+| `npm run build:staging`                                  | Build using `.env.staging` (fails fast if the file is missing)                      |
+| `npm run build:production`                               | Build using `.env.production` (fails fast if the file is missing)                   |
+| `npm run generate`                                       | Generate the static SPA (this is what Netlify runs)                                 |
+| `npm run generate:staging`                               | Generate using `.env.staging`                                                       |
+| `npm run generate:production`                            | Generate using `.env.production`                                                    |
+| `npm run preview`                                        | Preview the production build locally                                                |
+| `npm run typecheck`                                      | Type-check with `vue-tsc` via `nuxt typecheck`                                      |
+| `npm run lint`                                           | Run ESLint                                                                          |
+| `npm run lint:fix`                                       | Run ESLint and apply fixes                                                          |
+| `npm run format`                                         | Format with Prettier                                                                |
+| `npm run format:check`                                   | Check formatting (used in CI)                                                       |
+| `npm run test`                                           | Run the Vitest suite once                                                           |
+| `npm run test:watch`                                     | Run Vitest in watch mode                                                            |
+| `npm run netlify:env -- <staging\|production> [--apply]` | Upload an env file's values to the matching Netlify site (dry run unless `--apply`) |
 
-- Single source of truth for formatting patterns — changing `"d MMM yyyy"` to `"d MMM, yyyy"` is a one-line change in `utils/date.ts`, not a grep-and-replace across 8 files.
-- Inputs are forgiving (`Date | string | number | null | undefined`) and invalid input returns `''` instead of `"Invalid Date"`, so the UI never blows up on missing data.
-- ISO strings (`"2026-03-05"`) are parsed without timezone shift via `parseISO`.
-- The underlying library can be swapped later (e.g. to Day.js or Luxon) without touching call sites.
+There are no database migration or seed scripts. See [Backend Setup](#backend-setup-firebase).
 
-### API
+---
 
-```ts
-formatDate(input, style?)        // Format a date
-formatRelative(input)            // "2 days ago", "in 5 minutes"
-formatDateRange(start, end)      // "5 – 11 Mar 2026"
-toISODate(input)                 // "2026-03-05" (storage / <input type="date">)
+## Testing and Quality Checks
+
+The test suite uses Vitest with the Nuxt test environment and covers components, composables, repositories, stores, and utilities under [`tests/`](tests). Unit tests use placeholder Firebase values from `.env.test` and never contact a real project.
+
+Before opening a pull request, run the same checks CI runs:
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test
+npm run build
 ```
 
-### Styles
+A Husky pre-commit hook runs `lint-staged` (ESLint and Prettier) on staged files. Firestore rules are not covered by the test suite; [docs/deployment.md](docs/deployment.md#deploying-security-rules) lists the cases to check in the Rules Playground before deploying.
 
-`formatDate(input, style)` accepts the following styles (default: `'short'`):
+---
 
-| Style       | Output                 | Use case                                |
-| ----------- | ---------------------- | --------------------------------------- |
-| `short`     | `5 Mar 2026`           | Compact display — sermons, finance rows |
-| `long`      | `5 March 2026`         | Formal — member profile fields          |
-| `full`      | `Friday, 5 March 2026` | Headline date — live stream banner      |
-| `numeric`   | `05/03/2026`           | Tight columns — dashboard widgets       |
-| `dayMonth`  | `5 Mar`                | No-year labels — attendance week ticks  |
-| `monthYear` | `March 2026`           | Page headings — attendance per service  |
-| `iso`       | `2026-03-05`           | Storage and `<input type="date">`       |
+## Deployment
 
-### Examples
+Congregation builds to a **static SPA** (`npm run generate` writes to `dist/`) and can be served by any static host that supports an SPA fallback to `index.html`. The repository is configured for **Netlify**:
 
-```vue
-<template>
-  <p>Uploaded {{ formatDate(sermon.date, 'numeric') }}</p>
-  <p>Joined {{ formatDate(member.dateJoined, 'long') }}</p>
-  <p>{{ formatRelative(event.createdAt) }}</p>
-  <p>{{ formatDateRange(event.start, event.end) }}</p>
-</template>
-```
+- [`netlify.toml`](netlify.toml) runs `npm run generate`, publishes `dist`, and uses Node 22.
+- [`public/_redirects`](public/_redirects) provides the SPA fallback for deep links.
+- Environment variables are set **per Netlify site**, not in `netlify.toml`. The `npm run netlify:env` script uploads them from `.env.staging` or `.env.production` and verifies them afterwards.
 
-```ts
-// stores/attendance.ts
-const label = formatDate(weekStart, 'dayMonth') // "5 Mar"
-```
+The reference setup uses two Firebase projects and two Netlify sites: the `dev` branch deploys to staging and `main` deploys to production.
 
-### Adding a new style
+**Production checklist (summary)**
 
-Edit [`utils/date.ts`](utils/date.ts):
+1. Set all `VITE_*` variables and `APP_ENV=production` on the hosting provider, then redeploy. Environment changes only take effect on the next build.
+2. Complete the Firebase setup above, including the first Super Admin.
+3. Deploy `firestore.rules` to the production project.
+4. Add the production domain to Firebase Auth's authorized domains.
+5. Replace any placeholder copy (for example on `/salvation`) and fill in Settings for your church.
 
-1. Add the variant to the `DateStyle` union.
-2. Add the corresponding [date-fns format token](https://date-fns.org/docs/format) to the `PATTERNS` map.
-
-That's it — TypeScript will then offer the new style at every call site.
+The full runbook, including the security model, Netlify specifics, rules testing, and troubleshooting, is in [docs/deployment.md](docs/deployment.md).
 
 ---
 
 ## Documentation
 
-| Document                                   | Description                                     |
-| ------------------------------------------ | ----------------------------------------------- |
-| [Getting Started](docs/getting-started.md) | Full local setup and Firebase configuration     |
-| [Firebase Setup](docs/firebase-setup.md)   | Firestore rules, Storage config, Auth providers |
-| [Architecture](docs/architecture.md)       | Codebase design decisions and patterns          |
-| [Contributing](docs/contributing.md)       | Branching, commit conventions, PR process       |
+| Document                                          | Contents                                                                                  |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [Getting Started](docs/getting-started.md)        | Local setup, step by step                                                                 |
+| [Firebase Setup](docs/firebase-setup.md)          | Creating projects, account roles, granting access, environments                           |
+| [Cloudinary Setup](docs/cloudinary-setup.md)      | Configuring image uploads, and troubleshooting                                            |
+| [Deployment & Access Control](docs/deployment.md) | Security model, role matrix, audit log, Netlify, deploying rules, go-live checklist       |
+| [Architecture](docs/architecture.md)              | Design decisions, authentication flow, data flow, adding a feature                        |
+| [UI Conventions](docs/ui-conventions.md)          | Loading states, form fields, hiding pages in production, settings panels, date formatting |
+| [Contributing](CONTRIBUTING.md)                   | How to contribute                                                                         |
+| [Security Policy](SECURITY.md)                    | How to report a vulnerability                                                             |
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please read [docs/contributing.md](docs/contributing.md) before opening a pull request.
+Contributions are welcome from developers, designers, testers, writers, and churches using Congregation.
 
-Commits follow the [Conventional Commits](https://www.conventionalcommits.org/) spec: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, etc.
+1. Fork the repository and create a branch from `dev`, the integration branch (for example `feat/member-export` or `fix/attendance-totals`).
+2. Make a focused change that follows the existing conventions: TypeScript, `<script setup>`, feature-folder components, and Firestore access through `repositories/`.
+3. Run `npm run typecheck`, `npm run lint`, `npm run format:check`, and `npm run test`.
+4. Commit using [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, ...).
+5. Open a pull request and fill in the template.
+
+Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide.
+
+---
+
+## Community and Support
+
+| Need                                  | Where to go                                                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Report a bug                          | [Open a bug report](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/issues/new?template=bug_report.md)           |
+| Suggest a feature                     | [Open a feature request](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/issues/new?template=feature_request.md) |
+| Ask a question or browse known issues | [GitHub Issues](https://github.com/THE-CHURCH-OF-CHRIST-WORLDWIDE/congregation/issues)                                          |
+| Report a security vulnerability       | Do **not** open a public issue. Follow [SECURITY.md](SECURITY.md).                                                              |
+| Read the documentation                | [`docs/`](docs)                                                                                                                 |
+
+---
+
+## Sponsorship
+
+<p align="center">
+  <a href="https://github.com/sponsors/THE-CHURCH-OF-CHRIST-WORLDWIDE">
+    <img src="https://img.shields.io/badge/Sponsor%20Congregation-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor Congregation on GitHub Sponsors">
+  </a>
+</p>
+
+Congregation is built with the goal of making modern church management technology accessible to churches and faith-based organizations everywhere.
+
+Maintaining and improving an open-source project requires time, resources, and community support.
+
+Your sponsorship helps us continuously improve Congregation, introduce new features, improve reliability and security, maintain documentation, and make the platform better for churches around the world.
+
+Every contribution makes a difference.
+
+**[Become a sponsor →](https://github.com/sponsors/THE-CHURCH-OF-CHRIST-WORLDWIDE)**
 
 ---
 
 ## License
 
-Distributed under the **GNU Affero General Public License v3.0**. See [LICENSE](LICENSE) for full details.
+Congregation is free software, licensed under the **[GNU Affero General Public License v3.0](LICENSE)** (AGPL-3.0-or-later).
+
+In short, you may use, study, modify, and redistribute Congregation. If you distribute a modified version, **or run one as a network service that others use**, you must make its complete source code available to those users under the same license.
+
+Copyright © 2025–2026 Mfonido Mark and THE CHURCH OF CHRIST WORLDWIDE contributors. See [NOTICE](NOTICE) for the copyright notice and the additional attribution terms that apply under section 7 of the license.
 
 ---
 
 ## Authors
 
-**Mfonido Mark** — Lead Engineer
+**Mfonido Mark**, Lead Engineer: [@favourmark05](https://github.com/favourmark05) · [@MfonidoMark](https://twitter.com/MfonidoMark)
 
-- GitHub: [@favourmark05](https://github.com/favourmark05)
-- Twitter: [@MfonidoMark](https://twitter.com/MfonidoMark)
-- Email: MfonidoMark@gmail.com
-
-**Abasifreke Antia** — Designer / Product Manager
-
-- GitHub: [@abasifrekeantia](https://github.com/abasifrekeantia)
-- Twitter: [@Seantantiaa](https://twitter.com/Seantantiaa)
-- Email: abasifrekeantiaa@gmail.com
+**Abasifreke Antia**, Designer / Product Manager: [@abasifrekeantia](https://github.com/abasifrekeantia) · [@Seantantiaa](https://twitter.com/Seantantiaa)
 
 ---
 
-> _"Technology for the Kingdom — because stewardship should be as excellent as worship."_
+> _"Technology for the Kingdom: because stewardship should be as excellent as worship."_
