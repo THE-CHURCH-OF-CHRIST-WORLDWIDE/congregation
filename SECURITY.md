@@ -39,7 +39,7 @@ Please include:
 In scope:
 
 - The Congregation web application source in this repository
-- Default Firebase Security Rules shipped in `firestore.rules` and `storage.rules`
+- Default Firebase Security Rules shipped in `firestore.rules`
 - The authentication and authorisation flow in `middleware/`, `stores/auth.ts`, and `plugins/firebase.client.ts`
 - Documented setup paths in `docs/`
 
